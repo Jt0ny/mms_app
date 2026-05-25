@@ -1,0 +1,118 @@
+:root {
+  --primary: #16a34a;
+  --primary-dark: #15803d;
+  --primary-light: #86efac;
+  --secondary: #2a5d1c;
+  --success: #16a34a;
+  --warning: #facc15;
+  --error: #b91c1c;
+  --text: #374151;
+  --text-light: #6b7280;
+  --text-h: #111827;
+  --bg: #ffffff;
+  --bg-secondary: #f5f6fa;
+  --border: #e5e7eb;
+  --border-light: #f3f4f6;
+  --code-bg: #f3f4f6;
+  --shadow: rgba(0, 0, 0, 0.08) 0 10px 24px;
+  --shadow-sm: rgba(0, 0, 0, 0.04) 0 2px 8px;
+  --shadow-lg: rgba(0, 0, 0, 0.12) 0 15px 35px;
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --sidebar-min: 70px;
+  --sidebar-max: 250px;
+
+  font: clamp(15px, 1vw + 0.7rem, 16px)/1.5 var(--sans);
+  letter-spacing: 0.2px;
+  color: var(--text);
+  background: var(--bg);
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #d1d5db;
+    --text-light: #9ca3af;
+    --text-h: #f3f4f6;
+    --bg: #16171d;
+    --bg-secondary: #11131a;
+    --border: #2e303a;
+    --border-light: #20222b;
+    --code-bg: #1f2028;
+    --shadow: rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+}
+
+html {
+  min-width: 320px;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background: var(--bg-secondary);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+input,
+textarea,
+select {
+  min-width: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  letter-spacing: -0.03em;
+  margin: 32px 0;
+}
+
+h2 {
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+
+p {
+  margin: 0;
+}
+
+#app {
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}

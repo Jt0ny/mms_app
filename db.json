@@ -1,0 +1,2143 @@
+{
+  "materia_prima": [
+    {
+      "variedad": "ALOHA",
+      "cantidad_total": 2642,
+      "fecha_ingreso": "2026-04-30",
+      "id": "CUgwC6YhPZQ"
+    },
+    {
+      "variedad": "ALSTROEMERIA",
+      "cantidad_total": 598,
+      "fecha_ingreso": "2026-04-30",
+      "id": "zjiK_XdqpUA"
+    },
+    {
+      "variedad": "ANDES WHITE",
+      "cantidad_total": 190,
+      "fecha_ingreso": "2026-04-30",
+      "id": "EbPbb4xrECI"
+    },
+    {
+      "variedad": "ANDREA",
+      "cantidad_total": 3523,
+      "fecha_ingreso": "2026-04-30",
+      "id": "QqHHRSXY8fM"
+    },
+    {
+      "variedad": "ANTONIA",
+      "cantidad_total": 2196,
+      "fecha_ingreso": "2026-04-30",
+      "id": "vfR_wW7SZ74"
+    },
+    {
+      "variedad": "ATOMIC",
+      "cantidad_total": 2808,
+      "fecha_ingreso": "2026-04-30",
+      "id": "iLz0YNHgFsQ"
+    },
+    {
+      "variedad": "AVALANCHE",
+      "cantidad_total": 2296,
+      "fecha_ingreso": "2026-04-30",
+      "id": "zDXm9InNHXw"
+    },
+    {
+      "variedad": "ALL 4-LOVE",
+      "cantidad_total": 2853,
+      "fecha_ingreso": "2026-04-30",
+      "id": "hTuAEV97Bcg"
+    },
+    {
+      "variedad": "BABY BLUE",
+      "cantidad_total": 64,
+      "fecha_ingreso": "2026-04-30",
+      "id": "K9sCxRX9Xx0"
+    },
+    {
+      "variedad": "BLUEBERRY",
+      "cantidad_total": 816,
+      "fecha_ingreso": "2026-04-30",
+      "id": "mewODFjXwbA"
+    },
+    {
+      "variedad": "BLUEZ",
+      "cantidad_total": 1287,
+      "fecha_ingreso": "2026-04-30",
+      "id": "RP-xnr-p3X8"
+    },
+    {
+      "variedad": "BOUNTY WAY",
+      "cantidad_total": 2589,
+      "fecha_ingreso": "2026-04-30",
+      "id": "tWCen6K97BE"
+    },
+    {
+      "variedad": "BRIGHTON",
+      "cantidad_total": 2831,
+      "fecha_ingreso": "2026-04-30",
+      "id": "du_zsjHa6sc"
+    },
+    {
+      "variedad": "BUMBLE BEE",
+      "cantidad_total": 1738,
+      "fecha_ingreso": "2026-04-30",
+      "id": "9SJ7ll7-uz4"
+    },
+    {
+      "variedad": "CABARET",
+      "cantidad_total": 2243,
+      "fecha_ingreso": "2026-04-30",
+      "id": "6IHDOr0PWg0"
+    },
+    {
+      "variedad": "CANDLELIGHT",
+      "cantidad_total": 2791,
+      "fecha_ingreso": "2026-04-30",
+      "id": "EgPtidYvng8"
+    },
+    {
+      "variedad": "CANDY X-PRESSION",
+      "cantidad_total": 2979,
+      "fecha_ingreso": "2026-04-30",
+      "id": "v6WTa2vdcv0"
+    },
+    {
+      "variedad": "CHERRY BRANDY",
+      "cantidad_total": 2183,
+      "fecha_ingreso": "2026-04-30",
+      "id": "jBud_Tl7sx0"
+    },
+    {
+      "variedad": "CONSTANZA",
+      "cantidad_total": 5073,
+      "fecha_ingreso": "2026-04-30",
+      "id": "l9RRIr4ksdo"
+    },
+    {
+      "variedad": "COUNTRY CANDY",
+      "cantidad_total": 988,
+      "fecha_ingreso": "2026-04-30",
+      "id": "sjnVJR79Axo"
+    },
+    {
+      "variedad": "CREAM ESPERANCE",
+      "cantidad_total": 1960,
+      "fecha_ingreso": "2026-04-30",
+      "id": "V5_fuFfw-vU"
+    },
+    {
+      "variedad": "CRISANTEMO",
+      "cantidad_total": 256,
+      "fecha_ingreso": "2026-04-30",
+      "id": "fyHxU4uAjxQ"
+    },
+    {
+      "variedad": "DRAGONFLY",
+      "cantidad_total": 2799,
+      "fecha_ingreso": "2026-04-30",
+      "id": "fmvHeMh_WSQ"
+    },
+    {
+      "variedad": "DYNAMIC",
+      "cantidad_total": 14782,
+      "fecha_ingreso": "2026-04-30",
+      "id": "IeIHsRjVFS0"
+    },
+    {
+      "variedad": "ESPERANCE",
+      "cantidad_total": 3012,
+      "fecha_ingreso": "2026-04-30",
+      "id": "8NImkEftBnw"
+    },
+    {
+      "variedad": "EUCALIPTO",
+      "cantidad_total": 16,
+      "fecha_ingreso": "2026-04-30",
+      "id": "jwYvPnwbnG8"
+    },
+    {
+      "variedad": "EXPLORER",
+      "cantidad_total": 18537,
+      "fecha_ingreso": "2026-04-30",
+      "id": "SHBQWAYj3UY"
+    },
+    {
+      "variedad": "FASCINATION",
+      "cantidad_total": 1702,
+      "fecha_ingreso": "2026-04-30",
+      "id": "utWH8EHtT8A"
+    },
+    {
+      "variedad": "FATIMA",
+      "cantidad_total": 797,
+      "fecha_ingreso": "2026-04-30",
+      "id": "SdP3cm19VWM"
+    },
+    {
+      "variedad": "FORTUNE",
+      "cantidad_total": 6954,
+      "fecha_ingreso": "2026-04-30",
+      "id": "71Ko096Ivy0"
+    },
+    {
+      "variedad": "FREE SPIRIT",
+      "cantidad_total": 4136,
+      "fecha_ingreso": "2026-04-30",
+      "id": "suoADDiL0ys"
+    },
+    {
+      "variedad": "FREEDOM",
+      "cantidad_total": 11740,
+      "fecha_ingreso": "2026-04-30",
+      "id": "t90hH6-q6PU"
+    },
+    {
+      "variedad": "FULL MONTY",
+      "cantidad_total": 5514,
+      "fecha_ingreso": "2026-04-30",
+      "id": "VZOhyjOA1ww"
+    },
+    {
+      "variedad": "GREEN FASHION",
+      "cantidad_total": 3552,
+      "fecha_ingreso": "2026-04-30",
+      "id": "EasqTeZ8jOQ"
+    },
+    {
+      "variedad": "GYPSOPHILLA",
+      "cantidad_total": 3035,
+      "fecha_ingreso": "2026-04-30",
+      "id": "m2QpVR4pW34"
+    },
+    {
+      "variedad": "HELIANA ORANGE",
+      "cantidad_total": 1865,
+      "fecha_ingreso": "2026-04-30",
+      "id": "0nS6M91DW_8"
+    },
+    {
+      "variedad": "HIGH & MAGIC",
+      "cantidad_total": 928,
+      "fecha_ingreso": "2026-04-30",
+      "id": "wc3Hh3sqUag"
+    },
+    {
+      "variedad": "HIGH & YELLOW MAGIC",
+      "cantidad_total": 1442,
+      "fecha_ingreso": "2026-04-30",
+      "id": "K6VGTKeX7XY"
+    },
+    {
+      "variedad": "HOT MERENGUE",
+      "cantidad_total": 1890,
+      "fecha_ingreso": "2026-04-30",
+      "id": "lxBLiIGGfTE"
+    },
+    {
+      "variedad": "IGUAZU",
+      "cantidad_total": 6314,
+      "fecha_ingreso": "2026-04-30",
+      "id": "FWx1_qQ-hS0"
+    },
+    {
+      "variedad": "ILSE",
+      "cantidad_total": 2686,
+      "fecha_ingreso": "2026-04-30",
+      "id": "trMKjqZLsEY"
+    },
+    {
+      "variedad": "JUICY XPRESSION",
+      "cantidad_total": 2744,
+      "fecha_ingreso": "2026-04-30",
+      "id": "vdOTpKiuxXI"
+    },
+    {
+      "variedad": "KAHALA",
+      "cantidad_total": 4510,
+      "fecha_ingreso": "2026-04-30",
+      "id": "SjYXlbcU7aQ"
+    },
+    {
+      "variedad": "LEGEND",
+      "cantidad_total": 2465,
+      "fecha_ingreso": "2026-04-30",
+      "id": "tI4lgh61xuM"
+    },
+    {
+      "variedad": "LOLA",
+      "cantidad_total": 4390,
+      "fecha_ingreso": "2026-04-30",
+      "id": "igbLKqQJnU0"
+    },
+    {
+      "variedad": "LOLITA",
+      "cantidad_total": 2026,
+      "fecha_ingreso": "2026-04-30",
+      "id": "SsfIyvtbTIE"
+    },
+    {
+      "variedad": "MAMMA MIA",
+      "cantidad_total": 3692,
+      "fecha_ingreso": "2026-04-30",
+      "id": "KlT-vFy9qq8"
+    },
+    {
+      "variedad": "MANDALA",
+      "cantidad_total": 1348,
+      "fecha_ingreso": "2026-04-30",
+      "id": "5Yy11BVz_FE"
+    },
+    {
+      "variedad": "MANDARIN X-PRESSION",
+      "cantidad_total": 469,
+      "fecha_ingreso": "2026-04-30",
+      "id": "8o5f0hH1cBc"
+    },
+    {
+      "variedad": "MAYRA'S ROSE PEACH",
+      "cantidad_total": 898,
+      "fecha_ingreso": "2026-04-30",
+      "id": "Z6Ki-aoVlI4"
+    },
+    {
+      "variedad": "MOMENTUM",
+      "cantidad_total": 1061,
+      "fecha_ingreso": "2026-04-30",
+      "id": "v7yA4M5zrs4"
+    },
+    {
+      "variedad": "MONDIAL",
+      "cantidad_total": 22987,
+      "fecha_ingreso": "2026-04-30",
+      "id": "nA6ZbIYzg90"
+    },
+    {
+      "variedad": "MONTECITO VASE",
+      "cantidad_total": 14,
+      "fecha_ingreso": "2026-04-30",
+      "id": "4opFLjajsg4"
+    },
+    {
+      "variedad": "MOODY BLUES",
+      "cantidad_total": 6663,
+      "fecha_ingreso": "2026-04-30",
+      "id": "FAl71qm4uEU"
+    },
+    {
+      "variedad": "NAUTICA",
+      "cantidad_total": 4175,
+      "fecha_ingreso": "2026-04-30",
+      "id": "EXd6vjwGJvo"
+    },
+    {
+      "variedad": "NEWSFLASH",
+      "cantidad_total": 2760,
+      "fecha_ingreso": "2026-04-30",
+      "id": "EhiWfaIxzKE"
+    },
+    {
+      "variedad": "NEXUS",
+      "cantidad_total": 3104,
+      "fecha_ingreso": "2026-04-30",
+      "id": "KEthMmzx5PY"
+    },
+    {
+      "variedad": "NINA",
+      "cantidad_total": 5685,
+      "fecha_ingreso": "2026-04-30",
+      "id": "phf0ydh5XKk"
+    },
+    {
+      "variedad": "OPALA",
+      "cantidad_total": 4930,
+      "fecha_ingreso": "2026-04-30",
+      "id": "BK_ZKUkNhEA"
+    },
+    {
+      "variedad": "ORANGE CRUSH",
+      "cantidad_total": 2257,
+      "fecha_ingreso": "2026-04-30",
+      "id": "ua5UsiUnzWE"
+    },
+    {
+      "variedad": "ORANGE ONLY",
+      "cantidad_total": 936,
+      "fecha_ingreso": "2026-04-30",
+      "id": "Lz4sj7yHIJ4"
+    },
+    {
+      "variedad": "PALOMA",
+      "cantidad_total": 5683,
+      "fecha_ingreso": "2026-04-30",
+      "id": "1a2DnRr4NY8"
+    },
+    {
+      "variedad": "PEACH AVALANCHE",
+      "cantidad_total": 9618,
+      "fecha_ingreso": "2026-04-30",
+      "id": "B21O_VrBlRA"
+    },
+    {
+      "variedad": "PEARL AVALANCHE",
+      "cantidad_total": 2117,
+      "fecha_ingreso": "2026-04-30",
+      "id": "8GXYBm4iHu0"
+    },
+    {
+      "variedad": "PINK AVALANCHE",
+      "cantidad_total": 2891,
+      "fecha_ingreso": "2026-04-30",
+      "id": "8ezVsIEdRVk"
+    },
+    {
+      "variedad": "PINK FLOYD",
+      "cantidad_total": 13235,
+      "fecha_ingreso": "2026-04-30",
+      "id": "5tNVMaWco14"
+    },
+    {
+      "variedad": "PINK MONDIAL",
+      "cantidad_total": 2858,
+      "fecha_ingreso": "2026-04-30",
+      "id": "lH6rcgDrHBY"
+    },
+    {
+      "variedad": "PINK PUMA",
+      "cantidad_total": 2051,
+      "fecha_ingreso": "2026-04-30",
+      "id": "rgkuELU_Klk"
+    },
+    {
+      "variedad": "PINK X-PRESSION",
+      "cantidad_total": 1683,
+      "fecha_ingreso": "2026-04-30",
+      "id": "oke9udOino8"
+    },
+    {
+      "variedad": "PLAYA BLANCA",
+      "cantidad_total": 6244,
+      "fecha_ingreso": "2026-04-30",
+      "id": "bWkOYBqVgnA"
+    },
+    {
+      "variedad": "PRINCESS CROWN",
+      "cantidad_total": 6135,
+      "fecha_ingreso": "2026-04-30",
+      "id": "HOaUSRGuv-A"
+    },
+    {
+      "variedad": "PURPLE MOON",
+      "cantidad_total": 2377,
+      "fecha_ingreso": "2026-04-30",
+      "id": "EnsVGQW4TaA"
+    },
+    {
+      "variedad": "REDIANT",
+      "cantidad_total": 1897,
+      "fecha_ingreso": "2026-04-30",
+      "id": "YqVn-hU0KJI"
+    },
+    {
+      "variedad": "RUSCUS",
+      "cantidad_total": 513,
+      "fecha_ingreso": "2026-04-30",
+      "id": "6YajZQ26bO0"
+    },
+    {
+      "variedad": "SAGA",
+      "cantidad_total": 3002,
+      "fecha_ingreso": "2026-04-30",
+      "id": "x55H3Iu0W-0"
+    },
+    {
+      "variedad": "SCANDAL",
+      "cantidad_total": 3124,
+      "fecha_ingreso": "2026-04-30",
+      "id": "CMl7OBpxo0Q"
+    },
+    {
+      "variedad": "SCARLATTA",
+      "cantidad_total": 285,
+      "fecha_ingreso": "2026-04-30",
+      "id": "4iIIlx9lg8U"
+    },
+    {
+      "variedad": "SEA WALTZ",
+      "cantidad_total": 30,
+      "fecha_ingreso": "2026-04-30",
+      "id": "PCU3XP8bVB8"
+    },
+    {
+      "variedad": "SECRET GARDEN",
+      "cantidad_total": 4503,
+      "fecha_ingreso": "2026-04-30",
+      "id": "k28jNB_5Qi0"
+    },
+    {
+      "variedad": "SERENE LAVENDER",
+      "cantidad_total": 200,
+      "fecha_ingreso": "2026-04-30",
+      "id": "5etVgzTdB64"
+    },
+    {
+      "variedad": "SHIMMER",
+      "cantidad_total": 4658,
+      "fecha_ingreso": "2026-04-30",
+      "id": "zgItgHeRt48"
+    },
+    {
+      "variedad": "SHUKRANI",
+      "cantidad_total": 1294,
+      "fecha_ingreso": "2026-04-30",
+      "id": "5dV5iraCGI4"
+    },
+    {
+      "variedad": "SILANTOI",
+      "cantidad_total": 3424,
+      "fecha_ingreso": "2026-04-30",
+      "id": "ODY-YzpFGTQ"
+    },
+    {
+      "variedad": "SKY WALTZ LIGHT BLUE",
+      "cantidad_total": 180,
+      "fecha_ingreso": "2026-04-30",
+      "id": "JA3Ff9KJRag"
+    },
+    {
+      "variedad": "SPRAY",
+      "cantidad_total": 402,
+      "fecha_ingreso": "2026-04-30",
+      "id": "o_TDdWm7tBM"
+    },
+    {
+      "variedad": "SWEET AVALANCHE",
+      "cantidad_total": 2141,
+      "fecha_ingreso": "2026-04-30",
+      "id": "_Hx-OZCywYQ"
+    },
+    {
+      "variedad": "SWEETNESS",
+      "cantidad_total": 2192,
+      "fecha_ingreso": "2026-04-30",
+      "id": "s9n-r63-2_U"
+    },
+    {
+      "variedad": "TIBET",
+      "cantidad_total": 9720,
+      "fecha_ingreso": "2026-04-30",
+      "id": "gWP4aLxZrF4"
+    },
+    {
+      "variedad": "TOFFEE",
+      "cantidad_total": 1557,
+      "fecha_ingreso": "2026-04-30",
+      "id": "1qH3V_oQOrs"
+    },
+    {
+      "variedad": "TWILIGHT",
+      "cantidad_total": 2683,
+      "fecha_ingreso": "2026-04-30",
+      "id": "7p8yqGekSSw"
+    },
+    {
+      "variedad": "TYCOON",
+      "cantidad_total": 1607,
+      "fecha_ingreso": "2026-04-30",
+      "id": "o_gwSyyzzsg"
+    },
+    {
+      "variedad": "VENDELA",
+      "cantidad_total": 5081,
+      "fecha_ingreso": "2026-04-30",
+      "id": "e6vfKD-njP0"
+    },
+    {
+      "variedad": "WHITE XPRESSION",
+      "cantidad_total": 964,
+      "fecha_ingreso": "2026-04-30",
+      "id": "_P93e3NjGis"
+    },
+    {
+      "variedad": "WILD CROWN",
+      "cantidad_total": 1317,
+      "fecha_ingreso": "2026-04-30",
+      "id": "sznqqn9HUVY"
+    },
+    {
+      "variedad": "TOTALS",
+      "cantidad_total": 319385,
+      "fecha_ingreso": "2026-04-30",
+      "id": "0JsaXp4wwQk"
+    }
+  ],
+  "materiales": [
+    {
+      "nombre": "Carton",
+      "cantidad": 5888,
+      "descripcion": "Para rosas",
+      "id": "Nm5pkk9ZdoE"
+    },
+    {
+      "nombre": "Papel",
+      "cantidad": 1000,
+      "descripcion": "Para flores",
+      "id": "RTG2H-JkQNo"
+    },
+    {
+      "nombre": "A1",
+      "cantidad": 53,
+      "descripcion": "Bnnb",
+      "id": "qmOUq7Ek2z0"
+    },
+    {
+      "nombre": "A2",
+      "cantidad": 53,
+      "descripcion": "Aws dggdd",
+      "id": "C3O3g8_Vwuw"
+    },
+    {
+      "nombre": "asaD",
+      "cantidad": 1,
+      "descripcion": "D",
+      "id": "eMrGUg7QQAk"
+    },
+    {
+      "nombre": "Carton",
+      "cantidad": 5222,
+      "descripcion": "Para contar",
+      "id": "_uw3kJKc0Co"
+    },
+    {
+      "nombre": "sdad",
+      "cantidad": 6,
+      "descripcion": "fdsf",
+      "id": "oytkkh_Wypc"
+    }
+  ],
+  "recetas": [
+    {
+      "nombre": "Ramo 1",
+      "instrucciones": "Armar de forma uniforme",
+      "materiales": [
+        {
+          "id": "J29b7K_gyb8",
+          "nombre": "Ligas",
+          "cantidad": 1,
+          "disponible": 88,
+          "tipo": "material"
+        }
+      ],
+      "materia_prima": [
+        {
+          "id": "CUgwC6YhPZQ",
+          "nombre": "ALOHA",
+          "cantidad": 8,
+          "disponible": 2642,
+          "tipo": "materia_prima"
+        }
+      ],
+      "total_items": 2,
+      "fecha_creacion": "2026-05-06T18:11:36.190Z",
+      "id": "zOg6tvkpvSI"
+    },
+    {
+      "nombre": "Ramo 2",
+      "instrucciones": "Bien hecho",
+      "materiales": [
+        {
+          "id": "J29b7K_gyb8",
+          "nombre": "Ligas",
+          "cantidad": 1,
+          "disponible": 88,
+          "tipo": "material"
+        }
+      ],
+      "materia_prima": [
+        {
+          "id": "CUgwC6YhPZQ",
+          "nombre": "ALOHA",
+          "cantidad": 1,
+          "disponible": 2642,
+          "tipo": "materia_prima"
+        }
+      ],
+      "total_items": 2,
+      "fecha_creacion": "2026-05-06T18:20:53.069Z",
+      "id": "YRO8nIr0qWg"
+    },
+    {
+      "nombre": "sas",
+      "categoria": "Bouquet",
+      "instrucciones": "dasd",
+      "materiales": [
+        {
+          "id": "Nm5pkk9ZdoE",
+          "nombre": "Carton",
+          "cantidad": 9
+        }
+      ],
+      "materiaPrima": [
+        {
+          "id": "CUgwC6YhPZQ",
+          "nombre": "ALOHA",
+          "cantidad": 5
+        }
+      ],
+      "fecha_creacion": "2026-05-22T23:40:36.412Z",
+      "id": "XZrAwSsf2A0"
+    }
+  ],
+  "pedidos": [
+    {
+      "cliente_facturacion": "DISTRIBUIDORA EL PARAISO DE LAS FLORES S.A",
+      "cliente_envio": "DISTRIBUIDORA EL PARAISO DE LAS FLORES S.A",
+      "categoria": "GERBERA",
+      "stems": 425,
+      "id": "RR9xQ-4srI0"
+    },
+    {
+      "cliente_facturacion": "ABRAFLORA WHOLESALE FLOWERS LLC",
+      "cliente_envio": "ABRAFLORA WHOLESALE FLOWERS LLC",
+      "categoria": "ROSES",
+      "stems": 9575,
+      "id": "x02_2irn_gs"
+    },
+    {
+      "cliente_facturacion": "DISTRIBUIDORA EL PARAISO DE LAS FLORES S.A",
+      "cliente_envio": "DISTRIBUIDORA EL PARAISO DE LAS FLORES S.A",
+      "categoria": "SPRAY ROSES",
+      "stems": 200,
+      "id": "kszqNkxNsQg"
+    },
+    {
+      "cliente_facturacion": "DISTRIBUIDORA EL PARAISO DE LAS FLORES S.A",
+      "cliente_envio": "DISTRIBUIDORA EL PARAISO DE LAS FLORES S.A",
+      "categoria": "MINIGERBERAS",
+      "stems": 175,
+      "id": "bjjHOdK0DE4"
+    },
+    {
+      "cliente_facturacion": "ABRAFLORA WHOLESALE FLOWERS LLC",
+      "cliente_envio": "ABRAFLORA WHOLESALE FLOWERS LLC",
+      "categoria": "SPRAY ROSES",
+      "stems": 1180,
+      "id": "UXHwsVmg7zQ"
+    },
+    {
+      "cliente_facturacion": "AGROTROPIC AG",
+      "cliente_envio": "AGROTROPIC AG",
+      "categoria": "ROSES",
+      "stems": 5360,
+      "id": "iE9luxq_ouk"
+    },
+    {
+      "cliente_facturacion": "AGROTROPIC MH FAIRTRADE ID 18031",
+      "cliente_envio": "AGROTROPIC MH FLEUROP / AAA ID 18031",
+      "categoria": "ROSES",
+      "stems": 4946,
+      "id": "Liqkh4GNxvI"
+    },
+    {
+      "cliente_facturacion": "AGROTROPIC MH FAIRTRADE ID 18031",
+      "cliente_envio": "AGROTROPIC MH FLEUROP / AAA ID 18031",
+      "categoria": "SPRAY ROSES",
+      "stems": 140,
+      "id": "20s3tIQ5ycA"
+    },
+    {
+      "cliente_facturacion": "AGROTROPIC MH FAIRTRADE ID 18031",
+      "cliente_envio": "AGROTROPIC MH COOP STUCKWAREN ID 18031",
+      "categoria": "ROSES",
+      "stems": 2020,
+      "id": "yH1X69K4Qu0"
+    },
+    {
+      "cliente_facturacion": "ALINATURA SA",
+      "cliente_envio": "ALINATURA SA",
+      "categoria": "ROSES",
+      "stems": 19833,
+      "id": "xXoR7PNxQTM"
+    },
+    {
+      "cliente_facturacion": "ARPHI",
+      "cliente_envio": "MAKSO",
+      "categoria": "ROSES",
+      "stems": 450,
+      "id": "DK6_2_UKns8"
+    },
+    {
+      "cliente_facturacion": "DISTRIBUIDORA EL PARAISO DE LAS FLORES S.A",
+      "cliente_envio": "DISTRIBUIDORA EL PARAISO DE LAS FLORES S.A",
+      "categoria": "ROSES",
+      "stems": 100,
+      "id": "1JW_W3FXNoY"
+    },
+    {
+      "cliente_facturacion": "ARPHI",
+      "cliente_envio": "BELAYA",
+      "categoria": "ROSES",
+      "stems": 300,
+      "id": "thZeQmng1o4"
+    },
+    {
+      "cliente_facturacion": "ARPHI",
+      "cliente_envio": "BOBY 1",
+      "categoria": "ROSES",
+      "stems": 400,
+      "id": "0oFzX7lPfbA"
+    },
+    {
+      "cliente_facturacion": "ARPHI",
+      "cliente_envio": "RUBIK - YANAEKB",
+      "categoria": "ROSES",
+      "stems": 850,
+      "id": "3D7CMMvcvQ8"
+    },
+    {
+      "cliente_facturacion": "ARPHI",
+      "cliente_envio": "RITZ",
+      "categoria": "ROSES",
+      "stems": 400,
+      "id": "wxIy46Atobg"
+    },
+    {
+      "cliente_facturacion": "BAKU FLOWERS",
+      "cliente_envio": "OASIS K",
+      "categoria": "ROSES",
+      "stems": 1100,
+      "id": "2O4FyhQ5qaY"
+    },
+    {
+      "cliente_facturacion": "BAKU FLOWERS",
+      "cliente_envio": "IMPERATOR",
+      "categoria": "ROSES",
+      "stems": 550,
+      "id": "orjaSOGF_pU"
+    },
+    {
+      "cliente_facturacion": "BAKU FLOWERS",
+      "cliente_envio": "OASIS SERGUEY K",
+      "categoria": "ROSES",
+      "stems": 3900,
+      "id": "-grLd3sYg28"
+    },
+    {
+      "cliente_facturacion": "BAKU FLOWERS",
+      "cliente_envio": "BAK MAMED",
+      "categoria": "ROSES",
+      "stems": 8900,
+      "id": "ATw4IZscvaw"
+    },
+    {
+      "cliente_facturacion": "BAKU FLOWERS",
+      "cliente_envio": "BAK MAMED",
+      "categoria": "TINTED ROSES",
+      "stems": 100,
+      "id": "bUkc5q_PqDk"
+    },
+    {
+      "cliente_facturacion": "BAKU FLOWERS",
+      "cliente_envio": "BAK K",
+      "categoria": "ROSES",
+      "stems": 2415,
+      "id": "tgghCW9RX3o"
+    },
+    {
+      "cliente_facturacion": "BAKU FLOWERS",
+      "cliente_envio": "NADIR MINSK",
+      "categoria": "ROSES",
+      "stems": 500,
+      "id": "uBy0jMHwsAA"
+    },
+    {
+      "cliente_facturacion": "BLOOMQUEST LLC",
+      "cliente_envio": "CENTRAL MARKETS",
+      "categoria": "ROSES",
+      "stems": 3900,
+      "id": "ahnY_70eVwk"
+    },
+    {
+      "cliente_facturacion": "BOCA INC",
+      "cliente_envio": "BOCA INC USA",
+      "categoria": "ROSES",
+      "stems": 50,
+      "id": "9HzLZ44ZUrI"
+    },
+    {
+      "cliente_facturacion": "C.J. VIANEN FLOWEREXPORT B.V.",
+      "cliente_envio": "C.J. VIANEN FLOWEREXPORT B.V.",
+      "categoria": "ROSES",
+      "stems": 7200,
+      "id": "ENiCvwTQFiw"
+    },
+    {
+      "cliente_facturacion": "CAN-MEX IMPORTS INC",
+      "cliente_envio": "CAN-MEX IMPORTS INC",
+      "categoria": "ROSES",
+      "stems": 200,
+      "id": "UlPShP75Q5Y"
+    },
+    {
+      "cliente_facturacion": "CASA BLANCA FLOWERS",
+      "cliente_envio": "SCHNITT HAGENDORF BBW",
+      "categoria": "ROSES",
+      "stems": 858,
+      "id": "3wIjBG_SO5A"
+    },
+    {
+      "cliente_facturacion": "CASA BLANCA FLOWERS",
+      "cliente_envio": "SCHNITT HAGENDORF BBT",
+      "categoria": "ROSES",
+      "stems": 945,
+      "id": "mQKcgJz0Esg"
+    },
+    {
+      "cliente_facturacion": "CASA BLANCA FLOWERS",
+      "cliente_envio": "SCHITT WANGEN",
+      "categoria": "ROSES",
+      "stems": 2800,
+      "id": "chJEEebVAp8"
+    },
+    {
+      "cliente_facturacion": "CASA BLANCA FLOWERS",
+      "cliente_envio": "SCHNITT HAGENDORF BBR",
+      "categoria": "ROSES",
+      "stems": 1055,
+      "id": "_Cka1Zsidy4"
+    },
+    {
+      "cliente_facturacion": "CASA BLANCA FLOWERS",
+      "cliente_envio": "SCHNITT HAGENDORF",
+      "categoria": "ROSES",
+      "stems": 4100,
+      "id": "gibstjDTNh0"
+    },
+    {
+      "cliente_facturacion": "CHOICE FARMS",
+      "cliente_envio": "CHOICE FARMS",
+      "categoria": "ROSES",
+      "stems": 400,
+      "id": "lJAFPbgmaVA"
+    },
+    {
+      "cliente_facturacion": "COLGARDEN GROUP INC",
+      "cliente_envio": "CGG-01",
+      "categoria": "ROSES",
+      "stems": 250,
+      "id": "hIKiLkGRZHw"
+    },
+    {
+      "cliente_facturacion": "CRAGEN INTERNATIONAL CORPORATION",
+      "cliente_envio": "TAVO",
+      "categoria": "ROSES",
+      "stems": 550,
+      "id": "ZBlKcKFFa_o"
+    },
+    {
+      "cliente_facturacion": "CRAGEN INTERNATIONAL CORPORATION",
+      "cliente_envio": "DV MARIO",
+      "categoria": "ROSES",
+      "stems": 400,
+      "id": "m4LVUoNVlkM"
+    },
+    {
+      "cliente_facturacion": "CVETAMI GROUP",
+      "cliente_envio": "CVETAMI",
+      "categoria": "ROSES",
+      "stems": 400,
+      "id": "Ur_fushpnhw"
+    },
+    {
+      "cliente_facturacion": "CVETAMI GROUP",
+      "cliente_envio": "CV ROMBIK",
+      "categoria": "ROSES",
+      "stems": 300,
+      "id": "GqqMip8sbeU"
+    },
+    {
+      "cliente_facturacion": "CVETAMI GROUP",
+      "cliente_envio": "CV POCH",
+      "categoria": "ROSES",
+      "stems": 700,
+      "id": "M_itrDeTYOw"
+    },
+    {
+      "cliente_facturacion": "CVETAMI GROUP",
+      "cliente_envio": "VETA",
+      "categoria": "ROSES",
+      "stems": 800,
+      "id": "S3ibHUOctok"
+    },
+    {
+      "cliente_facturacion": "CVETAMI GROUP",
+      "cliente_envio": "CV ALEX",
+      "categoria": "ROSES",
+      "stems": 900,
+      "id": "fm79bu_7iL0"
+    },
+    {
+      "cliente_facturacion": "CVETAMI GROUP",
+      "cliente_envio": "CV IRMA",
+      "categoria": "ROSES",
+      "stems": 400,
+      "id": "KrL0Itq-WTs"
+    },
+    {
+      "cliente_facturacion": "COLOUR REPUBLIC LLC",
+      "cliente_envio": "COLOUR REPUBLIC LLC",
+      "categoria": "ROSES",
+      "stems": 5760,
+      "id": "UtWdRykO4hQ"
+    },
+    {
+      "cliente_facturacion": "DEALIGHT FLOWERS AG",
+      "cliente_envio": "DEALIGHT FLOWERS AG",
+      "categoria": "ROSES",
+      "stems": 2445,
+      "id": "TrDEseQuHqE"
+    },
+    {
+      "cliente_facturacion": "DELAWARE VALLEY FLORAL GROUP LLC.",
+      "cliente_envio": "DVFLORA-SEWELL, NJ",
+      "categoria": "ROSES",
+      "stems": 1300,
+      "id": "5ZPzL-iBZzE"
+    },
+    {
+      "cliente_facturacion": "DELAWARE VALLEY FLORAL GROUP LLC.",
+      "cliente_envio": "DVFLORA-SEWELL, NJ",
+      "categoria": "SPRAY ROSES",
+      "stems": 1000,
+      "id": "ZNapvnUerKE"
+    },
+    {
+      "cliente_facturacion": "DIVA FLOR",
+      "cliente_envio": "FLO -RSFL",
+      "categoria": "ROSES",
+      "stems": 300,
+      "id": "buw1Ga21lY4"
+    },
+    {
+      "cliente_facturacion": "DIVA FLOR",
+      "cliente_envio": "TSE.",
+      "categoria": "ROSES",
+      "stems": 2400,
+      "id": "j1uoo4QBOhI"
+    },
+    {
+      "cliente_facturacion": "ECUAMIA FLOWER CORP",
+      "cliente_envio": "ECUAMIA FLOWER CORP",
+      "categoria": "SPRAY ROSES",
+      "stems": 480,
+      "id": "xkb0wtIycPs"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU SWAT",
+      "categoria": "ROSES",
+      "stems": 400,
+      "id": "0uCyhF1kN7g"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU OPEN",
+      "categoria": "ROSES",
+      "stems": 2900,
+      "id": "CcFYVIkpNCI"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU ELENAFLOWERS",
+      "categoria": "ROSES",
+      "stems": 250,
+      "id": "WlNu882FYzo"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU ELENAFLOWERS",
+      "categoria": "SPRAY ROSES",
+      "stems": 250,
+      "id": "ZQmlinB2Jhg"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU ELENAFLOWERS",
+      "categoria": "TINTED ROSES",
+      "stems": 650,
+      "id": "a8cdWWuRMrQ"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU DUSAN",
+      "categoria": "ROSES",
+      "stems": 300,
+      "id": "QiofjZ_hIMM"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU DENGEL",
+      "categoria": "ROSES",
+      "stems": 3950,
+      "id": "AWcmNuWmpoI"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU ANAPO",
+      "categoria": "ROSES",
+      "stems": 450,
+      "id": "HCWu5B29tOM"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU OLIVA",
+      "categoria": "ROSES",
+      "stems": 625,
+      "id": "MJwe5lkqyYQ"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU DELAR",
+      "categoria": "ROSES",
+      "stems": 25,
+      "id": "UrbLlHlilUw"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU DELAR",
+      "categoria": "TINTED ROSES",
+      "stems": 1500,
+      "id": "rcpLMMp8xzQ"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU SAPA",
+      "categoria": "ROSES",
+      "stems": 1150,
+      "id": "Sp7VMAWb3gQ"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU SAPA",
+      "categoria": "TINTED ROSES",
+      "stems": 600,
+      "id": "IS_xJaBFWpU"
+    },
+    {
+      "cliente_facturacion": "ELENA FLOWERS",
+      "cliente_envio": "KU MAGNAT",
+      "categoria": "ROSES",
+      "stems": 450,
+      "id": "_eri3pblpLw"
+    },
+    {
+      "cliente_facturacion": "EXPOROSAS",
+      "cliente_envio": "DOLCHE PTZ",
+      "categoria": "ROSES",
+      "stems": 1875,
+      "id": "eG2EAQiJICA"
+    },
+    {
+      "cliente_facturacion": "EXPOROSAS",
+      "cliente_envio": "DOLCHE PTZ",
+      "categoria": "SPRAY ROSES",
+      "stems": 350,
+      "id": "bgEl1z8gCh4"
+    },
+    {
+      "cliente_facturacion": "FARM DIRECT NETHERLANDS B V",
+      "cliente_envio": "FARM DIRECT BV",
+      "categoria": "ROSES",
+      "stems": 200,
+      "id": "tfguqHOW7Is"
+    },
+    {
+      "cliente_facturacion": "FASHION GARDEN",
+      "cliente_envio": "GRD**-FASFLO",
+      "categoria": "ROSES",
+      "stems": 450,
+      "id": "v68Z599CtwY"
+    },
+    {
+      "cliente_facturacion": "FASHION GARDEN",
+      "cliente_envio": "GRD MSHA",
+      "categoria": "ROSES",
+      "stems": 500,
+      "id": "JhDUw879o08"
+    },
+    {
+      "cliente_facturacion": "FLEURIGROS",
+      "cliente_envio": "FLEUREXPERT",
+      "categoria": "ROSES",
+      "stems": 100,
+      "id": "IP9LeNhafWo"
+    },
+    {
+      "cliente_facturacion": "FLEURIGROS",
+      "cliente_envio": "FLEUREXPERT",
+      "categoria": "TINTED ROSES",
+      "stems": 25,
+      "id": "ZSQHlkWhin0"
+    },
+    {
+      "cliente_facturacion": "FLEXIN SRL",
+      "cliente_envio": "FLEXIN SRL",
+      "categoria": "ROSES",
+      "stems": 400,
+      "id": "-0ZVfsyn-xw"
+    },
+    {
+      "cliente_facturacion": "FLORALINK LLC",
+      "cliente_envio": "FLL SOUTH FLORALS IMPORTS",
+      "categoria": "ROSES",
+      "stems": 300,
+      "id": "ku9YAk0zRSc"
+    },
+    {
+      "cliente_facturacion": "FLORALINK LLC",
+      "cliente_envio": "FLL SOUTH FLORALS IMPORTS",
+      "categoria": "SPRAY ROSES",
+      "stems": 300,
+      "id": "GY54O3sJnUM"
+    },
+    {
+      "cliente_facturacion": "FLORALINK LLC",
+      "cliente_envio": "FLL FLORA FRESH",
+      "categoria": "ROSES",
+      "stems": 100,
+      "id": "ZZlKU8zMisM"
+    },
+    {
+      "cliente_facturacion": "FLORESOL EU",
+      "cliente_envio": "ROSMARIN",
+      "categoria": "ROSES",
+      "stems": 1400,
+      "id": "nbtyWoD7zRM"
+    },
+    {
+      "cliente_facturacion": "FLOWER MASTER LLC",
+      "cliente_envio": "OOO US",
+      "categoria": "TINTED ROSES",
+      "stems": 300,
+      "id": "U0S8rIYyEn8"
+    },
+    {
+      "cliente_facturacion": "FLOWER MASTER LLC",
+      "cliente_envio": "OOO ZARA",
+      "categoria": "TINTED ROSES",
+      "stems": 300,
+      "id": "jC1oRM5ipRI"
+    },
+    {
+      "cliente_facturacion": "FLOWER MASTER LLC",
+      "cliente_envio": "OOO EVP",
+      "categoria": "TINTED ROSES",
+      "stems": 300,
+      "id": "bpwWkPFh8-8"
+    },
+    {
+      "cliente_facturacion": "FLOWERJULIYA",
+      "cliente_envio": "TROPIC GENESIS",
+      "categoria": "ROSES",
+      "stems": 50,
+      "id": "waUR0Wnm7rE"
+    },
+    {
+      "cliente_facturacion": "FLOWERJULIYA",
+      "cliente_envio": "TROPIC GENESIS",
+      "categoria": "TINTED ROSES",
+      "stems": 250,
+      "id": "1R0Rhygs8Qg"
+    },
+    {
+      "cliente_facturacion": "FLOWEX BV",
+      "cliente_envio": "FLOWEX BV",
+      "categoria": "ROSES",
+      "stems": 1750,
+      "id": "7IxK8ORmC4c"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV",
+      "cliente_envio": "FLEURAMETZ SUISE",
+      "categoria": "ROSES",
+      "stems": 900,
+      "id": "fUPbm2O1d_c"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV",
+      "cliente_envio": "FM FRANKFURT",
+      "categoria": "ROSES",
+      "stems": 6443,
+      "id": "kuq_jDtAhmg"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV",
+      "cliente_envio": "FM BOX",
+      "categoria": "ROSES",
+      "stems": 1550,
+      "id": "otMOne6ZMqc"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV",
+      "cliente_envio": "FM BOX",
+      "categoria": "SPRAY ROSES",
+      "stems": 150,
+      "id": "0DjLu1LHZdA"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV",
+      "cliente_envio": "U-DA",
+      "categoria": "ROSES",
+      "stems": 100,
+      "id": "kDA3a1s5afc"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV",
+      "cliente_envio": "FLEURAMETZ AALMER",
+      "categoria": "ROSES",
+      "stems": 10325,
+      "id": "NN_4iX5DNeE"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV",
+      "cliente_envio": "FLEURAMETZ AALMER",
+      "categoria": "SPRAY ROSES",
+      "stems": 320,
+      "id": "oVF-hc65CoI"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV",
+      "cliente_envio": "FLEURAMETZ FDA",
+      "categoria": "ROSES",
+      "stems": 1150,
+      "id": "90MOjmY0luo"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV",
+      "cliente_envio": "FM UNPACK",
+      "categoria": "ROSES",
+      "stems": 3479,
+      "id": "ZwmgBGqb2Hc"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV",
+      "cliente_envio": "FM UNPACK",
+      "categoria": "SPRAY ROSES",
+      "stems": 100,
+      "id": "8etRx7xTR3o"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV",
+      "cliente_envio": "FM UNPACK",
+      "categoria": "TINTED ROSES",
+      "stems": 108,
+      "id": "VeCxKsnMrm4"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV-ESPECIALES",
+      "cliente_envio": "FLEURAMETZ USA NYC",
+      "categoria": "ROSES",
+      "stems": 675,
+      "id": "UYTJJClOHAk"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV-ESPECIALES",
+      "cliente_envio": "FM UNPACK.",
+      "categoria": "ROSES",
+      "stems": 864,
+      "id": "tZdYyHgW_NU"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV-ESPECIALES",
+      "cliente_envio": "FM UNPACK.",
+      "categoria": "TINTED ROSES",
+      "stems": 100,
+      "id": "5u1bsBv8mU8"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV-ESPECIALES",
+      "cliente_envio": "FGS",
+      "categoria": "ROSES",
+      "stems": 200,
+      "id": "KckfZFQMx6k"
+    },
+    {
+      "cliente_facturacion": "FM GROUP BV-ESPECIALES",
+      "cliente_envio": "FGS",
+      "categoria": "SPRAY ROSES",
+      "stems": 240,
+      "id": "7FBsdtOwvzU"
+    },
+    {
+      "cliente_facturacion": "FM GROUP GREENFLOR",
+      "cliente_envio": "GREENFLOR RIJNSBURG",
+      "categoria": "ROSES",
+      "stems": 1380,
+      "id": "ubKdirfDVFI"
+    },
+    {
+      "cliente_facturacion": "FM GROUP GREENFLOR",
+      "cliente_envio": "GREEN - EC",
+      "categoria": "ROSES",
+      "stems": 1245,
+      "id": "srW7Z8sPKQc"
+    },
+    {
+      "cliente_facturacion": "FM GROUP GREENFLOR",
+      "cliente_envio": "JMG - EC",
+      "categoria": "ROSES",
+      "stems": 300,
+      "id": "hpbsMa1AaH0"
+    },
+    {
+      "cliente_facturacion": "FM GROUP GREENFLOR",
+      "cliente_envio": "DEXX-EC",
+      "categoria": "ROSES",
+      "stems": 200,
+      "id": "9-sAiS6cLxI"
+    },
+    {
+      "cliente_facturacion": "FM GROUP GREENFLOR",
+      "cliente_envio": "GREENFLOR-DEXX",
+      "categoria": "ROSES",
+      "stems": 3850,
+      "id": "X1s0wGXcU0o"
+    },
+    {
+      "cliente_facturacion": "FOSHAN HUAMIJU NETWORK TECHNOLOGY CO., LTD",
+      "cliente_envio": "FOSHAN HUAMIJU NETWORK TECHNOLOGY CO., LTD",
+      "categoria": "ROSES",
+      "stems": 430,
+      "id": "_HTa4ZyYnZI"
+    },
+    {
+      "cliente_facturacion": "FOSHAN HUAMIJU NETWORK TECHNOLOGY CO., LTD",
+      "cliente_envio": "FOSHAN HUAMIJU NETWORK TECHNOLOGY CO., LTD",
+      "categoria": "TINTED ROSES",
+      "stems": 940,
+      "id": "WmqlncUcm_M"
+    },
+    {
+      "cliente_facturacion": "FOUR SEASON QUALITY B.V.",
+      "cliente_envio": "NEW YORK FLOWER GROUP INC",
+      "categoria": "ROSES",
+      "stems": 4900,
+      "id": "YbFZpjMvRTU"
+    },
+    {
+      "cliente_facturacion": "GRADYFLOR ESPANA",
+      "cliente_envio": "GRADYFLOR ESPANA",
+      "categoria": "ROSES",
+      "stems": 2050,
+      "id": "AJ5pqiGm4vE"
+    },
+    {
+      "cliente_facturacion": "GULF FLOWERS FZCO",
+      "cliente_envio": "GULF FLOWERS FZCO - RKG",
+      "categoria": "ROSES",
+      "stems": 650,
+      "id": "lIX3vvzo7ZY"
+    },
+    {
+      "cliente_facturacion": "GULF FLOWERS FZCO",
+      "cliente_envio": "GULF FLOWERS FZCO- TKG",
+      "categoria": "ROSES",
+      "stems": 50,
+      "id": "06UHaPLUb-w"
+    },
+    {
+      "cliente_facturacion": "GULF FLOWERS FZCO",
+      "cliente_envio": "GULF FLOWERS FZCO- TKG",
+      "categoria": "TINTED ROSES",
+      "stems": 1875,
+      "id": "fBunW9q8vR0"
+    },
+    {
+      "cliente_facturacion": "HADJU FLOWERS EXPORT SRO",
+      "cliente_envio": "HADJU",
+      "categoria": "ROSES",
+      "stems": 200,
+      "id": "3HtiFv3DW_8"
+    },
+    {
+      "cliente_facturacion": "HADJU FLOWERS EXPORT SRO",
+      "cliente_envio": "HADJU",
+      "categoria": "SPRAY ROSES",
+      "stems": 300,
+      "id": "D3AXNlL7mIs"
+    },
+    {
+      "cliente_facturacion": "HADJU FLOWERS EXPORT SRO",
+      "cliente_envio": "HADJU FLOWERS EXPORT SRO",
+      "categoria": "ROSES",
+      "stems": 300,
+      "id": "Av9dzFOPfeg"
+    },
+    {
+      "cliente_facturacion": "HOJA VERDE INTL",
+      "cliente_envio": "WGF001",
+      "categoria": "ROSES",
+      "stems": 1895,
+      "id": "njzKcdV0Inc"
+    },
+    {
+      "cliente_facturacion": "HOJA VERDE INTL",
+      "cliente_envio": "WGF001",
+      "categoria": "SPRAY ROSES",
+      "stems": 120,
+      "id": "2xxoX5lG5GU"
+    },
+    {
+      "cliente_facturacion": "HUNTER GREEN LLC",
+      "cliente_envio": "HUNTER GREEN LLC",
+      "categoria": "ROSES",
+      "stems": 1150,
+      "id": "BOiyZ12LKfI"
+    },
+    {
+      "cliente_facturacion": "HUNTER GREEN LLC",
+      "cliente_envio": "HUNTER GREEN LLC",
+      "categoria": "SPRAY ROSES",
+      "stems": 300,
+      "id": "LPqqjRHsXHs"
+    },
+    {
+      "cliente_facturacion": "IMPEX FLOWERS",
+      "cliente_envio": "IMPEX FLOWERMARKET LLC",
+      "categoria": "ROSES",
+      "stems": 300,
+      "id": "F5DJTybrQSs"
+    },
+    {
+      "cliente_facturacion": "IMPEX FLOWERS",
+      "cliente_envio": "IMPEX FLOWERMARKET LLC TA",
+      "categoria": "ROSES",
+      "stems": 300,
+      "id": "MduEs794O6A"
+    },
+    {
+      "cliente_facturacion": "IMPEX FLOWERS",
+      "cliente_envio": "B FORT.MNS",
+      "categoria": "ROSES",
+      "stems": 350,
+      "id": "nDEgKi4HT_M"
+    },
+    {
+      "cliente_facturacion": "INTER EXPORT",
+      "cliente_envio": "CARRERA 29",
+      "categoria": "ROSES",
+      "stems": 1400,
+      "id": "SoSSRvjsYto"
+    },
+    {
+      "cliente_facturacion": "INTERFLORALOGISTICS",
+      "cliente_envio": "TROPIC SINITSYNA",
+      "categoria": "ROSES",
+      "stems": 400,
+      "id": "aPt-EItVAuQ"
+    },
+    {
+      "cliente_facturacion": "J&L WHOLESALE INC",
+      "cliente_envio": "J&L WHOLESALE INC",
+      "categoria": "EUCALYPTUS",
+      "stems": 120,
+      "id": "xLPY5LPsK1Q"
+    },
+    {
+      "cliente_facturacion": "J&L WHOLESALE INC",
+      "cliente_envio": "J&L WHOLESALE INC",
+      "categoria": "ROSES",
+      "stems": 300,
+      "id": "q0l70ng0u3I"
+    },
+    {
+      "cliente_facturacion": "J&L WHOLESALE INC",
+      "cliente_envio": "J&L WHOLESALE INC",
+      "categoria": "SPRAY ROSES",
+      "stems": 190,
+      "id": "pbLv8b8bWwY"
+    },
+    {
+      "cliente_facturacion": "J&L WHOLESALE INC",
+      "cliente_envio": "J&L WHOLESALE INC",
+      "categoria": "TINTED ROSES",
+      "stems": 400,
+      "id": "ZTOhSiKRQgs"
+    },
+    {
+      "cliente_facturacion": "JET FRESH FLOWERS DISTRIBUTORS INC",
+      "cliente_envio": "JET FRESH FLOWERS DISTRIBUTION INC",
+      "categoria": "ROSES",
+      "stems": 2775,
+      "id": "rMFuoqbzNaA"
+    },
+    {
+      "cliente_facturacion": "JET FRESH FLOWERS DISTRIBUTORS INC",
+      "cliente_envio": "JET FRESH FLOWERS DISTRIBUTION INC",
+      "categoria": "SPRAY ROSES",
+      "stems": 2300,
+      "id": "hN3sBg5h-Rk"
+    },
+    {
+      "cliente_facturacion": "KIVA",
+      "cliente_envio": "KIVA",
+      "categoria": "ROSES",
+      "stems": 1950,
+      "id": "8tyd5W-9UbU"
+    },
+    {
+      "cliente_facturacion": "KOROLLARIUM LLC",
+      "cliente_envio": "ASSOCIATED CUT FLOWERS CO",
+      "categoria": "ROSES",
+      "stems": 750,
+      "id": "woyrMUpOOtg"
+    },
+    {
+      "cliente_facturacion": "MARIA FLOWERS INTERNATIONAL",
+      "cliente_envio": "MARIA FLOWERS INTERNATIONAL",
+      "categoria": "ROSES",
+      "stems": 3024,
+      "id": "vzKQjeXR0Ag"
+    },
+    {
+      "cliente_facturacion": "MAURICE ROSENG",
+      "cliente_envio": "ARTEMIS",
+      "categoria": "ROSES",
+      "stems": 1250,
+      "id": "p834SxFM03c"
+    },
+    {
+      "cliente_facturacion": "MAYESH WHOLESALE FLORIST INC",
+      "cliente_envio": "MAYESH WHOLESALE",
+      "categoria": "ROSES",
+      "stems": 1000,
+      "id": "t5Cyd4V_b6c"
+    },
+    {
+      "cliente_facturacion": "MAYESH WHOLESALE FLORIST INC",
+      "cliente_envio": "MAYESH WHOLESALE",
+      "categoria": "SPRAY ROSES",
+      "stems": 120,
+      "id": "3C1rzBUsab0"
+    },
+    {
+      "cliente_facturacion": "MAYESH WHOLESALE FLORIST INC",
+      "cliente_envio": "MAYESH WHOLESALE FLORIST INC",
+      "categoria": "ROSES",
+      "stems": 600,
+      "id": "0zKNm0irYBM"
+    },
+    {
+      "cliente_facturacion": "MEYERCOM L P",
+      "cliente_envio": "B GUBER",
+      "categoria": "ROSES",
+      "stems": 250,
+      "id": "D5RkpqWM2H0"
+    },
+    {
+      "cliente_facturacion": "MEYERCOM L P",
+      "cliente_envio": "B-FUAD",
+      "categoria": "ROSES",
+      "stems": 425,
+      "id": "5vq8-QKdbIc"
+    },
+    {
+      "cliente_facturacion": "MEYERCOM L P",
+      "cliente_envio": "B-FUAD",
+      "categoria": "TINTED ROSES",
+      "stems": 275,
+      "id": "7kAgFqdrf4o"
+    },
+    {
+      "cliente_facturacion": "MEYERCOM L P",
+      "cliente_envio": "B-TROPIC.NN.SAV64",
+      "categoria": "ROSES",
+      "stems": 600,
+      "id": "lmBjmqn-wRE"
+    },
+    {
+      "cliente_facturacion": "MEYERCOM L P",
+      "cliente_envio": "B - ORHIDEYA",
+      "categoria": "ROSES",
+      "stems": 1450,
+      "id": "6MHRNl7Uppc"
+    },
+    {
+      "cliente_facturacion": "MEYERCOM L P",
+      "cliente_envio": "B RUVALOV",
+      "categoria": "ROSES",
+      "stems": 1485,
+      "id": "Lo1t5RfS-k8"
+    },
+    {
+      "cliente_facturacion": "MJS F.H.U MICHAL SZYMANSKI",
+      "cliente_envio": "MJS F.H.U MICHAL SZYMANSKI",
+      "categoria": "ROSES",
+      "stems": 6830,
+      "id": "NMo8mCzLzfg"
+    },
+    {
+      "cliente_facturacion": "MJS F.H.U MICHAL SZYMANSKI",
+      "cliente_envio": "MJS F.H.U MICHAL SZYMANSKI",
+      "categoria": "SPRAY ROSES",
+      "stems": 580,
+      "id": "7ieIgDIcSRs"
+    },
+    {
+      "cliente_facturacion": "MJS F.H.U MICHAL SZYMANSKI",
+      "cliente_envio": "MJS F.H.U MICHAL SZYMANSKI",
+      "categoria": "TINTED ROSES",
+      "stems": 230,
+      "id": "onIjkY93uyo"
+    },
+    {
+      "cliente_facturacion": "NEO FLORA",
+      "cliente_envio": "NEO FLORA",
+      "categoria": "ROSES",
+      "stems": 4100,
+      "id": "K1NkU1vfd30"
+    },
+    {
+      "cliente_facturacion": "NINSAR FLORAL WHOLESALE INC",
+      "cliente_envio": "NINSAR FLORAL WHOLESALE INC",
+      "categoria": "GERBERA",
+      "stems": 10,
+      "id": "Zdwi8yYSuEs"
+    },
+    {
+      "cliente_facturacion": "NINSAR FLORAL WHOLESALE INC",
+      "cliente_envio": "NINSAR FLORAL WHOLESALE INC",
+      "categoria": "MINIGERBERAS",
+      "stems": 90,
+      "id": "Hrz2XI8ozZc"
+    },
+    {
+      "cliente_facturacion": "NINSAR FLORAL WHOLESALE INC",
+      "cliente_envio": "NINSAR FLORAL WHOLESALE INC",
+      "categoria": "ROSES",
+      "stems": 750,
+      "id": "8UlQ9L2Wzb8"
+    },
+    {
+      "cliente_facturacion": "NINSAR FLORAL WHOLESALE INC",
+      "cliente_envio": "NINSAR FLORAL WHOLESALE INC",
+      "categoria": "SPRAY ROSES",
+      "stems": 500,
+      "id": "NfguEYEtlMI"
+    },
+    {
+      "cliente_facturacion": "NINSAR FLORAL WHOLESALE INC",
+      "cliente_envio": "NINSAR FLORAL WHOLESALE INC",
+      "categoria": "TINTED ROSES",
+      "stems": 200,
+      "id": "UkpeH6x0gYA"
+    },
+    {
+      "cliente_facturacion": "OOO LUXUS LLC - LATITUD CERO",
+      "cliente_envio": "LUXUS KRASA",
+      "categoria": "ROSES",
+      "stems": 1500,
+      "id": "-G389yI4y_o"
+    },
+    {
+      "cliente_facturacion": "OOO LUXUS LLC - LATITUD CERO",
+      "cliente_envio": "SVSVIT",
+      "categoria": "SPRAY ROSES",
+      "stems": 200,
+      "id": "fg0RQ0TNBbY"
+    },
+    {
+      "cliente_facturacion": "OOO LUXUS LLC - LATITUD CERO",
+      "cliente_envio": "KONEVA",
+      "categoria": "SPRAY ROSES",
+      "stems": 250,
+      "id": "aSafzJ7RbzE"
+    },
+    {
+      "cliente_facturacion": "OOO MARLISE TROPIC TRADE",
+      "cliente_envio": "ISAK",
+      "categoria": "ROSES",
+      "stems": 2580,
+      "id": "TNjTe6S5HOs"
+    },
+    {
+      "cliente_facturacion": "OOO MARLISE TROPIC TRADE",
+      "cliente_envio": "RUBI",
+      "categoria": "ROSES",
+      "stems": 400,
+      "id": "BBExl7X5k6I"
+    },
+    {
+      "cliente_facturacion": "OOO MARLISE TROPIC TRADE",
+      "cliente_envio": "IBOR",
+      "categoria": "ROSES",
+      "stems": 1350,
+      "id": "ZDciUToI0XI"
+    },
+    {
+      "cliente_facturacion": "OOO MARLISE TROPIC TRADE",
+      "cliente_envio": "TROPIC NN KRIRO",
+      "categoria": "ROSES",
+      "stems": 100,
+      "id": "nY3yJaUNMPQ"
+    },
+    {
+      "cliente_facturacion": "OOO MARLISE TROPIC TRADE",
+      "cliente_envio": "TROPIC RUNEZH",
+      "categoria": "ROSES",
+      "stems": 3970,
+      "id": "oEGOkT-DWJc"
+    },
+    {
+      "cliente_facturacion": "ORANGE FLOWERS SRL",
+      "cliente_envio": "ORANGE FLOWERS CV",
+      "categoria": "ROSES",
+      "stems": 2245,
+      "id": "XHWOB2IYTOA"
+    },
+    {
+      "cliente_facturacion": "ORANGE FLOWERS SRL",
+      "cliente_envio": "ORANGE FLOWERS EK",
+      "categoria": "ROSES",
+      "stems": 11240,
+      "id": "kmRiQNhZ4H4"
+    },
+    {
+      "cliente_facturacion": "PACIF FLORAL JAPAN GK",
+      "cliente_envio": "PACIF FLORAL JAPAN GK",
+      "categoria": "ROSES",
+      "stems": 720,
+      "id": "gB0Ye0MBoKA"
+    },
+    {
+      "cliente_facturacion": "PACIF FLORAL JAPAN GK",
+      "cliente_envio": "PACIF FLORAL JAPAN GK",
+      "categoria": "TINTED ROSES",
+      "stems": 2640,
+      "id": "Q373AaO9Tr0"
+    },
+    {
+      "cliente_facturacion": "PAMELAS FLOWERS S.R.O.",
+      "cliente_envio": "PAMELAS FLOWERS S.R.O.",
+      "categoria": "ROSES",
+      "stems": 1100,
+      "id": "z4lXQwoQIdI"
+    },
+    {
+      "cliente_facturacion": "POTOMAC FLORAL WHOLESALE",
+      "cliente_envio": "POTOMAC FLORAL WHOLESALE",
+      "categoria": "ROSES",
+      "stems": 350,
+      "id": "8_eUo9FxzAE"
+    },
+    {
+      "cliente_facturacion": "RAD FLOWERS ILALO",
+      "cliente_envio": "TROPIC KHALA",
+      "categoria": "ROSES",
+      "stems": 2125,
+      "id": "O-4pqKkA900"
+    },
+    {
+      "cliente_facturacion": "RAD FLOWERS ILALO",
+      "cliente_envio": "RAD CROWN",
+      "categoria": "ROSES",
+      "stems": 100,
+      "id": "8CKeGqns_Og"
+    },
+    {
+      "cliente_facturacion": "RAD FLOWERS ILALO",
+      "cliente_envio": "KHALA-ZALA",
+      "categoria": "ROSES",
+      "stems": 300,
+      "id": "nn-4PlvnYpo"
+    },
+    {
+      "cliente_facturacion": "RAYA FLOR",
+      "cliente_envio": "TALIW11",
+      "categoria": "ROSES",
+      "stems": 3050,
+      "id": "V5iW6npeYx0"
+    },
+    {
+      "cliente_facturacion": "ROSETTE COMPANY LIMITED",
+      "cliente_envio": "ROSETTE COMPANY LIMITED",
+      "categoria": "ROSES",
+      "stems": 1850,
+      "id": "r7fewPNXAj8"
+    },
+    {
+      "cliente_facturacion": "SCENIC FLORAL INC.",
+      "cliente_envio": "SCENIC FLORAL INC.",
+      "categoria": "BOUQUETS",
+      "stems": 260,
+      "id": "d3bShLX_VQ8"
+    },
+    {
+      "cliente_facturacion": "SHANGHAI NIFA INTERNATIONAL TRADING CO. LTD",
+      "cliente_envio": "S.",
+      "categoria": "ROSES",
+      "stems": 60,
+      "id": "tKB5xroW1Gk"
+    },
+    {
+      "cliente_facturacion": "SHANGHAI NIFA INTERNATIONAL TRADING CO. LTD",
+      "cliente_envio": "S.",
+      "categoria": "TINTED ROSES",
+      "stems": 260,
+      "id": "G54V8kKR-RQ"
+    },
+    {
+      "cliente_facturacion": "SJAAK VAN DER VIJVER B.V",
+      "cliente_envio": "SJAAK VAN DER VIJVER B.V",
+      "categoria": "ROSES",
+      "stems": 1175,
+      "id": "9shOzPfhBPM"
+    },
+    {
+      "cliente_facturacion": "SKIFF FLOWERS",
+      "cliente_envio": "ZINAVOR",
+      "categoria": "ROSES",
+      "stems": 100,
+      "id": "lZGuaYw8ux8"
+    },
+    {
+      "cliente_facturacion": "SKIFF FLOWERS",
+      "cliente_envio": "MATVEY",
+      "categoria": "ROSES",
+      "stems": 600,
+      "id": "4-w6XpXdzl4"
+    },
+    {
+      "cliente_facturacion": "SUNFLORA LIMITED",
+      "cliente_envio": "SUNFLORA LIMITED",
+      "categoria": "ROSES",
+      "stems": 3000,
+      "id": "64PhJBbE-LQ"
+    },
+    {
+      "cliente_facturacion": "TAJIKFLOWERS",
+      "cliente_envio": "BYRIAT",
+      "categoria": "ROSES",
+      "stems": 300,
+      "id": "ZtfmLkDmwIM"
+    },
+    {
+      "cliente_facturacion": "TAJIKFLOWERS",
+      "cliente_envio": "TJ JEEP",
+      "categoria": "ROSES",
+      "stems": 8725,
+      "id": "kagRDDlTwYc"
+    },
+    {
+      "cliente_facturacion": "TGW FLOWERS 13 KR",
+      "cliente_envio": "TGW FLOWERS 13 KR",
+      "categoria": "ROSES",
+      "stems": 150,
+      "id": "_Qcc8xA4V48"
+    },
+    {
+      "cliente_facturacion": "TGW FLOWERS 13 KR",
+      "cliente_envio": "TGW FLOWERS 13 KR",
+      "categoria": "SPRAY ROSES",
+      "stems": 10,
+      "id": "aPTnEJn5OhA"
+    },
+    {
+      "cliente_facturacion": "THE BOUQS COMPANY",
+      "cliente_envio": "THE BOUQS COMPANY",
+      "categoria": "BOUQUETS",
+      "stems": 3507,
+      "id": "rbSnVwpSUeQ"
+    },
+    {
+      "cliente_facturacion": "THE BOUQS COMPANY",
+      "cliente_envio": "THE BOUQS COMPANY",
+      "categoria": "HARD-GOODS",
+      "stems": 4,
+      "id": "HrwcDqH6GrA"
+    },
+    {
+      "cliente_facturacion": "THE BOUQS COMPANY",
+      "cliente_envio": "THE BOUQS COMPANY",
+      "categoria": "ROSES",
+      "stems": 7980,
+      "id": "KsYwSIAyoi4"
+    },
+    {
+      "cliente_facturacion": "TONG LIN FLEUR CO",
+      "cliente_envio": "TONG LIN FLEUR CO",
+      "categoria": "ROSES",
+      "stems": 4905,
+      "id": "DO6CA8LOuEw"
+    },
+    {
+      "cliente_facturacion": "TONG LIN FLEUR CO",
+      "cliente_envio": "TONG LIN FLEUR CO",
+      "categoria": "TINTED ROSES",
+      "stems": 20,
+      "id": "ZRmkIqbQ-lw"
+    },
+    {
+      "cliente_facturacion": "TRADEWINDS INTL LLC",
+      "cliente_envio": "TRADEWINDS MAU",
+      "categoria": "ROSES",
+      "stems": 250,
+      "id": "hc3VahFvTCI"
+    },
+    {
+      "cliente_facturacion": "TRANSPORTGEMEINSCHAFT AG FAIRTRADE ID 18225",
+      "cliente_envio": "TRANSPORTGEMEINSCHAFT AG FAIRTRADE ID 18225",
+      "categoria": "ROSES",
+      "stems": 2760,
+      "id": "yepfmh42OOE"
+    },
+    {
+      "cliente_facturacion": "VALSE DES ROSES",
+      "cliente_envio": "VALSE DES ROSES",
+      "categoria": "ROSES",
+      "stems": 1005,
+      "id": "_TE-bK8Q4JE"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX REK LODZ",
+      "categoria": "ROSES",
+      "stems": 100,
+      "id": "h0XQ215vtLw"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX YURA",
+      "categoria": "MINIGERBERAS",
+      "stems": 265,
+      "id": "b1hwKVR4pOM"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX REK BYD",
+      "categoria": "ROSES",
+      "stems": 1350,
+      "id": "WBN6hbNAjkM"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX VRN",
+      "categoria": "ROSES",
+      "stems": 650,
+      "id": "Z4Il1oHRbRY"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX REK RAD",
+      "categoria": "ROSES",
+      "stems": 100,
+      "id": "9AsT41Sa5pg"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX REK BIA",
+      "categoria": "ROSES",
+      "stems": 200,
+      "id": "2iZJFogYWl4"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX REK GDA",
+      "categoria": "ROSES",
+      "stems": 400,
+      "id": "6UfqvIRrrng"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX KAR",
+      "categoria": "ROSES",
+      "stems": 350,
+      "id": "9d8h5vQZFUs"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX ANDREI",
+      "categoria": "ROSES",
+      "stems": 300,
+      "id": "ovsRhPEMW3I"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX- REK WAW",
+      "categoria": "ROSES",
+      "stems": 100,
+      "id": "SqK9Qy_YOwQ"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX MAGNUS",
+      "categoria": "ROSES",
+      "stems": 6470,
+      "id": "KYQ38863itg"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX MAGNUS",
+      "categoria": "TINTED ROSES",
+      "stems": 250,
+      "id": "38cxGlRLhKw"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX REK REKPOL",
+      "categoria": "ROSES",
+      "stems": 650,
+      "id": "tmpqK-J8eyQ"
+    },
+    {
+      "cliente_facturacion": "VIVAX FLOWERS LLC",
+      "cliente_envio": "VX REK KRK",
+      "categoria": "ROSES",
+      "stems": 650,
+      "id": "i0hmZXrs0Zs"
+    },
+    {
+      "cliente_facturacion": "WAFEX USA",
+      "cliente_envio": "WAFEX USA",
+      "categoria": "ROSES",
+      "stems": 100,
+      "id": "ja4L4bTi2CI"
+    },
+    {
+      "cliente_facturacion": "WALLFLOWERS PROPERTIES INC.PALADIUM TECH SERVICE ITHALAT VE IHRACAT DIS TICARET LIMITED SIRKETI",
+      "cliente_envio": "TROPIC UFO STAVROPOL.",
+      "categoria": "ROSES",
+      "stems": 3900,
+      "id": "S1atb1hNdPA"
+    },
+    {
+      "cliente_facturacion": "WALLFLOWERS PROPERTIES INC.PALADIUM TECH SERVICE ITHALAT VE IHRACAT DIS TICARET LIMITED SIRKETI",
+      "cliente_envio": "TROPIC UFO STAVROPOL.",
+      "categoria": "TINTED ROSES",
+      "stems": 550,
+      "id": "wjjhQC6btX4"
+    },
+    {
+      "cliente_facturacion": "WALLFLOWERS PROPERTIES INC.PALADIUM TECH SERVICE ITHALAT VE IHRACAT DIS TICARET LIMITED SIRKETI",
+      "cliente_envio": "TROPIC UFO BAXO.",
+      "categoria": "ROSES",
+      "stems": 22075,
+      "id": "X7XyT8TjbgU"
+    },
+    {
+      "cliente_facturacion": "WALLFLOWERS PROPERTIES INC.PALADIUM TECH SERVICE ITHALAT VE IHRACAT DIS TICARET LIMITED SIRKETI",
+      "cliente_envio": "TROPIC UFO MUJIKI.",
+      "categoria": "ROSES",
+      "stems": 1150,
+      "id": "N1meOBBJb28"
+    },
+    {
+      "cliente_facturacion": "WALLFLOWERS-ELENA PROPERTIES INC.",
+      "cliente_envio": "TROPIC LIMA",
+      "categoria": "ROSES",
+      "stems": 1650,
+      "id": "PVi0lr9GvwI"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

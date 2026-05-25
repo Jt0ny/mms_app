@@ -1,0 +1,215 @@
+<template>
+  <aside :class="['sidebar', { collapsed: isCollapsed }]">
+    <div class="top">
+      <h2 v-if="!isCollapsed">MMS</h2>
+      <button class="toggle" @click="toggleSidebar">☰</button>
+    </div>
+
+    <nav class="menu">
+      <router-link to="/app/pedidos" class="menu-item" active-class="active">
+        <span>📦</span>
+        <span v-if="!isCollapsed">Pedidos</span>
+      </router-link>
+
+      <router-link to="/app/materia-prima" class="menu-item" active-class="active">
+        <span>👤</span>
+        <span v-if="!isCollapsed">Inventario MP</span>
+      </router-link>
+
+      <router-link to="/app/materiales" class="menu-item" active-class="active">
+        <span>📊</span>
+        <span v-if="!isCollapsed">Inventario M</span>
+      </router-link>
+
+      <router-link to="/app/recetas" class="menu-item" active-class="active">
+        <span>⚙️</span>
+        <span v-if="!isCollapsed">Crear Receta</span>
+      </router-link>
+    </nav>
+  </aside>
+</template>
+
+<script>
+export default {
+  name: "SidebarLayout",
+
+  data() {
+    return {
+      isCollapsed: false,
+    }
+  },
+  methods: {
+    toggleSidebar() {
+      this.isCollapsed = !this.isCollapsed
+    }
+  }
+}
+</script>
+
+<style scoped>
+.sidebar {
+  width: clamp(var(--sidebar-min, 70px), 18vw, var(--sidebar-max, 250px));
+  background: var(--secondary);
+  color: white;
+  transition: width 0.3s ease;
+  padding: 20px;
+  overflow-y: auto;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar.collapsed {
+  width: clamp(56px, 12vw, 70px);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.top h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--primary-light);
+}
+
+.toggle {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+}
+
+.toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menu-item {
+  appearance: none;
+  border: none;
+  background: transparent;
+  text-decoration: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  font-size: clamp(12px, 1vw, 14px);
+  letter-spacing: 0.3px;
+  text-align: left;
+}
+
+.menu-item:hover:not(.disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.menu-item.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.menu-item.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.menu-item span:first-child {
+  font-size: clamp(16px, 1.2vw, 18px);
+  min-width: 24px;
+}
+
+.sidebar.collapsed .menu-item span:not(:first-child) {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    padding: 12px;
+    overflow-x: hidden;
+  }
+
+  .sidebar.collapsed {
+    width: 100%;
+  }
+
+  .top {
+    margin-bottom: 12px;
+  }
+
+  .top h2 {
+    display: none;
+  }
+
+  .menu {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+
+  .menu-item {
+    white-space: nowrap;
+    padding: 8px 10px;
+    width: auto;
+  }
+
+  .menu-item span:first-child {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    padding: 10px;
+  }
+
+  .top {
+    margin-bottom: 10px;
+    padding-bottom: 12px;
+  }
+
+  .toggle {
+    font-size: 18px;
+    padding: 6px;
+  }
+
+  .menu {
+    flex-direction: column;
+    overflow-x: visible;
+  }
+
+  .menu-item {
+    width: 100%;
+  }
+}
+</style>
