@@ -686,6 +686,27 @@
       ],
       "fecha_creacion": "2026-05-22T23:40:36.412Z",
       "id": "XZrAwSsf2A0"
+    },
+    {
+      "nombre": "R1",
+      "categoria": "Bouquet",
+      "instrucciones": "FB",
+      "materiales": [
+        {
+          "id": "Nm5pkk9ZdoE",
+          "nombre": "Carton",
+          "cantidad": 998
+        }
+      ],
+      "materiaPrima": [
+        {
+          "id": "CUgwC6YhPZQ",
+          "nombre": "ALOHA",
+          "cantidad": 887
+        }
+      ],
+      "fecha_creacion": "2026-05-29T22:29:48.155Z",
+      "id": "AT4UI7rXEAw"
     }
   ],
   "pedidos": [
@@ -2137,6 +2158,320 @@
       "categoria": "ROSES",
       "stems": 1650,
       "id": "PVi0lr9GvwI"
+    }
+  ],
+  "producciones": [
+    {
+      "fecha": "2026-05-27",
+      "total": 864,
+      "detalle": [
+        {
+          "categoria": "BOUQUETS",
+          "cantidad": 4
+        },
+        {
+          "categoria": "EUCALYPTUS",
+          "cantidad": 4
+        },
+        {
+          "categoria": "GERBERA",
+          "cantidad": 6
+        },
+        {
+          "categoria": "HARD-GOODS",
+          "cantidad": 5
+        },
+        {
+          "categoria": "MINIGERBERAS",
+          "cantidad": 63
+        },
+        {
+          "categoria": "ROSES",
+          "cantidad": 64
+        },
+        {
+          "categoria": "SPRAY ROSES",
+          "cantidad": 64
+        },
+        {
+          "categoria": "TINTED ROSES",
+          "cantidad": 654
+        }
+      ],
+      "creado_en": "2026-05-28T03:43:14.685Z",
+      "id": "BmrmVe2Ekns"
+    },
+    {
+      "fecha": "2026-05-27",
+      "total": 145,
+      "detalle": [
+        {
+          "categoria": "BOUQUETS",
+          "cantidad": 50
+        },
+        {
+          "categoria": "EUCALYPTUS",
+          "cantidad": 6
+        },
+        {
+          "categoria": "GERBERA",
+          "cantidad": 4
+        },
+        {
+          "categoria": "HARD-GOODS",
+          "cantidad": 5
+        },
+        {
+          "categoria": "MINIGERBERAS",
+          "cantidad": 6
+        },
+        {
+          "categoria": "ROSES",
+          "cantidad": 4
+        },
+        {
+          "categoria": "SPRAY ROSES",
+          "cantidad": 6
+        },
+        {
+          "categoria": "TINTED ROSES",
+          "cantidad": 64
+        }
+      ],
+      "creado_en": "2026-05-28T03:43:35.723Z",
+      "id": "2EXDsaZNQWI"
+    },
+    {
+      "fecha": "2026-05-29",
+      "total": 12,
+      "detalle": [
+        {
+          "categoria": "BOUQUETS",
+          "cantidad": 5
+        },
+        {
+          "categoria": "EUCALYPTUS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "GERBERA",
+          "cantidad": 1
+        },
+        {
+          "categoria": "HARD-GOODS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "MINIGERBERAS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "ROSES",
+          "cantidad": 1
+        },
+        {
+          "categoria": "SPRAY ROSES",
+          "cantidad": 1
+        },
+        {
+          "categoria": "TINTED ROSES",
+          "cantidad": 1
+        }
+      ],
+      "creado_en": "2026-05-29T22:28:47.524Z",
+      "id": "GVf5RMzKe1w"
+    },
+    {
+      "fecha": "2026-05-29",
+      "total": 15,
+      "detalle": [
+        {
+          "categoria": "BOUQUETS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "EUCALYPTUS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "GERBERA",
+          "cantidad": 1
+        },
+        {
+          "categoria": "HARD-GOODS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "MINIGERBERAS",
+          "cantidad": 10
+        },
+        {
+          "categoria": "SPRAY ROSES",
+          "cantidad": 1
+        }
+      ],
+      "creado_en": "2026-05-29T21:57:49.153Z",
+      "id": "DaEw3fG0T18"
+    },
+    {
+      "fecha": "2026-05-29",
+      "total": 14,
+      "detalle": [
+        {
+          "categoria": "BOUQUETS",
+          "cantidad": 7
+        },
+        {
+          "categoria": "EUCALYPTUS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "GERBERA",
+          "cantidad": 1
+        },
+        {
+          "categoria": "HARD-GOODS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "MINIGERBERAS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "ROSES",
+          "cantidad": 1
+        },
+        {
+          "categoria": "SPRAY ROSES",
+          "cantidad": 1
+        },
+        {
+          "categoria": "TINTED ROSES",
+          "cantidad": 1
+        }
+      ],
+      "creado_en": "2026-05-29T22:24:45.879Z",
+      "id": "-Na0TB151ec"
+    },
+    {
+      "fecha": "2026-05-30",
+      "total": 8,
+      "detalle": [
+        {
+          "categoria": "BOUQUETS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "EUCALYPTUS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "GERBERA",
+          "cantidad": 1
+        },
+        {
+          "categoria": "HARD-GOODS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "MINIGERBERAS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "ROSES",
+          "cantidad": 1
+        },
+        {
+          "categoria": "SPRAY ROSES",
+          "cantidad": 1
+        },
+        {
+          "categoria": "TINTED ROSES",
+          "cantidad": 1
+        }
+      ],
+      "creado_en": "2026-05-31T03:43:05.515Z",
+      "id": "LdJuRCzQ3NE"
+    },
+    {
+      "fecha": "2026-05-31",
+      "total": 18,
+      "detalle": [
+        {
+          "categoria": "BOUQUETS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "EUCALYPTUS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "GERBERA",
+          "cantidad": 1
+        },
+        {
+          "categoria": "HARD-GOODS",
+          "cantidad": 11
+        },
+        {
+          "categoria": "MINIGERBERAS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "ROSES",
+          "cantidad": 1
+        },
+        {
+          "categoria": "SPRAY ROSES",
+          "cantidad": 1
+        },
+        {
+          "categoria": "TINTED ROSES",
+          "cantidad": 1
+        }
+      ],
+      "creado_en": "2026-06-01T01:14:24.215Z",
+      "id": "bdQT1QW1_4Y"
+    },
+    {
+      "fecha": "2026-05-31",
+      "total": 36,
+      "detalle": [
+        {
+          "categoria": "BOUQUETS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "EUCALYPTUS",
+          "cantidad": 2
+        },
+        {
+          "categoria": "GERBERA",
+          "cantidad": 3
+        },
+        {
+          "categoria": "HARD-GOODS",
+          "cantidad": 4
+        },
+        {
+          "categoria": "MINIGERBERAS",
+          "cantidad": 5
+        },
+        {
+          "categoria": "ROSES",
+          "cantidad": 6
+        },
+        {
+          "categoria": "SPRAY ROSES",
+          "cantidad": 7
+        },
+        {
+          "categoria": "TINTED ROSES",
+          "cantidad": 8
+        }
+      ],
+      "creado_en": "2026-06-01T01:19:19.768Z",
+      "id": "tDzz-o_cLXQ"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

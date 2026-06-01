@@ -94,7 +94,7 @@ export default {
 .quantity { color: var(--primary); font-weight: 700; }
 .date { color: var(--text-light); font-size: 13px; }
 
-::v-deep ButtonActions { display:flex; justify-content:flex-end; margin:12px 20px 20px 20px; }
+:deep(ButtonActions) { display:flex; justify-content:flex-end; margin:12px 20px 20px 20px; }
 
 @media (max-width:768px) {
   .preview-header { flex-direction: column; align-items: flex-start; }
@@ -114,7 +114,7 @@ export default {
 
   .preview-table td:before { content: attr(data-label); font-weight: 600; color: var(--text-light); margin-right: 8px; }
 
-  ::v-deep ButtonActions { flex-direction: column; }
-  ::v-deep ButtonActions .btn { width: 100%; }
+  :deep(ButtonActions) { flex-direction: column; }
+  :deep(ButtonActions) .btn { width: 100%; }
 }
 </style>

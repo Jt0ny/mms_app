@@ -35,7 +35,9 @@ export default {
     ingresarSistema(rol) {
       localStorage.setItem('rol', rol)
       this.mostrarLogin = false
-      this.$router.push('/app/pedidos')
+
+      const rutaInicial = rol === 'operador' ? '/app/produccion' : '/app/pedidos'
+      this.$router.push(rutaInicial)
     },
 
     salirSistema() {

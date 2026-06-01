@@ -1,7 +1,6 @@
 import axios from "axios";
 
-//const API_URL = "http://localhost:3000/materiales";
-const API_URL = "http://192.168.1.6:3000/materiales";
+const API_URL = `${import.meta.env.VITE_API_URL}/materiales`;
 
 export default {
   

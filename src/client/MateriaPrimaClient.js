@@ -1,9 +1,9 @@
 import axios from "axios";
 
-//const API_URL = "http://localhost:3000/materia_prima";
-const API_URL = "http://192.168.1.6:3000/materia_prima";
+const API_URL = `${import.meta.env.VITE_API_URL}/materia_prima`;
 
 export default {
+  
   async obtenerMateriaPrima() {
     try {
       const response = await axios.get(API_URL);

@@ -6,6 +6,7 @@ import PedidoPage from '../pages/PedidoPage.vue'
 import MateriaPrimaPage from '../pages/MateriaPrimaPage.vue'
 import MaterialesPage from '../pages/MaterialesPage.vue'
 import RecetasPage from '../pages/RecetasPage.vue'
+import ProduccionPage from '../pages/ProduccionPage.vue'
 
 
 
@@ -30,29 +31,42 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: { name: 'pedidos' }
+        redirect: () => {
+          const rol = localStorage.getItem('rol')
+          return rol === 'operador' ? '/app/produccion' : '/app/pedidos'
+        }
       },
 
       {
         path: 'pedidos',
         name: 'pedidos',
-        component: PedidoPage
+        component: PedidoPage,
+        meta: { roles: ['supervisor'] }
       },
 
       {
         path: 'materia-prima',
         name: 'materia-prima',
-        component: MateriaPrimaPage
+        component: MateriaPrimaPage,
+        meta: { roles: ['supervisor'] }
       },
       {
         path:'materiales',
         name:'materiales',
-        component: MaterialesPage
+        component: MaterialesPage,
+        meta: { roles: ['supervisor'] }
       },
       {
         path:'recetas',
         name:'recetas',
-        component: RecetasPage
+        component: RecetasPage,
+        meta: { roles: ['supervisor'] }
+      },
+      {
+        path:'produccion',
+        name:'produccion',
+        component: ProduccionPage,
+        meta: { roles: ['operador'] }
       }
     ]
   },
@@ -75,6 +89,11 @@ const routes = [
   {
     path: '/recetas',
     redirect: '/app/recetas'
+  },
+
+  {
+    path: '/produccion',
+    redirect: '/app/produccion'
   }
 ]
 
@@ -85,13 +104,19 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   const isLogged = !!localStorage.getItem('rol')
+  const rol = localStorage.getItem('rol')
 
   if (to.path === '/' && isLogged) {
-    return '/app/pedidos'
+    return rol === 'operador' ? '/app/produccion' : '/app/pedidos'
   }
 
   if (to.meta.requiresAuth && !isLogged) {
     return '/'
+  }
+
+  const allowedRoles = to.meta?.roles
+  if (isLogged && Array.isArray(allowedRoles) && !allowedRoles.includes(rol)) {
+    return rol === 'operador' ? '/app/produccion' : '/app/pedidos'
   }
 })
 

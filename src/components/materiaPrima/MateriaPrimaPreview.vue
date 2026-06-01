@@ -180,7 +180,7 @@ export default {
 }
 
 /* Alinear el componente ButtonActions al final del card */
-::v-deep ButtonActions {
+:deep(ButtonActions) {
   display: flex;
   justify-content: flex-end;
   margin: 12px 20px 20px 20px;
@@ -252,11 +252,11 @@ export default {
     margin-right: 8px;
   }
 
-  ::v-deep ButtonActions {
+  :deep(ButtonActions) {
     flex-direction: column;
   }
 
-  ::v-deep ButtonActions .btn {
+  :deep(ButtonActions) .btn {
     width: 100%;
   }
 }

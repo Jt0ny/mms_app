@@ -6,24 +6,29 @@
     </div>
 
     <nav class="menu">
-      <router-link to="/app/pedidos" class="menu-item" active-class="active">
+      <router-link v-if="esSupervisor" to="/app/pedidos" class="menu-item" active-class="active">
         <span>📦</span>
         <span v-if="!isCollapsed">Pedidos</span>
       </router-link>
 
-      <router-link to="/app/materia-prima" class="menu-item" active-class="active">
+      <router-link v-if="esSupervisor" to="/app/materia-prima" class="menu-item" active-class="active">
         <span>👤</span>
         <span v-if="!isCollapsed">Inventario MP</span>
       </router-link>
 
-      <router-link to="/app/materiales" class="menu-item" active-class="active">
+      <router-link v-if="esSupervisor" to="/app/materiales" class="menu-item" active-class="active">
         <span>📊</span>
         <span v-if="!isCollapsed">Inventario M</span>
       </router-link>
 
-      <router-link to="/app/recetas" class="menu-item" active-class="active">
+      <router-link v-if="esSupervisor" to="/app/recetas" class="menu-item" active-class="active">
         <span>⚙️</span>
         <span v-if="!isCollapsed">Crear Receta</span>
+      </router-link>
+
+      <router-link v-if="esOperador" to="/app/produccion" class="menu-item" active-class="active">
+        <span>📝</span>
+        <span v-if="!isCollapsed">Producción diaria</span>
       </router-link>
     </nav>
   </aside>
@@ -36,6 +41,16 @@ export default {
   data() {
     return {
       isCollapsed: false,
+      rol: localStorage.getItem('rol')
+    }
+  },
+  computed: {
+    esOperador() {
+      return this.rol === 'operador'
+    },
+
+    esSupervisor() {
+      return this.rol === 'supervisor'
     }
   },
   methods: {
