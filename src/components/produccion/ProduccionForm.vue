@@ -15,13 +15,12 @@
             </label>
         </header>
 
-        <div v-if="cargandoCategorias" class="empty-state">
-            Cargando categorías desde pedidos...
-        </div>
+        <Alertas :mensaje="mensaje" />
 
-        <div v-else-if="!categorias.length" class="empty-state">
-            No hay categorías registradas en pedidos.
-        </div>
+        <Alertas v-if="cargandoCategorias" :mensaje="{ tipo: 'info', texto: 'Cargando categorías desde pedidos...' }" />
+
+        <Alertas v-else-if="!categorias.length"
+            :mensaje="{ tipo: 'info', texto: 'No hay categorías registradas en pedidos.' }" />
 
         <form v-else class="produccion-form" @submit.prevent="enviarFormulario">
             <div class="stats-grid">
@@ -59,12 +58,14 @@
                 </p>
 
                 <div style="display:flex; gap:8px;">
-                    <button v-if="edicion" type="button" class="submit-btn" @click="handleCancelar" :disabled="guardando">
+                    <button v-if="edicion" type="button" class="submit-btn" @click="handleCancelar"
+                        :disabled="guardando">
                         Cancelar
                     </button>
 
                     <button type="submit" class="submit-btn" :disabled="guardando || cargandoCategorias">
-                        {{ guardando ? (edicion ? 'Guardando...' : 'Guardando...') : (edicion ? 'Actualizar producción' : 'Registrar producción') }}
+                        {{ guardando ? (edicion ? 'Guardando...' : 'Guardando...') : (edicion ? 'Actualizar producción'
+                            : 'Registrar producción') }}
                     </button>
                 </div>
             </footer>
@@ -74,9 +75,11 @@
 
 <script>
 import PedidoClient from '../../client/PedidoClient'
+import Alertas from '../Alertas.vue'
 
 export default {
     name: 'ProduccionForm',
+    components: { Alertas },
 
     props: {
         guardando: {
@@ -100,6 +103,7 @@ export default {
             cargandoCategorias: false,
             categorias: [],
             cantidadesPorCategoria: {},
+            mensaje: { tipo: null, texto: '' },
             form: {
                 fecha: this.obtenerFechaHoy()
             }
@@ -112,7 +116,6 @@ export default {
                 return total + this.obtenerCantidadNumerica(categoria)
             }, 0)
         },
-
         categoriasConCantidad() {
             return this.categorias.filter(categoria => this.obtenerCantidadNumerica(categoria) > 0).length
         }
@@ -121,7 +124,6 @@ export default {
     watch: {
         ultimaGuardada(newVal, oldVal) {
             if (!newVal || newVal === oldVal) return
-
             const cantidades = {}
             this.categorias.forEach(categoria => {
                 cantidades[categoria] = 0
@@ -132,7 +134,6 @@ export default {
         edicion() {
             this.applyEdicion()
         },
-
         categorias() {
             this.applyEdicion()
         }
@@ -150,20 +151,25 @@ export default {
         },
 
         notificar(tipo, texto, duracion = 4000) {
+            // Mostrar alerta local en el formulario
+            this.mensaje = { tipo, texto }
+            // Emitir al padre para alertas globales
             this.$emit('notificar', { tipo, texto, duracion })
+            if (duracion > 0) {
+                setTimeout(() => {
+                    this.mensaje = { tipo: null, texto: '' }
+                }, duracion)
+            }
         },
 
         async cargarCategorias() {
             this.cargandoCategorias = true
-
             try {
                 const pedidos = await PedidoClient.obtenerPedidos()
                 const categorias = (pedidos ?? [])
                     .map(pedido => String(pedido?.categoria ?? '').trim())
                     .filter(Boolean)
-
                 this.categorias = [...new Set(categorias)].sort((a, b) => a.localeCompare(b, 'es'))
-
                 const cantidades = {}
                 this.categorias.forEach(categoria => {
                     cantidades[categoria] = 0
@@ -180,14 +186,12 @@ export default {
         applyEdicion() {
             const e = this.edicion
             if (!e) return
-
             // set fecha
             if (e.fecha) {
                 this.form.fecha = e.fecha
             } else if (e.creado_en) {
                 this.form.fecha = e.creado_en.slice(0, 10)
             }
-
             const cantidades = {}
             this.categorias.forEach(categoria => {
                 const item = (e.detalle || []).find(d => String(d.categoria) === String(categoria))
@@ -224,23 +228,19 @@ export default {
 
         enviarFormulario() {
             const detalle = this.construirDetalle()
-
             if (!detalle.length) {
                 this.notificar('error', 'Completa al menos una categoría con cantidad mayor a cero', 0)
                 return
             }
-
             const payload = {
                 fecha: this.form.fecha,
                 total: this.totalDelDia,
                 detalle,
                 creado_en: new Date().toISOString()
             }
-
             if (this.edicion && this.edicion.id) {
                 payload.id = this.edicion.id
             }
-
             this.$emit('guardar', payload)
         },
 
@@ -334,6 +334,11 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    /* Make the form scrollable when content is large */
+    max-height: 75vh;
+    overflow-y: auto;
+    padding-right: 8px;
+    /* prevent content hiding under scrollbar */
 }
 
 .stats-grid {
@@ -453,6 +458,26 @@ export default {
 
     .category-input {
         width: 100%;
+    }
+}
+
+/* Scrollbar styling for the form (WebKit) */
+.produccion-form::-webkit-scrollbar {
+    width: 8px;
+}
+
+.produccion-form::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+}
+
+.produccion-form::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+@media (max-width: 600px) {
+    .produccion-form {
+        max-height: 50vh;
     }
 }
 </style>

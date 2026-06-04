@@ -707,6 +707,48 @@
       ],
       "fecha_creacion": "2026-05-29T22:29:48.155Z",
       "id": "AT4UI7rXEAw"
+    },
+    {
+      "nombre": "Rama P",
+      "categoria": "BOUQUETS",
+      "instrucciones": "Instrucciones",
+      "materiales": [
+        {
+          "id": "Nm5pkk9ZdoE",
+          "nombre": "Carton",
+          "cantidad": 5
+        }
+      ],
+      "materiaPrima": [
+        {
+          "id": "CUgwC6YhPZQ",
+          "nombre": "ALOHA",
+          "cantidad": 8
+        }
+      ],
+      "fecha_creacion": "2026-06-02T16:12:52.682Z",
+      "id": "OnOl64N9Iec"
+    },
+    {
+      "nombre": "Rosa1",
+      "categoria": "ROSES",
+      "instrucciones": "Ocupar tallo 60cm\nDoblar carton\nOcupar ligas",
+      "materiales": [
+        {
+          "id": "Nm5pkk9ZdoE",
+          "nombre": "Carton",
+          "cantidad": 213
+        }
+      ],
+      "materiaPrima": [
+        {
+          "id": "zDXm9InNHXw",
+          "nombre": "AVALANCHE",
+          "cantidad": 5
+        }
+      ],
+      "fecha_creacion": "2026-06-03T17:02:54.198Z",
+      "id": "usyRecGQsC8"
     }
   ],
   "pedidos": [
@@ -2472,6 +2514,106 @@
       ],
       "creado_en": "2026-06-01T01:19:19.768Z",
       "id": "tDzz-o_cLXQ"
+    },
+    {
+      "fecha": "2026-06-02",
+      "total": 17,
+      "detalle": [
+        {
+          "categoria": "BOUQUETS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "EUCALYPTUS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "GERBERA",
+          "cantidad": 1
+        },
+        {
+          "categoria": "HARD-GOODS",
+          "cantidad": 10
+        },
+        {
+          "categoria": "MINIGERBERAS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "ROSES",
+          "cantidad": 1
+        },
+        {
+          "categoria": "SPRAY ROSES",
+          "cantidad": 1
+        },
+        {
+          "categoria": "TINTED ROSES",
+          "cantidad": 1
+        }
+      ],
+      "creado_en": "2026-06-02T16:08:58.424Z",
+      "id": "IyWLwDPTesw"
+    },
+    {
+      "fecha": "2026-06-03",
+      "total": 74,
+      "detalle": [
+        {
+          "categoria": "BOUQUETS",
+          "cantidad": 21
+        },
+        {
+          "categoria": "EUCALYPTUS",
+          "cantidad": 1
+        },
+        {
+          "categoria": "GERBERA",
+          "cantidad": 21
+        },
+        {
+          "categoria": "HARD-GOODS",
+          "cantidad": 2
+        },
+        {
+          "categoria": "MINIGERBERAS",
+          "cantidad": 2
+        },
+        {
+          "categoria": "ROSES",
+          "cantidad": 20
+        },
+        {
+          "categoria": "SPRAY ROSES",
+          "cantidad": 2
+        },
+        {
+          "categoria": "TINTED ROSES",
+          "cantidad": 5
+        }
+      ],
+      "creado_en": "2026-06-03T16:53:14.937Z",
+      "id": "HalXkhcQ-qU"
+    }
+  ],
+  "usuarios": [
+    {
+      "nombre": "joel",
+      "contrasena": "1234",
+      "rol": "supervisor",
+      "id": "U10Dz8Q6P3I"
+    },
+    {
+      "nombre": "Anthony",
+      "contrasena": "0ee4a40991b56290079851915392fa449e29b12a95f0ab3cfc39b9a3dcff065a",
+      "rol": "supervisor",
+      "id": "FCCAoA1bsPc"
+    },
+    {
+      "nombre": "juan",
+      "contrasena": "f6ccb3e8d609012238c0b39e60b2c9632b3cdede91e035dad1de43469768f4cc",
+      "rol": "operador",
+      "id": "46kxiQkr_fo"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

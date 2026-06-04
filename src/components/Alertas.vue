@@ -23,7 +23,8 @@ export default {
         claseAlerta() {
             return {
                 'status-success': this.mensaje.tipo === 'exito',
-                'status-error': this.mensaje.tipo === 'error'
+                'status-error': this.mensaje.tipo === 'error',
+                'status-info': this.mensaje.tipo === 'info'
             }
         }
     }

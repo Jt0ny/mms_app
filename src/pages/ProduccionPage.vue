@@ -9,7 +9,8 @@
                 <ProduccionForm :guardando="guardando" :ultima-guardada="ultimaGuardada" :edicion="editingProduccion" @guardar="guardarProduccion"
                     @notificar="mostrarMensaje($event.tipo, $event.texto, $event.duracion)" @cancelar="editingProduccion = null" />
 
-                <ProduccionResumen :producciones="producciones" :permitirEliminar="false" @editar="editarProduccion" />
+                <!-- <ProduccionResumen :producciones="producciones" :permitirEliminar="false" @editar="editarProduccion" /> -->
+                <ProduccionRecetasView />
             </div>
         </div>
     </div>
@@ -20,12 +21,14 @@ import PedidoAlerts from '../components/Alertas.vue'
 import ProduccionForm from '../components/produccion/ProduccionForm.vue'
 import ProduccionClient from '../client/ProduccionClient'
 import ProduccionResumen from '../components/produccion/ProduccionResumen.vue'
+import ProduccionRecetasView from '../components/produccion/ProduccionRecetasView.vue'
 
 export default {
     components: {
         ProduccionForm,
         PedidoAlerts,
-        ProduccionResumen
+        ProduccionResumen,
+        ProduccionRecetasView
     },
 
     data() {

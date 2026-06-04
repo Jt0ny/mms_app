@@ -7,6 +7,7 @@ import MateriaPrimaPage from '../pages/MateriaPrimaPage.vue'
 import MaterialesPage from '../pages/MaterialesPage.vue'
 import RecetasPage from '../pages/RecetasPage.vue'
 import ProduccionPage from '../pages/ProduccionPage.vue'
+import UsuariosPage from '../pages/UsuariosPage.vue'
 
 
 
@@ -67,6 +68,16 @@ const routes = [
         name:'produccion',
         component: ProduccionPage,
         meta: { roles: ['operador'] }
+      },
+      {
+        path:'usuarios',
+        name:'usuarios',
+        component: UsuariosPage,
+        meta: { roles: ['supervisor'] }
+      },
+      {
+        path:'mantenimientoU',
+        redirect: '/app/usuarios'
       }
     ]
   },
@@ -94,6 +105,14 @@ const routes = [
   {
     path: '/produccion',
     redirect: '/app/produccion'
+  },
+  {
+    path: '/usuarios',
+    redirect: '/app/usuarios'
+  },
+  {
+    path: '/mantenimientoU',
+    redirect: '/app/usuarios'
   }
 ]
 

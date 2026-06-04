@@ -26,6 +26,11 @@
         <span v-if="!isCollapsed">Crear Receta</span>
       </router-link>
 
+      <router-link v-if="esSupervisor" to="/app/usuarios" class="menu-item" active-class="active">
+        <span>⚙️</span>
+        <span v-if="!isCollapsed">Mantenimiento de Usuarios</span>
+      </router-link>
+
       <router-link v-if="esOperador" to="/app/produccion" class="menu-item" active-class="active">
         <span>📝</span>
         <span v-if="!isCollapsed">Producción diaria</span>
