@@ -228,7 +228,7 @@ export default {
             this.cargando = true
 
             try {
-                await Promise.all(this.datosProcesados.map(item => PedidoClient.agregarPedido(item)))
+                await PedidoClient.agregarPedido(this.datosProcesados)
                 this.mostrarMensaje('exito', '✓ Pedidos guardados correctamente')
                 this.datosProcesados = []
                 await this.cargarPedidos()

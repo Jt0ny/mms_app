@@ -10,7 +10,9 @@
         <Alertas :mensaje="mensaje" />
 
         <div>
-            <div v-if="!recetas.length" class="empty">No hay recetas registradas.</div>
+            <div v-if="!filteredRecetas.length" class="empty">
+                {{ recetas.length ? 'No se encontraron recetas.' : 'No hay recetas registradas.' }}
+            </div>
 
             <ul v-else class="receta-list">
                 <li v-for="receta in filteredRecetas" :key="receta.id" class="receta-card">
@@ -41,6 +43,10 @@
                             </li>
                         </ul>
                     </div>
+
+                    <button class="receta-accion" type="button" @click="emitirAccion(receta)">
+                        {{ textoBotonPorReceta(receta) }}
+                    </button>
                 </li>
             </ul>
         </div>
@@ -54,6 +60,30 @@ import Alertas from '../Alertas.vue'
 export default {
     name: 'ProduccionRecetasView',
     components: { Alertas },
+    props: {
+        modo: {
+            type: String,
+            default: 'seleccionar',
+            validator: value => ['seleccionar', 'contador'].includes(value)
+        },
+        textoSeleccionar: {
+            type: String,
+            default: 'Seleccionar'
+        },
+        contadorActual: {
+            type: [Number, String],
+            default: 0
+        },
+        contadorTotal: {
+            type: [Number, String],
+            default: 0
+        },
+        contadorPorReceta: {
+            type: Object,
+            default: () => ({})
+        }
+    },
+    emits: ['accion-receta', 'recetas-cargadas'],
 
 
     data() {
@@ -67,6 +97,18 @@ export default {
     },
 
     computed: {
+        textoBotonPorReceta() {
+            return receta => {
+                if (this.modo !== 'contador') {
+                    return this.textoSeleccionar
+                }
+
+                const estado = this.contadorPorReceta?.[receta?.id] || {}
+                const actual = estado.actual ?? this.contadorActual
+                const total = estado.total ?? this.contadorTotal
+                return `${actual}/${total}`
+            }
+        },
 
         filteredRecetas() {
             const q = String(this.query || '').trim().toLowerCase()
@@ -84,6 +126,15 @@ export default {
     },
 
     methods: {
+        emitirAccion(receta) {
+            this.$emit('accion-receta', {
+                receta,
+                modo: this.modo,
+                contadorActual: this.contadorActual,
+                contadorTotal: this.contadorTotal
+            })
+        },
+
         async buscarRecetas() {
             this.cargando = true
             this.error = null
@@ -91,6 +142,7 @@ export default {
             try {
                 const data = await RecetaClient.obtenerRecetas()
                 this.recetas = data ?? []
+                this.$emit('recetas-cargadas', this.recetas)
             } catch (err) {
                 console.error('Error fetching recetas:', err)
                 this.error = 'Error al cargar recetas'
@@ -150,6 +202,26 @@ export default {
     border-radius: 8px;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-light);
+}
+
+.receta-accion {
+    margin-top: 12px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 6px;
+    background: var(--primary, #2f6fed);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.receta-accion:hover {
+    filter: brightness(0.95);
+}
+
+.receta-accion:focus-visible {
+    outline: 2px solid rgba(47, 111, 237, 0.35);
+    outline-offset: 2px;
 }
 
 /* Scrollbar styling (WebKit) */

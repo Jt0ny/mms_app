@@ -38,7 +38,7 @@
 
 <script>
 import * as XLSX from 'xlsx'
-import materiaPrimaClient from '../Client/MateriaPrimaClient'
+import materiaPrimaClient from '../client/MateriaPrimaClient'
 
 import CargaArchivo from '../components/CargaArchivo.vue'
 
@@ -164,31 +164,22 @@ export default {
         /* ================= GUARDAR ================= */
         async confirmarYSubir() {
             this.cargando = true
+
             try {
-                let exitos = 0
-                for (const item of this.datosProcesados) {
-                    try {
-                        await materiaPrimaClient.cargarMateriaPrima(item)
-                        exitos++
-                    } catch (error) {
-                        console.error(error)
-                    }
-                }
+                await materiaPrimaClient.cargarMateriaPrima(this.datosProcesados)
 
-                if (exitos === this.datosProcesados.length) {
-                    this.mostrarMensaje('exito', `✓ ${exitos} registros guardados`)
+                this.mostrarMensaje(
+                    'exito',
+                    `✓ ${this.datosProcesados.length} registros guardados`
+                )
 
-                    this.datosProcesados = []
+                this.datosProcesados = []
 
-                    await this.cargarInventario()
-
-                } else {
-                    this.mostrarMensaje('error', '⚠️ Algunos registros fallaron', 0)
-                }
+                await this.cargarInventario()
 
             } catch (error) {
                 console.error(error)
-                this.mostrarMensaje('error', '❌ Error general al guardar', 0)
+                this.mostrarMensaje('error', '❌ Error al guardar registros', 0)
             } finally {
                 this.cargando = false
             }

@@ -10,7 +10,14 @@
                     @notificar="mostrarMensaje($event.tipo, $event.texto, $event.duracion)" @cancelar="editingProduccion = null" />
 
                 <!-- <ProduccionResumen :producciones="producciones" :permitirEliminar="false" @editar="editarProduccion" /> -->
-                <ProduccionRecetasView />
+                <ProduccionRecetasView
+                    modo="contador"
+                    :contador-por-receta="contadorRecetaPorId"
+                    :contador-actual="contadorRecetaDefaultActual"
+                    :contador-total="contadorRecetaDefaultTotal"
+                    @recetas-cargadas="inicializarContadoresReceta"
+                    @accion-receta="manejarAccionReceta"
+                />
             </div>
         </div>
     </div>
@@ -43,7 +50,10 @@ export default {
             producciones: [],
             cargandoProducciones: false
             ,
-            editingProduccion: null
+            editingProduccion: null,
+            contadorRecetaPorId: {},
+            contadorRecetaDefaultActual: 1,
+            contadorRecetaDefaultTotal: 6
         }
     },
 
@@ -126,6 +136,45 @@ export default {
                 this.mostrarMensaje('error', 'No se pudo eliminar el registro', 0)
             }
         },
+
+        inicializarContadoresReceta(recetas) {
+            const estadoInicial = {}
+
+            for (const receta of recetas || []) {
+                estadoInicial[receta.id] = {
+                    actual: 1,
+                    total: 6
+                }
+            }
+
+            this.contadorRecetaPorId = estadoInicial
+        },
+
+        manejarAccionReceta({ receta } = {}) {
+            const recetaId = receta?.id
+            if (recetaId == null) {
+                return
+            }
+
+            const estadoActual = this.contadorRecetaPorId[recetaId] || {
+                actual: this.contadorRecetaDefaultActual,
+                total: this.contadorRecetaDefaultTotal
+            }
+
+            if (estadoActual.actual < estadoActual.total) {
+                this.contadorRecetaPorId = {
+                    ...this.contadorRecetaPorId,
+                    [recetaId]: {
+                        ...estadoActual,
+                        actual: estadoActual.actual + 1
+                    }
+                }
+                return
+            }
+
+            this.mostrarMensaje('info', `El contador de ${receta.nombre} ya llegó al total configurado`, 2500)
+        },
+
         formatearFecha() {
             // Mantener firma en caso de futura necesidad; actualmente no se usa.
             return ''

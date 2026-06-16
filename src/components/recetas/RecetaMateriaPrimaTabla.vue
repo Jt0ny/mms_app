@@ -45,14 +45,14 @@
                             </strong>
 
                             <div class="row-subtitle">
-                                Fecha:{{ item.fecha_ingreso || '-' }}
+                                Fecha:{{ item.fecha || '-' }}
                             </div>
 
                         </td>
 
                         <!-- DISPONIBLE -->
                         <td>
-                            {{ item.cantidad_total ?? 0 }}
+                            {{ item.cantidadTotal ?? 0 }}
                         </td>
 
                         <!-- CANTIDAD -->

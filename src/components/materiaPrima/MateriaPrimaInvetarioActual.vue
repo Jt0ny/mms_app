@@ -32,8 +32,8 @@
                     <tr v-for="(item, index) in inventario" :key="index">
                         <td class="variety">   {{ item.variedad }}</td>
 
-                        <td class="quantity"> {{ item.cantidad_total }} </td>
-                         <td class="date"> {{ formatearFecha(item.fecha_ingreso) }}</td>
+                        <td class="quantity"> {{ item.cantidadTotal }} </td>
+                         <td class="date"> {{ formatearFecha(item.fecha) }}</td>
                     </tr>
                 </tbody>
             </table>

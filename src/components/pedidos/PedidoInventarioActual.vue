@@ -28,7 +28,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="(item, index) in pedidos" :key="index">
-                        <td class="variety">{{ item.cliente_facturacion }}</td>
+                        <td class="variety">{{ item.clienteFacturacion }}</td>
                         <td>{{ item.categoria }}</td>
                         <td class="quantity">{{ item.stems }}</td>
                     </tr>
