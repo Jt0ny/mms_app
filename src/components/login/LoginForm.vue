@@ -83,7 +83,7 @@ export default {
                 }
 
                 this.mensaje = { tipo: null, texto: '' }
-                this.$emit('ingresar', (usuario.rol || '').toLowerCase())
+                this.$emit('ingresar', usuario)
             } catch (error) {
                 this.mostrarMensaje('error', 'No se pudo validar el usuario. Revisa la conexion con la API.')
             } finally {

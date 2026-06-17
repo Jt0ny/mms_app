@@ -93,6 +93,18 @@ export default {
         edicion: {
             type: Object,
             default: null
+        },
+        categoriasPermitidas: {
+            // Array de strings con las categorías de las recetas asignadas.
+            // Si es null/vacío, se muestran todas las categorías de pedidos.
+            type: Array,
+            default: null
+        },
+        cantidadesExternas: {
+            // Acumulador externo: { [categoria]: totalClicks }.
+            // El form lo observa y aplica el delta como incremento.
+            type: Object,
+            default: () => ({})
         }
     },
 
@@ -136,6 +148,24 @@ export default {
         },
         categorias() {
             this.applyEdicion()
+        },
+        // Recargar categorías cuando cambia el filtro desde el padre
+        categoriasPermitidas() {
+            this.cargarCategorias()
+        },
+        // Sincronizar inputs cuando el contador de recetas avanza
+        cantidadesExternas(newVal, oldVal) {
+            for (const [categoria, total] of Object.entries(newVal || {})) {
+                const anterior = (oldVal || {})[categoria] || 0
+                const delta = total - anterior
+                if (delta > 0) {
+                    const actual = Number(this.cantidadesPorCategoria[categoria] || 0)
+                    this.cantidadesPorCategoria = {
+                        ...this.cantidadesPorCategoria,
+                        [categoria]: actual + delta
+                    }
+                }
+            }
         }
     },
 
@@ -166,9 +196,16 @@ export default {
             this.cargandoCategorias = true
             try {
                 const pedidos = await PedidoClient.obtenerPedidos()
-                const categorias = (pedidos ?? [])
+                let categorias = (pedidos ?? [])
                     .map(pedido => String(pedido?.categoria ?? '').trim())
                     .filter(Boolean)
+
+                // Si hay categorías permitidas, filtrar solo esas
+                if (Array.isArray(this.categoriasPermitidas) && this.categoriasPermitidas.length) {
+                    const permitidas = this.categoriasPermitidas.map(c => c.trim().toUpperCase())
+                    categorias = categorias.filter(c => permitidas.includes(c.trim().toUpperCase()))
+                }
+
                 this.categorias = [...new Set(categorias)].sort((a, b) => a.localeCompare(b, 'es'))
                 const cantidades = {}
                 this.categorias.forEach(categoria => {

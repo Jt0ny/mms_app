@@ -1,5 +1,4 @@
 {
-  
   "materiales": [
     {
       "nombre": "Carton",
@@ -178,6 +177,48 @@
       ],
       "fecha_creacion": "2026-06-03T17:02:54.198Z",
       "id": "usyRecGQsC8"
+    },
+    {
+      "nombre": "Rojo",
+      "categoria": "BOUQUETS",
+      "instrucciones": "zcxcvz",
+      "materiales": [
+        {
+          "id": "Nm5pkk9ZdoE",
+          "nombre": "Carton",
+          "cantidad": 55
+        }
+      ],
+      "materiaPrima": [
+        {
+          "id": 286,
+          "nombre": "ALOHA",
+          "cantidad": 144
+        }
+      ],
+      "fecha_creacion": "2026-06-17T00:28:14.988Z",
+      "id": "mwY9WnrWaIE"
+    },
+    {
+      "nombre": "mini",
+      "categoria": "MINIGERBERAS",
+      "instrucciones": "dddv",
+      "materiales": [
+        {
+          "id": "RTG2H-JkQNo",
+          "nombre": "Papel",
+          "cantidad": 1
+        }
+      ],
+      "materiaPrima": [
+        {
+          "id": 287,
+          "nombre": "ALSTROEMERIA",
+          "cantidad": 1
+        }
+      ],
+      "fecha_creacion": "2026-06-17T00:28:28.262Z",
+      "id": "BcJr6TNHqEQ"
     }
   ],
   "producciones": [
@@ -572,6 +613,38 @@
       ],
       "creado_en": "2026-06-03T16:53:14.937Z",
       "id": "HalXkhcQ-qU"
+    },
+    {
+      "fecha": "2026-06-16",
+      "total": 11,
+      "detalle": [
+        {
+          "categoria": "BOUQUETS",
+          "cantidad": 2
+        },
+        {
+          "categoria": "MINIGERBERAS",
+          "cantidad": 9
+        }
+      ],
+      "creado_en": "2026-06-17T00:42:42.841Z",
+      "id": "4xZTSMDnlDk"
+    },
+    {
+      "fecha": "2026-06-16",
+      "total": 14,
+      "detalle": [
+        {
+          "categoria": "MINIGERBERAS",
+          "cantidad": 4
+        },
+        {
+          "categoria": "ROSES",
+          "cantidad": 10
+        }
+      ],
+      "creado_en": "2026-06-17T00:45:49.419Z",
+      "id": "EWJUqEF9u-s"
     }
   ],
   "usuarios": [
@@ -604,10 +677,92 @@
       "contrasena": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
       "rol": "operador",
       "id": "zlaRRpW47FY"
+    },
+    {
+      "nombre": "ana",
+      "contrasena": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+      "rol": "operador",
+      "id": "6qVMHFtkbCA"
     }
   ],
-  "clientes":[
-
+  "clientes": [],
+  "planificaciones": [
+    {
+      "operadorId": "zlaRRpW47FY",
+      "operadorNombre": "pedro",
+      "fecha": "2026-06-17",
+      "recetas": [
+        {
+          "recetaId": "zOg6tvkpvSI",
+          "nombre": "Ramo 1",
+          "cantidad": 10
+        },
+        {
+          "recetaId": "YRO8nIr0qWg",
+          "nombre": "Ramo 2",
+          "cantidad": 5
+        }
+      ],
+      "creado_en": "2026-06-17T00:21:28.499Z",
+      "id": "QWtM7g63iFc"
+    },
+    {
+      "operadorId": "zlaRRpW47FY",
+      "operadorNombre": "pedro",
+      "fecha": "2026-06-17",
+      "recetas": [
+        {
+          "recetaId": "usyRecGQsC8",
+          "nombre": "Rosa1",
+          "cantidad": 1
+        },
+        {
+          "recetaId": "AT4UI7rXEAw",
+          "nombre": "R1",
+          "cantidad": 1
+        }
+      ],
+      "creado_en": "2026-06-17T00:23:54.079Z",
+      "id": "HGR_2eKlG9A"
+    },
+    {
+      "operadorId": "zlaRRpW47FY",
+      "operadorNombre": "pedro",
+      "fecha": "2026-06-17",
+      "recetas": [
+        {
+          "recetaId": "mwY9WnrWaIE",
+          "nombre": "Rojo",
+          "cantidad": 2
+        },
+        {
+          "recetaId": "BcJr6TNHqEQ",
+          "nombre": "mini",
+          "cantidad": 9
+        }
+      ],
+      "creado_en": "2026-06-17T00:28:56.718Z",
+      "id": "mIM16_Hr6yc"
+    },
+    {
+      "operadorId": "6qVMHFtkbCA",
+      "operadorNombre": "ana",
+      "fecha": "2026-06-17",
+      "recetas": [
+        {
+          "recetaId": "usyRecGQsC8",
+          "nombre": "Rosa1",
+          "cantidad": 12
+        },
+        {
+          "recetaId": "BcJr6TNHqEQ",
+          "nombre": "mini",
+          "cantidad": 5
+        }
+      ],
+      "creado_en": "2026-06-17T00:45:00.193Z",
+      "id": "jv_gM4ufQyg"
+    }
   ],
   "$schema": "./node_modules/json-server/schema.json"
 }

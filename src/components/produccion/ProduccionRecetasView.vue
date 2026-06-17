@@ -44,8 +44,18 @@
                         </ul>
                     </div>
 
-                    <button class="receta-accion" type="button" @click="emitirAccion(receta)">
-                        {{ textoBotonPorReceta(receta) }}
+                    <button
+                        class="receta-accion"
+                        :class="{ 'receta-accion--seleccionada': modo === 'seleccionar' && isSelected(receta) }"
+                        type="button"
+                        @click="emitirAccion(receta)"
+                    >
+                        <template v-if="modo === 'contador'">
+                            {{ textoBotonPorReceta(receta) }}
+                        </template>
+                        <template v-else>
+                            {{ isSelected(receta) ? '\u2713 Seleccionada' : textoSeleccionar }}
+                        </template>
                     </button>
                 </li>
             </ul>
@@ -78,9 +88,17 @@ export default {
             type: [Number, String],
             default: 0
         },
+        recetasSeleccionadasIds: {
+            type: Array,
+            default: () => []
+        },
         contadorPorReceta: {
             type: Object,
             default: () => ({})
+        },
+        recetasFiltradas: {
+            type: Array,
+            default: null
         }
     },
     emits: ['accion-receta', 'recetas-cargadas'],
@@ -97,6 +115,10 @@ export default {
     },
 
     computed: {
+        isSelected() {
+            return receta => this.recetasSeleccionadasIds.includes(receta?.id)
+        },
+
         textoBotonPorReceta() {
             return receta => {
                 if (this.modo !== 'contador') {
@@ -111,9 +133,14 @@ export default {
         },
 
         filteredRecetas() {
+            // Si se pasa recetasFiltradas, solo mostrar esas recetas
+            let base = this.recetas
+            if (Array.isArray(this.recetasFiltradas)) {
+                base = this.recetas.filter(r => this.recetasFiltradas.includes(r.id))
+            }
             const q = String(this.query || '').trim().toLowerCase()
-            if (!q) return this.recetas
-            return this.recetas.filter(r => {
+            if (!q) return base
+            return base.filter(r => {
                 const nombre = String(r?.nombre || '').toLowerCase()
                 const categoria = String(r?.categoria || '').toLowerCase()
                 return nombre.includes(q) || categoria.includes(q)
@@ -213,6 +240,12 @@ export default {
     color: white;
     font-weight: 600;
     cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.receta-accion--seleccionada {
+    background: #16a34a;
+    color: white;
 }
 
 .receta-accion:hover {

@@ -32,8 +32,11 @@ export default {
   },
 
   methods: {
-    ingresarSistema(rol) {
+    ingresarSistema(usuario) {
+      const rol = (usuario.rol || '').toLowerCase()
       localStorage.setItem('rol', rol)
+      localStorage.setItem('usuarioId', usuario.id ?? '')
+      localStorage.setItem('usuarioNombre', usuario.nombre ?? '')
       this.mostrarLogin = false
 
       const rutaInicial = rol === 'operador' ? '/app/produccion' : '/app/pedidos'
