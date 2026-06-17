@@ -47,8 +47,12 @@
                         <span class="category-hint">Cantidad producida hoy</span>
                     </div>
 
-                    <input :value="obtenerCantidad(categoria)" type="number" min="0" step="1" inputmode="numeric"
-                        class="category-input" @input="actualizarCantidad(categoria, $event.target.value)" />
+                    <div class="stepper">
+                        <button type="button" class="stepper-btn" @click="actualizarCantidad(categoria, obtenerCantidad(categoria) - 1)" aria-label="Restar">−</button>
+                        <input :value="obtenerCantidad(categoria)" type="number" min="0" step="1" inputmode="numeric"
+                            class="category-input" @input="actualizarCantidad(categoria, $event.target.value)" />
+                        <button type="button" class="stepper-btn" @click="actualizarCantidad(categoria, obtenerCantidad(categoria) + 1)" aria-label="Sumar">+</button>
+                    </div>
                 </article>
             </div>
 
@@ -371,11 +375,6 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    /* Make the form scrollable when content is large */
-    max-height: 75vh;
-    overflow-y: auto;
-    padding-right: 8px;
-    /* prevent content hiding under scrollbar */
 }
 
 .stats-grid {
@@ -410,7 +409,7 @@ export default {
 
 .category-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 160px;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 14px;
     align-items: center;
     padding: 14px 16px;
@@ -498,23 +497,49 @@ export default {
     }
 }
 
-/* Scrollbar styling for the form (WebKit) */
-.produccion-form::-webkit-scrollbar {
-    width: 8px;
+/* Stepper táctil — solo en pantallas touch (tablet/móvil) */
+@media (pointer: coarse) {
+    .stepper {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .stepper-btn {
+        width: 44px;
+        height: 44px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--bg-secondary);
+        color: var(--text-h);
+        font-size: 20px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s ease;
+        flex-shrink: 0;
+    }
+
+    .stepper-btn:active {
+        background: var(--primary-bg);
+    }
+
+    .category-input {
+        width: 60px;
+        text-align: center;
+    }
 }
 
-.produccion-form::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.12);
-    border-radius: 8px;
-}
+/* En desktop (mouse), el stepper-btn está oculto — usa solo el input */
+@media (pointer: fine) {
+    .stepper {
+        display: contents; /* los hijos se comportan como si no existiera el wrapper */
+    }
 
-.produccion-form::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-@media (max-width: 600px) {
-    .produccion-form {
-        max-height: 50vh;
+    .stepper-btn {
+        display: none;
     }
 }
 </style>

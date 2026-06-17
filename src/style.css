@@ -22,8 +22,11 @@
   --mono: ui-monospace, Consolas, monospace;
   --bp-sm: 480px;
   --bp-md: 768px;
+  --bp-tablet: 1024px;
   --sidebar-min: 70px;
   --sidebar-max: 250px;
+  --primary-border: rgba(22, 163, 74, 0.3);
+  --primary-bg:     rgba(22, 163, 74, 0.08);
 
   font: clamp(15px, 1vw + 0.7rem, 16px)/1.5 var(--sans);
   letter-spacing: 0.2px;

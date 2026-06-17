@@ -218,10 +218,7 @@ export default {
     margin: 0;
     display: grid;
     gap: 12px;
-    /* Scrollable area: limit height and enable vertical scroll */
-    max-height: 75vh;
-    overflow-y: auto;
-    padding-right: 8px; /* avoid content hidden behind scrollbar */}
+}
 
 .receta-card {
     background: white;
@@ -229,6 +226,11 @@ export default {
     border-radius: 8px;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-light);
+    transition: transform 0.1s ease;
+}
+
+.receta-card:active {
+    transform: scale(0.99);
 }
 
 .receta-accion {
@@ -257,14 +259,10 @@ export default {
     outline-offset: 2px;
 }
 
-/* Scrollbar styling (WebKit) */
+/* Scrollbar — ya no hay scroll interno, por si se reactiva en futuro */
 .receta-list::-webkit-scrollbar { width: 8px; }
 .receta-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 8px; }
 .receta-list::-webkit-scrollbar-track { background: transparent; }
-
-@media (max-width: 600px) {
-    .receta-list { max-height: 40vh; }
-}
 
 .receta-head {
     display: flex;

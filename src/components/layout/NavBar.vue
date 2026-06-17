@@ -66,7 +66,7 @@ export default {
   width: 100%;
   background: var(--secondary);
   padding: 12px clamp(16px, 3vw, 30px);
-  display: block;
+  display: flex;
   align-items: center;
   box-sizing: border-box;
   box-shadow: var(--shadow-sm);

@@ -2,8 +2,9 @@ import axios from "axios";
 
 const API_URL = `${import.meta.env.VITE_API_URL}/usuarios`;
 
+
 export default {
-  
+
   async obtenerUsuarios() {
     try {
       const response = await axios.get(API_URL);

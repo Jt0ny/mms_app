@@ -309,7 +309,9 @@ export default {
 	color: var(--text-light);
 	cursor: pointer;
 	font-size: 15px;
-	padding: 4px 6px;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 8px 10px;
 	border-radius: 6px;
 	transition: color 0.15s, background 0.15s;
 }

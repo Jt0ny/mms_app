@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = `http://localhost:8070/materia-prima`;
+//const API_URL = `http://localhost:8070/materia-prima`;
+const API_URL = `http://192.168.1.3:8070/materia-prima`;
 
 /*const client = axios.create({
   baseURL: `http://localhost:8070`,

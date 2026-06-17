@@ -378,6 +378,12 @@ export default {
     align-items: start;
 }
 
+@media (min-width: 769px) and (max-width: 1100px) {
+    .page-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
 @media (max-width: 1100px) {
     .page-grid {
         grid-template-columns: 1fr;

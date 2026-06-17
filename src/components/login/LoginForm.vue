@@ -74,7 +74,7 @@ export default {
 
                 const usuario = usuarios.find(
                     (item) => item.nombre?.trim().toLowerCase() === nombreIngresado
-                        && (item.contrasena === contrasenaEncriptada || item.contrasena === contrasenaIngresada)
+                        && item.contrasena === contrasenaEncriptada
                 )
 
                 if (!usuario) {

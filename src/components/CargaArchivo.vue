@@ -1,10 +1,12 @@
 <template>
     <div class="upload-card">
-        <label class="input-label">
-            Importar Reporte de {{ nombreModulo }} (.xls / .xlsx)
+        <label class="upload-zone" :class="{ disabled: cargando }">
+            <span class="upload-icon">📁</span>
+            <span class="upload-label">Importar Reporte de {{ nombreModulo }}</span>
+            <span class="upload-hint">.xls / .xlsx</span>
+            <input type="file" accept=".xls,.xlsx" class="file-input" :disabled="cargando" @change="handleFileUpload" />
         </label>
-        <input  type="file"accept=".xls,.xlsx" class="file-input" :disabled="cargando" @change="handleFileUpload"/>
-        <p class="helper-text"> Formatos soportados: .xls, .xlsx</p>
+        <p class="helper-text">Formatos soportados: .xls, .xlsx</p>
     </div>
 </template>
 
@@ -37,45 +39,70 @@ export default {
 </script>
 <style scoped>
 .upload-card {
-    padding: 24px;
-    border-radius: 12px;
-    background: var(--bg);
+    padding: 0;
+}
+
+.upload-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 32px 24px;
+    border-radius: 14px;
+    background: var(--primary-bg);
     border: 2px dashed var(--primary-border);
-    transition: all 0.3s ease;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+    min-height: 120px;
 }
 
-.upload-card:hover {
+.upload-zone:hover:not(.disabled) {
     border-color: var(--primary);
+    background: rgba(22, 163, 74, 0.12);
 }
 
-.input-label {
-    display: block;
-    margin-bottom: 12px;
-    color: var(--text-h);
+.upload-zone.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.upload-icon {
+    font-size: 32px;
+    line-height: 1;
+}
+
+.upload-label {
     font-weight: 600;
+    color: var(--text-h);
     font-size: 15px;
 }
 
-.file-input {
-    width: 100%;
-    padding: 8px 0;
-    cursor: pointer;
+.upload-hint {
+    font-size: 13px;
+    color: var(--text-light);
 }
 
-.file-input::file-selector-button {
-    margin-right: 12px;
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background: var(--primary-bg);
-    color: var(--primary-dark);
-    font-weight: 600;
-    cursor: pointer;
+.file-input {
+    display: none; /* oculto, la label activa el input */
 }
 
 .helper-text {
-    margin-top: 8px;
+    margin-top: 10px;
     color: var(--text-light);
     font-size: 13px;
+}
+
+/* En tablet/touch: zona aun más grande */
+@media (pointer: coarse) {
+    .upload-zone {
+        min-height: 150px;
+        padding: 40px 24px;
+    }
+
+    .upload-icon {
+        font-size: 40px;
+    }
 }
 </style>

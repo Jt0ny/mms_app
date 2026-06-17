@@ -1,7 +1,8 @@
 import axios from "axios";
 
 //const API_URL = `${import.meta.env.VITE_API_URL}/pedidos`;
-const API_URL = "http://localhost:8060/pedidos";
+//const API_URL = "http://localhost:8060/pedidos";
+const API_URL = "http://192.168.1.3:8060/pedidos";
 
 export default {
 

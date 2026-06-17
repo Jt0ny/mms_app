@@ -683,6 +683,18 @@
       "contrasena": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
       "rol": "operador",
       "id": "6qVMHFtkbCA"
+    },
+    {
+      "nombre": "p1",
+      "contrasena": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+      "rol": "operador",
+      "id": "aymCE68Mqus"
+    },
+    {
+      "nombre": "Mari",
+      "contrasena": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+      "rol": "supervisor",
+      "id": "o9puWLby824"
     }
   ],
   "clientes": [],

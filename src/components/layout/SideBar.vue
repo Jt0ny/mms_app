@@ -87,6 +87,17 @@ export default {
   width: clamp(56px, 12vw, 70px);
 }
 
+/* Tablet portrait: ancho fijo cómodo */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .sidebar.collapsed {
+    width: 64px;
+  }
+}
+
 .top {
   display: flex;
   justify-content: space-between;
