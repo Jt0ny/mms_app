@@ -74,9 +74,10 @@ export default {
 
 <style scoped>
 .usuario-table-container {
-    background: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    background: var(--bg);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-light);
     overflow: hidden;
 }
 
@@ -86,32 +87,38 @@ export default {
     gap: 16px;
     align-items: center;
     padding: 20px 24px;
-    border-bottom: 1px solid #e2e8f0;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
 }
 
 .usuario-table-header h2 {
     margin: 0;
-    font-size: 22px;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
 }
 
 .usuario-table-header p {
-    margin: 6px 0 0;
-    color: #64748b;
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .btn-refresh {
-    border: none;
-    border-radius: 12px;
-    padding: 12px 16px;
-    background: #0f766e;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.2);
     color: white;
     font-weight: 700;
+    font-size: 13px;
     cursor: pointer;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: background 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
 }
 
 .btn-refresh:hover:not(:disabled) {
-    opacity: 0.92;
+    background: rgba(255, 255, 255, 0.3);
     transform: translateY(-1px);
 }
 
@@ -148,26 +155,27 @@ export default {
 }
 
 .usuario-table thead {
-    background: #f8fafc;
+    background: var(--primary);
 }
 
 .usuario-table th {
     text-align: left;
-    padding: 14px 16px;
-    font-size: 13px;
+    padding: 12px 16px;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #475569;
+    letter-spacing: 0.8px;
+    color: white;
+    font-weight: 700;
 }
 
 .usuario-table td {
     padding: 14px 16px;
-    border-bottom: 1px solid #e2e8f0;
-    color: #1e293b;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
 }
 
 .usuario-table tbody tr:hover {
-    background: #f8fafc;
+    background: var(--bg-secondary);
 }
 
 .user-name {

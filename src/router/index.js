@@ -9,6 +9,8 @@ import RecetasPage from '../pages/RecetasPage.vue'
 import ProduccionPage from '../pages/ProduccionPage.vue'
 import PlanificacionPage from '../pages/PlanificacionPage.vue'
 import UsuariosPage from '../pages/UsuariosPage.vue'
+import MermasPage from '../pages/MermasPage.vue'
+import ClientesPage from '../pages/ClientesPage.vue'
 
 
 
@@ -83,6 +85,18 @@ const routes = [
         meta: { roles: ['supervisor'] }
       },
       {
+        path: 'mermas',
+        name: 'mermas',
+        component: MermasPage,
+        meta: { roles: ['supervisor'] }
+      },
+      {
+        path: 'clientes',
+        name: 'clientes',
+        component: ClientesPage,
+        meta: { roles: ['supervisor'] }
+      },
+      {
         path:'mantenimientoU',
         redirect: '/app/usuarios'
       }
@@ -124,6 +138,14 @@ const routes = [
   {
     path: '/mantenimientoU',
     redirect: '/app/usuarios'
+  },
+  {
+    path: '/mermas',
+    redirect: '/app/mermas'
+  },
+  {
+    path: '/clientes',
+    redirect: '/app/clientes'
   }
 ]
 

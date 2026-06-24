@@ -79,6 +79,7 @@ export default {
   align-items: center;
   gap: 20px;
   min-width: 0;
+  width: 100%;
 }
 
 .logo {

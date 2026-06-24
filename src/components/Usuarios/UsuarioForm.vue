@@ -1,24 +1,36 @@
 <template>
     <form class="usuarios-form" @submit.prevent="guardar">
-        <div class="header">
-            <h1>Agregar Usuario</h1>
+
+        <div class="form-header">
+            <span class="form-icon">👤</span>
+            <div>
+                <h2>Agregar Usuario</h2>
+                <p>Completa los campos para registrar un nuevo acceso</p>
+            </div>
         </div>
 
-        <label>Nombre<input v-model.trim="nombre" type="text" autocomplete="username"
-                placeholder="Nombre de usuario" /></label>
+        <div class="form-body">
+            <label>
+                Nombre
+                <input v-model.trim="nombre" type="text" autocomplete="username" placeholder="Nombre de usuario" />
+            </label>
 
-        <label> Contraseña <input v-model="contrasena" type="password" autocomplete="new-password"
-                placeholder="Contraseña segura" /></label>
+            <label>
+                Contraseña
+                <input v-model="contrasena" type="password" autocomplete="new-password" placeholder="Contraseña segura" />
+            </label>
 
-        <UsuarioRol v-model="rol" :roles="roles" />
+            <UsuarioRol v-model="rol" :roles="roles" />
 
-        <Alertas :mensaje="mensaje" />
+            <Alertas :mensaje="mensaje" />
 
-        <button type="submit" :disabled="guardando">
-            {{ guardando ? 'Guardando...' : 'Guardar' }}
-        </button>
+            <button type="submit" :disabled="guardando">
+                {{ guardando ? 'Guardando...' : '✓ Guardar usuario' }}
+            </button>
+        </div>
     </form>
 </template>
+
 <script>
 import Alertas from '../Alertas.vue'
 import UsuarioRol from './UsuarioRol.vue'
@@ -55,18 +67,12 @@ export default {
 
         async guardar() {
             if (this.nombre.trim() === '' || this.contrasena.trim() === '') {
-                this.mensaje = {
-                    tipo: 'error',
-                    texto: 'Por favor, complete todos los campos.'
-                }
+                this.mensaje = { tipo: 'error', texto: 'Por favor, complete todos los campos.' }
                 return
             }
 
             if (!this.rol) {
-                this.mensaje = {
-                    tipo: 'error',
-                    texto: 'Selecciona un rol para el usuario.'
-                }
+                this.mensaje = { tipo: 'error', texto: 'Selecciona un rol para el usuario.' }
                 return
             }
 
@@ -81,90 +87,114 @@ export default {
                     rol: this.rol.toLowerCase()
                 })
 
-                this.mensaje = {
-                    tipo: 'exito',
-                    texto: 'Usuario guardado exitosamente.'
-                }
+                this.mensaje = { tipo: 'exito', texto: 'Usuario guardado exitosamente.' }
                 this.$emit('guardado')
                 this.nombre = ''
                 this.contrasena = ''
                 this.rol = ''
             } catch (error) {
-                this.mensaje = {
-                    tipo: 'error',
-                    texto: 'No se pudo guardar el usuario. Intenta nuevamente.'
-                }
+                this.mensaje = { tipo: 'error', texto: 'No se pudo guardar el usuario. Intenta nuevamente.' }
             } finally {
                 this.guardando = false
             }
         }
     }
 }
-
 </script>
 
 <style scoped>
 .usuarios-form {
-    display: grid;
-    gap: 18px;
-    max-width: 560px;
-    padding: 28px;
-    border-radius: 20px;
-    background: #ffffff;
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-}
-
-.header h1 {
-    margin: 0;
-    font-size: 28px;
-}
-
-.header p {
-    margin: 8px 0 0;
-    color: #64748b;
-}
-
-.usuarios-form label {
-    display: grid;
-    gap: 8px;
-    font-weight: 600;
-    color: #1e293b;
-}
-
-.usuarios-form input {
     width: 100%;
-    border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    padding: 12px 14px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--bg);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Header verde con ícono ── */
+.form-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+}
+
+.form-icon {
+    font-size: 28px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.form-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.01em;
+}
+
+.form-header p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ── Cuerpo del formulario ── */
+.form-body {
+    display: grid;
+    gap: 16px;
+    padding: 24px;
+}
+
+.form-body label {
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-h);
+}
+
+.form-body input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
     font: inherit;
-    background: #fff;
+    background: var(--bg);
+    color: var(--text);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.usuarios-form input:focus {
+.form-body input:focus {
     outline: none;
-    border-color: #16a34a;
-    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.12);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
 }
 
-.usuarios-form button {
+.form-body button[type="submit"] {
     justify-self: start;
     border: none;
-    border-radius: 12px;
-    padding: 12px 18px;
-    background: #16a34a;
+    border-radius: 10px;
+    padding: 12px 20px;
+    background: var(--primary);
     color: white;
     font-weight: 700;
+    font-size: 14px;
     cursor: pointer;
-    transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+    transition: background 0.15s ease, transform 0.15s ease;
 }
 
-.usuarios-form button:hover:not(:disabled) {
-    background: #15803d;
+.form-body button[type="submit"]:hover:not(:disabled) {
+    background: var(--primary-dark);
     transform: translateY(-1px);
 }
 
-.usuarios-form button:disabled {
+.form-body button[type="submit"]:disabled {
     cursor: progress;
     opacity: 0.75;
 }

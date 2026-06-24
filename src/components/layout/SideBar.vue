@@ -11,6 +11,11 @@
         <span v-if="!isCollapsed">Pedidos</span>
       </router-link>
 
+      <router-link v-if="esSupervisor" to="/app/clientes" class="menu-item" active-class="active">
+        <span>👥</span>
+        <span v-if="!isCollapsed">Clientes</span>
+      </router-link>
+
       <router-link v-if="esSupervisor" to="/app/materia-prima" class="menu-item" active-class="active">
         <span>👤</span>
         <span v-if="!isCollapsed">Inventario MP</span>
@@ -33,7 +38,12 @@
 
       <router-link v-if="esSupervisor" to="/app/usuarios" class="menu-item" active-class="active">
         <span>⚙️</span>
-        <span v-if="!isCollapsed">Mantenimiento de Usuarios</span>
+        <span v-if="!isCollapsed">Usuarios</span>
+      </router-link>
+
+      <router-link v-if="esSupervisor" to="/app/mermas" class="menu-item" active-class="active">
+        <span>⚠️</span>
+        <span v-if="!isCollapsed">Mermas</span>
       </router-link>
 
       <router-link v-if="esOperador" to="/app/produccion" class="menu-item" active-class="active">
@@ -54,6 +64,14 @@ export default {
       rol: localStorage.getItem('rol')
     }
   },
+
+  watch: {
+    // Re-leer el rol cuando cambia la ruta (ej. después de login/logout)
+    $route() {
+      this.rol = localStorage.getItem('rol')
+    }
+  },
+
   computed: {
     esOperador() {
       return this.rol === 'operador'
@@ -176,8 +194,15 @@ export default {
 }
 
 .menu-item span:first-child {
-  font-size: clamp(16px, 1.2vw, 18px);
+  font-size: clamp(18px, 1.4vw, 20px);
   min-width: 24px;
+  text-align: center;
+}
+
+/* Colapsado: centra el ícono */
+.sidebar.collapsed .menu-item {
+  justify-content: center;
+  padding: 12px 8px;
 }
 
 .sidebar.collapsed .menu-item span:not(:first-child) {

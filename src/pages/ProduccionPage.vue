@@ -276,10 +276,6 @@ export default {
             }
 
             this.mostrarMensaje('info', `El contador de ${receta.nombre} ya llegó al total configurado`, 2500)
-        },
-
-        formatearFecha() {
-            return ''
         }
     }
 }

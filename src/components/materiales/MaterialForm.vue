@@ -103,42 +103,6 @@ export default {
     box-shadow: var(--shadow);
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 18px;
-}
-
-.form-label {
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: var(--text-h);
-    font-size: 14px;
-}
-
-.form-input,
-.form-textarea {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--text);
-    font-size: 14px;
-    transition: all 0.3s ease;
-}
-
-.form-input:focus,
-.form-textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
-}
-
-.form-textarea {
-    resize: vertical;
-}
-
 .actions {
     display: flex;
     justify-content: flex-end;

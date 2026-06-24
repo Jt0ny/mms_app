@@ -36,6 +36,7 @@
 </template>
 <script>
 import PedidoClient from '../client/PedidoClient'
+import ClientesClient from '../client/ClientesClient'
 import * as XLSX from 'xlsx'
 
 import CargaArchivo from '../components/CargaArchivo.vue'
@@ -229,6 +230,10 @@ export default {
 
             try {
                 await PedidoClient.agregarPedido(this.datosProcesados)
+                
+                // Sincronizar nuevos clientes en la base de datos local
+                await this.sincronizarClientes(this.datosProcesados)
+
                 this.mostrarMensaje('exito', '✓ Pedidos guardados correctamente')
                 this.datosProcesados = []
                 await this.cargarPedidos()
@@ -238,6 +243,95 @@ export default {
                 this.mostrarMensaje('error', '❌ Error al guardar pedidos', 0)
             } finally {
                 this.cargando = false
+            }
+        },
+
+        async sincronizarClientes(datosPedidos) {
+            try {
+                const clientesExistentes = await ClientesClient.obtenerClientes()
+                const mapaClientes = new Map(clientesExistentes.map(c => [c.nombre.toLowerCase().trim(), c]))
+                
+                const clientesParaAgregar = []
+                const clientesParaActualizar = []
+
+                for (const order of datosPedidos) {
+                    const billName = (order.cliente_facturacion || '').trim()
+                    const shipName = (order.cliente_envio || '').trim()
+
+                    if (billName) {
+                        const billKey = billName.toLowerCase()
+                        if (!mapaClientes.has(billKey)) {
+                            const nuevo = {
+                                nombre: billName,
+                                tipo: 'Facturación',
+                                clienteFacturacionAsociado: '',
+                                email: '',
+                                telefono: '',
+                                direccion: '',
+                                notas: '',
+                                creado_en: new Date().toISOString()
+                            }
+                            mapaClientes.set(billKey, nuevo)
+                            clientesParaAgregar.push(nuevo)
+                        } else {
+                            const existente = mapaClientes.get(billKey)
+                            if (existente.tipo === 'Envío') {
+                                existente.tipo = 'Ambos'
+                                if (!clientesParaActualizar.some(c => c.id === existente.id)) {
+                                    clientesParaActualizar.push(existente)
+                                }
+                            }
+                        }
+                    }
+
+                    if (shipName) {
+                        const shipKey = shipName.toLowerCase()
+                        if (!mapaClientes.has(shipKey)) {
+                            const nuevo = {
+                                nombre: shipName,
+                                tipo: 'Envío',
+                                clienteFacturacionAsociado: billName || '',
+                                email: '',
+                                telefono: '',
+                                direccion: '',
+                                notas: '',
+                                creado_en: new Date().toISOString()
+                            }
+                            mapaClientes.set(shipKey, nuevo)
+                            clientesParaAgregar.push(nuevo)
+                        } else {
+                            const existente = mapaClientes.get(shipKey)
+                            let modificado = false
+                            if (existente.tipo === 'Facturación') {
+                                existente.tipo = 'Ambos'
+                                modificado = true
+                            }
+                            if (!existente.clienteFacturacionAsociado && billName && existente.nombre !== billName) {
+                                existente.clienteFacturacionAsociado = billName
+                                modificado = true
+                            }
+                            if (modificado) {
+                                if (!clientesParaActualizar.some(c => c.id === existente.id)) {
+                                    clientesParaActualizar.push(existente)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Guardar nuevos clientes
+                for (const nuevo of clientesParaAgregar) {
+                    await ClientesClient.agregarCliente(nuevo)
+                }
+
+                // Actualizar clientes modificados
+                for (const modificado of clientesParaActualizar) {
+                    await ClientesClient.actualizarCliente(modificado.id, modificado)
+                }
+
+                console.log(`Sincronización automática de clientes completada. Creados: ${clientesParaAgregar.length}, Actualizados: ${clientesParaActualizar.length}`)
+            } catch (error) {
+                console.error("Error al sincronizar clientes de facturación/envío:", error)
             }
         }
     }

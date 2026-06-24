@@ -116,7 +116,7 @@ export default {
 
 @media (min-width: 1100px) {
     .main-layout {
-        grid-template-columns: minmax(320px, 560px) 1fr;
+        grid-template-columns: 1fr 1fr;
         align-items: start;
     }
 }

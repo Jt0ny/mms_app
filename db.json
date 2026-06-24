@@ -2,13 +2,13 @@
   "materiales": [
     {
       "nombre": "Carton",
-      "cantidad": 5888,
+      "cantidad": 5878,
       "descripcion": "Para rosas",
       "id": "Nm5pkk9ZdoE"
     },
     {
       "nombre": "Papel",
-      "cantidad": 1000,
+      "cantidad": 500,
       "descripcion": "Para flores",
       "id": "RTG2H-JkQNo"
     },
@@ -41,6 +41,12 @@
       "cantidad": 6,
       "descripcion": "fdsf",
       "id": "oytkkh_Wypc"
+    },
+    {
+      "nombre": "Ligas",
+      "cantidad": 85,
+      "descripcion": "Ligas elasticas",
+      "id": "yrYTTPMDDys"
     }
   ],
   "recetas": [
@@ -223,428 +229,20 @@
   ],
   "producciones": [
     {
-      "fecha": "2026-05-27",
-      "total": 864,
+      "fecha": "2026-06-23",
+      "total": 13,
       "detalle": [
-        {
-          "categoria": "BOUQUETS",
-          "cantidad": 4
-        },
-        {
-          "categoria": "EUCALYPTUS",
-          "cantidad": 4
-        },
-        {
-          "categoria": "GERBERA",
-          "cantidad": 6
-        },
-        {
-          "categoria": "HARD-GOODS",
-          "cantidad": 5
-        },
         {
           "categoria": "MINIGERBERAS",
-          "cantidad": 63
-        },
-        {
-          "categoria": "ROSES",
-          "cantidad": 64
-        },
-        {
-          "categoria": "SPRAY ROSES",
-          "cantidad": 64
-        },
-        {
-          "categoria": "TINTED ROSES",
-          "cantidad": 654
-        }
-      ],
-      "creado_en": "2026-05-28T03:43:14.685Z",
-      "id": "BmrmVe2Ekns"
-    },
-    {
-      "fecha": "2026-05-27",
-      "total": 145,
-      "detalle": [
-        {
-          "categoria": "BOUQUETS",
-          "cantidad": 50
-        },
-        {
-          "categoria": "EUCALYPTUS",
-          "cantidad": 6
-        },
-        {
-          "categoria": "GERBERA",
-          "cantidad": 4
-        },
-        {
-          "categoria": "HARD-GOODS",
-          "cantidad": 5
-        },
-        {
-          "categoria": "MINIGERBERAS",
-          "cantidad": 6
-        },
-        {
-          "categoria": "ROSES",
-          "cantidad": 4
-        },
-        {
-          "categoria": "SPRAY ROSES",
-          "cantidad": 6
-        },
-        {
-          "categoria": "TINTED ROSES",
-          "cantidad": 64
-        }
-      ],
-      "creado_en": "2026-05-28T03:43:35.723Z",
-      "id": "2EXDsaZNQWI"
-    },
-    {
-      "fecha": "2026-05-29",
-      "total": 12,
-      "detalle": [
-        {
-          "categoria": "BOUQUETS",
-          "cantidad": 5
-        },
-        {
-          "categoria": "EUCALYPTUS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "GERBERA",
-          "cantidad": 1
-        },
-        {
-          "categoria": "HARD-GOODS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "MINIGERBERAS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "ROSES",
-          "cantidad": 1
-        },
-        {
-          "categoria": "SPRAY ROSES",
-          "cantidad": 1
-        },
-        {
-          "categoria": "TINTED ROSES",
-          "cantidad": 1
-        }
-      ],
-      "creado_en": "2026-05-29T22:28:47.524Z",
-      "id": "GVf5RMzKe1w"
-    },
-    {
-      "fecha": "2026-05-29",
-      "total": 15,
-      "detalle": [
-        {
-          "categoria": "BOUQUETS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "EUCALYPTUS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "GERBERA",
-          "cantidad": 1
-        },
-        {
-          "categoria": "HARD-GOODS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "MINIGERBERAS",
-          "cantidad": 10
-        },
-        {
-          "categoria": "SPRAY ROSES",
-          "cantidad": 1
-        }
-      ],
-      "creado_en": "2026-05-29T21:57:49.153Z",
-      "id": "DaEw3fG0T18"
-    },
-    {
-      "fecha": "2026-05-29",
-      "total": 14,
-      "detalle": [
-        {
-          "categoria": "BOUQUETS",
-          "cantidad": 7
-        },
-        {
-          "categoria": "EUCALYPTUS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "GERBERA",
-          "cantidad": 1
-        },
-        {
-          "categoria": "HARD-GOODS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "MINIGERBERAS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "ROSES",
-          "cantidad": 1
-        },
-        {
-          "categoria": "SPRAY ROSES",
-          "cantidad": 1
-        },
-        {
-          "categoria": "TINTED ROSES",
-          "cantidad": 1
-        }
-      ],
-      "creado_en": "2026-05-29T22:24:45.879Z",
-      "id": "-Na0TB151ec"
-    },
-    {
-      "fecha": "2026-05-30",
-      "total": 8,
-      "detalle": [
-        {
-          "categoria": "BOUQUETS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "EUCALYPTUS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "GERBERA",
-          "cantidad": 1
-        },
-        {
-          "categoria": "HARD-GOODS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "MINIGERBERAS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "ROSES",
-          "cantidad": 1
-        },
-        {
-          "categoria": "SPRAY ROSES",
-          "cantidad": 1
-        },
-        {
-          "categoria": "TINTED ROSES",
-          "cantidad": 1
-        }
-      ],
-      "creado_en": "2026-05-31T03:43:05.515Z",
-      "id": "LdJuRCzQ3NE"
-    },
-    {
-      "fecha": "2026-05-31",
-      "total": 18,
-      "detalle": [
-        {
-          "categoria": "BOUQUETS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "EUCALYPTUS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "GERBERA",
-          "cantidad": 1
-        },
-        {
-          "categoria": "HARD-GOODS",
-          "cantidad": 11
-        },
-        {
-          "categoria": "MINIGERBERAS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "ROSES",
-          "cantidad": 1
-        },
-        {
-          "categoria": "SPRAY ROSES",
-          "cantidad": 1
-        },
-        {
-          "categoria": "TINTED ROSES",
-          "cantidad": 1
-        }
-      ],
-      "creado_en": "2026-06-01T01:14:24.215Z",
-      "id": "bdQT1QW1_4Y"
-    },
-    {
-      "fecha": "2026-05-31",
-      "total": 36,
-      "detalle": [
-        {
-          "categoria": "BOUQUETS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "EUCALYPTUS",
-          "cantidad": 2
-        },
-        {
-          "categoria": "GERBERA",
           "cantidad": 3
         },
         {
-          "categoria": "HARD-GOODS",
-          "cantidad": 4
-        },
-        {
-          "categoria": "MINIGERBERAS",
-          "cantidad": 5
-        },
-        {
-          "categoria": "ROSES",
-          "cantidad": 6
-        },
-        {
-          "categoria": "SPRAY ROSES",
-          "cantidad": 7
-        },
-        {
-          "categoria": "TINTED ROSES",
-          "cantidad": 8
-        }
-      ],
-      "creado_en": "2026-06-01T01:19:19.768Z",
-      "id": "tDzz-o_cLXQ"
-    },
-    {
-      "fecha": "2026-06-02",
-      "total": 17,
-      "detalle": [
-        {
-          "categoria": "BOUQUETS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "EUCALYPTUS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "GERBERA",
-          "cantidad": 1
-        },
-        {
-          "categoria": "HARD-GOODS",
-          "cantidad": 10
-        },
-        {
-          "categoria": "MINIGERBERAS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "ROSES",
-          "cantidad": 1
-        },
-        {
-          "categoria": "SPRAY ROSES",
-          "cantidad": 1
-        },
-        {
-          "categoria": "TINTED ROSES",
-          "cantidad": 1
-        }
-      ],
-      "creado_en": "2026-06-02T16:08:58.424Z",
-      "id": "IyWLwDPTesw"
-    },
-    {
-      "fecha": "2026-06-03",
-      "total": 74,
-      "detalle": [
-        {
-          "categoria": "BOUQUETS",
-          "cantidad": 21
-        },
-        {
-          "categoria": "EUCALYPTUS",
-          "cantidad": 1
-        },
-        {
-          "categoria": "GERBERA",
-          "cantidad": 21
-        },
-        {
-          "categoria": "HARD-GOODS",
-          "cantidad": 2
-        },
-        {
-          "categoria": "MINIGERBERAS",
-          "cantidad": 2
-        },
-        {
-          "categoria": "ROSES",
-          "cantidad": 20
-        },
-        {
-          "categoria": "SPRAY ROSES",
-          "cantidad": 2
-        },
-        {
-          "categoria": "TINTED ROSES",
-          "cantidad": 5
-        }
-      ],
-      "creado_en": "2026-06-03T16:53:14.937Z",
-      "id": "HalXkhcQ-qU"
-    },
-    {
-      "fecha": "2026-06-16",
-      "total": 11,
-      "detalle": [
-        {
-          "categoria": "BOUQUETS",
-          "cantidad": 2
-        },
-        {
-          "categoria": "MINIGERBERAS",
-          "cantidad": 9
-        }
-      ],
-      "creado_en": "2026-06-17T00:42:42.841Z",
-      "id": "4xZTSMDnlDk"
-    },
-    {
-      "fecha": "2026-06-16",
-      "total": 14,
-      "detalle": [
-        {
-          "categoria": "MINIGERBERAS",
-          "cantidad": 4
-        },
-        {
           "categoria": "ROSES",
           "cantidad": 10
         }
       ],
-      "creado_en": "2026-06-17T00:45:49.419Z",
-      "id": "EWJUqEF9u-s"
+      "creado_en": "2026-06-23T17:10:13.941Z",
+      "id": "jO5t-tjIlFE"
     }
   ],
   "usuarios": [
@@ -697,7 +295,2298 @@
       "id": "o9puWLby824"
     }
   ],
-  "clientes": [],
+  "clientes": [
+    {
+      "nombre": "DISTRIBUIDORA EL PARAISO DE LAS FLORES S.A",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "client1@test.com",
+      "telefono": "+1 555-0199",
+      "direccion": "100 Broadway St",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "975JlTbgfz4"
+    },
+    {
+      "nombre": "ABRAFLORA WHOLESALE FLOWERS LLC",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "gyovIHYWVoA"
+    },
+    {
+      "nombre": "AGROTROPIC AG",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "8qZd3JWTCDA"
+    },
+    {
+      "nombre": "AGROTROPIC MH FAIRTRADE ID 18031",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "4J7AfGz9Gos"
+    },
+    {
+      "nombre": "AGROTROPIC MH FLEUROP / AAA ID 18031",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "AGROTROPIC MH FAIRTRADE ID 18031",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "HdmQcXsHLVg"
+    },
+    {
+      "nombre": "AGROTROPIC MH COOP STUCKWAREN ID 18031",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "AGROTROPIC MH FAIRTRADE ID 18031",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "RKju8opDCT4"
+    },
+    {
+      "nombre": "ALINATURA SA",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "TcPRaTMjHFA"
+    },
+    {
+      "nombre": "ARPHI",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "gPYfSkGUp0A"
+    },
+    {
+      "nombre": "MAKSO",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ARPHI",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "45-RdlP4VQE"
+    },
+    {
+      "nombre": "BELAYA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ARPHI",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "9r0dAhlGBgM"
+    },
+    {
+      "nombre": "BOBY 1",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ARPHI",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "Omz2B66CMxA"
+    },
+    {
+      "nombre": "RUBIK - YANAEKB",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ARPHI",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "Fsb_1A71lsc"
+    },
+    {
+      "nombre": "RITZ",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ARPHI",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "jQt-FaHC9T4"
+    },
+    {
+      "nombre": "BAKU FLOWERS",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "eimHLtPHglY"
+    },
+    {
+      "nombre": "OASIS K",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "BAKU FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "lv9OkTTloZI"
+    },
+    {
+      "nombre": "IMPERATOR",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "BAKU FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "xEuw_rS-NAE"
+    },
+    {
+      "nombre": "OASIS SERGUEY K",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "BAKU FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "5jgLmi85DMM"
+    },
+    {
+      "nombre": "BAK MAMED",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "BAKU FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "EXk3EPZ5TVA"
+    },
+    {
+      "nombre": "BAK K",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "BAKU FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "imKx6oPPOzI"
+    },
+    {
+      "nombre": "NADIR MINSK",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "BAKU FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "fxC-WDpcHuQ"
+    },
+    {
+      "nombre": "BLOOMQUEST LLC",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "8_Fkl_GuVkY"
+    },
+    {
+      "nombre": "CENTRAL MARKETS",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "BLOOMQUEST LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "pPIBwypbhxI"
+    },
+    {
+      "nombre": "BOCA INC",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "CtPDIDvoauI"
+    },
+    {
+      "nombre": "BOCA INC USA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "BOCA INC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "rMCtPf9N0Y8"
+    },
+    {
+      "nombre": "C.J. VIANEN FLOWEREXPORT B.V.",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "_yjrirZIzXk"
+    },
+    {
+      "nombre": "CAN-MEX IMPORTS INC",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "f9W-xBj8oeI"
+    },
+    {
+      "nombre": "CASA BLANCA FLOWERS",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "01y_ujQDc9E"
+    },
+    {
+      "nombre": "SCHNITT HAGENDORF BBW",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "CASA BLANCA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "t3mvmet0qTo"
+    },
+    {
+      "nombre": "SCHNITT HAGENDORF BBT",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "CASA BLANCA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "u7vRjl5_BN4"
+    },
+    {
+      "nombre": "SCHITT WANGEN",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "CASA BLANCA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "LSsf4scW2zc"
+    },
+    {
+      "nombre": "SCHNITT HAGENDORF BBR",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "CASA BLANCA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "RLeCjCr1Q8I"
+    },
+    {
+      "nombre": "SCHNITT HAGENDORF",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "CASA BLANCA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "epnpYSQ6ysE"
+    },
+    {
+      "nombre": "CHOICE FARMS",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "a-o2zsm11uQ"
+    },
+    {
+      "nombre": "COLGARDEN GROUP INC",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "-IDF8YbeozM"
+    },
+    {
+      "nombre": "CGG-01",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "COLGARDEN GROUP INC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "xSLNrm_Z7GE"
+    },
+    {
+      "nombre": "CRAGEN INTERNATIONAL CORPORATION",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "ocn5XJJF4Ns"
+    },
+    {
+      "nombre": "TAVO",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "CRAGEN INTERNATIONAL CORPORATION",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "CjQtSuCxxKs"
+    },
+    {
+      "nombre": "DV MARIO",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "CRAGEN INTERNATIONAL CORPORATION",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "9DpFyK4FXM8"
+    },
+    {
+      "nombre": "CVETAMI GROUP",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "-of-OdJHi7k"
+    },
+    {
+      "nombre": "CVETAMI",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "CVETAMI GROUP",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "sJpGfKTJvOA"
+    },
+    {
+      "nombre": "CV ROMBIK",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "CVETAMI GROUP",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "Omx7kwglhQk"
+    },
+    {
+      "nombre": "CV POCH",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "CVETAMI GROUP",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "v5FFq0sPij8"
+    },
+    {
+      "nombre": "VETA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "CVETAMI GROUP",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "C_jdWK78ICE"
+    },
+    {
+      "nombre": "CV ALEX",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "CVETAMI GROUP",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "sbWzLX9E674"
+    },
+    {
+      "nombre": "CV IRMA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "CVETAMI GROUP",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "EAay9wz-PwY"
+    },
+    {
+      "nombre": "COLOUR REPUBLIC LLC",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "I2Zz6FNsYLI"
+    },
+    {
+      "nombre": "DEALIGHT FLOWERS AG",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "72EXXR-6CuU"
+    },
+    {
+      "nombre": "DELAWARE VALLEY FLORAL GROUP LLC.",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "xrHZcHEuvyk"
+    },
+    {
+      "nombre": "DVFLORA-SEWELL, NJ",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "DELAWARE VALLEY FLORAL GROUP LLC.",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "NAzLcktoZ6c"
+    },
+    {
+      "nombre": "DIVA FLOR",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "aR2WtrqanPc"
+    },
+    {
+      "nombre": "FLO -RSFL",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "DIVA FLOR",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "RvMNbClmBRs"
+    },
+    {
+      "nombre": "TSE.",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "DIVA FLOR",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "qxP8Nb3QIMA"
+    },
+    {
+      "nombre": "ECUAMIA FLOWER CORP",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "HdF-5HrGAzY"
+    },
+    {
+      "nombre": "ELENA FLOWERS",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "YuwgubIfg8I"
+    },
+    {
+      "nombre": "KU SWAT",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ELENA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "_P6i-DWqPjg"
+    },
+    {
+      "nombre": "KU OPEN",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ELENA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "Nu5RtSACnWc"
+    },
+    {
+      "nombre": "KU ELENAFLOWERS",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ELENA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "gG_npk3rjVY"
+    },
+    {
+      "nombre": "KU DUSAN",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ELENA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "Cio8J--Kkjs"
+    },
+    {
+      "nombre": "KU DENGEL",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ELENA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "lVG5iDva-eY"
+    },
+    {
+      "nombre": "KU ANAPO",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ELENA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "v2B3YJ2rMz4"
+    },
+    {
+      "nombre": "KU OLIVA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ELENA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "PvlLPa_TMeg"
+    },
+    {
+      "nombre": "KU DELAR",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ELENA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "HCBhTuq5Q0A"
+    },
+    {
+      "nombre": "KU SAPA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ELENA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "lWd79P908UY"
+    },
+    {
+      "nombre": "KU MAGNAT",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ELENA FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "qzCmJj4AjGI"
+    },
+    {
+      "nombre": "EXPOROSAS",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "YUppHFddwCs"
+    },
+    {
+      "nombre": "DOLCHE PTZ",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "EXPOROSAS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "LO0AxxzOGu8"
+    },
+    {
+      "nombre": "FARM DIRECT NETHERLANDS B V",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "o7J6QEZjais"
+    },
+    {
+      "nombre": "FARM DIRECT BV",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FARM DIRECT NETHERLANDS B V",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "j5QFMAq9pqk"
+    },
+    {
+      "nombre": "FASHION GARDEN",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "XMvQqAtilFo"
+    },
+    {
+      "nombre": "GRD**-FASFLO",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FASHION GARDEN",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "J-KkllVRGBA"
+    },
+    {
+      "nombre": "GRD MSHA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FASHION GARDEN",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "1EZp-CqbCig"
+    },
+    {
+      "nombre": "FLEURIGROS",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "T9SIKxUzxeg"
+    },
+    {
+      "nombre": "FLEUREXPERT",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FLEURIGROS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "ZG-DJmzntsA"
+    },
+    {
+      "nombre": "FLEXIN SRL",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "Yw72Hq-7a90"
+    },
+    {
+      "nombre": "FLORALINK LLC",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "tAvyP93LWFg"
+    },
+    {
+      "nombre": "FLL SOUTH FLORALS IMPORTS",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FLORALINK LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "CYJez0__CwE"
+    },
+    {
+      "nombre": "FLL FLORA FRESH",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FLORALINK LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "OlTX2GiwQ3k"
+    },
+    {
+      "nombre": "FLORESOL EU",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "7jPBz9qwCWU"
+    },
+    {
+      "nombre": "ROSMARIN",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FLORESOL EU",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "bxPJIBvSlwg"
+    },
+    {
+      "nombre": "FLOWER MASTER LLC",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "su8PrpD1FEA"
+    },
+    {
+      "nombre": "OOO US",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FLOWER MASTER LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "v0oHGaTqCPw"
+    },
+    {
+      "nombre": "OOO ZARA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FLOWER MASTER LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "IzohjdA7uHI"
+    },
+    {
+      "nombre": "OOO EVP",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FLOWER MASTER LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "-3C9vbCaRiw"
+    },
+    {
+      "nombre": "FLOWERJULIYA",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "Fd1q9lgAYKk"
+    },
+    {
+      "nombre": "TROPIC GENESIS",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FLOWERJULIYA",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "_xHkqo054UQ"
+    },
+    {
+      "nombre": "FLOWEX BV",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "YoQrwlnezBw"
+    },
+    {
+      "nombre": "FM GROUP BV",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "BQyc-aXNPyw"
+    },
+    {
+      "nombre": "FLEURAMETZ SUISE",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP BV",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "vc6yb9zknHM"
+    },
+    {
+      "nombre": "FM FRANKFURT",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP BV",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "6GCqVPhiWY4"
+    },
+    {
+      "nombre": "FM BOX",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP BV",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "zPtvyI72uHA"
+    },
+    {
+      "nombre": "U-DA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP BV",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.801Z",
+      "id": "jej57RhnVtk"
+    },
+    {
+      "nombre": "FLEURAMETZ AALMER",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP BV",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "Jxcw03KZIMc"
+    },
+    {
+      "nombre": "FLEURAMETZ FDA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP BV",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "8p_7LxgaMII"
+    },
+    {
+      "nombre": "FM UNPACK",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP BV",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "eXp_mHk0rGY"
+    },
+    {
+      "nombre": "FM GROUP BV-ESPECIALES",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "lnPdn8FWzuo"
+    },
+    {
+      "nombre": "FLEURAMETZ USA NYC",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP BV-ESPECIALES",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "Z-ekW5edg9Y"
+    },
+    {
+      "nombre": "FM UNPACK.",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP BV-ESPECIALES",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "HQRTEeMCnMM"
+    },
+    {
+      "nombre": "FGS",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP BV-ESPECIALES",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "_C3gyLs6S80"
+    },
+    {
+      "nombre": "FM GROUP GREENFLOR",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "FLn90Z7rh7s"
+    },
+    {
+      "nombre": "GREENFLOR RIJNSBURG",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP GREENFLOR",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "KLD-CbSiqYM"
+    },
+    {
+      "nombre": "GREEN - EC",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP GREENFLOR",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "vsT5eDJvU_Y"
+    },
+    {
+      "nombre": "JMG - EC",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP GREENFLOR",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "9xD3u2yv37M"
+    },
+    {
+      "nombre": "DEXX-EC",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP GREENFLOR",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "KUrjbb1Rxpc"
+    },
+    {
+      "nombre": "GREENFLOR-DEXX",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FM GROUP GREENFLOR",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "EwhUHRAeJfM"
+    },
+    {
+      "nombre": "FOSHAN HUAMIJU NETWORK TECHNOLOGY CO., LTD",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "0kSQmunBBgw"
+    },
+    {
+      "nombre": "FOUR SEASON QUALITY B.V.",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "qDgqRAFaSfQ"
+    },
+    {
+      "nombre": "NEW YORK FLOWER GROUP INC",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "FOUR SEASON QUALITY B.V.",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "XUSVtefwW-Y"
+    },
+    {
+      "nombre": "GRADYFLOR ESPANA",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "ZJx2WiWv8zs"
+    },
+    {
+      "nombre": "GULF FLOWERS FZCO",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "UsTzQC3oT2k"
+    },
+    {
+      "nombre": "GULF FLOWERS FZCO - RKG",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "GULF FLOWERS FZCO",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "p1zu_R_hBBE"
+    },
+    {
+      "nombre": "GULF FLOWERS FZCO- TKG",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "GULF FLOWERS FZCO",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "2OwGNqPG5vE"
+    },
+    {
+      "nombre": "HADJU FLOWERS EXPORT SRO",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "ey8-miGYB2s"
+    },
+    {
+      "nombre": "HADJU",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "HADJU FLOWERS EXPORT SRO",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "iNL3POWVsFg"
+    },
+    {
+      "nombre": "HOJA VERDE INTL",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "5fISZVugSns"
+    },
+    {
+      "nombre": "WGF001",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "HOJA VERDE INTL",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "sIdfjvgQHlY"
+    },
+    {
+      "nombre": "HUNTER GREEN LLC",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "4Rjivge9f-U"
+    },
+    {
+      "nombre": "IMPEX FLOWERS",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "XMaVtZlmF2A"
+    },
+    {
+      "nombre": "IMPEX FLOWERMARKET LLC",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "IMPEX FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "-NljpXt3h44"
+    },
+    {
+      "nombre": "IMPEX FLOWERMARKET LLC TA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "IMPEX FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "zFoWy7ly_ts"
+    },
+    {
+      "nombre": "B FORT.MNS",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "IMPEX FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "DFpcsadj3QU"
+    },
+    {
+      "nombre": "INTER EXPORT",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "TJJxWPOoftU"
+    },
+    {
+      "nombre": "CARRERA 29",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "INTER EXPORT",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "xQD0fK02s-4"
+    },
+    {
+      "nombre": "INTERFLORALOGISTICS",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "Dee5WjWY_O0"
+    },
+    {
+      "nombre": "TROPIC SINITSYNA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "INTERFLORALOGISTICS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "rBj5X0hFqNM"
+    },
+    {
+      "nombre": "J&L WHOLESALE INC",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "Yass_uMpxBc"
+    },
+    {
+      "nombre": "JET FRESH FLOWERS DISTRIBUTORS INC",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "pN0KW4RW7po"
+    },
+    {
+      "nombre": "JET FRESH FLOWERS DISTRIBUTION INC",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "JET FRESH FLOWERS DISTRIBUTORS INC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "5ILdwgIUbJc"
+    },
+    {
+      "nombre": "KIVA",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "K2QeqeF-8JE"
+    },
+    {
+      "nombre": "KOROLLARIUM LLC",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "q4HjMsfio8I"
+    },
+    {
+      "nombre": "ASSOCIATED CUT FLOWERS CO",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "KOROLLARIUM LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "VXzGOtQCudI"
+    },
+    {
+      "nombre": "MARIA FLOWERS INTERNATIONAL",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "gFnUgR0qZqE"
+    },
+    {
+      "nombre": "MAURICE ROSENG",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "bsWqJYinvH8"
+    },
+    {
+      "nombre": "ARTEMIS",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "MAURICE ROSENG",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "AB9eP9HVJLI"
+    },
+    {
+      "nombre": "MAYESH WHOLESALE FLORIST INC",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "8OJGrCGimZU"
+    },
+    {
+      "nombre": "MAYESH WHOLESALE",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "MAYESH WHOLESALE FLORIST INC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "RQNTuHQ_HI4"
+    },
+    {
+      "nombre": "MEYERCOM L P",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "eK_d-YRmxGA"
+    },
+    {
+      "nombre": "B GUBER",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "MEYERCOM L P",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "dlqk9JH7xEY"
+    },
+    {
+      "nombre": "B-FUAD",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "MEYERCOM L P",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "AbsOELrJbbA"
+    },
+    {
+      "nombre": "B-TROPIC.NN.SAV64",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "MEYERCOM L P",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "kzmt7UfEcn0"
+    },
+    {
+      "nombre": "B RUVALOV",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "MEYERCOM L P",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "yPIGndrTTVE"
+    },
+    {
+      "nombre": "NEO FLORA",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "h5r5R0OwjA4"
+    },
+    {
+      "nombre": "NINSAR FLORAL WHOLESALE INC",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "UTQu9e5LguA"
+    },
+    {
+      "nombre": "OOO LUXUS LLC - LATITUD CERO",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "cNSolTJtibA"
+    },
+    {
+      "nombre": "LUXUS KRASA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "OOO LUXUS LLC - LATITUD CERO",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "y6eb0lPVlmA"
+    },
+    {
+      "nombre": "SVSVIT",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "OOO LUXUS LLC - LATITUD CERO",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "MHJxU7_nYVQ"
+    },
+    {
+      "nombre": "KONEVA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "OOO LUXUS LLC - LATITUD CERO",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "LlBSaTIu4FQ"
+    },
+    {
+      "nombre": "OOO MARLISE TROPIC TRADE",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "DDFxt4z9hhM"
+    },
+    {
+      "nombre": "ISAK",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "OOO MARLISE TROPIC TRADE",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "oMNOCpszXo8"
+    },
+    {
+      "nombre": "RUBI",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "OOO MARLISE TROPIC TRADE",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "_9KrKZmBhBs"
+    },
+    {
+      "nombre": "IBOR",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "OOO MARLISE TROPIC TRADE",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "i2syyV_710I"
+    },
+    {
+      "nombre": "TROPIC RUNEZH",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "OOO MARLISE TROPIC TRADE",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "VH0396WF1J8"
+    },
+    {
+      "nombre": "ORANGE FLOWERS SRL",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "lyFeLw2YmOY"
+    },
+    {
+      "nombre": "ORANGE FLOWERS EK",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ORANGE FLOWERS SRL",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "HhMhsbzvEsU"
+    },
+    {
+      "nombre": "PACIF FLORAL JAPAN GK",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "N5aL_TnvyxE"
+    },
+    {
+      "nombre": "POTOMAC FLORAL WHOLESALE",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "NgUXTyp_mr0"
+    },
+    {
+      "nombre": "RAD FLOWERS ILALO",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "86VOdjvcbIw"
+    },
+    {
+      "nombre": "RAD CROWN",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "RAD FLOWERS ILALO",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "eCHz8nSMk5E"
+    },
+    {
+      "nombre": "KHALA-ZALA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "RAD FLOWERS ILALO",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "7L5UV1xsId4"
+    },
+    {
+      "nombre": "TALIW11",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "RAYA FLOR",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "T7RlQHdYgWs"
+    },
+    {
+      "nombre": "ROSETTE COMPANY LIMITED",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "Y9a8Jjln1So"
+    },
+    {
+      "nombre": "SCENIC FLORAL INC.",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "Rh6UKFSKYTw"
+    },
+    {
+      "nombre": "SHANGHAI NIFA INTERNATIONAL TRADING CO. LTD",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "tKuCWkOER3w"
+    },
+    {
+      "nombre": "S.",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "SHANGHAI NIFA INTERNATIONAL TRADING CO. LTD",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "LeRBbCzSJwc"
+    },
+    {
+      "nombre": "SJAAK VAN DER VIJVER B.V",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "lJctAqsSqec"
+    },
+    {
+      "nombre": "ZINAVOR",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "SKIFF FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "A0GyLq4YYFY"
+    },
+    {
+      "nombre": "MATVEY",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "SKIFF FLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "QySoXsC_iAw"
+    },
+    {
+      "nombre": "SUNFLORA LIMITED",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "MuqkB0oiR5Q"
+    },
+    {
+      "nombre": "TAJIKFLOWERS",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "7yOf1UOX9nM"
+    },
+    {
+      "nombre": "BYRIAT",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "TAJIKFLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "bJDjg9B1rTc"
+    },
+    {
+      "nombre": "TGW FLOWERS 13 KR",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "80hi0SRxnZI"
+    },
+    {
+      "nombre": "TONG LIN FLEUR CO",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "AskA9RvsUAU"
+    },
+    {
+      "nombre": "TRADEWINDS MAU",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "TRADEWINDS INTL LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "to2N7FlJWuY"
+    },
+    {
+      "nombre": "VALSE DES ROSES",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "Dpf8EuYaOUs"
+    },
+    {
+      "nombre": "VIVAX FLOWERS LLC",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "i-h4_-F2yFA"
+    },
+    {
+      "nombre": "VX REK LODZ",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "VIVAX FLOWERS LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "KTmuqEWrkN8"
+    },
+    {
+      "nombre": "VX YURA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "VIVAX FLOWERS LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "fN4wBWZoMR4"
+    },
+    {
+      "nombre": "VX REK BYD",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "VIVAX FLOWERS LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "ivcDCDaj6ig"
+    },
+    {
+      "nombre": "VX VRN",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "VIVAX FLOWERS LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "NqFogDS-GkA"
+    },
+    {
+      "nombre": "VX REK BIA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "VIVAX FLOWERS LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "flTufW3UWm4"
+    },
+    {
+      "nombre": "VX REK GDA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "VIVAX FLOWERS LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "lC_73vT8iaA"
+    },
+    {
+      "nombre": "VX KAR",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "VIVAX FLOWERS LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "LlLAzE6n2Kg"
+    },
+    {
+      "nombre": "VX ANDREI",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "VIVAX FLOWERS LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "uppb_Un0nMo"
+    },
+    {
+      "nombre": "VX MAGNUS",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "VIVAX FLOWERS LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "hD3IUHHxZ14"
+    },
+    {
+      "nombre": "VX REK KRK",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "VIVAX FLOWERS LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "30YZRZoIK_4"
+    },
+    {
+      "nombre": "WALLFLOWERS PROPERTIES INC.PALADIUM TECH SERVICE ITHALAT VE IHRACAT DIS TICARET LIMITED SIRKETI",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "sGn3WW0YtiM"
+    },
+    {
+      "nombre": "TROPIC UFO BAXO.",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "WALLFLOWERS PROPERTIES INC.PALADIUM TECH SERVICE ITHALAT VE IHRACAT DIS TICARET LIMITED SIRKETI",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "kzCAy0bwrSM"
+    },
+    {
+      "nombre": "WALLFLOWERS-ELENA PROPERTIES INC.",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:30:09.802Z",
+      "id": "3t_wUOKpCAA"
+    },
+    {
+      "nombre": "B - ORHIDEYA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "MEYERCOM L P",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "b4OKlWGYOPE"
+    },
+    {
+      "nombre": "TROPIC NN KRIRO",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "OOO MARLISE TROPIC TRADE",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "TwuS6h0UAoE"
+    },
+    {
+      "nombre": "ORANGE FLOWERS CV",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "ORANGE FLOWERS SRL",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "lXSxIcscRDw"
+    },
+    {
+      "nombre": "PAMELAS FLOWERS S.R.O.",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "iwFzlyu-3pc"
+    },
+    {
+      "nombre": "TROPIC KHALA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "RAD FLOWERS ILALO",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "bwyS3oWvNNM"
+    },
+    {
+      "nombre": "RAYA FLOR",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "RcyEpJqv7TU"
+    },
+    {
+      "nombre": "SKIFF FLOWERS",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "qQsWL_2ij_8"
+    },
+    {
+      "nombre": "TJ JEEP",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "TAJIKFLOWERS",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "ZN9R5n9BAek"
+    },
+    {
+      "nombre": "THE BOUQS COMPANY",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "__3k8DiDJhs"
+    },
+    {
+      "nombre": "TRADEWINDS INTL LLC",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "n5R1-KzeD1k"
+    },
+    {
+      "nombre": "TRANSPORTGEMEINSCHAFT AG FAIRTRADE ID 18225",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "cEPrwXrXdPU"
+    },
+    {
+      "nombre": "VX REK RAD",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "VIVAX FLOWERS LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "ZoRrYaI2eNc"
+    },
+    {
+      "nombre": "VX- REK WAW",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "VIVAX FLOWERS LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "fctPSJlyxg4"
+    },
+    {
+      "nombre": "VX REK REKPOL",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "VIVAX FLOWERS LLC",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "knd9xtEv5Zo"
+    },
+    {
+      "nombre": "WAFEX USA",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "LZ1l6yKQCnU"
+    },
+    {
+      "nombre": "TROPIC UFO MUJIKI.",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "WALLFLOWERS PROPERTIES INC.PALADIUM TECH SERVICE ITHALAT VE IHRACAT DIS TICARET LIMITED SIRKETI",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "69djQIvTAm8"
+    },
+    {
+      "nombre": "TROPIC LIMA",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "WALLFLOWERS-ELENA PROPERTIES INC.",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:24.514Z",
+      "id": "RqB8w3F6CGY"
+    },
+    {
+      "nombre": "MJS F.H.U MICHAL SZYMANSKI",
+      "tipo": "Ambos",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:26.165Z",
+      "id": "dZcK9DZiWNY"
+    },
+    {
+      "nombre": "TROPIC UFO STAVROPOL.",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "WALLFLOWERS PROPERTIES INC.PALADIUM TECH SERVICE ITHALAT VE IHRACAT DIS TICARET LIMITED SIRKETI",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-23T23:58:27.283Z",
+      "id": "1k1HZvL-ong"
+    },
+    {
+      "nombre": "Test Broker Inc",
+      "tipo": "Facturación",
+      "clienteFacturacionAsociado": "",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-24T00:17:43.348Z",
+      "notes": "",
+      "id": "9N-HCcNQ_g4"
+    },
+    {
+      "nombre": "Test Destino Inc",
+      "tipo": "Envío",
+      "clienteFacturacionAsociado": "Test Broker Inc",
+      "email": "",
+      "telefono": "",
+      "direccion": "",
+      "notas": "",
+      "creado_en": "2026-06-24T00:21:06.296Z",
+      "notes": "",
+      "id": "XKF006g3Lcw"
+    }
+  ],
   "planificaciones": [
     {
       "operadorId": "zlaRRpW47FY",
@@ -774,6 +2663,80 @@
       ],
       "creado_en": "2026-06-17T00:45:00.193Z",
       "id": "jv_gM4ufQyg"
+    }
+  ],
+  "mermas": [
+    {
+      "fecha": "2026-06-23",
+      "tipo": "material",
+      "referenciaId": "Nm5pkk9ZdoE",
+      "nombre": "Carton",
+      "cantidad": 5,
+      "motivo": "Vencimiento/Descomposición",
+      "creado_en": "2026-06-23T17:54:39.837Z",
+      "operadorId": "jZEvcytQadY",
+      "operadorNombre": "omar",
+      "id": "w8j29WOR-GQ"
+    },
+    {
+      "fecha": "2026-06-23",
+      "tipo": "material",
+      "referenciaId": "RTG2H-JkQNo",
+      "nombre": "Papel",
+      "cantidad": 500,
+      "motivo": "Daño en armado",
+      "creado_en": "2026-06-23T17:57:10.015Z",
+      "operadorId": "FCCAoA1bsPc",
+      "operadorNombre": "Anthony",
+      "id": "tclxnmTZe6I"
+    },
+    {
+      "fecha": "2026-06-23",
+      "tipo": "material",
+      "referenciaId": "Nm5pkk9ZdoE",
+      "nombre": "Carton",
+      "cantidad": 5,
+      "motivo": "Daño en armado",
+      "creado_en": "2026-06-23T18:03:04.119Z",
+      "operadorId": "jZEvcytQadY",
+      "operadorNombre": "omar",
+      "id": "5La9PDOx6FQ"
+    },
+    {
+      "fecha": "2026-06-23",
+      "tipo": "materia_prima",
+      "referenciaId": 295,
+      "nombre": "BLUEBERRY",
+      "cantidad": 16,
+      "motivo": "Rotura/Daño físico",
+      "creado_en": "2026-06-23T21:36:24.402Z",
+      "operadorId": "FCCAoA1bsPc",
+      "operadorNombre": "Anthony",
+      "id": "kajrO71pzTk"
+    },
+    {
+      "fecha": "2026-06-23",
+      "tipo": "material",
+      "referenciaId": "yrYTTPMDDys",
+      "nombre": "Ligas",
+      "cantidad": 15,
+      "motivo": "Prueba de subcomponentes",
+      "creado_en": "2026-06-23T22:22:47.595Z",
+      "operadorId": "jZEvcytQadY",
+      "operadorNombre": "omar",
+      "id": "PT-vmSI6YiI"
+    },
+    {
+      "fecha": "2026-06-23",
+      "tipo": "producto_terminado",
+      "referenciaId": "zOg6tvkpvSI",
+      "nombre": "Ramo 1",
+      "cantidad": 1,
+      "motivo": "Vencimiento/Descomposición",
+      "creado_en": "2026-06-23T22:36:54.517Z",
+      "operadorId": "FCCAoA1bsPc",
+      "operadorNombre": "Anthony",
+      "id": "1hmNuPXDWcU"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
