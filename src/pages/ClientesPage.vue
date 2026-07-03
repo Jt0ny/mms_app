@@ -221,8 +221,10 @@ export default {
               const existente = mapaClientes.get(billKey)
               if (existente.tipo === 'Envío') {
                 existente.tipo = 'Ambos'
-                if (!clientesParaActualizar.some(c => c.id === existente.id)) {
-                  clientesParaActualizar.push(existente)
+                if (existente.id && existente.id !== 'undefined') {
+                  if (!clientesParaActualizar.some(c => c.id === existente.id)) {
+                    clientesParaActualizar.push(existente)
+                  }
                 }
               }
             }
@@ -255,8 +257,10 @@ export default {
                 modificado = true
               }
               if (modificado) {
-                if (!clientesParaActualizar.some(c => c.id === existente.id)) {
-                  clientesParaActualizar.push(existente)
+                if (existente.id && existente.id !== 'undefined') {
+                  if (!clientesParaActualizar.some(c => c.id === existente.id)) {
+                    clientesParaActualizar.push(existente)
+                  }
                 }
               }
             }

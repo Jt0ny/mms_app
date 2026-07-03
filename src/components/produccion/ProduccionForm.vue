@@ -9,10 +9,7 @@
                 </p>
             </div>
 
-            <label class="date-field" for="fecha-produccion">
-                <span>Fecha</span>
-                <input id="fecha-produccion" v-model="form.fecha" type="date" />
-            </label>
+
         </header>
 
         <Alertas :mensaje="mensaje" />
@@ -48,10 +45,14 @@
                     </div>
 
                     <div class="stepper">
-                        <button type="button" class="stepper-btn" @click="actualizarCantidad(categoria, obtenerCantidad(categoria) - 1)" aria-label="Restar">−</button>
+                        <button type="button" class="stepper-btn"
+                            @click="actualizarCantidad(categoria, obtenerCantidad(categoria) - 1)"
+                            aria-label="Restar">−</button>
                         <input :value="obtenerCantidad(categoria)" type="number" min="0" step="1" inputmode="numeric"
                             class="category-input" @input="actualizarCantidad(categoria, $event.target.value)" />
-                        <button type="button" class="stepper-btn" @click="actualizarCantidad(categoria, obtenerCantidad(categoria) + 1)" aria-label="Sumar">+</button>
+                        <button type="button" class="stepper-btn"
+                            @click="actualizarCantidad(categoria, obtenerCantidad(categoria) + 1)"
+                            aria-label="Sumar">+</button>
                     </div>
                 </article>
             </div>
@@ -535,7 +536,8 @@ export default {
 /* En desktop (mouse), el stepper-btn está oculto — usa solo el input */
 @media (pointer: fine) {
     .stepper {
-        display: contents; /* los hijos se comportan como si no existiera el wrapper */
+        display: contents;
+        /* los hijos se comportan como si no existiera el wrapper */
     }
 
     .stepper-btn {

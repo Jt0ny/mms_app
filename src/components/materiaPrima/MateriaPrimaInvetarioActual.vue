@@ -3,9 +3,14 @@
 
         <div class="inventory-header">
             <h2> 📦 Inventario Actual </h2>
-            <button @click="$emit('actualizar')" :disabled="cargando" class="btn-refresh">
-                {{ cargando ? '⟳ Cargando...' : '↻ Actualizar' }}
-            </button>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button @click="$emit('sincronizar')" :disabled="cargando" class="btn-sync" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.25s ease;">
+                    ⚡ Sincronizar API
+                </button>
+                <button @click="$emit('actualizar')" :disabled="cargando" class="btn-refresh">
+                    {{ cargando ? '⟳ Cargando...' : '↻ Actualizar' }}
+                </button>
+            </div>
         </div>
 
         <!-- LOADING -->
@@ -59,7 +64,7 @@ export default {
         }
     },
 
-    emits: ['actualizar'],
+    emits: ['actualizar', 'sincronizar'],
     
     methods: {
         formatearFecha(fecha) {

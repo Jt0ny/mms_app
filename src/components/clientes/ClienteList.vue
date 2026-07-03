@@ -10,7 +10,7 @@
       <!-- Filtros -->
       <div class="filters">
         <input v-model="filtros.buscar"
-          :placeholder="mostrarDetallesContacto ? 'Buscar por nombre, correo...' : 'Buscar broker...'"
+          :placeholder="mostrarDetallesContacto ? 'Buscar por nombre, correo...' : 'Buscar ...'"
           class="filter-input filter-search" />
 
         <div v-if="mostrarDetallesContacto" class="select-wrapper">

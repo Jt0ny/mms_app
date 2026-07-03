@@ -21,7 +21,7 @@
 
                     <!-- INVENTARIO -->
                     <MateriaPrimaInvetarioActual :inventario="inventarioActual" :cargando="cargandoInventario"
-                        @actualizar="cargarInventario" />
+                        @actualizar="cargarInventario" @sincronizar="sincronizarAPI" />
 
                 </div>
 
@@ -86,13 +86,27 @@ export default {
         async cargarInventario() {
             this.cargandoInventario = true
             try {
+                // Cargar los datos locales de Supabase (sin disparar sincronización externa automática)
                 const datos = await materiaPrimaClient.obtenerMateriaPrima()
                 this.inventarioActual = datos ?? []
             } catch (error) {
-
                 console.error(error)
                 this.mostrarMensaje('error', '❌ Error al cargar inventario', 0)
             } finally {
+                this.cargandoInventario = false
+            }
+        },
+
+        async sincronizarAPI() {
+            this.cargandoInventario = true
+            try {
+                this.mostrarMensaje('info', '⚡ Sincronizando con la API externa...', 0)
+                await materiaPrimaClient.sincronizarConSupabase(true) // forceOverwrite = true
+                this.mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
+                await this.cargarInventario()
+            } catch (error) {
+                console.error(error)
+                this.mostrarMensaje('error', '❌ Error al sincronizar con la API externa')
                 this.cargandoInventario = false
             }
         },

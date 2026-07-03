@@ -1,166 +1,411 @@
 <template>
 	<div class="container planificacion-page">
 		<div class="content-wrap">
-			<header class="page-header">
-				<div>
-					<h1 class="page-title">Planificación</h1>
-					<p class="page-subtitle">Selecciona un operador y una o más recetas para armar la planificación.</p>
-				</div>
 
-				<button type="button" class="btn-limpiar" @click="limpiarSeleccion">
-					Limpiar selección
-				</button>
-			</header>
+			<!-- Header / Selector de Fecha y Acciones -->
+			<PlanificacionAsignacion
+				v-model:fechaSeleccionada="fechaSeleccionada"
+				:cargando-auto="cargandoAuto"
+				:guardando="guardando"
+				:mostrar-limpiar="asignaciones.length > 0"
+				@distribuir="distribuirAutomaticamente"
+				@limpiar="limpiarTodo"
+			/>
 
-			<div class="summary-card">
-				<div>
-					<span class="summary-label">Operador</span>
-					<strong>{{ operadorSeleccionado ? operadorSeleccionado.nombre : 'Ninguno seleccionado' }}</strong>
-				</div>
+			<!-- Feedback Global de Errores/Éxito en el Header -->
+			<Alertas :mensaje="mensaje" />
 
-				<div class="summary-recetas-col">
-					<span class="summary-label">Recetas ({{ recetasSeleccionadas.length }})</span>
-					<span v-if="!recetasSeleccionadas.length" class="summary-none">Ninguna seleccionada</span>
-					<table v-else class="recetas-tabla">
-						<thead>
-							<tr>
-								<th>Receta</th>
-								<th>Cantidad</th>
-								<th></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="r in recetasSeleccionadas" :key="r.id">
-								<td class="receta-nombre-cell">{{ r.nombre }}</td>
-								<td class="cantidad-cell">
-									<input
-										v-model.number="r.cantidad"
-										type="number"
-										min="1"
-										class="cantidad-input"
-									/>
-								</td>
-								<td>
-									<button class="btn-quitar" type="button" @click="quitarReceta(r.id)" title="Quitar">✕</button>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<button class="btn-asignar" :disabled="guardando" @click="asignarPlanificacion">
-					{{ guardando ? 'Guardando...' : 'Asignar' }}
-				</button>
-				<transition name="fade-msg">
-					<p v-if="mensaje.texto" :class="['msg-feedback', 'msg-' + mensaje.tipo]">{{ mensaje.texto }}</p>
-				</transition>
+			<!-- Estado inicial / vacío -->
+			<div v-if="!cargandoAuto && asignaciones.length === 0 && !mostrarMapeoWizard" class="summary-card-vacio">
+				<p class="vacio-texto">
+					Selecciona una fecha y presiona <strong>⚡ Distribuir automáticamente</strong> para generar la
+					planificación según los pedidos pendientes del día.
+				</p>
 			</div>
 
-			<div class="page-grid">
-				<PlanificacionOperadores
-					modo="seleccionar"
-					texto-seleccionar="Seleccionar operador"
-					:operador-seleccionado-id="operadorSeleccionado?.id ?? null"
-					@seleccionar-operador="seleccionarOperador"
+			<!-- Estado: distribuyendo -->
+			<div v-else-if="cargandoAuto && !mostrarMapeoWizard" class="summary-card-vacio">
+				<p class="vacio-texto">⟳ Analizando pedidos y distribuyendo carga entre operadores...</p>
+			</div>
+
+			<!-- Asistente de Mapeo de Recetas (Inline) -->
+			<PlanificacionMapeoRecetas
+				v-else-if="mostrarMapeoWizard"
+				:categorias-requeridas="categoriasRequeridas"
+				:todas-las-recetas="todasLasRecetas"
+				@confirmar="confirmarMapeoYPlanificar"
+				@cancelar="mostrarMapeoWizard = false; cargandoAuto = false"
+			/>
+
+			<!-- Resumen de asignaciones y tarjetas de operadores -->
+			<template v-else-if="asignaciones.length > 0">
+				<!-- Resumen Global -->
+				<PlanificacionResumen
+					:fecha-seleccionada="fechaSeleccionada"
+					:total-operadores="asignaciones.length"
+					:total-recetas="totalRecetasGlobal"
+					:total-stems="totalStemsGlobal"
+					:guardando="guardando"
+					:mensaje-inline="mensajeInline"
+					@guardar="guardarTodas"
 				/>
 
-				<ProduccionRecetasView
-					modo="seleccionar"
-					texto-seleccionar="Seleccionar receta"
-					:recetas-seleccionadas-ids="recetasSeleccionadasIds"
-					@accion-receta="toggleReceta"
-				/>
-			</div>
+				<!-- Grid de Tarjetas de Operadores -->
+				<div class="page-grid">
+					<PlanificacionOperadorCard
+						v-for="(asig, idx) in asignaciones"
+						:key="asig.operador.id"
+						:asig="asig"
+						:idx="idx"
+						:todas-las-recetas="todasLasRecetas"
+						@quitar-receta="quitarReceta"
+						@agregar-receta="agregarReceta"
+						@recalcular="recalcularStems"
+					/>
+				</div>
+			</template>
+
 		</div>
 	</div>
 </template>
 
 <script>
-import PlanificacionOperadores from '../components/planificacion/PlanificacionOperadores.vue'
-import ProduccionRecetasView from '../components/produccion/ProduccionRecetasView.vue'
 import PlanificacionClient from '../client/PlanificacionClient.js'
+import UsuarioClient from '../client/UsuarioClient.js'
+import RecetaClient from '../client/RecetaClient.js'
+
+import PlanificacionAsignacion from '../components/planificacion/PlanificacionAsignacion.vue'
+import PlanificacionResumen from '../components/planificacion/PlanificacionResumen.vue'
+import PlanificacionOperadorCard from '../components/planificacion/PlanificacionOperadorCard.vue'
+import PlanificacionMapeoRecetas from '../components/planificacion/PlanificacionMapeoRecetas.vue'
+import Alertas from '../components/Alertas.vue'
 
 export default {
 	name: 'PlanificacionPage',
+
 	components: {
-		PlanificacionOperadores,
-		ProduccionRecetasView
+		PlanificacionAsignacion,
+		PlanificacionResumen,
+		PlanificacionOperadorCard,
+		PlanificacionMapeoRecetas,
+		Alertas
 	},
 
 	data() {
+		const hoy = new Date().toISOString().slice(0, 10)
 		return {
-			operadorSeleccionado: null,
-			recetasSeleccionadas: [],
+			fechaSeleccionada: hoy,
+			asignaciones: [],      // [{ operador, recetas: [{recetaId, nombre, categoria, cantidad}], stemsTotal }]
+			todasLasRecetas: [],   // cache para el select de agregar receta
+			gruposRecetaBackup: [], // copia de respaldo con la información de pedidos por receta
+			cargandoAuto: false,
 			guardando: false,
-			mensaje: { tipo: null, texto: '' }
+			mensaje: { tipo: null, texto: '' },       // mensaje en el header
+			mensajeInline: { tipo: null, texto: '' }, // mensaje dentro del summary card
+			
+			// Estados del asistente interactivo de recetas
+			mostrarMapeoWizard: false,
+			categoriasRequeridas: [],
+			mapeoSeleccionado: null
+		}
+	},
+
+	computed: {
+		totalRecetasGlobal() {
+			return this.asignaciones.reduce((acc, a) => acc + a.recetas.length, 0)
+		},
+		totalStemsGlobal() {
+			return this.asignaciones.reduce((acc, a) => acc + a.stemsTotal, 0)
+		}
+	},
+
+	async mounted() {
+		try {
+			this.todasLasRecetas = await RecetaClient.obtenerRecetas()
+		} catch (e) {
+			console.warn('No se pudieron cargar las recetas para el selector:', e)
 		}
 	},
 
 	methods: {
-		seleccionarOperador(operador) {
-			this.operadorSeleccionado = operador
-		},
-
-		toggleReceta({ receta } = {}) {
-			if (!receta) return
-			const idx = this.recetasSeleccionadas.findIndex(r => r.id === receta.id)
-			if (idx === -1) {
-				this.recetasSeleccionadas.push({ ...receta, cantidad: 1 })
-			} else {
-				this.recetasSeleccionadas.splice(idx, 1)
-			}
-		},
-
-		quitarReceta(id) {
-			const idx = this.recetasSeleccionadas.findIndex(r => r.id === id)
-			if (idx !== -1) this.recetasSeleccionadas.splice(idx, 1)
-		},
-
-		limpiarSeleccion() {
-			this.operadorSeleccionado = null
-			this.recetasSeleccionadas = []
-		},
-
-		mostrarMensaje(tipo, texto, duracion = 4000) {
+		/* ─── Utilidades ─────────────────────────── */
+		mostrarMensaje(tipo, texto, duracion = 5000) {
 			this.mensaje = { tipo, texto }
 			if (duracion > 0) setTimeout(() => { this.mensaje = { tipo: null, texto: '' } }, duracion)
 		},
 
-		async asignarPlanificacion() {
-			if (!this.operadorSeleccionado) {
-				this.mostrarMensaje('error', 'Selecciona un operador primero.')
+		mostrarMensajeInline(tipo, texto, duracion = 5000) {
+			this.mensajeInline = { tipo, texto }
+			if (duracion > 0) setTimeout(() => { this.mensajeInline = { tipo: null, texto: '' } }, duracion)
+		},
+
+		/* ─── Distribución automática ─────────────── */
+		async distribuirAutomaticamente() {
+			this.cargandoAuto = true
+			this.asignaciones = []
+			this.gruposRecetaBackup = []
+			this.categoriasRequeridas = []
+			this.mapeoSeleccionado = null
+
+			try {
+				// 1. Obtener los pedidos pendientes agrupados puramente por categoría de flor
+				const categorias = await PlanificacionClient.obtenerPedidosAgrupadosPorCategoria(
+					this.fechaSeleccionada
+				)
+
+				if (!categorias.length) {
+					this.mostrarMensaje('error', `📭 No hay pedidos pendientes para el ${this.fechaSeleccionada}.`)
+					this.cargandoAuto = false
+					return
+				}
+
+				this.categoriasRequeridas = categorias
+				// Abrir modal de mapeo interactivo de recetas
+				this.mostrarMapeoWizard = true
+
+			} catch (err) {
+				console.error('Error al iniciar distribución:', err)
+				this.mostrarMensaje('error', '❌ Error al obtener pedidos. Intenta de nuevo.')
+				this.cargandoAuto = false
+			}
+		},
+
+		/* ─── Confirmar Mapeo y Ejecutar Planificación ─── */
+		async confirmarMapeoYPlanificar(mapeo) {
+			this.mapeoSeleccionado = mapeo
+			this.mostrarMapeoWizard = false
+
+			try {
+				// 1. Reconstruir los grupos de receta y distribuir pedidos basándonos en la elección del supervisor
+				const gruposReceta = []
+				for (const cat of this.categoriasRequeridas) {
+					const mappings = mapeo[cat.categoria] || []
+					const targetRecipes = mappings.map(m => {
+						const recetaObj = this.todasLasRecetas.find(r => r.id === m.recetaId)
+						return {
+							recetaId: m.recetaId,
+							nombre: recetaObj ? recetaObj.nombre : `Receta ${cat.categoria}`,
+							categoria: cat.categoria,
+							capacity: parseInt(m.stems) || 0,
+							pedidos: []
+						}
+					})
+
+					// Algoritmo FIFO para asignar pedidos individuales de la categoría a las recetas físicas
+					let recipeIdx = 0
+					for (const p of cat.pedidos) {
+						let remainingStems = p.stems
+						while (remainingStems > 0 && recipeIdx < targetRecipes.length) {
+							const currentRecipe = targetRecipes[recipeIdx]
+							const allocatedStems = Math.min(remainingStems, currentRecipe.capacity)
+
+							if (allocatedStems > 0) {
+								currentRecipe.pedidos.push({
+									pedidoId: p.pedidoId,
+									cliente: p.cliente,
+									categoria: p.categoria,
+									stems: allocatedStems
+								})
+								currentRecipe.capacity -= allocatedStems
+								remainingStems -= allocatedStems
+							}
+
+							if (currentRecipe.capacity <= 0) {
+								recipeIdx++
+							}
+						}
+
+						if (remainingStems > 0) {
+							const lastRecipe = targetRecipes[targetRecipes.length - 1] || targetRecipes[0]
+							if (lastRecipe) {
+								lastRecipe.pedidos.push({
+									pedidoId: p.pedidoId,
+									cliente: p.cliente,
+									categoria: p.categoria,
+									stems: remainingStems
+								})
+							}
+						}
+					}
+
+					// Restablecer el totalStems e ingresarlo en la lista final para Greedy
+					mappings.forEach((m, i) => {
+						if (targetRecipes[i]) {
+							targetRecipes[i].totalStems = parseInt(m.stems) || 0
+							gruposReceta.push(targetRecipes[i])
+						}
+					})
+				}
+
+				this.gruposRecetaBackup = gruposReceta
+
+				// 2. Obtener operadores disponibles
+				const todosUsuarios = await UsuarioClient.obtenerUsuarios()
+				const operadores = todosUsuarios.filter(u => String(u.rol).toLowerCase() === 'operador')
+
+				if (!operadores.length) {
+					this.mostrarMensaje('error', '👥 No hay operadores disponibles.')
+					this.cargandoAuto = false
+					return
+				}
+
+				// 3. Algoritmo Greedy Least-Loaded
+				const dist = PlanificacionClient.distribuirEquitativamente(operadores, gruposReceta)
+
+				// 4. Construir asignaciones editables
+				this.asignaciones = dist.map(d => {
+					const asigObj = {
+						operador: d.operador,
+						recetas: d.recetas.map(r => ({
+							recetaId: r.recetaId,
+							nombre: r.nombre,
+							categoria: gruposReceta.find(g => g.recetaId === r.recetaId)?.categoria || '',
+							cantidad: r.cantidad
+						})),
+						pedidosAsignados: [],
+						stemsTotal: d.stemsTotal
+					}
+					return asigObj
+				})
+
+				// Resolver pedidos asignados a cada operador inicialmente
+				for (let i = 0; i < this.asignaciones.length; i++) {
+					this.recalcularPedidosYStems(i)
+				}
+
+				this.mostrarMensaje(
+					'exito',
+					`✓ ${gruposReceta.length} recetas de producción distribuidas entre ${dist.length} operadores según la carga de stems.`,
+					7000
+				)
+
+			} catch (err) {
+				console.error('Error al distribuir:', err)
+				this.mostrarMensaje('error', '❌ Error al distribuir carga entre operadores.')
+			} finally {
+				this.cargandoAuto = false
+			}
+		},
+
+		/* ─── Edición por operador ──────────────── */
+		quitarReceta({ idx, ri }) {
+			const asig = this.asignaciones[idx]
+			if (!asig) return
+			asig.recetas.splice(ri, 1)
+			this.recalcularPedidosYStems(idx)
+		},
+
+		agregarReceta({ idx, recetaId }) {
+			const receta = this.todasLasRecetas.find(r => r.id === recetaId)
+			if (!receta) return
+
+			const asig = this.asignaciones[idx]
+			if (!asig || asig.recetas.some(r => r.recetaId === recetaId)) {
 				return
 			}
-			if (!this.recetasSeleccionadas.length) {
-				this.mostrarMensaje('error', 'Selecciona al menos una receta.')
+
+			asig.recetas.push({
+				recetaId: receta.id,
+				nombre: receta.nombre,
+				categoria: receta.categoria || '',
+				cantidad: 1
+			})
+			this.recalcularPedidosYStems(idx)
+		},
+
+		recalcularStems(idx) {
+			this.recalcularPedidosYStems(idx)
+		},
+
+		recalcularPedidosYStems(idx) {
+			const asig = this.asignaciones[idx]
+			if (!asig) return
+
+			// Recalcular stems
+			asig.stemsTotal = asig.recetas.reduce((acc, r) => acc + (parseInt(r.cantidad) || 0), 0)
+
+			// Recalcular pedidos atendidos
+			const pedidosMapa = new Map()
+			asig.recetas.forEach(r => {
+				const grupo = this.gruposRecetaBackup.find(g => g.recetaId === r.recetaId)
+				if (grupo && grupo.pedidos) {
+					grupo.pedidos.forEach(p => {
+						const key = `${p.pedidoId}-${p.categoria}`
+						if (pedidosMapa.has(key)) {
+							pedidosMapa.get(key).stems += p.stems
+						} else {
+							pedidosMapa.set(key, {
+								pedidoId: p.pedidoId,
+								cliente: p.cliente,
+								categoria: p.categoria || '',
+								stems: p.stems
+							})
+						}
+					})
+				}
+			})
+			asig.pedidosAsignados = Array.from(pedidosMapa.values())
+		},
+
+		/* ─── Limpiar ───────────────────────────── */
+		limpiarTodo() {
+			this.asignaciones = []
+			this.mensaje = { tipo: null, texto: '' }
+			this.mensajeInline = { tipo: null, texto: '' }
+			this.gruposRecetaBackup = []
+			this.categoriasRequeridas = []
+			this.mapeoSeleccionado = null
+			this.mostrarMapeoWizard = false
+		},
+
+		/* ─── Guardar todo ──────────────────────── */
+		async guardarTodas() {
+			const validas = this.asignaciones.filter(a => a.recetas.length > 0)
+			if (!validas.length) {
+				this.mostrarMensajeInline('error', 'No hay recetas asignadas para guardar.')
 				return
 			}
 
 			this.guardando = true
 			try {
-				const hoy = new Date().toISOString().slice(0, 10)
-				await PlanificacionClient.crearPlanificacion({
-					operadorId: this.operadorSeleccionado.id,
-					operadorNombre: this.operadorSeleccionado.nombre,
-					fecha: hoy,
-					recetas: this.recetasSeleccionadas.map(r => ({
-						recetaId: r.id,
-						nombre: r.nombre,
-						cantidad: r.cantidad
-					}))
-				})
-				this.mostrarMensaje('exito', `✓ Planificación asignada a ${this.operadorSeleccionado.nombre}`)
-				this.limpiarSeleccion()
-			} catch (e) {
-				this.mostrarMensaje('error', '❌ No se pudo guardar la planificación.')
+				const resultado = await PlanificacionClient.crearPlanificacionesMasivas(
+					validas.map(a => ({
+						operador: a.operador,
+						recetas: a.recetas.map(r => ({
+							recetaId: r.recetaId,
+							nombre: r.nombre,
+							cantidad: parseInt(r.cantidad) || 1
+						})),
+						stemsTotal: a.stemsTotal
+					})),
+					this.fechaSeleccionada,
+					this.mapeoSeleccionado
+				)
+
+				if (resultado.fallidos.length === 0) {
+					this.mostrarMensaje(
+						'exito',
+						`✓ ${resultado.exitosos} planificación${resultado.exitosos !== 1 ? 'es' : ''} guardada${resultado.exitosos !== 1 ? 's' : ''} correctamente.`
+					)
+					this.asignaciones = []
+					this.gruposRecetaBackup = []
+					this.categoriasRequeridas = []
+					this.mapeoSeleccionado = null
+				} else {
+					const nombres = resultado.fallidos.map(f => `${f.nombre}: ${f.motivo}`).join(' · ')
+					this.mostrarMensajeInline(
+						'error',
+						`✓ ${resultado.exitosos} guardadas. ⚠️ No guardadas: ${nombres}`,
+						0
+					)
+				}
+
+			} catch (err) {
+				console.error('Error al guardar planificaciones:', err)
+				this.mostrarMensajeInline('error', '❌ Error al guardar. Intenta de nuevo.')
 			} finally {
 				this.guardando = false
 			}
-		}
-	},
-
-	computed: {
-		recetasSeleccionadasIds() {
-			return this.recetasSeleccionadas.map(r => r.id)
 		}
 	}
 }
@@ -176,182 +421,35 @@ export default {
 	max-width: 1400px;
 	margin: 0 auto;
 	display: grid;
-	gap: 20px;
+	gap: 24px;
 }
 
-/* ── Header ─────────────────────────────── */
-.page-header {
-	display: flex;
-	justify-content: space-between;
-	gap: 16px;
-	align-items: center;
-}
-
-.page-title {
-	margin: 0;
-}
-
-.page-subtitle {
-	margin: 6px 0 0;
-	color: var(--text-light);
-}
-
-.btn-limpiar {
-	border: none;
-	border-radius: 12px;
-	padding: 12px 16px;
-	background: #0f172a;
-	color: white;
-	font-weight: 700;
-	cursor: pointer;
-	transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.btn-limpiar:hover {
-	opacity: 0.88;
-	transform: translateY(-1px);
-}
-
-/* ── Summary card ────────────────────────── */
-.summary-card {
+/* ── Estado Vacío / Cargas ──────────────── */
+.summary-card-vacio {
 	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 20px 24px;
 	padding: 24px;
 	border-radius: 20px;
 	background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 	box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-	align-items: start;
+	justify-content: center;
+	align-items: center;
 }
 
-.summary-card > div {
-	display: grid;
-	gap: 6px;
-}
-
-.summary-label {
+.vacio-texto {
+	margin: 0;
 	color: var(--text-light);
-	font-size: 11px;
-	text-transform: uppercase;
-	letter-spacing: 0.06em;
-	font-weight: 700;
-}
-
-.summary-none {
-	color: var(--text-light);
-	font-style: italic;
-	font-size: 14px;
-}
-
-/* ── Tabla de recetas seleccionadas ─────── */
-.summary-recetas-col {
-	display: grid;
-	gap: 6px;
-}
-
-.recetas-tabla {
-	width: 100%;
-	border-collapse: collapse;
-	font-size: 14px;
-}
-
-.recetas-tabla thead th {
-	text-align: left;
-	color: var(--text-light);
-	font-size: 11px;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-	font-weight: 700;
-	padding: 4px 8px 8px;
-	border-bottom: 1px solid var(--border);
-}
-
-.recetas-tabla tbody tr + tr td {
-	border-top: 1px solid var(--border-light);
-}
-
-.recetas-tabla td {
-	padding: 8px;
-	vertical-align: middle;
-}
-
-.receta-nombre-cell {
-	font-weight: 700;
-	color: var(--text-h);
-}
-
-.cantidad-cell {
-	width: 100px;
-}
-
-.cantidad-input {
-	width: 76px;
-	padding: 6px 10px;
-	border: 1px solid var(--border);
-	border-radius: 8px;
-	font-size: 14px;
 	text-align: center;
-	color: var(--text-h);
-	background: var(--bg-secondary);
-	outline: none;
-	transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.cantidad-input:focus {
-	border-color: var(--primary);
-	box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
-	background: var(--bg);
-}
-
-.btn-quitar {
-	border: none;
-	background: none;
-	color: var(--text-light);
-	cursor: pointer;
-	font-size: 15px;
-	min-width: 44px;
-	min-height: 44px;
-	padding: 8px 10px;
-	border-radius: 6px;
-	transition: color 0.15s, background 0.15s;
-}
-
-.btn-quitar:hover {
-	color: #dc2626;
-	background: #fee2e2;
-}
-
-.btn-asignar {
-	align-self: end;
-	padding: 11px 22px;
-	border: none;
-	border-radius: 12px;
-	background: var(--primary);
-	color: white;
-	font-weight: 700;
 	font-size: 14px;
-	cursor: pointer;
-	transition: opacity 0.2s ease, transform 0.2s ease;
+	padding: 16px 0;
 }
 
-.btn-asignar:hover:not(:disabled) {
-	opacity: 0.9;
-	transform: translateY(-1px);
-}
-
-.btn-asignar:disabled {
-	opacity: 0.65;
-	cursor: progress;
-}
-
-/* Feedback de asignación */
+/* ── Feedback ───────────────────────── */
 .msg-feedback {
 	margin: 0;
 	font-size: 13px;
 	font-weight: 600;
 	padding: 8px 12px;
 	border-radius: 8px;
-	grid-column: 1 / -1;
 }
 
 .msg-exito {
@@ -364,6 +462,11 @@ export default {
 	color: #dc2626;
 }
 
+.msg-info {
+	background: #e0f2fe;
+	color: #0369a1;
+}
+
 .fade-msg-enter-active,
 .fade-msg-leave-active {
 	transition: opacity 0.3s ease;
@@ -374,7 +477,7 @@ export default {
 	opacity: 0;
 }
 
-/* ── Grid de paneles ─────────────────────── */
+/* ── Grid de Tarjetas ─────────────────── */
 .page-grid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -382,10 +485,9 @@ export default {
 	align-items: start;
 }
 
-/* ── Responsive ──────────────────────────── */
+/* ── Responsive ──────────────────────── */
 @media (max-width: 1100px) {
-	.page-grid,
-	.summary-card {
+	.page-grid {
 		grid-template-columns: 1fr;
 	}
 }
@@ -393,16 +495,6 @@ export default {
 @media (max-width: 768px) {
 	.container {
 		padding: 12px;
-	}
-
-	.page-header {
-		flex-direction: column;
-		align-items: stretch;
-	}
-
-	.btn-limpiar,
-	.btn-asignar {
-		width: 100%;
 	}
 }
 </style>

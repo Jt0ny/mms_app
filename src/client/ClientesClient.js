@@ -1,46 +1,176 @@
-import axios from "axios";
-
-const API_URL = `${import.meta.env.VITE_API_URL}/clientes`;
+import { supabase } from '../supabase'
 
 export default {
-
+  // Obtiene la lista completa de clientes y resuelve la relación recursiva del broker
   async obtenerClientes() {
     try {
-      const response = await axios.get(API_URL);
-      return response.data;
+      // Hacemos una consulta relacional (unir tabla clientes consigo misma)
+      const { data, error } = await supabase
+        .from('clientes')
+        .select(`
+          id,
+          nombre,
+          tipo,
+          cliente_facturacion_id,
+          email,
+          telefono,
+          direccion,
+          notas,
+          creado_en,
+          parent:cliente_facturacion_id (
+            nombre
+          )
+        `)
+        .order('nombre', { ascending: true })
+
+      if (error) throw error
+
+      // Mapeamos el resultado para mantener la compatibilidad con el frontend
+      return data.map(item => ({
+        id: item.id,
+        nombre: item.nombre,
+        tipo: item.tipo,
+        cliente_facturacion_id: item.cliente_facturacion_id,
+        // Asignamos el nombre del broker para que las vistas de Vue lo muestren sin cambios
+        clienteFacturacionAsociado: item.parent ? item.parent.nombre : '',
+        email: item.email || '',
+        telefono: item.telefono || '',
+        direccion: item.direccion || '',
+        notas: item.notas || '',
+        creado_en: item.creado_en
+      }))
     } catch (error) {
-      console.error("Error al obtener clientes:", error);
-      throw error;
+      console.error("Error al obtener clientes desde Supabase:", error)
+      throw error
     }
   },
 
-  async agregarCliente(data) {
+  // Agrega un nuevo cliente, resolviendo el UUID del broker por su nombre
+  async agregarCliente(cliente) {
     try {
-      const response = await axios.post(API_URL, data);
-      return response.data;
+      let parentId = null
+
+      // Si viene un nombre de broker asociado, buscamos su UUID
+      if (cliente.clienteFacturacionAsociado) {
+        const { data: broker, error: brokerErr } = await supabase
+          .from('clientes')
+          .select('id')
+          .eq('nombre', cliente.clienteFacturacionAsociado.trim())
+          .maybeSingle()
+
+        if (!brokerErr && broker) {
+          parentId = broker.id
+        }
+      }
+
+      const { data, error } = await supabase
+        .from('clientes')
+        .insert([{
+          nombre: cliente.nombre.trim(),
+          tipo: cliente.tipo,
+          cliente_facturacion_id: parentId,
+          email: cliente.email || null,
+          telefono: cliente.telefono || null,
+          direccion: cliente.direccion || null,
+          notas: cliente.notas || null
+        }])
+        .select()
+
+      if (error) throw error
+      return data[0]
     } catch (error) {
-      console.error("Error al guardar cliente:", error);
-      throw error;
+      console.error("Error al agregar cliente en Supabase:", error)
+      throw error
     }
   },
 
-  async actualizarCliente(id, data) {
+  // Actualiza los datos de un cliente
+  async actualizarCliente(id, cliente) {
+    if (!id || id === 'undefined') {
+      console.warn("Intento de actualizar cliente con ID inválido:", id)
+      return null
+    }
     try {
-      const response = await axios.put(`${API_URL}/${id}`, data);
-      return response.data;
+      let parentId = null
+
+      if (cliente.clienteFacturacionAsociado) {
+        const { data: broker, error: brokerErr } = await supabase
+          .from('clientes')
+          .select('id')
+          .eq('nombre', cliente.clienteFacturacionAsociado.trim())
+          .maybeSingle()
+
+        if (!brokerErr && broker) {
+          parentId = broker.id
+        }
+      }
+
+      const { data, error } = await supabase
+        .from('clientes')
+        .update({
+          nombre: cliente.nombre.trim(),
+          tipo: cliente.tipo,
+          cliente_facturacion_id: parentId,
+          email: cliente.email || null,
+          telefono: cliente.telefono || null,
+          direccion: cliente.direccion || null,
+          notas: cliente.notas || null
+        })
+        .eq('id', id)
+        .select()
+
+      if (error) throw error
+      return data[0]
     } catch (error) {
-      console.error("Error al actualizar cliente:", error);
-      throw error;
+      console.error("Error al actualizar cliente en Supabase:", error)
+      throw error
     }
   },
 
+  // Elimina un cliente por su UUID
   async eliminarCliente(id) {
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      const { error } = await supabase
+        .from('clientes')
+        .delete()
+        .eq('id', id)
+
+      if (error) throw error
     } catch (error) {
-      console.error("Error al eliminar cliente:", error);
-      throw error;
+      console.error("Error al eliminar cliente en Supabase:", error)
+      throw error
+    }
+  },
+
+  // Inserta múltiples clientes de golpe en Supabase
+  async agregarClientesMasivos(payload) {
+    try {
+      const { data, error } = await supabase
+        .from('clientes')
+        .insert(payload)
+        .select()
+
+      if (error) throw error
+      return data
+    } catch (error) {
+      console.error("Error al agregar clientes masivos en Supabase:", error)
+      throw error
+    }
+  },
+
+  // Actualiza múltiples clientes usando upsert en Supabase
+  async upsertClientesMasivos(payload) {
+    try {
+      const { data, error } = await supabase
+        .from('clientes')
+        .upsert(payload)
+        .select()
+
+      if (error) throw error
+      return data
+    } catch (error) {
+      console.error("Error al hacer upsert masivo de clientes en Supabase:", error)
+      throw error
     }
   }
-};
-
+}

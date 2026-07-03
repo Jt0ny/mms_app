@@ -11,6 +11,7 @@ import PlanificacionPage from '../pages/PlanificacionPage.vue'
 import UsuariosPage from '../pages/UsuariosPage.vue'
 import MermasPage from '../pages/MermasPage.vue'
 import ClientesPage from '../pages/ClientesPage.vue'
+import DashboardPage from '../pages/DashboardPage.vue'
 
 
 
@@ -58,6 +59,12 @@ const routes = [
         path:'materiales',
         name:'materiales',
         component: MaterialesPage,
+        meta: { roles: ['supervisor'] }
+      },
+      {
+        path: 'dashboard',
+        name: 'dashboard',
+        component: DashboardPage,
         meta: { roles: ['supervisor'] }
       },
       {

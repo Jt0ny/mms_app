@@ -4,7 +4,13 @@
       <h2>Registrar Merma</h2>
     </div>
 
+    <!-- Alerta informativa del estado de filtrado por planificacion -->
+    <Alertas v-if="filtroInfo" :mensaje="filtroInfo" style="margin-bottom: 16px;" />
+
     <form @submit.prevent="enviarFormulario" class="merma-form">
+      <!-- Operador Responsable -->
+      <MermaOperadorSelector v-model="form.operadorId" :operadores="operadoresLista" />
+
       <!-- Fecha -->
       <div class="form-group">
         <label class="form-label" for="fecha-merma">Fecha de Registro</label>
@@ -54,12 +60,16 @@
 <script>
 import MermaTipoSelector from './MermaTipoSelector.vue'
 import MermaMotivoSelector from './MermaMotivoSelector.vue'
+import Alertas from '../Alertas.vue'
+import MermaOperadorSelector from './MermaOperadorSelector.vue'
 
 export default {
   name: 'MermaForm',
   components: {
     MermaTipoSelector,
-    MermaMotivoSelector
+    MermaMotivoSelector,
+    Alertas,
+    MermaOperadorSelector
   },
   props: {
     materiaPrimaLista: {
@@ -74,6 +84,14 @@ export default {
       type: Array,
       default: () => []
     },
+    operadoresLista: {
+      type: Array,
+      default: () => []
+    },
+    filtroInfo: {
+      type: Object,
+      default: null
+    },
     cargandoRecursos: {
       type: Boolean,
       default: false
@@ -83,10 +101,11 @@ export default {
       default: false
     }
   },
-  emits: ['guardar'],
+  emits: ['guardar', 'cambio-filtro'],
   data() {
     return {
       form: {
+        operadorId: '',
         fecha: this.obtenerFechaHoy(),
         tipo: 'materia_prima',
         referenciaId: '',
@@ -143,6 +162,12 @@ export default {
       if (match) {
         this.form.nombre = match.nombre
       }
+    },
+    'form.operadorId'(newOpId) {
+      this.$emit('cambio-filtro', { operadorId: newOpId, fecha: this.form.fecha })
+    },
+    'form.fecha'(newFecha) {
+      this.$emit('cambio-filtro', { operadorId: this.form.operadorId, fecha: newFecha })
     }
   },
   methods: {
@@ -152,10 +177,14 @@ export default {
       return fechaLocal.toISOString().slice(0, 10)
     },
     enviarFormulario() {
-      if (!this.form.referenciaId || !this.form.cantidad || this.form.cantidad <= 0 || !this.form.motivo) {
+      if (!this.form.operadorId || !this.form.referenciaId || !this.form.cantidad || this.form.cantidad <= 0 || !this.form.motivo) {
         return
       }
       const motivoFinal = this.form.motivo === 'Otro' ? this.form.otroMotivo : this.form.motivo
+      
+      // Encontrar el nombre del operador
+      const opObj = this.operadoresLista.find(o => o.id === this.form.operadorId)
+      
       const payload = {
         fecha: this.form.fecha,
         tipo: this.form.tipo,
@@ -163,6 +192,8 @@ export default {
         nombre: this.form.nombre,
         cantidad: Math.trunc(this.form.cantidad),
         motivo: motivoFinal,
+        operadorId: this.form.operadorId,
+        operadorNombre: opObj ? opObj.nombre : 'operador',
         creado_en: new Date().toISOString()
       }
       this.$emit('guardar', payload)
@@ -174,7 +205,7 @@ export default {
       this.form.cantidad = null
       this.form.motivo = ''
       this.form.otroMotivo = ''
-      this.form.fecha = this.obtenerFechaHoy()
+      // Conservamos el operador y la fecha para facilitar cargas consecutivas
     }
   }
 }

@@ -20,7 +20,7 @@
 
                     <!-- INVENTARIO -->
                     <PedidoInventarioActual :pedidos="pedidosActual" :cargando="cargandoPedidos"
-                        @actualizar="cargarPedidos" />
+                        @actualizar="cargarPedidos" @sincronizar="sincronizarAPI" />
 
                 </div>
 
@@ -91,12 +91,27 @@ export default {
         async cargarPedidos() {
             this.cargandoPedidos = true
             try {
+                // Cargar inmediatamente los pedidos locales de Supabase
                 const datos = await PedidoClient.obtenerPedidos()
                 this.pedidosActual = datos ?? []
             } catch (error) {
                 console.error(error)
                 this.mostrarMensaje('error', '❌ Error al cargar pedidos', 0)
             } finally {
+                this.cargandoPedidos = false
+            }
+        },
+
+        async sincronizarAPI() {
+            this.cargandoPedidos = true
+            try {
+                this.mostrarMensaje('info', '⚡ Sincronizando pedidos con la API externa...', 0)
+                await PedidoClient.sincronizarConSupabase()
+                this.mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
+                await this.cargarPedidos()
+            } catch (error) {
+                console.error(error)
+                this.mostrarMensaje('error', '❌ Error al sincronizar con la API externa')
                 this.cargandoPedidos = false
             }
         },
@@ -198,6 +213,8 @@ export default {
                     continue
                 }
 
+                const fechaHoy = new Date().toISOString().split('T')[0]
+
                 columnasStems.forEach(map => {
                     let stems = parseInt(String(fila[map.indice] || '0').replace(/\s+/g, ''), 10)
 
@@ -206,7 +223,7 @@ export default {
                     }
 
                     if (stems > 0) {
-                        resultados.push({ cliente_facturacion: billCustomer, cliente_envio: shipCustomer, categoria: map.categoria, stems })
+                        resultados.push({ cliente_facturacion: billCustomer, cliente_envio: shipCustomer, categoria: map.categoria, stems, fecha_ingreso: fechaHoy })
                     }
                 })
             }
@@ -251,7 +268,8 @@ export default {
                 const clientesExistentes = await ClientesClient.obtenerClientes()
                 const mapaClientes = new Map(clientesExistentes.map(c => [c.nombre.toLowerCase().trim(), c]))
                 
-                const clientesParaAgregar = []
+                const clientesParaAgregarFacturacion = []
+                const clientesParaAgregarEnvio = []
                 const clientesParaActualizar = []
 
                 for (const order of datosPedidos) {
@@ -268,11 +286,10 @@ export default {
                                 email: '',
                                 telefono: '',
                                 direccion: '',
-                                notas: '',
-                                creado_en: new Date().toISOString()
+                                notas: ''
                             }
                             mapaClientes.set(billKey, nuevo)
-                            clientesParaAgregar.push(nuevo)
+                            clientesParaAgregarFacturacion.push(nuevo)
                         } else {
                             const existente = mapaClientes.get(billKey)
                             if (existente.tipo === 'Envío') {
@@ -294,11 +311,10 @@ export default {
                                 email: '',
                                 telefono: '',
                                 direccion: '',
-                                notas: '',
-                                creado_en: new Date().toISOString()
+                                notas: ''
                             }
                             mapaClientes.set(shipKey, nuevo)
-                            clientesParaAgregar.push(nuevo)
+                            clientesParaAgregarEnvio.push(nuevo)
                         } else {
                             const existente = mapaClientes.get(shipKey)
                             let modificado = false
@@ -319,17 +335,72 @@ export default {
                     }
                 }
 
-                // Guardar nuevos clientes
-                for (const nuevo of clientesParaAgregar) {
-                    await ClientesClient.agregarCliente(nuevo)
+                // 2. Insertar primeros los de Facturación (para resolver sus IDs)
+                if (clientesParaAgregarFacturacion.length > 0) {
+                    const insertadosFact = await ClientesClient.agregarClientesMasivos(
+                        clientesParaAgregarFacturacion.map(c => ({
+                            nombre: c.nombre.trim(),
+                            tipo: c.tipo,
+                            cliente_facturacion_id: null,
+                            email: null,
+                            telefono: null,
+                            direccion: null,
+                            notes: null // En supabase el campo notas se mapea de forma predeterminada
+                        }))
+                    )
+                    insertadosFact.forEach(c => {
+                        mapaClientes.set(c.nombre.toLowerCase().trim(), c)
+                    })
                 }
 
-                // Actualizar clientes modificados
-                for (const modificado of clientesParaActualizar) {
-                    await ClientesClient.actualizarCliente(modificado.id, modificado)
+                // 3. Insertar los de Envío resolviendo su parentId (cliente_facturacion_id) en memoria
+                if (clientesParaAgregarEnvio.length > 0) {
+                    const payloadEnvio = clientesParaAgregarEnvio.map(c => {
+                        let parentId = null
+                        if (c.clienteFacturacionAsociado) {
+                            const parentObj = mapaClientes.get(c.clienteFacturacionAsociado.toLowerCase().trim())
+                            if (parentObj && parentObj.id) {
+                                parentId = parentObj.id
+                            }
+                        }
+                        return {
+                            nombre: c.nombre.trim(),
+                            tipo: c.tipo,
+                            cliente_facturacion_id: parentId,
+                            email: null,
+                            telefono: null,
+                            direccion: null,
+                            notes: null
+                        }
+                    })
+                    await ClientesClient.agregarClientesMasivos(payloadEnvio)
                 }
 
-                console.log(`Sincronización automática de clientes completada. Creados: ${clientesParaAgregar.length}, Actualizados: ${clientesParaActualizar.length}`)
+                // 4. Actualizar clientes modificados de golpe usando bulk upsert
+                if (clientesParaActualizar.length > 0) {
+                    const payloadUpsert = clientesParaActualizar.map(c => {
+                        let parentId = c.cliente_facturacion_id || null
+                        if (c.clienteFacturacionAsociado) {
+                            const parentObj = mapaClientes.get(c.clienteFacturacionAsociado.toLowerCase().trim())
+                            if (parentObj && parentObj.id) {
+                                parentId = parentObj.id
+                            }
+                        }
+                        return {
+                            id: c.id,
+                            nombre: c.nombre.trim(),
+                            tipo: c.tipo,
+                            cliente_facturacion_id: parentId,
+                            email: c.email || null,
+                            telefono: c.telefono || null,
+                            direccion: c.direccion || null,
+                            notas: c.notas || null
+                        }
+                    })
+                    await ClientesClient.upsertClientesMasivos(payloadUpsert)
+                }
+
+                console.log(`Sincronización masiva de clientes completada. Creados: ${clientesParaAgregarFacturacion.length + clientesParaAgregarEnvio.length}, Actualizados: ${clientesParaActualizar.length}`)
             } catch (error) {
                 console.error("Error al sincronizar clientes de facturación/envío:", error)
             }

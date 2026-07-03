@@ -1,7 +1,8 @@
 -- ===========================================================================
--- ESQUEMA DE BASE DE DATOS DE ALTA NORMALIZACIÓN (CON UUIDs NATIVOS)
+-- ESQUEMA DE BASE DE DATOS DE ALTA NORMALIZACIÓN (CON UUIDs Y CLAVES DE TEXTO)
 -- SISTEMA MMS_APP (PostgreSQL / Supabase)
--- Optimizado para generación automática de identificadores en el servidor
+-- Optimizado para integración con APIs externas (puertos 8060, 8070, 8090)
+-- y consistencia de tipos en claves foráneas.
 -- ===========================================================================
 
 -- ---------------------------------------------------------------------------
@@ -39,9 +40,11 @@ CREATE TABLE clientes (
 
 -- ---------------------------------------------------------------------------
 -- 3. TABLA: materia_prima
+-- El ID es VARCHAR(50) para ser consistente con los identificadores que
+-- provienen de la API externa de producción en el puerto 8070.
 -- ---------------------------------------------------------------------------
 CREATE TABLE materia_prima (
-    id UUID NOT NULL DEFAULT gen_random_uuid(),
+    id VARCHAR(50) NOT NULL,
     variedad VARCHAR(120) NOT NULL,
     cantidad_total INT NOT NULL,
     fecha_ingreso DATE NOT NULL,
@@ -51,9 +54,11 @@ CREATE TABLE materia_prima (
 
 -- ---------------------------------------------------------------------------
 -- 4. TABLA: materiales
+-- El ID es VARCHAR(50) para soportar los identificadores provenientes de la
+-- API externa del puerto 8090.
 -- ---------------------------------------------------------------------------
 CREATE TABLE materiales (
-    id UUID NOT NULL DEFAULT gen_random_uuid(),
+    id VARCHAR(50) NOT NULL,
     nombre VARCHAR(120) NOT NULL,
     cantidad INT NOT NULL,
     descripcion VARCHAR(500) NULL,
@@ -63,6 +68,7 @@ CREATE TABLE materiales (
 
 -- ---------------------------------------------------------------------------
 -- 5. TABLA: recetas
+-- Utiliza UUIDs nativos auto-generados.
 -- ---------------------------------------------------------------------------
 CREATE TABLE recetas (
     id UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -79,7 +85,7 @@ CREATE TABLE recetas (
 -- ---------------------------------------------------------------------------
 CREATE TABLE receta_materiales (
     receta_id UUID NOT NULL,
-    material_id UUID NOT NULL,
+    material_id VARCHAR(50) NOT NULL,
     cantidad INT NOT NULL,
     disponible_snapshot INT NULL,
     CONSTRAINT pk_receta_materiales PRIMARY KEY (receta_id, material_id),
@@ -92,7 +98,7 @@ CREATE TABLE receta_materiales (
 -- ---------------------------------------------------------------------------
 CREATE TABLE receta_materia_prima (
     receta_id UUID NOT NULL,
-    materia_prima_id UUID NOT NULL,
+    materia_prima_id VARCHAR(50) NOT NULL,
     cantidad INT NOT NULL,
     disponible_snapshot INT NULL,
     CONSTRAINT pk_receta_materia_prima PRIMARY KEY (receta_id, materia_prima_id),
@@ -102,24 +108,28 @@ CREATE TABLE receta_materia_prima (
 
 -- ---------------------------------------------------------------------------
 -- 8. TABLA MAESTRO: pedidos
+-- El ID es VARCHAR(50) debido a que provienen de la API de ventas del puerto 8060.
+-- Contiene una referencia a usuarios (operador_id) para asociar el pedido.
 -- ---------------------------------------------------------------------------
 CREATE TABLE pedidos (
-    id UUID NOT NULL DEFAULT gen_random_uuid(),
+    id VARCHAR(50) NOT NULL,
     cliente_facturacion_id UUID NOT NULL, -- Relación N:1 con clientes (Broker)
     cliente_envio_id UUID NULL,           -- Relación N:1 con clientes (Destino)
     fecha_pedido DATE NOT NULL DEFAULT CURRENT_DATE,
     estado VARCHAR(50) NOT NULL DEFAULT 'Pendiente',
+    operador_id UUID NULL,                -- Relación N:1 con usuarios (Operador asignado)
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT pk_pedidos PRIMARY KEY (id),
     CONSTRAINT fk_pedidos_cliente_facturacion FOREIGN KEY (cliente_facturacion_id) REFERENCES clientes(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_pedidos_cliente_envio FOREIGN KEY (cliente_envio_id) REFERENCES clientes(id) ON DELETE RESTRICT
+    CONSTRAINT fk_pedidos_cliente_envio FOREIGN KEY (cliente_envio_id) REFERENCES clientes(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_pedidos_operador FOREIGN KEY (operador_id) REFERENCES usuarios(id) ON DELETE SET NULL
 );
 
 -- ---------------------------------------------------------------------------
 -- 9. TABLA DETALLE: pedido_detalles
 -- ---------------------------------------------------------------------------
 CREATE TABLE pedido_detalles (
-    pedido_id UUID NOT NULL,
+    pedido_id VARCHAR(50) NOT NULL,
     receta_id UUID NOT NULL,
     stems INT NOT NULL,
     cantidad INT NOT NULL DEFAULT 1,
@@ -135,8 +145,8 @@ CREATE TABLE mermas (
     id UUID NOT NULL DEFAULT gen_random_uuid(),
     fecha DATE NOT NULL,
     tipo VARCHAR(50) NOT NULL,            -- 'materia_prima', 'material', 'producto_terminado'
-    material_id UUID NULL,
-    materia_prima_id UUID NULL,
+    material_id VARCHAR(50) NULL,
+    materia_prima_id VARCHAR(50) NULL,
     receta_id UUID NULL,
     cantidad INT NOT NULL,
     motivo VARCHAR(255) NOT NULL,
@@ -162,8 +172,10 @@ CREATE TABLE producciones (
     id UUID NOT NULL DEFAULT gen_random_uuid(),
     fecha DATE NOT NULL,
     total INT NOT NULL,
+    operador_id UUID NULL,                -- Relación con usuarios (Operador que registra)
     creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT pk_producciones PRIMARY KEY (id)
+    CONSTRAINT pk_producciones PRIMARY KEY (id),
+    CONSTRAINT fk_producciones_operador FOREIGN KEY (operador_id) REFERENCES usuarios (id) ON DELETE SET NULL
 );
 
 -- ---------------------------------------------------------------------------
@@ -175,6 +187,24 @@ CREATE TABLE produccion_detalle (
     cantidad INT NOT NULL,
     CONSTRAINT pk_produccion_detalle PRIMARY KEY (produccion_id, categoria),
     CONSTRAINT fk_produccion_detalle_produccion FOREIGN KEY (produccion_id) REFERENCES producciones (id) ON DELETE CASCADE
+);
+
+-- ---------------------------------------------------------------------------
+-- 12b. TABLA: produccion_consumos (Consumo real descontado de materia prima y materiales)
+-- ---------------------------------------------------------------------------
+CREATE TABLE produccion_consumos (
+    id UUID NOT NULL DEFAULT gen_random_uuid(),
+    produccion_id UUID NOT NULL REFERENCES producciones(id) ON DELETE CASCADE,
+    tipo VARCHAR(50) NOT NULL CHECK (tipo IN ('materia_prima', 'material')),
+    materia_prima_id VARCHAR(50) REFERENCES materia_prima(id) ON DELETE SET NULL,
+    material_id VARCHAR(50) REFERENCES materiales(id) ON DELETE SET NULL,
+    cantidad_consumida INT NOT NULL,
+    creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_produccion_consumos PRIMARY KEY (id),
+    CONSTRAINT chk_consumos_coherencia CHECK (
+        (tipo = 'materia_prima' AND materia_prima_id IS NOT NULL AND material_id IS NULL) OR
+        (tipo = 'material' AND material_id IS NOT NULL AND materia_prima_id IS NULL)
+    )
 );
 
 -- ---------------------------------------------------------------------------

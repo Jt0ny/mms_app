@@ -176,6 +176,9 @@ export default {
         async guardarProduccion(payload) {
             this.guardando = true
             try {
+                // Vincular el operador actual que registra la producción
+                payload.operador_id = this.operadorId
+
                 if (payload.id) {
                     await ProduccionClient.editarProduccion(payload.id, payload)
                     this.mostrarMensaje('exito', '✓ Producción actualizada correctamente')

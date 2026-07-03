@@ -10,20 +10,16 @@
         <div class="main-layout">
             <UsuarioForm @guardado="cargarUsuarios" />
 
-            <UsuarioTablaActual
-                :usuarios="usuarios"
-                :cargando="cargandoUsuarios"
-                @actualizar="cargarUsuarios"
-                @eliminar="eliminarUsuario"
-            />
+            <UsuarioTablaActual :usuarios="usuarios" :cargando="cargandoUsuarios" @actualizar="cargarUsuarios"
+                @eliminar="eliminarUsuario" />
         </div>
     </div>
 </template>
 <script>
 import Alertas from '../components/Alertas.vue'
 import UsuarioClient from '../client/UsuarioClient.js'
-import UsuarioForm from '../components/Usuarios/UsuarioForm.vue'
-import UsuarioTablaActual from '../components/Usuarios/UsuarioTablaActual.vue'
+import UsuarioForm from '../components/usuarios/UsuarioForm.vue'
+import UsuarioTablaActual from '../components/usuarios/UsuarioTablaActual.vue'
 
 export default {
     components: {

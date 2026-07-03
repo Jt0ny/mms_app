@@ -69,13 +69,8 @@ export default {
             this.cargando = true
 
             try {
-                const usuarios = await UsuarioClient.obtenerUsuarios()
                 const contrasenaEncriptada = await this.generarSHA256(contrasenaIngresada)
-
-                const usuario = usuarios.find(
-                    (item) => item.nombre?.trim().toLowerCase() === nombreIngresado
-                        && item.contrasena === contrasenaEncriptada
-                )
+                const usuario = await UsuarioClient.login(nombreIngresado, contrasenaEncriptada)
 
                 if (!usuario) {
                     this.mostrarMensaje('error', 'Usuario o contraseña incorrectos.')

@@ -1,42 +1,68 @@
 <template>
     <div class="container materiales-page">
 
-        <h1 class="page-title">Carga de Materiales</h1>
+        <div class="content-wrap">
 
-        <!-- ALERTAS -->
-        <MaterialesAlerts :mensaje="mensaje" />
+            <!-- TÍTULO -->
+            <h1 class="page-title">Carga de Materiales</h1>
 
-        <div class="main-layout">
-            <!-- FORM -->
+            <!-- ALERTAS -->
+            <MaterialesAlerts :mensaje="mensaje" />
+
+            <!-- LAYOUT -->
+            <div class="main-layout" :class="{ 'with-preview': datosProcesados.length > 0 }">
+
+                <!-- PANEL IZQUIERDO -->
+                <div class="left-panel">
+
+                    <!-- UPLOAD -->
+                    <CargaArchivo nombreModulo="Materiales" :cargando="cargando"
+                        @archivo-seleccionado="procesarArchivo" />
+
+                    <!-- INVENTARIO -->
+                    <MaterialesInventarioActual :materiales="inventarioActual" :cargando="cargandoInventario"
+                        @actualizar="cargarInventario" @editar="editarMaterial" @eliminar="eliminarMaterial" @sincronizar="sincronizarAPI" />
+
+                </div>
+
+                <!-- PANEL DERECHO: Preview Excel -->
+                <MaterialesPreview :datosProcesados="datosProcesados" :cargando="cargando"
+                    @cancelar="limpiarDatos" @confirmar="confirmarYSubir" />
+
+            </div>
+
+            <!-- FORMULARIO MANUAL (debajo del layout principal) -->
             <MaterialForm :material="nuevoMaterial" :modoEdicion="modoEdicion" :cargando="cargando"
                 @guardar="guardarMaterial" @actualizar="actualizarMaterial" @cancelar="resetForm" />
-            <!-- TABLA -->
-            <MaterialesInventarioActual :materiales="inventarioActual" :cargando="cargandoInventario"
-                @actualizar="cargarInventario" @editar="editarMaterial" @eliminar="eliminarMaterial" />
+
         </div>
 
     </div>
 </template>
 
 <script>
+import * as XLSX from 'xlsx'
 import MaterialClient from '../client/MaterialClient.js'
 
+import CargaArchivo from '../components/CargaArchivo.vue'
 import MaterialesAlerts from '../components/Alertas.vue'
 import MaterialesInventarioActual from '../components/materiales/MaterialesInventarioActual.vue'
+import MaterialesPreview from '../components/materiales/MaterialesPreview.vue'
 import MaterialForm from '../components/materiales/MaterialForm.vue'
 
 export default {
 
     components: {
         MaterialesInventarioActual,
+        MaterialesPreview,
         MaterialForm,
+        CargaArchivo,
         MaterialesAlerts
     },
 
     data() {
-
         return {
-
+            datosProcesados: [],
             inventarioActual: [],
             cargando: false,
             cargandoInventario: false,
@@ -72,18 +98,103 @@ export default {
         async cargarInventario() {
             this.cargandoInventario = true
             try {
-                const data = await MaterialClient.obtenerMateriales()
-                this.inventarioActual = data ?? []
+                // Cargar los datos locales de Supabase (sin disparar sincronización externa automática)
+                const datos = await MaterialClient.obtenerMateriales()
+                this.inventarioActual = datos ?? []
             } catch (error) {
                 console.error(error)
-                this.mostrarMensaje('error', '❌ Error al cargar materiales'
-                )
+                this.mostrarMensaje('error', '❌ Error al cargar materiales', 0)
             } finally {
                 this.cargandoInventario = false
             }
         },
 
-        /* ================= GUARDAR ================= */
+        async sincronizarAPI() {
+            this.cargandoInventario = true
+            try {
+                this.mostrarMensaje('info', '⚡ Sincronizando con la API externa...', 0)
+                await MaterialClient.sincronizarConSupabase(true) // forceOverwrite = true
+                this.mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
+                await this.cargarInventario()
+            } catch (error) {
+                console.error(error)
+                this.mostrarMensaje('error', '❌ Error al sincronizar con la API externa')
+                this.cargandoInventario = false
+            }
+        },
+
+        /* ================= EXCEL ================= */
+        async procesarArchivo(file) {
+            try {
+                const data = await file.arrayBuffer()
+                const workbook = XLSX.read(data, { type: 'array' })
+                const sheet = workbook.Sheets[workbook.SheetNames[0]]
+                const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: '' })
+
+                if (!jsonData.length) {
+                    this.mostrarMensaje('error', '❌ Archivo vacío')
+                    return
+                }
+
+                this.datosProcesados = this.procesarDatos(jsonData)
+
+                if (!this.datosProcesados.length) {
+                    this.mostrarMensaje('error', '❌ No se encontraron datos válidos')
+                    return
+                }
+
+                this.mostrarMensaje('exito', `✓ ${this.datosProcesados.length} materiales cargados`)
+
+            } catch (error) {
+                console.error(error)
+                this.mostrarMensaje('error', '❌ Error al leer archivo Excel')
+            }
+        },
+
+        /* ================= PROCESAMIENTO EXCEL ================= */
+        procesarDatos(data) {
+            return data
+                .map(fila => {
+                    // Normalizar claves del Excel (quitar espacios, minúsculas)
+                    const norm = {}
+                    Object.keys(fila).forEach(key => {
+                        norm[key.toLowerCase().replace(/\s+/g, '')] = fila[key]
+                    })
+
+                    const nombre = String(norm.nombre || norm.name || norm.material || '').trim()
+                    const cantidad = parseInt(norm.cantidad || norm.quantity || norm.qty || 0) || 0
+                    const descripcion = String(norm.descripcion || norm.description || norm.desc || '').trim() || null
+
+                    if (!nombre) return null
+
+                    return { nombre, cantidad, descripcion }
+                })
+                .filter(Boolean)
+        },
+
+        /* ================= LIMPIAR ================= */
+        limpiarDatos() {
+            this.datosProcesados = []
+            this.mensaje = { tipo: null, texto: '' }
+        },
+
+        /* ================= CONFIRMAR EXCEL ================= */
+        async confirmarYSubir() {
+            this.cargando = true
+            try {
+                await MaterialClient.cargarMateriales(this.datosProcesados)
+                this.mostrarMensaje('exito', `✓ ${this.datosProcesados.length} materiales guardados`)
+                this.datosProcesados = []
+                await this.cargarInventario()
+            } catch (error) {
+                console.error(error)
+                this.mostrarMensaje('error', '❌ Error al guardar materiales', 0)
+            } finally {
+                this.cargando = false
+            }
+        },
+
+        /* ================= GUARDAR MANUAL ================= */
         async guardarMaterial(material) {
             this.cargando = true
             try {
@@ -93,9 +204,7 @@ export default {
                 await this.cargarInventario()
             } catch (error) {
                 console.error(error)
-                this.mostrarMensaje('error', '❌ Error al guardar material'
-                )
-
+                this.mostrarMensaje('error', '❌ Error al guardar material')
             } finally {
                 this.cargando = false
             }
@@ -105,9 +214,7 @@ export default {
         editarMaterial(material) {
             this.modoEdicion = true
             this.idEditando = material.id
-            this.nuevoMaterial = {
-                ...material
-            }
+            this.nuevoMaterial = { ...material }
         },
 
         /* ================= ACTUALIZAR ================= */
@@ -115,8 +222,7 @@ export default {
             this.cargando = true
             try {
                 await MaterialClient.actualizarMaterial(this.idEditando, material)
-                this.mostrarMensaje('exito', '✓ Material actualizado'
-                )
+                this.mostrarMensaje('exito', '✓ Material actualizado')
                 this.resetForm()
                 await this.cargarInventario()
             } catch (error) {
@@ -155,18 +261,41 @@ export default {
 
 <style scoped>
 .container {
+    width: 100%;
+    min-height: 100%;
     padding: 24px;
+    background: var(--bg-secondary);
 }
 
-.page-title {
-    margin-bottom: 24px;
-}
-
-.main-layout {
+.content-wrap {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 24px;
 }
+
+.page-title {
+    margin: 0;
+}
+
+.main-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+.main-layout.with-preview {
+    grid-template-columns: minmax(220px, 360px) 1fr;
+}
+
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
 @media (max-width: 768px) {
 
     .main-layout,

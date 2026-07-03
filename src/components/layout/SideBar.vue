@@ -6,6 +6,11 @@
     </div>
 
     <nav class="menu">
+      <router-link v-if="esSupervisor" to="/app/dashboard" class="menu-item" active-class="active">
+        <span>📊</span>
+        <span v-if="!isCollapsed">Dashboard</span>
+      </router-link>
+
       <router-link v-if="esSupervisor" to="/app/pedidos" class="menu-item" active-class="active">
         <span>📦</span>
         <span v-if="!isCollapsed">Pedidos</span>
