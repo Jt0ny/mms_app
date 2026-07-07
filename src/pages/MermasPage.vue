@@ -69,23 +69,6 @@ export default {
       mensaje: { tipo: null, texto: '' }
     }
   },
-  computed: {
-    totalFloresMermadas() {
-      return this.mermas
-        .filter(m => m.tipo === 'materia_prima')
-        .reduce((sum, m) => sum + (Number(m.cantidad) || 0), 0)
-    },
-    totalMaterialesMermados() {
-      return this.mermas
-        .filter(m => m.tipo === 'material')
-        .reduce((sum, m) => sum + (Number(m.cantidad) || 0), 0)
-    },
-    totalProductosMermados() {
-      return this.mermas
-        .filter(m => m.tipo === 'producto_terminado')
-        .reduce((sum, m) => sum + (Number(m.cantidad) || 0), 0)
-    }
-  },
   mounted() {
     this.cargarDatos()
   },

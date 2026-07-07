@@ -44,7 +44,7 @@
                     </li>
                 </ul>
 
-                <p v-else class="empty - text">No hay materia prima seleccionada</p>
+                <p v-else class="empty-text">No hay materia prima seleccionada</p>
             </div>
         </div>
     </div>

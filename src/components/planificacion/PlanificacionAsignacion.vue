@@ -32,7 +32,7 @@
 
 <script>
 export default {
-	name: 'PlanificacionHeader',
+	name: 'PlanificacionAsignacion',
 	props: {
 		fechaSeleccionada: {
 			type: String,

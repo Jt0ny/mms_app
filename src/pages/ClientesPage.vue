@@ -130,9 +130,6 @@ export default {
         this.clienteFacturacionSeleccionado = cliente
       }
     },
-    limpiarFiltroFacturacion() {
-      this.clienteFacturacionSeleccionado = null
-    },
     abrirNuevoFormulario() {
       this.clienteParaEditar = null
       this.mostrarFormulario = true

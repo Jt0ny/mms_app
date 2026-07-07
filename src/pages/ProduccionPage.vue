@@ -47,7 +47,6 @@
 import Alertas from '../components/Alertas.vue'
 import ProduccionForm from '../components/produccion/ProduccionForm.vue'
 import ProduccionClient from '../client/ProduccionClient'
-import ProduccionResumen from '../components/produccion/ProduccionResumen.vue'
 import ProduccionRecetasView from '../components/produccion/ProduccionRecetasView.vue'
 import PlanificacionClient from '../client/PlanificacionClient.js'
 import RecetaClient from '../client/RecetaClient'
@@ -56,7 +55,6 @@ export default {
     components: {
         ProduccionForm,
         Alertas,
-        ProduccionResumen,
         ProduccionRecetasView
     },
 

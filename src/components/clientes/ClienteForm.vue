@@ -140,7 +140,6 @@ export default {
         email: this.form.email ? this.form.email.trim() : '',
         telefono: this.form.telefono ? this.form.telefono.trim() : '',
         direccion: this.form.direccion ? this.form.direccion.trim() : '',
-        notes: this.form.notas ? this.form.notas.trim() : '',
         notas: this.form.notas ? this.form.notas.trim() : '',
         creado_en: this.form.creado_en || new Date().toISOString()
       }

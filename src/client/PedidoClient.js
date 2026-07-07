@@ -1,7 +1,6 @@
 import axios from "axios";
 import { supabase } from "../supabase";
 import ClientesClient from "./ClientesClient";
-import RecetaClient from "./RecetaClient";
 
 const API_URL = "http://localhost:8060/pedidos";
 

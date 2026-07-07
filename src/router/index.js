@@ -24,11 +24,6 @@ const routes = [
   },
 
   {
-    path: '/login',
-    redirect: '/'
-  },
-
-  {
     path: '/app',
     component: MainLayout,
     meta: { requiresAuth: true },
@@ -38,7 +33,7 @@ const routes = [
         path: '',
         redirect: () => {
           const rol = localStorage.getItem('rol')
-          return rol === 'operador' ? '/app/produccion' : '/app/pedidos'
+          return rol === 'operador' ? '/app/produccion' : '/app/dashboard'
         }
       },
 
@@ -56,8 +51,8 @@ const routes = [
         meta: { roles: ['supervisor'] }
       },
       {
-        path:'materiales',
-        name:'materiales',
+        path: 'materiales',
+        name: 'materiales',
         component: MaterialesPage,
         meta: { roles: ['supervisor'] }
       },
@@ -68,26 +63,26 @@ const routes = [
         meta: { roles: ['supervisor'] }
       },
       {
-        path:'recetas',
-        name:'recetas',
+        path: 'recetas',
+        name: 'recetas',
         component: RecetasPage,
         meta: { roles: ['supervisor'] }
       },
       {
-        path:'produccion',
-        name:'produccion',
+        path: 'produccion',
+        name: 'produccion',
         component: ProduccionPage,
         meta: { roles: ['operador'] }
       },
       {
-        path:'planificacion',
-        name:'planificacion',
+        path: 'planificacion',
+        name: 'planificacion',
         component: PlanificacionPage,
         meta: { roles: ['supervisor'] }
       },
       {
-        path:'usuarios',
-        name:'usuarios',
+        path: 'usuarios',
+        name: 'usuarios',
         component: UsuariosPage,
         meta: { roles: ['supervisor'] }
       },
@@ -103,56 +98,7 @@ const routes = [
         component: ClientesPage,
         meta: { roles: ['supervisor'] }
       },
-      {
-        path:'mantenimientoU',
-        redirect: '/app/usuarios'
-      }
     ]
-  },
-
-  {
-    path: '/pedidos',
-    redirect: '/app/pedidos'
-  },
-
-  {
-    path: '/materia-prima',
-    redirect: '/app/materia-prima'
-  },
-
-  {
-    path: '/materiales',
-    redirect: '/app/materiales'
-  },
-
-  {
-    path: '/recetas',
-    redirect: '/app/recetas'
-  },
-
-  {
-    path: '/produccion',
-    redirect: '/app/produccion'
-  },
-  {
-    path: '/planificacion',
-    redirect: '/app/planificacion'
-  },
-  {
-    path: '/usuarios',
-    redirect: '/app/usuarios'
-  },
-  {
-    path: '/mantenimientoU',
-    redirect: '/app/usuarios'
-  },
-  {
-    path: '/mermas',
-    redirect: '/app/mermas'
-  },
-  {
-    path: '/clientes',
-    redirect: '/app/clientes'
   }
 ]
 
@@ -166,7 +112,7 @@ router.beforeEach((to) => {
   const rol = localStorage.getItem('rol')
 
   if (to.path === '/' && isLogged) {
-    return rol === 'operador' ? '/app/produccion' : '/app/pedidos'
+    return rol === 'operador' ? '/app/produccion' : '/app/dashboard'
   }
 
   if (to.meta.requiresAuth && !isLogged) {
@@ -175,7 +121,7 @@ router.beforeEach((to) => {
 
   const allowedRoles = to.meta?.roles
   if (isLogged && Array.isArray(allowedRoles) && !allowedRoles.includes(rol)) {
-    return rol === 'operador' ? '/app/produccion' : '/app/pedidos'
+    return rol === 'operador' ? '/app/produccion' : '/app/dashboard'
   }
 })
 

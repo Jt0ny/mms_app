@@ -1,4 +1,4 @@
-<!-- MotivoMermaSelector.vue -->
+<!-- MermaMotivoSelector.vue -->
 <template>
     <div>
         <!-- Selector Principal de Motivo -->
@@ -26,7 +26,7 @@
 
 <script>
 export default {
-    name: 'MotivoMermaSelector',
+    name: 'MermaMotivoSelector',
     props: {
         motivo: {
             type: String,
