@@ -7,7 +7,7 @@
             <h1 class="page-title">Carga de Materiales</h1>
 
             <!-- ALERTAS -->
-            <MaterialesAlerts :mensaje="mensaje" />
+            <Alertas :mensaje="mensaje" />
 
             <!-- LAYOUT -->
             <div class="main-layout" :class="{ 'with-preview': datosProcesados.length > 0 }">
@@ -21,13 +21,14 @@
 
                     <!-- INVENTARIO -->
                     <MaterialesInventarioActual :materiales="inventarioActual" :cargando="cargandoInventario"
-                        @actualizar="cargarInventario" @editar="editarMaterial" @eliminar="eliminarMaterial" @sincronizar="sincronizarAPI" />
+                        @actualizar="cargarInventario" @editar="editarMaterial" @eliminar="eliminarMaterial"
+                        @sincronizar="sincronizarAPI" />
 
                 </div>
 
                 <!-- PANEL DERECHO: Preview Excel -->
-                <MaterialesPreview :datosProcesados="datosProcesados" :cargando="cargando"
-                    @cancelar="limpiarDatos" @confirmar="confirmarYSubir" />
+                <MaterialesPreview :datosProcesados="datosProcesados" :cargando="cargando" @cancelar="limpiarDatos"
+                    @confirmar="confirmarYSubir" />
 
             </div>
 
@@ -45,7 +46,7 @@ import * as XLSX from 'xlsx'
 import MaterialClient from '../client/MaterialClient.js'
 
 import CargaArchivo from '../components/CargaArchivo.vue'
-import MaterialesAlerts from '../components/Alertas.vue'
+import Alertas from '../components/Alertas.vue'
 import MaterialesInventarioActual from '../components/materiales/MaterialesInventarioActual.vue'
 import MaterialesPreview from '../components/materiales/MaterialesPreview.vue'
 import MaterialForm from '../components/materiales/MaterialForm.vue'
@@ -57,7 +58,7 @@ export default {
         MaterialesPreview,
         MaterialForm,
         CargaArchivo,
-        MaterialesAlerts
+        Alertas
     },
 
     data() {

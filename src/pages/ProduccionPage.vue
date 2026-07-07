@@ -18,44 +18,33 @@
                 </div>
             </header>
 
-            <PedidoAlerts :mensaje="mensaje" />
+            <Alertas :mensaje="mensaje" />
 
             <div class="page-grid">
-                <ProduccionForm
-                    :guardando="guardando"
-                    :ultima-guardada="ultimaGuardada"
-                    :edicion="editingProduccion"
-                    :categorias-permitidas="categoriasRecetasAsignadas"
-                    :cantidades-externas="cantidadesExternas"
-                    @guardar="guardarProduccion"
-                    @notificar="mostrarMensaje($event.tipo, $event.texto, $event.duracion)"
-                    @cancelar="editingProduccion = null"
-                />
+                <ProduccionForm :guardando="guardando" :ultima-guardada="ultimaGuardada" :edicion="editingProduccion"
+                    :categorias-permitidas="categoriasRecetasAsignadas" :cantidades-externas="cantidadesExternas"
+                    @guardar="guardarProduccion" @notificar="mostrarMensaje($event.tipo, $event.texto, $event.duracion)"
+                    @cancelar="editingProduccion = null" />
 
                 <!-- Panel de recetas: muestra solo las asignadas o mensaje vacío -->
                 <div v-if="sinPlanificacion && !cargandoPlanificacion" class="sin-planificacion">
                     <span class="sin-plan-icon">📋</span>
                     <p>No tienes recetas asignadas para hoy.</p>
-                    <p class="sin-plan-sub">El supervisor debe asignarte una planificación desde la sección Planificación.</p>
+                    <p class="sin-plan-sub">El supervisor debe asignarte una planificación desde la sección
+                        Planificación.</p>
                 </div>
 
-                <ProduccionRecetasView
-                    v-else
-                    modo="contador"
-                    :contador-por-receta="contadorRecetaPorId"
-                    :contador-actual="contadorRecetaDefaultActual"
-                    :contador-total="contadorRecetaDefaultTotal"
-                    :recetas-filtradas="recetasPlanificadasIds"
-                    @recetas-cargadas="inicializarContadoresReceta"
-                    @accion-receta="manejarAccionReceta"
-                />
+                <ProduccionRecetasView v-else modo="contador" :contador-por-receta="contadorRecetaPorId"
+                    :contador-actual="contadorRecetaDefaultActual" :contador-total="contadorRecetaDefaultTotal"
+                    :recetas-filtradas="recetasPlanificadasIds" @recetas-cargadas="inicializarContadoresReceta"
+                    @accion-receta="manejarAccionReceta" />
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import PedidoAlerts from '../components/Alertas.vue'
+import Alertas from '../components/Alertas.vue'
 import ProduccionForm from '../components/produccion/ProduccionForm.vue'
 import ProduccionClient from '../client/ProduccionClient'
 import ProduccionResumen from '../components/produccion/ProduccionResumen.vue'
@@ -66,7 +55,7 @@ import RecetaClient from '../client/RecetaClient'
 export default {
     components: {
         ProduccionForm,
-        PedidoAlerts,
+        Alertas,
         ProduccionResumen,
         ProduccionRecetasView
     },

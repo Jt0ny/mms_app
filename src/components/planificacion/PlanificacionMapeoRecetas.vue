@@ -2,16 +2,13 @@
 	<div class="mapeo-panel">
 		<header class="mapeo-header">
 			<h2>Mapear Recetas del Día</h2>
-			<p>Selecciona una o más recetas para cada categoría de flor y distribuye la cantidad de stems solicitada.</p>
+			<p>Selecciona una o más recetas para cada categoría de flor y distribuye la cantidad de stems solicitada.
+			</p>
 		</header>
 
 		<div class="mapeo-content">
 			<div class="categorias-grid">
-				<div
-					v-for="cat in categoriasRequeridas"
-					:key="cat.categoria"
-					class="categoria-card"
-				>
+				<div v-for="cat in categoriasRequeridas" :key="cat.categoria" class="categoria-card">
 					<!-- Info de la Categoría -->
 					<div class="categoria-summary">
 						<div class="summary-text">
@@ -27,23 +24,13 @@
 
 					<!-- Listado de Recetas Asignadas -->
 					<div class="recetas-asignadas-list">
-						<div
-							v-for="(row, idx) in mapeoCategorias[cat.categoria]"
-							:key="idx"
-							class="receta-mapping-row"
-						>
+						<div v-for="(row, idx) in mapeoCategorias[cat.categoria]" :key="idx" class="receta-mapping-row">
 							<div class="select-col">
-								<select
-									v-model="row.recetaId"
-									class="select-mapeo"
-									@change="validarRow(cat.categoria, idx)"
-								>
+								<select v-model="row.recetaId" class="select-mapeo"
+									@change="validarRow(cat.categoria, idx)">
 									<option value="">-- Seleccionar Receta --</option>
-									<option
-										v-for="rec in recetasPorCategoria(cat.categoria)"
-										:key="rec.id"
-										:value="rec.id"
-									>
+									<option v-for="rec in recetasPorCategoria(cat.categoria)" :key="rec.id"
+										:value="rec.id">
 										{{ rec.nombre }}
 									</option>
 								</select>
@@ -51,24 +38,14 @@
 
 							<div class="stems-col">
 								<div class="stems-input-wrapper">
-									<input
-										v-model.number="row.stems"
-										type="number"
-										min="1"
-										placeholder="Stems"
-										class="stems-input"
-										@input="balancearCantidades(cat.categoria, idx)"
-									/>
+									<input v-model.number="row.stems" type="number" min="1" placeholder="Stems"
+										class="stems-input" @input="balancearCantidades(cat.categoria, idx)" />
 									<span class="stems-suffix">stems</span>
 								</div>
 							</div>
 
-							<button
-								type="button"
-								class="btn-eliminar-row"
-								title="Quitar esta receta"
-								@click="eliminarRow(cat.categoria, idx)"
-							>
+							<button type="button" class="btn-eliminar-row" title="Quitar esta receta"
+								@click="eliminarRow(cat.categoria, idx)">
 								✕
 							</button>
 						</div>
@@ -76,12 +53,8 @@
 
 					<!-- Botón agregar receta extra -->
 					<div class="add-row-action">
-						<button
-							type="button"
-							class="btn-add-receta"
-							:disabled="!puedeAgregarReceta(cat.categoria)"
-							@click="agregarRow(cat.categoria)"
-						>
+						<button type="button" class="btn-add-receta" :disabled="!puedeAgregarReceta(cat.categoria)"
+							@click="agregarRow(cat.categoria)">
 							+ Agregar otra receta de {{ cat.categoria }}
 						</button>
 					</div>
@@ -93,12 +66,7 @@
 			<button type="button" class="btn-cancelar" @click="$emit('cancelar')">
 				Cancelar
 			</button>
-			<button
-				type="button"
-				class="btn-confirmar"
-				:disabled="!formularioValido"
-				@click="confirmarMapeo"
-			>
+			<button type="button" class="btn-confirmar" :disabled="!formularioValido" @click="confirmarMapeo">
 				Confirmar y Planificar
 			</button>
 		</footer>
@@ -176,7 +144,7 @@ export default {
 		agregarRow(categoria) {
 			const asignadoActualmente = this.obtenerTotalAsignado(categoria)
 			const faltante = Math.max(0, this.categoriasRequeridas.find(c => c.categoria === categoria).totalStems - asignadoActualmente)
-			
+
 			this.mapeoCategorias[categoria].push({
 				recetaId: '',
 				stems: faltante
@@ -204,7 +172,7 @@ export default {
 			const totalDemand = targetCat.totalStems
 
 			const numRows = rows.length
-			
+
 			// Validar el valor editado
 			let val = parseInt(rows[editedIdx].stems)
 			if (isNaN(val) || val < 0) val = 0
@@ -333,9 +301,20 @@ export default {
 	letter-spacing: 0.03em;
 }
 
-.status-perfect { background: #dcfce7; color: #15803d; }
-.status-incomplete { background: #fef3c7; color: #b45309; }
-.status-overflow { background: #fee2e2; color: #dc2626; }
+.status-perfect {
+	background: #dcfce7;
+	color: #15803d;
+}
+
+.status-incomplete {
+	background: #fef3c7;
+	color: #b45309;
+}
+
+.status-overflow {
+	background: #fee2e2;
+	color: #dc2626;
+}
 
 .recetas-asignadas-list {
 	display: grid;
@@ -496,7 +475,7 @@ export default {
 		flex-direction: column;
 		align-items: stretch;
 	}
-	
+
 	.stems-col {
 		min-width: 100%;
 	}

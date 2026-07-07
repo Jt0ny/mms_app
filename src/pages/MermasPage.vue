@@ -12,40 +12,14 @@
       <!-- Mensajes de Alerta -->
       <Alertas :mensaje="mensaje" />
 
-      <!-- Tarjetas de Estadísticas (KPIs) 
-      <div class="stats-grid">
-        <article class="stat-card">
-          <div class="stat-icon pink">🌸</div>
-          <div class="stat-info">
-            <span> Flores Mermadas</span>
-            <strong>{{ totalFloresMermadas }} <small>tallos</small></strong>
-          </div>
-        </article>
-
-        <article class="stat-card">
-          <div class="stat-icon blue">📦</div>
-          <div class="stat-info">
-            <span>Materiales Mermados</span>
-            <strong>{{ totalMaterialesMermados }} <small>unidades</small></strong>
-          </div>
-        </article>
-
-        <article class="stat-card">
-          <div class="stat-icon purple">✨</div>
-          <div class="stat-info">
-            <span>Productos Finales Mermados</span>
-            <strong>{{ totalProductosMermados }} <small>ramos</small></strong>
-          </div>
-        </article>
-      </div>-->
-
       <!-- Layout Principal: Formulario + Listado -->
       <div class="main-layout">
         <!-- Formulario (Lado Izquierdo) -->
         <div class="left-panel">
-          <MermaForm :materia-prima-lista="materiaPrimaFiltrada" :materiales-lista="materialesFiltrados" :recetas-lista="recetasFiltradas"
-            :operadores-lista="operadores" :filtro-info="filtroActivoInfo" :cargando-recursos="cargandoRecursos" 
-            :guardando="guardando" @guardar="registrarMerma" @cambio-filtro="filtrarRecursos" />
+          <MermaForm :materia-prima-lista="materiaPrimaFiltrada" :materiales-lista="materialesFiltrados"
+            :recetas-lista="recetasFiltradas" :operadores-lista="operadores" :filtro-info="filtroActivoInfo"
+            :cargando-recursos="cargandoRecursos" :guardando="guardando" @guardar="registrarMerma"
+            @cambio-filtro="filtrarRecursos" />
         </div>
 
         <!-- Historial/Tabla (Lado Derecho) -->
@@ -263,7 +237,7 @@ export default {
           this.materiaPrimaFiltrada = this.materiaPrima
           this.materialesFiltrados = this.materiales
           this.recetasFiltradas = this.recetas
-          
+
           const op = this.operadores.find(o => o.id === operadorId)
           this.filtroActivoInfo = {
             tipo: 'info',
@@ -274,10 +248,10 @@ export default {
 
         // Obtener recetas completas para saber qué ingredientes usan
         const todasLasRecetas = await RecetaClient.obtenerRecetas()
-        
+
         const recetasPlanIds = plan.recetas.map(r => r.recetaId)
         const recetasPlanificadas = todasLasRecetas.filter(r => recetasPlanIds.includes(r.id))
-        
+
         this.recetasFiltradas = recetasPlanificadas
 
         // Extraer materias primas y materiales

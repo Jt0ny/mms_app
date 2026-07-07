@@ -60,13 +60,6 @@
           placeholder="Ej: Calle Las Flores 123, Lima" />
       </div>
 
-      <!-- Notas 
-      <div class="form-group">
-        <label class="form-label" for="cliente-notas">Notas / Comentarios</label>
-        <textarea id="cliente-notas" v-model="form.notas" class="form-textarea" rows="3"
-          placeholder="Indicaciones especiales de entrega, horarios de atención, etc."></textarea>
-      </div>-->
-
       <!-- Acciones -->
       <div class="actions">
         <button type="button" class="btn btn-secondary" @click="$emit('cancelar')">
@@ -147,7 +140,7 @@ export default {
         email: this.form.email ? this.form.email.trim() : '',
         telefono: this.form.telefono ? this.form.telefono.trim() : '',
         direccion: this.form.direccion ? this.form.direccion.trim() : '',
-        notes: this.form.notas ? this.form.notas.trim() : '', // guardamos en db.json notas
+        notes: this.form.notas ? this.form.notas.trim() : '',
         notas: this.form.notas ? this.form.notas.trim() : '',
         creado_en: this.form.creado_en || new Date().toISOString()
       }

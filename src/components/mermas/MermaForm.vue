@@ -181,10 +181,10 @@ export default {
         return
       }
       const motivoFinal = this.form.motivo === 'Otro' ? this.form.otroMotivo : this.form.motivo
-      
+
       // Encontrar el nombre del operador
       const opObj = this.operadoresLista.find(o => o.id === this.form.operadorId)
-      
+
       const payload = {
         fecha: this.form.fecha,
         tipo: this.form.tipo,

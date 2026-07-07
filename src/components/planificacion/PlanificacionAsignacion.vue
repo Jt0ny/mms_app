@@ -3,7 +3,8 @@
 		<div>
 			<h1 class="page-title">Planificación</h1>
 			<p class="page-subtitle">
-				Selecciona una fecha y distribuye los pedidos pendientes entre operadores de forma automática y equitativa.
+				Selecciona una fecha y distribuye los pedidos pendientes entre operadores de forma automática y
+				equitativa.
 			</p>
 		</div>
 
@@ -11,32 +12,18 @@
 			<!-- Selector de fecha -->
 			<div class="fecha-group">
 				<label class="fecha-label" for="plan-fecha">Fecha de pedidos</label>
-				<input
-					id="plan-fecha"
-					:value="fechaSeleccionada"
-					type="date"
-					class="fecha-input"
+				<input id="plan-fecha" :value="fechaSeleccionada" type="date" class="fecha-input"
 					:disabled="cargandoAuto || guardando"
-					@input="$emit('update:fechaSeleccionada', $event.target.value)"
-				/>
+					@input="$emit('update:fechaSeleccionada', $event.target.value)" />
 			</div>
 
-			<button
-				type="button"
-				class="btn-distribuir"
-				:disabled="cargandoAuto || guardando"
-				@click="$emit('distribuir')"
-			>
+			<button type="button" class="btn-distribuir" :disabled="cargandoAuto || guardando"
+				@click="$emit('distribuir')">
 				{{ cargandoAuto ? '⟳ Distribuyendo...' : '⚡ Distribuir automáticamente' }}
 			</button>
 
-			<button
-				v-if="mostrarLimpiar"
-				type="button"
-				class="btn-limpiar"
-				:disabled="guardando"
-				@click="$emit('limpiar')"
-			>
+			<button v-if="mostrarLimpiar" type="button" class="btn-limpiar" :disabled="guardando"
+				@click="$emit('limpiar')">
 				Limpiar
 			</button>
 		</div>

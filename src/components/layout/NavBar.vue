@@ -1,7 +1,7 @@
 <template>
   <div class="container-nav">
     <nav class="navbar">
-      
+
       <!-- Logo -->
       <div class="logo" aria-label="Gestión de manufactura">
         <div class="logo-mark">GM</div>
@@ -14,8 +14,7 @@
       <!-- Menú-->
       <ul class="menu">
         <li class="active">Gestion de manufactura</li>
-      </ul> 
-     
+      </ul>
 
       <!-- Botón -->
       <div class="acciones">
@@ -87,7 +86,7 @@ export default {
   align-items: center;
   gap: 12px;
   flex: 0 0 auto;
-  grid-area: logo; 
+  grid-area: logo;
 }
 
 .logo-mark {
@@ -96,7 +95,7 @@ export default {
   border-radius: 16px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(223, 249, 231, 0.88));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(223, 249, 231, 0.88));
   color: var(--secondary);
   font-weight: 800;
   letter-spacing: 0.08em;

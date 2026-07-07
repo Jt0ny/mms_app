@@ -10,14 +10,12 @@
         </div>
 
         <div class="form-body">
-            <label>
-                Nombre
-                <input v-model.trim="nombre" type="text" autocomplete="username" placeholder="Nombre de usuario" />
+            <label>Nombre<input v-model.trim="nombre" type="text" autocomplete="username"
+                    placeholder="Nombre de usuario" />
             </label>
 
-            <label>
-                Contraseña
-                <input v-model="contrasena" type="password" autocomplete="new-password" placeholder="Contraseña segura" />
+            <label>Contraseña<input v-model="contrasena" type="password" autocomplete="new-password"
+                    placeholder="Contraseña segura" />
             </label>
 
             <UsuarioRol v-model="rol" :roles="roles" />

@@ -4,7 +4,7 @@
         <div class="inventory-header">
             <h2> 📦 Inventario Actual </h2>
             <div style="display: flex; gap: 8px; align-items: center;">
-                <button @click="$emit('sincronizar')" :disabled="cargando" class="btn-sync" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.25s ease;">
+                <button @click="$emit('sincronizar')" :disabled="cargando" class="btn-sync">
                     ⚡ Sincronizar API
                 </button>
                 <button @click="$emit('actualizar')" :disabled="cargando" class="btn-refresh">
@@ -35,10 +35,10 @@
 
                 <tbody>
                     <tr v-for="(item, index) in inventario" :key="index">
-                        <td class="variety">   {{ item.variedad }}</td>
+                        <td class="variety"> {{ item.variedad }}</td>
 
                         <td class="quantity"> {{ item.cantidadTotal }} </td>
-                         <td class="date"> {{ formatearFecha(item.fecha) }}</td>
+                        <td class="date"> {{ formatearFecha(item.fecha) }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -65,7 +65,7 @@ export default {
     },
 
     emits: ['actualizar', 'sincronizar'],
-    
+
     methods: {
         formatearFecha(fecha) {
             if (!fecha) return '-'
@@ -112,19 +112,13 @@ export default {
 
 .btn-refresh {
     background: rgba(255, 255, 255, 0.2);
-
     color: white;
-
     padding: 8px 14px;
-
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.3);
-
     cursor: pointer;
-
     font-size: 13px;
     font-weight: 600;
-
     transition: all 0.25s ease;
 }
 
@@ -135,6 +129,18 @@ export default {
 .btn-refresh:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.btn-sync {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.25s ease;
 }
 
 /* ================= ESTADOS ================= */

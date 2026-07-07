@@ -7,7 +7,7 @@
             <h1 class="page-title">Creación de Recetas</h1>
 
             <!-- ALERTAS -->
-            <RecetaAlerts :mensaje="mensaje" />
+            <Alertas :mensaje="mensaje" />
 
             <!-- LAYOUT -->
             <div class="main-layout">
@@ -51,7 +51,7 @@ import RecetaForm from '../components/recetas/RecetaForm.vue'
 import RecetaMaterialesTabla from '../components/recetas/RecetaMaterialesTabla.vue'
 import RecetaMateriaPrimaTabla from '../components/recetas/RecetaMateriaPrimaTabla.vue'
 import RecetaResumen from '../components/recetas/RecetaResumen.vue'
-import RecetaAlerts from '../components/Alertas.vue'
+import Alertas from '../components/Alertas.vue'
 
 export default {
 
@@ -60,7 +60,7 @@ export default {
         RecetaMaterialesTabla,
         RecetaMateriaPrimaTabla,
         RecetaResumen,
-        RecetaAlerts
+        Alertas
     },
 
     data() {
@@ -75,13 +75,11 @@ export default {
             cargandoMateriaPrima: false,
             guardandoReceta: false,
             categorias: [],
-
             nuevaReceta: {
                 nombre: '',
                 categoria: '',
                 instrucciones: ''
             },
-
             mensaje: {
                 tipo: null,
                 texto: ''

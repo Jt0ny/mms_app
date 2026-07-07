@@ -7,7 +7,7 @@
             <h1 class="page-title">Carga de Pedidos</h1>
 
             <!-- ALERTAS -->
-            <PedidoAlerts :mensaje="mensaje" />
+            <Alertas :mensaje="mensaje" />
 
             <!-- LAYOUT -->
             <div class="main-layout" :class="{ 'with-preview': datosProcesados.length > 0 }">
@@ -42,7 +42,7 @@ import * as XLSX from 'xlsx'
 import CargaArchivo from '../components/CargaArchivo.vue'
 import PedidoPreview from '../components/pedidos/PedidoPreview.vue'
 import PedidoInventarioActual from '../components/pedidos/PedidoInventarioActual.vue'
-import PedidoAlerts from '../components/Alertas.vue'
+import Alertas from '../components/Alertas.vue'
 
 export default {
 
@@ -50,7 +50,7 @@ export default {
         PedidoInventarioActual,
         PedidoPreview,
         CargaArchivo,
-        PedidoAlerts
+        Alertas
     },
 
     data() {
@@ -247,7 +247,7 @@ export default {
 
             try {
                 await PedidoClient.agregarPedido(this.datosProcesados)
-                
+
                 // Sincronizar nuevos clientes en la base de datos local
                 await this.sincronizarClientes(this.datosProcesados)
 
@@ -267,7 +267,7 @@ export default {
             try {
                 const clientesExistentes = await ClientesClient.obtenerClientes()
                 const mapaClientes = new Map(clientesExistentes.map(c => [c.nombre.toLowerCase().trim(), c]))
-                
+
                 const clientesParaAgregarFacturacion = []
                 const clientesParaAgregarEnvio = []
                 const clientesParaActualizar = []

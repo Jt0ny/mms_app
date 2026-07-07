@@ -7,7 +7,7 @@
             <h1 class="page-title">Carga de Materia Prima</h1>
 
             <!-- ALERTAS -->
-            <MateriaPrimaAlerts :mensaje="mensaje" />
+            <Alertas :mensaje="mensaje" />
 
             <!-- LAYOUT -->
             <div class="main-layout" :class="{ 'with-preview': datosProcesados.length > 0 }">
@@ -44,7 +44,8 @@ import CargaArchivo from '../components/CargaArchivo.vue'
 
 import MateriaPrimaInvetarioActual from '../components/materiaPrima/MateriaPrimaInvetarioActual.vue'
 import MateriaPrimaPreview from '../components/materiaPrima/MateriaPrimaPreview.vue'
-import MateriaPrimaAlerts from '../components/Alertas.vue'
+import Alertas from '../components/Alertas.vue'
+
 
 export default {
 
@@ -52,7 +53,7 @@ export default {
         MateriaPrimaInvetarioActual,
         MateriaPrimaPreview,
         CargaArchivo,
-        MateriaPrimaAlerts
+        Alertas
     },
 
     data() {

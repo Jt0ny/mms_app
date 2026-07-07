@@ -3,7 +3,7 @@
         <div class="inventory-header">
             <h2>📦 Pedidos Actuales</h2>
             <div style="display: flex; gap: 8px; align-items: center;">
-                <button @click="$emit('sincronizar')" :disabled="cargando" class="btn-sync" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.25s ease;">
+                <button @click="$emit('sincronizar')" :disabled="cargando" class="btn-sync">
                     ⚡ Sincronizar API
                 </button>
                 <button @click="$emit('actualizar')" :disabled="cargando" class="btn-refresh">
@@ -12,7 +12,7 @@
             </div>
         </div>
 
-         <!-- LOADING -->
+        <!-- LOADING -->
         <div v-if="cargando" class="loading-state">
             <p>Cargando pedidos...</p>
         </div>
@@ -28,7 +28,7 @@
                         <th>Cliente</th>
                         <th>Categoría</th>
                         <th>Tallos</th>
-                        
+
                     </tr>
                 </thead>
                 <tbody>
@@ -48,21 +48,21 @@
 </template>
 <script>
 export default {
-  props: {
-    pedidos: {
-      type: Array,
-      default: () => []
+    props: {
+        pedidos: {
+            type: Array,
+            default: () => []
+        },
+        cargando: {
+            type: Boolean,
+            default: false
+        }
     },
-    cargando: {
-      type: Boolean,
-      default: false
+    emits: ['actualizar', 'sincronizar'],
+
+    methods: {
+
     }
-  },
-  emits: ['actualizar', 'sincronizar'],
-  
-  methods: {
-    
-  }
 }
 </script>
 <style scoped>
@@ -97,19 +97,13 @@ export default {
 
 .btn-refresh {
     background: rgba(255, 255, 255, 0.2);
-
     color: white;
-
     padding: 8px 14px;
-
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.3);
-
     cursor: pointer;
-
     font-size: 13px;
     font-weight: 600;
-
     transition: all 0.25s ease;
 }
 
@@ -121,6 +115,19 @@ export default {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+.btn-sync {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.25s ease;
+}
+
 
 /* ================= ESTADOS ================= */
 

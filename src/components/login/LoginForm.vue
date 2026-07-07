@@ -2,8 +2,9 @@
     <div class="login-card">
         <h1>Gestión de Manufactura</h1>
         <p type="Nombre:"><input type="text" v-model="nombre" autocomplete="username" /></p>
-        <p type="Contraseña:"><input type="password" v-model="contrasena" autocomplete="current-password" @keyup.enter="ingresar" /></p>
-        <AlertasLogin :mensaje="mensaje" />
+        <p type="Contraseña:"><input type="password" v-model="contrasena" autocomplete="current-password"
+                @keyup.enter="ingresar" /></p>
+        <Alertas :mensaje="mensaje" />
         <button type="button" @click="ingresar" :disabled="cargando">
             {{ cargando ? 'Ingresando...' : 'Ingresar' }}
         </button>
@@ -11,7 +12,7 @@
 </template>
 
 <script>
-import AlertasLogin from '../Alertas.vue'
+import Alertas from '../Alertas.vue'
 import UsuarioClient from '../../client/UsuarioClient.js'
 
 export default {
@@ -19,7 +20,7 @@ export default {
     emits: ['ingresar'],
 
     components: {
-        AlertasLogin
+        Alertas
     },
 
     data() {
@@ -99,7 +100,7 @@ export default {
     padding: 36px;
     background: white;
     border-radius: 22px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 h1 {
@@ -138,7 +139,7 @@ input {
 input:focus {
     border-color: var(--primary);
     background: white;
-    box-shadow:0 0 0 4px rgba(16, 185, 129, 0.12);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
 }
 
 button {
@@ -147,7 +148,7 @@ button {
     padding: 14px;
     border: none;
     border-radius: 999px;
-    background:linear-gradient(135deg, var(--primary),var(--primary-dark));
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     font-size: 16px;
     font-weight: 700;

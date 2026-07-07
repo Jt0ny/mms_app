@@ -3,7 +3,7 @@
     <div class="inventory-header">
       <h2>📦 Inventario Actual</h2>
       <div style="display: flex; gap: 8px; align-items: center;">
-        <button @click="$emit('sincronizar')" :disabled="cargando" class="btn-sync" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.25s ease;">
+        <button @click="$emit('sincronizar')" :disabled="cargando" class="btn-sync">
           ⚡ Sincronizar API
         </button>
         <button @click="$emit('actualizar')" :disabled="cargando" class="btn-refresh">
@@ -33,14 +33,14 @@
         </thead>
 
         <tbody>
-          <tr v-for="item in materiales":key="item.id">
+          <tr v-for="item in materiales" :key="item.id">
             <td class="variety">{{ item.nombre }}</td>
             <td class="quantity">{{ item.cantidad }}</td>
             <td>{{ item.descripcion || '-' }}</td>
 
             <td class="actions-column">
-            <button class="btn-action btn-edit" @click="$emit('editar', item)">✏️</button>
-            <button class="btn-action btn-delete"@click="$emit('eliminar', item.id)" > 🗑️</button>
+              <button class="btn-action btn-edit" @click="$emit('editar', item)">✏️</button>
+              <button class="btn-action btn-delete" @click="$emit('eliminar', item.id)"> 🗑️</button>
             </td>
           </tr>
         </tbody>
@@ -90,11 +90,9 @@ export default {
 }
 
 .inventory-header {
-  background: linear-gradient(
-    135deg,
-    var(--primary) 0%,
-    var(--primary-dark) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--primary) 0%,
+      var(--primary-dark) 100%);
 
   color: white;
 
@@ -111,7 +109,7 @@ export default {
 }
 
 .btn-refresh {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   color: white;
   border: none;
   border-radius: 6px;
@@ -179,6 +177,18 @@ export default {
 .actions-column {
   display: flex;
   gap: 8px;
+}
+
+.btn-sync {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.25s ease;
 }
 
 .btn-action {
