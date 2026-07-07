@@ -30,30 +30,43 @@ export default {
 
       const mapClientes = new Map(clientes.map(c => [c.nombre.toLowerCase().trim(), c.id]));
 
-      // Resolver clientes placeholder en paralelo para todos los clientes faltantes
-      const missingClientNames = new Set();
+      // Rastrear qué nombres faltan y en qué rol aparecen (facturación, envío o ambos)
+      const billNames = new Set();  // nombres que aparecen como cliente de facturación
+      const shipNames = new Set();  // nombres que aparecen como cliente de envío
+
       for (const item of pedidosExternos) {
         const billName = (item.clienteFacturacion || item.cliente_facturacion || "").trim();
         const shipName = (item.clienteEnvio || item.cliente_envio || "").trim();
-        
+
         if (billName && !mapClientes.has(billName.toLowerCase())) {
-          missingClientNames.add(billName);
+          billNames.add(billName);
         }
         if (shipName && !mapClientes.has(shipName.toLowerCase())) {
-          missingClientNames.add(shipName);
+          shipNames.add(shipName);
         }
       }
 
+      const missingClientNames = new Set([...billNames, ...shipNames]);
+
       if (missingClientNames.size > 0) {
         console.log(`Creando clientes placeholder para nombres faltantes:`, [...missingClientNames]);
-        const payloadClientes = [...missingClientNames].map(name => ({
-          nombre: name,
-          tipo: 'Ambos', // Asignar 'Ambos' por defecto
-          email: '',
-          telefono: '',
-          direccion: '',
-          notas: 'Autogenerado durante sincronización de pedidos'
-        }));
+
+        const payloadClientes = [...missingClientNames].map(name => {
+          const esBill = billNames.has(name);
+          const esShip = shipNames.has(name);
+          let tipo = 'Ambos';
+          if (esBill && !esShip) tipo = 'Facturación';
+          else if (!esBill && esShip) tipo = 'Envío';
+
+          return {
+            nombre: name,
+            tipo,
+            email: '',
+            telefono: '',
+            direccion: '',
+            notas: 'Autogenerado durante sincronización de pedidos'
+          };
+        });
 
         const { data: creadosClientes, error: cliError } = await supabase
           .from('clientes')

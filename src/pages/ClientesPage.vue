@@ -195,84 +195,85 @@ export default {
         const clientesExistentes = await ClientesClient.obtenerClientes()
         const mapaClientes = new Map(clientesExistentes.map(c => [c.nombre.toLowerCase().trim(), c]))
 
-        const clientesParaAgregar = []
-        const clientesParaActualizar = []
+        // --- FASE 1: Recorrer TODOS los pedidos y acumular roles sin actuar aún ---
+        const billSet = new Set()  // nombres que aparecen como facturación
+        const shipSet = new Set()  // nombres que aparecen como envío
+        const shipParent = new Map() // shipName → billName (primer broker encontrado)
 
         for (const order of pedidos) {
           const billName = (order.cliente_facturacion || order.clienteFacturacion || '').trim()
           const shipName = (order.cliente_envio || order.clienteEnvio || '').trim()
-
-          if (billName) {
-            const billKey = billName.toLowerCase()
-            if (!mapaClientes.has(billKey)) {
-              const nuevo = {
-                nombre: billName,
-                tipo: 'Facturación',
-                clienteFacturacionAsociado: '',
-                email: '',
-                telefono: '',
-                direccion: '',
-                notas: '',
-                creado_en: new Date().toISOString()
-              }
-              mapaClientes.set(billKey, nuevo)
-              clientesParaAgregar.push(nuevo)
-            } else {
-              const existente = mapaClientes.get(billKey)
-              if (existente.tipo === 'Envío') {
-                existente.tipo = 'Ambos'
-                if (existente.id && existente.id !== 'undefined') {
-                  if (!clientesParaActualizar.some(c => c.id === existente.id)) {
-                    clientesParaActualizar.push(existente)
-                  }
-                }
-              }
+          if (billName) billSet.add(billName)
+          if (shipName) {
+            shipSet.add(shipName)
+            if (!shipParent.has(shipName.toLowerCase()) && billName && billName !== shipName) {
+              shipParent.set(shipName.toLowerCase(), billName)
             }
           }
+        }
 
-          if (shipName) {
-            const shipKey = shipName.toLowerCase()
-            if (!mapaClientes.has(shipKey)) {
-              const nuevo = {
-                nombre: shipName,
-                tipo: 'Envío',
-                clienteFacturacionAsociado: billName || '',
-                email: '',
-                telefono: '',
-                direccion: '',
-                notas: '',
-                creado_en: new Date().toISOString()
-              }
-              mapaClientes.set(shipKey, nuevo)
-              clientesParaAgregar.push(nuevo)
-            } else {
-              const existente = mapaClientes.get(shipKey)
-              let modificado = false
-              if (existente.tipo === 'Facturación') {
-                existente.tipo = 'Ambos'
-                modificado = true
-              }
-              if (!existente.clienteFacturacionAsociado && billName && existente.nombre !== billName) {
-                existente.clienteFacturacionAsociado = billName
-                modificado = true
-              }
-              if (modificado) {
-                if (existente.id && existente.id !== 'undefined') {
-                  if (!clientesParaActualizar.some(c => c.id === existente.id)) {
-                    clientesParaActualizar.push(existente)
-                  }
-                }
+        // --- FASE 2: Determinar tipo correcto y actualizar / crear ---
+        const clientesParaAgregar = []
+        const clientesParaActualizar = []
+        const procesados = new Set()
+
+        const todosLosNombres = new Set([...billSet, ...shipSet])
+
+        for (const nombre of todosLosNombres) {
+          const key = nombre.toLowerCase()
+          if (procesados.has(key)) continue
+          procesados.add(key)
+
+          const esBill = billSet.has(nombre)
+          const esShip = shipSet.has(nombre)
+          let tipoCalculado = 'Ambos'
+          if (esBill && !esShip) tipoCalculado = 'Facturación'
+          else if (!esBill && esShip) tipoCalculado = 'Envío'
+
+          const brokerAsociado = shipParent.get(key) || ''
+
+          if (!mapaClientes.has(key)) {
+            // Cliente nuevo
+            const nuevo = {
+              nombre,
+              tipo: tipoCalculado,
+              clienteFacturacionAsociado: tipoCalculado === 'Envío' ? brokerAsociado : '',
+              email: '',
+              telefono: '',
+              direccion: '',
+              notas: '',
+              creado_en: new Date().toISOString()
+            }
+            mapaClientes.set(key, nuevo)
+            clientesParaAgregar.push(nuevo)
+          } else {
+            // Cliente existente — corregir tipo si es incorrecto
+            const existente = mapaClientes.get(key)
+            let modificado = false
+
+            if (existente.tipo !== tipoCalculado) {
+              existente.tipo = tipoCalculado
+              modificado = true
+            }
+            if (tipoCalculado === 'Envío' && !existente.clienteFacturacionAsociado && brokerAsociado) {
+              existente.clienteFacturacionAsociado = brokerAsociado
+              modificado = true
+            }
+
+            if (modificado && existente.id && existente.id !== 'undefined') {
+              if (!clientesParaActualizar.some(c => c.id === existente.id)) {
+                clientesParaActualizar.push(existente)
               }
             }
           }
         }
 
-        // Guardar
+        // Guardar nuevos
         for (const nuevo of clientesParaAgregar) {
           await ClientesClient.agregarCliente(nuevo)
         }
 
-        // Actualizar
+        // Actualizar existentes con tipo corregido
         for (const modificado of clientesParaActualizar) {
           await ClientesClient.actualizarCliente(modificado.id, modificado)
         }

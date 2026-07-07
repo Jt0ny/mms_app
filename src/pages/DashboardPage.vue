@@ -16,31 +16,22 @@
 
             <!-- Alertas Críticas de Stock Reutilizando el Componente Alertas -->
             <div class="alertas-stock-wrap" v-if="alertasStock.length > 0">
-                <Alertas v-for="(alerta, index) in alertasStock" :key="index" :mensaje="alerta" class="dashboard-alerta-item" />
+                <Alertas v-for="(alerta, index) in alertasStock" :key="index" :mensaje="alerta"
+                    class="dashboard-alerta-item" />
             </div>
 
             <!-- KPIs Principales -->
-            <DashboardKPIs
-                :totalPedidosStems="kpis.totalPedidosStems"
-                :eficienciaGlobal="kpis.eficienciaGlobal"
-                :totalMermasStems="kpis.totalMermasStems"
-                :totalAlertasStock="alertasStock.length"
-            />
+            <DashboardKPIs :totalPedidosStems="kpis.totalPedidosStems" :eficienciaGlobal="kpis.eficienciaGlobal"
+                :totalMermasStems="kpis.totalMermasStems" :totalAlertasStock="alertasStock.length" />
 
             <!-- Layout de Gráficos e Indicadores -->
             <div class="dashboard-layout">
                 <!-- Avance de Operadores -->
-                <DashboardAvanceOperador
-                    :operadoresAvance="avanceOperadores"
-                    :cargando="cargando"
-                />
+                <DashboardAvanceOperador :operadoresAvance="avanceOperadores" :cargando="cargando" />
 
                 <!-- Distribución y Análisis de Mermas -->
-                <DashboardDistribucionMermas
-                    :mermasMotivos="mermasMotivos"
-                    :topMermasInsumos="topMermasInsumos"
-                    :cargando="cargando"
-                />
+                <DashboardDistribucionMermas :mermasMotivos="mermasMotivos" :topMermasInsumos="topMermasInsumos"
+                    :cargando="cargando" />
             </div>
         </div>
     </div>
@@ -53,7 +44,7 @@ import DashboardKPIs from '../components/dashboard/DashboardKPIs.vue'
 import DashboardAvanceOperador from '../components/dashboard/DashboardAvanceOperador.vue'
 import DashboardDistribucionMermas from '../components/dashboard/DashboardDistribucionMermas.vue'
 
-import RecetaClient from '../client/RecetaClient'
+import RecetaClient from '../client/RecetaClient.js'
 
 export default {
     name: 'DashboardPage',
@@ -84,7 +75,7 @@ export default {
         async cargarDatosDashboard() {
             this.cargando = true
             this.alertasStock = []
-            
+
             const today = new Date().toISOString().split('T')[0]
 
             try {
@@ -225,7 +216,7 @@ export default {
                 if (!mermaErr && mermasHoy) {
                     mermasHoy.forEach(m => {
                         const cant = parseInt(m.cantidad) || 0
-                        
+
                         // Solo sumamos flores al KPI principal de mermas
                         if (m.tipo === 'materia_prima') {
                             totalMermasFlores += cant
