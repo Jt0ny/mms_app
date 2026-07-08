@@ -33,6 +33,7 @@
 import Alertas from '../Alertas.vue'
 import UsuarioRol from './UsuarioRol.vue'
 import UsuarioClient from '../../client/UsuarioClient.js'
+import { generarSHA256 } from '../../utils/crypto.js'
 
 export default {
     components: {
@@ -55,14 +56,6 @@ export default {
     },
 
     methods: {
-        async generarSHA256(texto) {
-            const encoder = new TextEncoder()
-            const data = encoder.encode(texto)
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-            const hashArray = Array.from(new Uint8Array(hashBuffer))
-            return hashArray.map((byte) => byte.toString(16).padStart(2, '0')).join('')
-        },
-
         async guardar() {
             if (this.nombre.trim() === '' || this.contrasena.trim() === '') {
                 this.mensaje = { tipo: 'error', texto: 'Por favor, complete todos los campos.' }
@@ -77,7 +70,7 @@ export default {
             this.guardando = true
 
             try {
-                const contrasenaEncriptada = await this.generarSHA256(this.contrasena)
+                const contrasenaEncriptada = await generarSHA256(this.contrasena)
 
                 await UsuarioClient.agregarUsuario({
                     nombre: this.nombre.trim(),

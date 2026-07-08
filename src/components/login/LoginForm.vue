@@ -14,6 +14,7 @@
 <script>
 import Alertas from '../Alertas.vue'
 import UsuarioClient from '../../client/UsuarioClient.js'
+import { generarSHA256 } from '../../utils/crypto.js'
 
 export default {
 
@@ -49,14 +50,6 @@ export default {
             }
         },
 
-        async generarSHA256(texto) {
-            const encoder = new TextEncoder()
-            const data = encoder.encode(texto)
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-            const hashArray = Array.from(new Uint8Array(hashBuffer))
-            return hashArray.map((byte) => byte.toString(16).padStart(2, '0')).join('')
-        },
-
         async ingresar() {
 
             const nombreIngresado = this.nombre.trim().toLowerCase()
@@ -70,7 +63,7 @@ export default {
             this.cargando = true
 
             try {
-                const contrasenaEncriptada = await this.generarSHA256(contrasenaIngresada)
+                const contrasenaEncriptada = await generarSHA256(contrasenaIngresada)
                 const usuario = await UsuarioClient.login(nombreIngresado, contrasenaEncriptada)
 
                 if (!usuario) {

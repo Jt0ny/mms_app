@@ -52,6 +52,7 @@ import RecetaMaterialesTabla from '../components/recetas/RecetaMaterialesTabla.v
 import RecetaMateriaPrimaTabla from '../components/recetas/RecetaMateriaPrimaTabla.vue'
 import RecetaResumen from '../components/recetas/RecetaResumen.vue'
 import Alertas from '../components/Alertas.vue'
+import { useMensajes } from '../composables/useMensajes.js'
 
 export default {
 
@@ -64,8 +65,10 @@ export default {
     },
 
     data() {
-
+        const { state, mostrarMensaje } = useMensajes()
         return {
+            mensaje: state,
+            mostrarMensaje,
 
             materiales: [],
             materiaPrima: [],
@@ -80,10 +83,6 @@ export default {
                 categoria: '',
                 instrucciones: ''
             },
-            mensaje: {
-                tipo: null,
-                texto: ''
-            }
         }
     },
 
@@ -101,20 +100,6 @@ export default {
     },
 
     methods: {
-
-        /* ================= ALERTAS ================= */
-        mostrarMensaje(tipo, texto, duracion = 4000) {
-            this.mensaje = { tipo, texto }
-
-            if (duracion > 0) {
-                setTimeout(() => {
-                    this.mensaje = {
-                        tipo: null, texto: ''
-
-                    }
-                }, duracion)
-            }
-        },
 
         /* ================= CARGAR ================= */
         async cargarMateriales() {

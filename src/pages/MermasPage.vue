@@ -44,6 +44,7 @@ import RecetaClient from '../client/RecetaClient'
 import UsuarioClient from '../client/UsuarioClient'
 import PlanificacionClient from '../client/PlanificacionClient'
 import { supabase } from '../supabase'
+import { useMensajes } from '../composables/useMensajes.js'
 
 export default {
   name: 'MermasPage',
@@ -53,7 +54,10 @@ export default {
     MermaList
   },
   data() {
+    const { state, mostrarMensaje } = useMensajes()
     return {
+      mensaje: state,
+      mostrarMensaje,
       mermas: [],
       materiales: [],
       materiaPrima: [],
@@ -65,22 +69,13 @@ export default {
       filtroActivoInfo: null,
       cargandoMermas: false,
       cargandoRecursos: false,
-      guardando: false,
-      mensaje: { tipo: null, texto: '' }
+      guardando: false
     }
   },
   mounted() {
     this.cargarDatos()
   },
   methods: {
-    mostrarMensaje(tipo, texto, duracion = 4000) {
-      this.mensaje = { tipo, texto }
-      if (duracion > 0) {
-        setTimeout(() => {
-          this.mensaje = { tipo: null, texto: '' }
-        }, duracion)
-      }
-    },
     async cargarDatos() {
       this.cargandoMermas = true
       this.cargandoRecursos = true

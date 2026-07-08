@@ -79,6 +79,7 @@ import PlanificacionResumen from '../components/planificacion/PlanificacionResum
 import PlanificacionOperadorCard from '../components/planificacion/PlanificacionOperadorCard.vue'
 import PlanificacionMapeoRecetas from '../components/planificacion/PlanificacionMapeoRecetas.vue'
 import Alertas from '../components/Alertas.vue'
+import { useMensajes } from '../composables/useMensajes.js'
 
 export default {
 	name: 'PlanificacionPage',
@@ -92,15 +93,17 @@ export default {
 	},
 
 	data() {
+		const { state, mostrarMensaje } = useMensajes()
 		const hoy = new Date().toISOString().slice(0, 10)
 		return {
+			mensaje: state,
+			mostrarMensaje,
 			fechaSeleccionada: hoy,
 			asignaciones: [],      // [{ operador, recetas: [{recetaId, nombre, categoria, cantidad}], stemsTotal }]
 			todasLasRecetas: [],   // cache para el select de agregar receta
 			gruposRecetaBackup: [], // copia de respaldo con la información de pedidos por receta
 			cargandoAuto: false,
 			guardando: false,
-			mensaje: { tipo: null, texto: '' },       // mensaje en el header
 			mensajeInline: { tipo: null, texto: '' }, // mensaje dentro del summary card
 			
 			// Estados del asistente interactivo de recetas
@@ -129,11 +132,6 @@ export default {
 
 	methods: {
 		/* ─── Utilidades ─────────────────────────── */
-		mostrarMensaje(tipo, texto, duracion = 5000) {
-			this.mensaje = { tipo, texto }
-			if (duracion > 0) setTimeout(() => { this.mensaje = { tipo: null, texto: '' } }, duracion)
-		},
-
 		mostrarMensajeInline(tipo, texto, duracion = 5000) {
 			this.mensajeInline = { tipo, texto }
 			if (duracion > 0) setTimeout(() => { this.mensajeInline = { tipo: null, texto: '' } }, duracion)

@@ -20,14 +20,38 @@
                         @archivo-seleccionado="procesarArchivo" />
 
                     <!-- INVENTARIO -->
-                    <MateriaPrimaInvetarioActual :inventario="inventarioActual" :cargando="cargandoInventario"
-                        @actualizar="cargarInventario" @sincronizar="sincronizarAPI" />
+                    <InventoryTable title="📦 Inventario Actual" :items="inventarioActual" :loading="cargandoInventario"
+                        item-label="variedades en inventario" empty-text="📭 No hay datos en el inventario"
+                        @actualizar="cargarInventario" @sincronizar="sincronizarAPI">
+                        <template #header>
+                            <th>Variedad</th>
+                            <th>Cantidad (Tallos)</th>
+                            <th>Fecha Ingreso</th>
+                        </template>
+                        <template #row="{ item }">
+                            <td class="variety">{{ item.variedad }}</td>
+                            <td class="quantity">{{ item.cantidadTotal }}</td>
+                            <td class="date">{{ formatearFecha(item.fecha) }}</td>
+                        </template>
+                    </InventoryTable>
 
                 </div>
 
                 <!-- PANEL DERECHO -->
-                <MateriaPrimaPreview :datosProcesados="datosProcesados" :cargando="cargando" @cancelar="limpiarDatos"
-                    @confirmar="confirmarYSubir" />
+                <PreviewTable :items="datosProcesados" :loading="cargando" item-label="variedades encontradas"
+                    confirm-text="Guardar Inventario" loading-text="Guardando..."
+                    @cancelar="limpiarDatos" @confirmar="confirmarYSubir">
+                    <template #header>
+                        <th>Variedad</th>
+                        <th>Cantidad (Tallos)</th>
+                        <th>Fecha Ingreso</th>
+                    </template>
+                    <template #row="{ item }">
+                        <td class="variety" data-label="Variedad">{{ item.variedad }}</td>
+                        <td class="quantity" data-label="Cantidad (Tallos)">{{ item.cantidad_total }}</td>
+                        <td class="date" data-label="Fecha Ingreso">{{ item.fecha_ingreso }}</td>
+                    </template>
+                </PreviewTable>
 
             </div>
 
@@ -41,31 +65,29 @@ import * as XLSX from 'xlsx'
 import materiaPrimaClient from '../client/MateriaPrimaClient'
 
 import CargaArchivo from '../components/CargaArchivo.vue'
-
-import MateriaPrimaInvetarioActual from '../components/materiaPrima/MateriaPrimaInvetarioActual.vue'
-import MateriaPrimaPreview from '../components/materiaPrima/MateriaPrimaPreview.vue'
 import Alertas from '../components/Alertas.vue'
-
+import InventoryTable from '../components/shared/InventoryTable.vue'
+import PreviewTable from '../components/shared/PreviewTable.vue'
+import { useMensajes } from '../composables/useMensajes.js'
 
 export default {
 
     components: {
-        MateriaPrimaInvetarioActual,
-        MateriaPrimaPreview,
         CargaArchivo,
-        Alertas
+        Alertas,
+        InventoryTable,
+        PreviewTable
     },
 
     data() {
+        const { state, mostrarMensaje } = useMensajes()
         return {
+            mensaje: state,
+            mostrarMensaje,
             datosProcesados: [],
             inventarioActual: [],
             cargando: false,
-            cargandoInventario: false,
-            mensaje: {
-                tipo: null,
-                texto: ''
-            }
+            cargandoInventario: false
         }
     },
 
@@ -74,15 +96,14 @@ export default {
     },
 
     methods: {
-
-        /* ================= MENSAJES ================= */
-        mostrarMensaje(tipo, texto, duracion = 4000) {
-            this.mensaje = { tipo, texto }
-            if (duracion > 0) {
-                setTimeout(() => { this.mensaje = { tipo: null, texto: '' } }, duracion)
+        formatearFecha(fecha) {
+            if (!fecha) return '-'
+            try {
+                return new Date(fecha).toLocaleDateString('es-EC')
+            } catch {
+                return fecha
             }
         },
-
         /* ================= INVENTARIO ================= */
         async cargarInventario() {
             this.cargandoInventario = true
@@ -232,6 +253,21 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 24px;
+}
+
+.variety {
+    color: var(--text-h);
+    font-weight: 600;
+}
+
+.quantity {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.date {
+    color: var(--text-light);
+    font-size: 13px;
 }
 
 @media (max-width: 768px) {

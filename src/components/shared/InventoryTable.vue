@@ -1,82 +1,57 @@
 <template>
     <div class="inventory-card">
-
         <div class="inventory-header">
-            <h2> 📦 Inventario Actual </h2>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <button @click="$emit('sincronizar')" :disabled="cargando" class="btn-sync">
+            <h2>{{ title }}</h2>
+            <div class="header-actions">
+                <button v-if="showSync" @click="$emit('sincronizar')" :disabled="loading" class="btn-sync">
                     ⚡ Sincronizar API
                 </button>
-                <button @click="$emit('actualizar')" :disabled="cargando" class="btn-refresh">
-                    {{ cargando ? '⟳ Cargando...' : '↻ Actualizar' }}
+                <button @click="$emit('actualizar')" :disabled="loading" class="btn-refresh">
+                    {{ loading ? '⟳ Cargando...' : '↻ Actualizar' }}
                 </button>
             </div>
         </div>
 
-        <!-- LOADING -->
-        <div v-if="cargando" class="loading-state">
-            <p> Cargando inventario...</p>
+        <div v-if="loading" class="loading-state">
+            <p>Cargando inventario...</p>
         </div>
 
-        <!-- TABLA -->
-        <div v-else-if="inventario.length > 0" class="content-table">
+        <div v-else-if="items.length > 0" class="content-table">
             <div class="inventory-info">
-                <p> <strong>{{ inventario.length }}</strong> variedades en inventario</p>
+                <p><strong>{{ items.length }}</strong> {{ itemLabel }}</p>
             </div>
-
             <table class="inventory-table">
                 <thead>
                     <tr>
-                        <th>Variedad</th>
-                        <th>Cantidad (Tallos)</th>
-                        <th>Fecha Ingreso</th>
+                        <slot name="header" />
                     </tr>
                 </thead>
-
                 <tbody>
-                    <tr v-for="(item, index) in inventario" :key="index">
-                        <td class="variety"> {{ item.variedad }}</td>
-
-                        <td class="quantity"> {{ item.cantidadTotal }} </td>
-                        <td class="date"> {{ formatearFecha(item.fecha) }}</td>
+                    <tr v-for="(item, index) in items" :key="index">
+                        <slot name="row" :item="item" :index="index" />
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- EMPTY -->
         <div v-else class="empty-state">
-            <p>📭 No hay datos en el inventario</p>
+            <p>{{ emptyText }}</p>
         </div>
     </div>
 </template>
 
 <script>
 export default {
+    name: 'InventoryTable',
     props: {
-        inventario: {
-            type: Array,
-            default: () => []
-        },
-        cargando: {
-            type: Boolean,
-            default: false
-        }
+        title: { type: String, required: true },
+        items: { type: Array, default: () => [] },
+        loading: { type: Boolean, default: false },
+        itemLabel: { type: String, default: 'registros' },
+        emptyText: { type: String, default: '📭 No hay datos' },
+        showSync: { type: Boolean, default: true }
     },
-
-    emits: ['actualizar', 'sincronizar'],
-
-    methods: {
-        formatearFecha(fecha) {
-            if (!fecha) return '-'
-
-            try {
-                return new Date(fecha).toLocaleDateString('es-EC')
-            } catch {
-                return fecha
-            }
-        }
-    }
+    emits: ['actualizar', 'sincronizar']
 }
 </script>
 
@@ -90,14 +65,9 @@ export default {
 }
 
 .inventory-header {
-    background: linear-gradient(135deg,
-            var(--primary) 0%,
-            var(--primary-dark) 100%);
-
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: white;
-
     padding: 16px 20px;
-
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -108,6 +78,12 @@ export default {
     margin: 0;
     font-size: 16px;
     font-weight: 700;
+}
+
+.header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
 .btn-refresh {
@@ -143,8 +119,6 @@ export default {
     transition: all 0.25s ease;
 }
 
-/* ================= ESTADOS ================= */
-
 .loading-state,
 .empty-state {
     padding: 40px 20px;
@@ -158,8 +132,6 @@ export default {
     max-height: 450px;
 }
 
-/* ================= INFO ================= */
-
 .inventory-info {
     margin-bottom: 16px;
     padding-bottom: 12px;
@@ -172,61 +144,37 @@ export default {
     font-weight: 600;
 }
 
-/* ================= TABLA ================= */
-
 .inventory-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
 }
 
-.inventory-table thead {
+.inventory-table :deep(thead) {
     background: var(--primary);
     color: white;
 }
 
-.inventory-table th {
+.inventory-table :deep(th) {
     padding: 14px 16px;
-
     text-align: left;
-
     text-transform: uppercase;
-
     font-size: 12px;
     font-weight: 700;
-
     letter-spacing: 0.8px;
 }
 
-.inventory-table td {
+.inventory-table :deep(td) {
     padding: 14px 16px;
     border-bottom: 1px solid var(--border);
     color: var(--text);
 }
 
-.inventory-table tbody tr:hover {
+.inventory-table :deep(tbody tr:hover) {
     background: var(--bg-secondary);
 }
 
-.variety {
-    color: var(--text-h);
-    font-weight: 600;
-}
-
-.quantity {
-    color: var(--primary);
-    font-weight: 700;
-}
-
-.date {
-    color: var(--text-light);
-    font-size: 13px;
-}
-
-/* ================= RESPONSIVE ================= */
-
 @media (max-width: 768px) {
-
     .inventory-header {
         flex-direction: column;
         align-items: flex-start;
@@ -240,8 +188,8 @@ export default {
         font-size: 12px;
     }
 
-    .inventory-table th,
-    .inventory-table td {
+    .inventory-table :deep(th),
+    .inventory-table :deep(td) {
         padding: 10px 8px;
     }
 }

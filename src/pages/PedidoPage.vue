@@ -19,14 +19,40 @@
                     <CargaArchivo nombreModulo="Ventas" :cargando="cargando" @archivo-seleccionado="procesarArchivo" />
 
                     <!-- INVENTARIO -->
-                    <PedidoInventarioActual :pedidos="pedidosActual" :cargando="cargandoPedidos"
-                        @actualizar="cargarPedidos" @sincronizar="sincronizarAPI" />
+                    <InventoryTable title="📦 Pedidos Actuales" :items="pedidosActual" :loading="cargandoPedidos"
+                        item-label="pedidos en curso" empty-text="📭 No hay datos en los pedidos"
+                        @actualizar="cargarPedidos" @sincronizar="sincronizarAPI">
+                        <template #header>
+                            <th>Cliente</th>
+                            <th>Categoría</th>
+                            <th>Tallos</th>
+                        </template>
+                        <template #row="{ item }">
+                            <td class="variety">{{ item.clienteFacturacion }}</td>
+                            <td>{{ item.categoria }}</td>
+                            <td class="quantity">{{ item.stems }}</td>
+                        </template>
+                    </InventoryTable>
 
                 </div>
 
                 <!-- PANEL DERECHO -->
-                <PedidoPreview :datosProcesados="datosProcesados" :cargando="cargando" @cancelar="limpiarDatos"
-                    @confirmar="confirmarYSubir" />
+                <PreviewTable :items="datosProcesados" :loading="cargando" item-label="líneas de pedido encontradas"
+                    confirm-text="Guardar Inventario" loading-text="Guardando..."
+                    @cancelar="limpiarDatos" @confirmar="confirmarYSubir">
+                    <template #header>
+                        <th>Cliente (Bill)</th>
+                        <th>Destino (Ship)</th>
+                        <th>Categoría</th>
+                        <th>Tallos</th>
+                    </template>
+                    <template #row="{ item }">
+                        <td class="variety" data-label="Cliente (Bill)" :title="item.cliente_facturacion">{{ item.cliente_facturacion }}</td>
+                        <td class="variety" data-label="Destino (Ship)" :title="item.cliente_envio">{{ item.cliente_envio }}</td>
+                        <td class="category" data-label="Categoría">{{ item.categoria }}</td>
+                        <td class="quantity" data-label="Tallos">{{ item.stems }}</td>
+                    </template>
+                </PreviewTable>
 
             </div>
 
@@ -40,27 +66,27 @@ import ClientesClient from '../client/ClientesClient'
 import * as XLSX from 'xlsx'
 
 import CargaArchivo from '../components/CargaArchivo.vue'
-import PedidoPreview from '../components/pedidos/PedidoPreview.vue'
-import PedidoInventarioActual from '../components/pedidos/PedidoInventarioActual.vue'
 import Alertas from '../components/Alertas.vue'
+import InventoryTable from '../components/shared/InventoryTable.vue'
+import PreviewTable from '../components/shared/PreviewTable.vue'
+import { useMensajes } from '../composables/useMensajes.js'
 
 export default {
 
     components: {
-        PedidoInventarioActual,
-        PedidoPreview,
         CargaArchivo,
-        Alertas
+        Alertas,
+        InventoryTable,
+        PreviewTable
     },
 
     data() {
+        const { state, mostrarMensaje } = useMensajes()
         return {
+            mensaje: state,
+            mostrarMensaje,
             datosProcesados: [],
             pedidosActual: [],
-            mensaje: {
-                tipo: null,
-                texto: ''
-            },
             cargando: false,
             cargandoPedidos: false
         }
@@ -71,22 +97,6 @@ export default {
     },
 
     methods: {
-        mostrarMensaje(tipo, texto, duracion = 4000) {
-
-            this.mensaje = {
-                tipo,
-                texto
-            }
-            if (duracion > 0) {
-                setTimeout(() => {
-                    this.mensaje = {
-                        tipo: null,
-                        texto: ''
-                    }
-                }, duracion)
-            }
-        },
-
         /* ================= PEDIDOS ================= */
         async cargarPedidos() {
             this.cargandoPedidos = true
@@ -437,6 +447,23 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 24px;
+}
+
+.variety {
+    color: var(--text-h);
+    font-weight: 600;
+}
+
+.category {
+    color: var(--text-h);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+.quantity {
+    color: var(--primary);
+    font-weight: 700;
 }
 
 @media (max-width: 768px) {

@@ -81,6 +81,7 @@
 <script>
 import PedidoClient from '../../client/PedidoClient'
 import Alertas from '../Alertas.vue'
+import { obtenerFechaHoy } from '../../utils/date.js'
 
 export default {
     name: 'ProduccionForm',
@@ -122,7 +123,7 @@ export default {
             cantidadesPorCategoria: {},
             mensaje: { tipo: null, texto: '' },
             form: {
-                fecha: this.obtenerFechaHoy()
+                fecha: obtenerFechaHoy()
             }
         }
     },
@@ -179,12 +180,6 @@ export default {
     },
 
     methods: {
-        obtenerFechaHoy() {
-            const fecha = new Date()
-            const fechaLocal = new Date(fecha.getTime() - fecha.getTimezoneOffset() * 60000)
-            return fechaLocal.toISOString().slice(0, 10)
-        },
-
         notificar(tipo, texto, duracion = 4000) {
             // Mostrar alerta local en el formulario
             this.mensaje = { tipo, texto }
@@ -292,7 +287,7 @@ export default {
                 cantidades[categoria] = 0
             })
             this.cantidadesPorCategoria = cantidades
-            this.form.fecha = this.obtenerFechaHoy()
+            this.form.fecha = obtenerFechaHoy()
             this.$emit('cancelar')
         }
     }

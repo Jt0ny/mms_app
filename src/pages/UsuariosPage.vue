@@ -20,6 +20,7 @@ import Alertas from '../components/Alertas.vue'
 import UsuarioClient from '../client/UsuarioClient.js'
 import UsuarioForm from '../components/usuarios/UsuarioForm.vue'
 import UsuarioTablaActual from '../components/usuarios/UsuarioTablaActual.vue'
+import { useMensajes } from '../composables/useMensajes.js'
 
 export default {
     components: {
@@ -29,13 +30,12 @@ export default {
     },
 
     data() {
+        const { state, mostrarMensaje } = useMensajes()
         return {
+            mensaje: state,
+            mostrarMensaje,
             usuarios: [],
-            cargandoUsuarios: false,
-            mensaje: {
-                tipo: null,
-                texto: ''
-            }
+            cargandoUsuarios: false
         }
     },
 
@@ -44,16 +44,6 @@ export default {
     },
 
     methods: {
-        mostrarMensaje(tipo, texto, duracion = 3000) {
-            this.mensaje = { tipo, texto }
-
-            if (duracion > 0) {
-                setTimeout(() => {
-                    this.mensaje = { tipo: null, texto: '' }
-                }, duracion)
-            }
-        },
-
         async cargarUsuarios() {
             this.cargandoUsuarios = true
             try {

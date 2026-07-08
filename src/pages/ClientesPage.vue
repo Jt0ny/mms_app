@@ -58,6 +58,7 @@ import PedidoClient from '../client/PedidoClient'
 import ClienteList from '../components/clientes/ClienteList.vue'
 import ClienteForm from '../components/clientes/ClienteForm.vue'
 import Alertas from '../components/Alertas.vue'
+import { useMensajes } from '../composables/useMensajes.js'
 
 export default {
   name: 'ClientesPage',
@@ -67,18 +68,17 @@ export default {
     Alertas
   },
   data() {
+    const { state, mostrarMensaje } = useMensajes()
     return {
+      mensaje: state,
+      mostrarMensaje,
       clientes: [],
       cargando: false,
       sincronizando: false,
       guardando: false,
       mostrarFormulario: false,
       clienteParaEditar: null,
-      clienteFacturacionSeleccionado: null,
-      mensaje: {
-        tipo: null,
-        texto: ''
-      }
+      clienteFacturacionSeleccionado: null
     }
   },
   computed: {
@@ -92,14 +92,6 @@ export default {
     this.cargarClientes()
   },
   methods: {
-    mostrarMensaje(tipo, texto, duracion = 4000) {
-      this.mensaje = { tipo, texto }
-      if (duracion > 0) {
-        setTimeout(() => {
-          this.mensaje = { tipo: null, texto: '' }
-        }, duracion)
-      }
-    },
     async cargarClientes() {
       this.cargando = true
       try {

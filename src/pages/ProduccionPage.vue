@@ -50,6 +50,7 @@ import ProduccionClient from '../client/ProduccionClient'
 import ProduccionRecetasView from '../components/produccion/ProduccionRecetasView.vue'
 import PlanificacionClient from '../client/PlanificacionClient.js'
 import RecetaClient from '../client/RecetaClient'
+import { useMensajes } from '../composables/useMensajes.js'
 
 export default {
     components: {
@@ -59,9 +60,11 @@ export default {
     },
 
     data() {
+        const { state, mostrarMensaje } = useMensajes()
         return {
+            mensaje: state,
+            mostrarMensaje,
             guardando: false,
-            mensaje: { tipo: null, texto: '' },
             ultimaGuardada: null,
             producciones: [],
             cargandoProducciones: false,
@@ -89,13 +92,6 @@ export default {
     },
 
     methods: {
-        mostrarMensaje(tipo, texto, duracion = 4000) {
-            this.mensaje = { tipo, texto }
-            if (duracion > 0) {
-                setTimeout(() => { this.mensaje = { tipo: null, texto: '' } }, duracion)
-            }
-        },
-
         // ── Planificación ──────────────────────────────────────────
         async cargarPlanificacion() {
             if (!this.operadorId) {

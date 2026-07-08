@@ -20,15 +20,43 @@
                         @archivo-seleccionado="procesarArchivo" />
 
                     <!-- INVENTARIO -->
-                    <MaterialesInventarioActual :materiales="inventarioActual" :cargando="cargandoInventario"
-                        @actualizar="cargarInventario" @editar="editarMaterial" @eliminar="eliminarMaterial"
-                        @sincronizar="sincronizarAPI" />
+                    <InventoryTable title="📦 Inventario Actual" :items="inventarioActual" :loading="cargandoInventario"
+                        item-label="materiales registrados" empty-text="📭 No hay materiales registrados"
+                        @actualizar="cargarInventario" @sincronizar="sincronizarAPI">
+                        <template #header>
+                            <th>Nombre</th>
+                            <th>Cantidad</th>
+                            <th>Descripción</th>
+                            <th>Acciones</th>
+                        </template>
+                        <template #row="{ item }">
+                            <td class="variety">{{ item.nombre }}</td>
+                            <td class="quantity">{{ item.cantidad }}</td>
+                            <td>{{ item.descripcion || '-' }}</td>
+                            <td class="actions-column">
+                                <button class="btn-action btn-edit" @click="editarMaterial(item)">✏️</button>
+                                <button class="btn-action btn-delete" @click="eliminarMaterial(item.id)">🗑️</button>
+                            </td>
+                        </template>
+                    </InventoryTable>
 
                 </div>
 
                 <!-- PANEL DERECHO: Preview Excel -->
-                <MaterialesPreview :datosProcesados="datosProcesados" :cargando="cargando" @cancelar="limpiarDatos"
-                    @confirmar="confirmarYSubir" />
+                <PreviewTable :items="datosProcesados" :loading="cargando" item-label="materiales encontrados"
+                    confirm-text="Guardar Materiales" loading-text="Guardando..."
+                    @cancelar="limpiarDatos" @confirmar="confirmarYSubir">
+                    <template #header>
+                        <th>Nombre</th>
+                        <th>Cantidad</th>
+                        <th>Descripción</th>
+                    </template>
+                    <template #row="{ item }">
+                        <td class="nombre" data-label="Nombre">{{ item.nombre }}</td>
+                        <td class="quantity" data-label="Cantidad">{{ item.cantidad }}</td>
+                        <td class="descripcion" data-label="Descripción">{{ item.descripcion || '-' }}</td>
+                    </template>
+                </PreviewTable>
 
             </div>
 
@@ -47,22 +75,26 @@ import MaterialClient from '../client/MaterialClient.js'
 
 import CargaArchivo from '../components/CargaArchivo.vue'
 import Alertas from '../components/Alertas.vue'
-import MaterialesInventarioActual from '../components/materiales/MaterialesInventarioActual.vue'
-import MaterialesPreview from '../components/materiales/MaterialesPreview.vue'
 import MaterialForm from '../components/materiales/MaterialForm.vue'
+import InventoryTable from '../components/shared/InventoryTable.vue'
+import PreviewTable from '../components/shared/PreviewTable.vue'
+import { useMensajes } from '../composables/useMensajes.js'
 
 export default {
 
     components: {
-        MaterialesInventarioActual,
-        MaterialesPreview,
         MaterialForm,
         CargaArchivo,
-        Alertas
+        Alertas,
+        InventoryTable,
+        PreviewTable
     },
 
     data() {
+        const { state, mostrarMensaje } = useMensajes()
         return {
+            mensaje: state,
+            mostrarMensaje,
             datosProcesados: [],
             inventarioActual: [],
             cargando: false,
@@ -73,10 +105,6 @@ export default {
                 nombre: '',
                 cantidad: null,
                 descripcion: ''
-            },
-            mensaje: {
-                tipo: null,
-                texto: ''
             }
         }
     },
@@ -86,15 +114,6 @@ export default {
     },
 
     methods: {
-
-        /* ================= MENSAJES ================= */
-        mostrarMensaje(tipo, texto, duracion = 3000) {
-            this.mensaje = { tipo, texto }
-            if (duracion > 0) {
-                setTimeout(() => { this.mensaje = { tipo: null, texto: '' } }, duracion)
-            }
-        },
-
         /* ================= INVENTARIO ================= */
         async cargarInventario() {
             this.cargandoInventario = true
@@ -295,6 +314,51 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 24px;
+}
+
+.variety {
+    color: var(--text-h);
+    font-weight: 600;
+}
+
+.quantity {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.nombre {
+    color: var(--text-h);
+    font-weight: 600;
+}
+
+.descripcion {
+    color: var(--text-light);
+    font-size: 13px;
+}
+
+.actions-column {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.btn-edit {
+    background: #dbeafe;
+}
+
+.btn-delete {
+    background: #fee2e2;
+}
+
+.btn-action:hover {
+    transform: scale(1.05);
 }
 
 @media (max-width: 768px) {

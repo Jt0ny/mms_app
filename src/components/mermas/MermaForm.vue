@@ -62,6 +62,7 @@ import MermaTipoSelector from './MermaTipoSelector.vue'
 import MermaMotivoSelector from './MermaMotivoSelector.vue'
 import Alertas from '../Alertas.vue'
 import MermaOperadorSelector from './MermaOperadorSelector.vue'
+import { obtenerFechaHoy } from '../../utils/date.js'
 
 export default {
   name: 'MermaForm',
@@ -106,7 +107,7 @@ export default {
     return {
       form: {
         operadorId: '',
-        fecha: this.obtenerFechaHoy(),
+        fecha: obtenerFechaHoy(),
         tipo: 'materia_prima',
         referenciaId: '',
         nombre: '',
@@ -171,11 +172,6 @@ export default {
     }
   },
   methods: {
-    obtenerFechaHoy() {
-      const fecha = new Date()
-      const fechaLocal = new Date(fecha.getTime() - fecha.getTimezoneOffset() * 60000)
-      return fechaLocal.toISOString().slice(0, 10)
-    },
     enviarFormulario() {
       if (!this.form.operadorId || !this.form.referenciaId || !this.form.cantidad || this.form.cantidad <= 0 || !this.form.motivo) {
         return
