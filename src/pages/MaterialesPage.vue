@@ -90,11 +90,13 @@ export default {
         PreviewTable
     },
 
+    setup() {
+        const { mensaje, mostrarMensaje } = useMensajes()
+        return { mensaje, mostrarMensaje }
+    },
+
     data() {
-        const { state, mostrarMensaje } = useMensajes()
         return {
-            mensaje: state,
-            mostrarMensaje,
             datosProcesados: [],
             inventarioActual: [],
             cargando: false,

@@ -1,17 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { getRol, getIsLogged } from '../composables/useAuth.js'
 
-import PublicHomePage from '../pages/PublicHomePage.vue'
+// Layout se carga estáticamente (siempre necesario)
 import MainLayout from '../components/layout/MainLayout.vue'
-import PedidoPage from '../pages/PedidoPage.vue'
-import MateriaPrimaPage from '../pages/MateriaPrimaPage.vue'
-import MaterialesPage from '../pages/MaterialesPage.vue'
-import RecetasPage from '../pages/RecetasPage.vue'
-import ProduccionPage from '../pages/ProduccionPage.vue'
-import PlanificacionPage from '../pages/PlanificacionPage.vue'
-import UsuariosPage from '../pages/UsuariosPage.vue'
-import MermasPage from '../pages/MermasPage.vue'
-import ClientesPage from '../pages/ClientesPage.vue'
-import DashboardPage from '../pages/DashboardPage.vue'
+
+// Lazy loading de páginas — cada página se carga solo cuando se navega a ella
+const PublicHomePage = () => import('../pages/PublicHomePage.vue')
+const PedidoPage = () => import('../pages/PedidoPage.vue')
+const MateriaPrimaPage = () => import('../pages/MateriaPrimaPage.vue')
+const MaterialesPage = () => import('../pages/MaterialesPage.vue')
+const RecetasPage = () => import('../pages/RecetasPage.vue')
+const ProduccionPage = () => import('../pages/ProduccionPage.vue')
+const PlanificacionPage = () => import('../pages/PlanificacionPage.vue')
+const UsuariosPage = () => import('../pages/UsuariosPage.vue')
+const MermasPage = () => import('../pages/MermasPage.vue')
+const ClientesPage = () => import('../pages/ClientesPage.vue')
+const DashboardPage = () => import('../pages/DashboardPage.vue')
 
 
 
@@ -32,7 +36,7 @@ const routes = [
       {
         path: '',
         redirect: () => {
-          const rol = localStorage.getItem('rol')
+          const rol = getRol()
           return rol === 'operador' ? '/app/produccion' : '/app/dashboard'
         }
       },
@@ -108,8 +112,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-  const isLogged = !!localStorage.getItem('rol')
-  const rol = localStorage.getItem('rol')
+  const isLogged = getIsLogged()
+  const rol = getRol()
 
   if (to.path === '/' && isLogged) {
     return rol === 'operador' ? '/app/produccion' : '/app/dashboard'
@@ -125,4 +129,4 @@ router.beforeEach((to) => {
   }
 })
 
-export default router
+export default router

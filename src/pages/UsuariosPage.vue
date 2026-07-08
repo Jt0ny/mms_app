@@ -29,11 +29,13 @@ export default {
         UsuarioTablaActual
     },
 
+    setup() {
+        const { mensaje, mostrarMensaje } = useMensajes()
+        return { mensaje, mostrarMensaje }
+    },
+
     data() {
-        const { state, mostrarMensaje } = useMensajes()
         return {
-            mensaje: state,
-            mostrarMensaje,
             usuarios: [],
             cargandoUsuarios: false
         }

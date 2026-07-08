@@ -39,8 +39,8 @@
 
                 <!-- PANEL DERECHO -->
                 <PreviewTable :items="datosProcesados" :loading="cargando" item-label="variedades encontradas"
-                    confirm-text="Guardar Inventario" loading-text="Guardando..."
-                    @cancelar="limpiarDatos" @confirmar="confirmarYSubir">
+                    confirm-text="Guardar Inventario" loading-text="Guardando..." @cancelar="limpiarDatos"
+                    @confirmar="confirmarYSubir">
                     <template #header>
                         <th>Variedad</th>
                         <th>Cantidad (Tallos)</th>
@@ -79,11 +79,13 @@ export default {
         PreviewTable
     },
 
+    setup() {
+        const { mensaje, mostrarMensaje } = useMensajes()
+        return { mensaje, mostrarMensaje }
+    },
+
     data() {
-        const { state, mostrarMensaje } = useMensajes()
         return {
-            mensaje: state,
-            mostrarMensaje,
             datosProcesados: [],
             inventarioActual: [],
             cargando: false,

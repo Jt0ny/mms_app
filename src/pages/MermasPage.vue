@@ -43,7 +43,7 @@ import MateriaPrimaClient from '../client/MateriaPrimaClient'
 import RecetaClient from '../client/RecetaClient'
 import UsuarioClient from '../client/UsuarioClient'
 import PlanificacionClient from '../client/PlanificacionClient'
-import { supabase } from '../supabase'
+import DashboardClient from '../client/DashboardClient'
 import { useMensajes } from '../composables/useMensajes.js'
 
 export default {
@@ -53,11 +53,13 @@ export default {
     MermaForm,
     MermaList
   },
+  setup() {
+    const { mensaje, mostrarMensaje } = useMensajes()
+    return { mensaje, mostrarMensaje }
+  },
+
   data() {
-    const { state, mostrarMensaje } = useMensajes()
     return {
-      mensaje: state,
-      mostrarMensaje,
       mermas: [],
       materiales: [],
       materiaPrima: [],
@@ -113,25 +115,12 @@ export default {
         console.error('Error al cargar materiales o recetas:', error)
       }
 
-      // Cargar materia prima (sincronizando con Supabase primero en segundo plano)
+      // Cargar materia prima (desde Supabase directamente)
       try {
-        // 1. Cargar inmediatamente desde Supabase para no bloquear la carga de la pantalla
         const mpRes = await MateriaPrimaClient.obtenerMateriaPrima()
         this.materiaPrima = mpRes ?? []
         this.materiaPrimaFiltrada = this.materiaPrima
         this.cargandoRecursos = false // Liberar estado de carga inicial de recursos
-
-        // 2. Sincronizar en segundo plano
-        MateriaPrimaClient.sincronizarConSupabase()
-          .then(async () => {
-            const mpResActualizado = await MateriaPrimaClient.obtenerMateriaPrima()
-            this.materiaPrima = mpResActualizado ?? []
-            this.materiaPrimaFiltrada = this.materiaPrima
-            console.log("Sincronización en segundo plano de materia prima para mermas completada.");
-          })
-          .catch(syncError => {
-            console.warn('Servidor de Materia Prima no disponible en puerto 8070 o error en segundo plano.', syncError)
-          })
       } catch (error) {
         console.error('Error al obtener materia prima:', error)
         this.materiaPrima = []
@@ -170,16 +159,12 @@ export default {
             const nuevaCantidad = Math.max(0, (Number(mp.cantidad_total) || 0) - Number(payload.cantidad))
 
             // Actualizar stock de materia prima en Supabase
-            const { error: mpErr } = await supabase
-              .from('materia_prima')
-              .update({ cantidad_total: nuevaCantidad })
-              .eq('id', mp.id)
-
-            if (!mpErr) {
+            try {
+              await DashboardClient.actualizarStockMateriaPrima(mp.id, nuevaCantidad)
               mp.cantidad_total = nuevaCantidad
               mp.cantidadTotal = nuevaCantidad
               this.mostrarMensaje('exito', `✓ Merma registrada e inventario de "${mp.variedad}" actualizado.`)
-            } else {
+            } catch {
               this.mostrarMensaje('exito', '✓ Merma registrada con éxito.')
             }
           } else {

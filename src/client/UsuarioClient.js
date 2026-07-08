@@ -1,4 +1,4 @@
-import { supabase } from '../supabase'
+import { supabase } from './supabase'
 
 export default {
   // Obtiene un usuario por nombre y contraseña encriptada (Alternativa 2)

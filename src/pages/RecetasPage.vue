@@ -64,12 +64,13 @@ export default {
         Alertas
     },
 
-    data() {
-        const { state, mostrarMensaje } = useMensajes()
-        return {
-            mensaje: state,
-            mostrarMensaje,
+    setup() {
+        const { mensaje, mostrarMensaje } = useMensajes()
+        return { mensaje, mostrarMensaje }
+    },
 
+    data() {
+        return {
             materiales: [],
             materiaPrima: [],
             materialesSeleccionados: [],
@@ -118,11 +119,6 @@ export default {
         async cargarMateriaPrima() {
             this.cargandoMateriaPrima = true
             try {
-                try {
-                    await MateriaPrimaClient.sincronizarConSupabase()
-                } catch (syncError) {
-                    console.warn('Servidor de Materia Prima no disponible en puerto 8070. Usando base de datos local de Supabase.', syncError)
-                }
                 const data = await MateriaPrimaClient.obtenerMateriaPrima()
                 this.materiaPrima = data ?? []
             } catch (error) {

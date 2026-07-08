@@ -1,4 +1,4 @@
-import { supabase } from '../supabase'
+import { supabase } from './supabase'
 
 export default {
     /**
@@ -23,7 +23,7 @@ export default {
                 .order('fecha', { ascending: false });
 
             if (error) throw error;
-            
+
             return (data || []).map(p => ({
                 id: p.id,
                 fecha: p.fecha,
@@ -118,7 +118,7 @@ export default {
                 if (cantProducida <= 0) continue;
 
                 // Buscar recetas elegibles para esta categoría
-                const recetasCategoria = (recetas || []).filter(r => 
+                const recetasCategoria = (recetas || []).filter(r =>
                     String(r.categoria).toLowerCase().trim() === String(d.categoria).toLowerCase().trim()
                 );
 
@@ -129,15 +129,15 @@ export default {
                 // Prioridad 2: Cualquier receta en esta categoría que tenga ingredientes configurados
                 // Prioridad 3: La receta planificada (aunque esté vacía)
                 // Prioridad 4: La primera receta de esta categoría
-                let recetaElegida = recetasCategoria.find(r => 
-                    recetasPlanificadasIds.includes(r.id) && 
-                    ((r.receta_materia_prima && r.receta_materia_prima.length > 0) || 
-                     (r.receta_materiales && r.receta_materiales.length > 0))
+                let recetaElegida = recetasCategoria.find(r =>
+                    recetasPlanificadasIds.includes(r.id) &&
+                    ((r.receta_materia_prima && r.receta_materia_prima.length > 0) ||
+                        (r.receta_materiales && r.receta_materiales.length > 0))
                 );
 
                 if (!recetaElegida) {
-                    recetaElegida = recetasCategoria.find(r => 
-                        (r.receta_materia_prima && r.receta_materia_prima.length > 0) || 
+                    recetaElegida = recetasCategoria.find(r =>
+                        (r.receta_materia_prima && r.receta_materia_prima.length > 0) ||
                         (r.receta_materiales && r.receta_materiales.length > 0)
                     );
                 }

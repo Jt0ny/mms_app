@@ -26,31 +26,27 @@
 </template>
 
 <script>
+import { useAuth } from '../../composables/useAuth.js'
+
 export default {
   name: "Navbar",
   emits: ['ingresar', 'logout'],
-  data() {
-    return {
-      rol: null
-    }
+
+  setup() {
+    const { rol, isLogged, logout } = useAuth()
+    return { rol, isLogged, logout }
   },
+
   computed: {
-    isLogged() {
-      return !!this.rol
-    },
     buttonLabel() {
       return this.isLogged ? 'Salir del sistema' : 'Ingresar'
     }
   },
-  mounted() {
-    this.rol = localStorage.getItem('rol')
-  },
-  methods: {
 
+  methods: {
     onAction() {
       if (this.isLogged) {
-        localStorage.removeItem('rol')
-        this.rol = null
+        this.logout()
         this.$emit('logout')
       } else {
         this.$emit('ingresar')

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { supabase } from "../supabase";
+import { supabase } from "./supabase";
 
 const API_URL = "http://localhost:8090/materiales";
 
@@ -32,18 +32,18 @@ export default {
         const { data: existentes, error: queryErr } = await supabase
           .from('materiales')
           .select('id, cantidad');
-        
+
         if (!queryErr && existentes) {
           const mapExistentes = new Map(existentes.map(e => [String(e.id), e.cantidad]));
-          
+
           // Solo insertar los que NO existen en Supabase
           const nuevosRegistros = payloadUpsert.filter(item => !mapExistentes.has(item.id));
-          
+
           if (nuevosRegistros.length === 0) {
             console.log("No hay nuevos materiales para insertar (preservando stock actual).");
             return;
           }
-          
+
           const { error: insErr } = await supabase
             .from('materiales')
             .upsert(nuevosRegistros);

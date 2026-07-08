@@ -16,6 +16,7 @@
 <script>
 import NavBar from '../components/layout/NavBar.vue'
 import LoginForm from '../components/login/LoginForm.vue'
+import { useAuth } from '../composables/useAuth.js'
 
 export default {
   name: 'PublicHomePage',
@@ -23,6 +24,11 @@ export default {
   components: {
     NavBar,
     LoginForm
+  },
+
+  setup() {
+    const { login, logout } = useAuth()
+    return { login, logout }
   },
 
   data() {
@@ -33,18 +39,16 @@ export default {
 
   methods: {
     ingresarSistema(usuario) {
-      const rol = (usuario.rol || '').toLowerCase()
-      localStorage.setItem('rol', rol)
-      localStorage.setItem('usuarioId', usuario.id ?? '')
-      localStorage.setItem('usuarioNombre', usuario.nombre ?? '')
+      this.login(usuario)
       this.mostrarLogin = false
 
+      const rol = (usuario.rol || '').toLowerCase()
       const rutaInicial = rol === 'operador' ? '/app/produccion' : '/app/pedidos'
       this.$router.push(rutaInicial)
     },
 
     salirSistema() {
-      localStorage.removeItem('rol')
+      this.logout()
       this.mostrarLogin = false
     }
   }

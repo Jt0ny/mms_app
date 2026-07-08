@@ -25,6 +25,7 @@
 <script>
 import SideBar from './SideBar.vue'
 import NavBar from './NavBar.vue'
+import { useAuth } from '../../composables/useAuth.js'
 
 export default {
 
@@ -33,9 +34,14 @@ export default {
         NavBar
     },
 
+    setup() {
+        const { logout } = useAuth()
+        return { logout }
+    },
+
     methods: {
         salirSistema() {
-            localStorage.removeItem('rol')
+            this.logout()
             this.$router.push('/')
         }
     }

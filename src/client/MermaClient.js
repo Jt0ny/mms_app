@@ -1,4 +1,4 @@
-import { supabase } from '../supabase'
+import { supabase } from './supabase'
 
 /**
  * Función auxiliar para verificar si un ID de operador es un UUID válido de Supabase

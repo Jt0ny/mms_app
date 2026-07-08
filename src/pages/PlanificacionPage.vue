@@ -92,12 +92,14 @@ export default {
 		Alertas
 	},
 
+	setup() {
+		const { mensaje, mostrarMensaje } = useMensajes()
+		return { mensaje, mostrarMensaje }
+	},
+
 	data() {
-		const { state, mostrarMensaje } = useMensajes()
 		const hoy = new Date().toISOString().slice(0, 10)
 		return {
-			mensaje: state,
-			mostrarMensaje,
 			fechaSeleccionada: hoy,
 			asignaciones: [],      // [{ operador, recetas: [{recetaId, nombre, categoria, cantidad}], stemsTotal }]
 			todasLasRecetas: [],   // cache para el select de agregar receta

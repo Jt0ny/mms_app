@@ -60,20 +60,19 @@
 </template>
 
 <script>
+import { useAuth } from '../../composables/useAuth.js'
+
 export default {
   name: "SidebarLayout",
 
-  data() {
-    return {
-      isCollapsed: false,
-      rol: localStorage.getItem('rol')
-    }
+  setup() {
+    const { rol } = useAuth()
+    return { rol }
   },
 
-  watch: {
-    // Re-leer el rol cuando cambia la ruta (ej. después de login/logout)
-    $route() {
-      this.rol = localStorage.getItem('rol')
+  data() {
+    return {
+      isCollapsed: false
     }
   },
 

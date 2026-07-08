@@ -1,4 +1,4 @@
-import { supabase } from '../supabase'
+import { supabase } from './supabase'
 
 export default {
     /**
@@ -462,10 +462,10 @@ export default {
                     const updates = [];
                     for (const pedido of pedidosDetalles) {
                         const stemsPorOperador = new Map(); // operadorId -> stems
-                        
+
                         for (const det of (pedido.pedido_detalles || [])) {
                             // Buscar qué operador tiene esta receta asignada en la distribución
-                            const distAsignada = distribuciones.find(d => 
+                            const distAsignada = distribuciones.find(d =>
                                 d.recetas.some(r => r.recetaId === det.receta_id)
                             );
                             if (distAsignada) {
@@ -549,7 +549,7 @@ export default {
                     if (mapaCategorias.has(categoria)) {
                         const entry = mapaCategorias.get(categoria);
                         entry.totalStems += stems;
-                        
+
                         const pedExistente = entry.pedidos.find(p => p.pedidoId === pedido.id);
                         if (pedExistente) {
                             pedExistente.stems += stems;

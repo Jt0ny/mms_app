@@ -1,5 +1,5 @@
 import axios from "axios";
-import { supabase } from "../supabase";
+import { supabase } from "./supabase";
 import ClientesClient from "./ClientesClient";
 
 const API_URL = "http://localhost:8060/pedidos";
@@ -80,7 +80,7 @@ export default {
           });
         }
       }
-      
+
       // Mapear recetas por categoría. Si hay múltiples recetas de la misma categoría, toma la primera.
       const mapRecetas = new Map();
       recetas.forEach(r => {
@@ -101,7 +101,7 @@ export default {
 
       if (missingCategories.length > 0) {
         console.log(`Creando recetas placeholder para categorías faltantes:`, missingCategories);
-        
+
         const payloadRecetas = missingCategories.map(category => ({
           nombre: `Receta Genérica ${category}`,
           categoria: category,
@@ -316,7 +316,7 @@ export default {
   async agregarPedido(data) {
     try {
       const response = await axios.post(`${API_URL}/importar`, data);
-      
+
       // Sincronizar inmediatamente los pedidos importados a Supabase
       try {
         await this.sincronizarConSupabase();

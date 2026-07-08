@@ -67,11 +67,13 @@ export default {
     ClienteForm,
     Alertas
   },
+  setup() {
+    const { mensaje, mostrarMensaje } = useMensajes()
+    return { mensaje, mostrarMensaje }
+  },
+
   data() {
-    const { state, mostrarMensaje } = useMensajes()
     return {
-      mensaje: state,
-      mostrarMensaje,
       clientes: [],
       cargando: false,
       sincronizando: false,

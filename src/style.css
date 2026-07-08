@@ -28,6 +28,17 @@
   --primary-border: rgba(22, 163, 74, 0.3);
   --primary-bg:     rgba(22, 163, 74, 0.08);
 
+  /* Alertas */
+  --alert-success-bg: #dcfce7;
+  --alert-success-text: #15803d;
+  --alert-success-border: #bbf7d0;
+  --alert-error-bg: #fee2e2;
+  --alert-error-text: #dc2626;
+  --alert-error-border: #fecaca;
+  --alert-info-bg: #eff6ff;
+  --alert-info-text: #2563eb;
+  --alert-info-border: #bfdbfe;
+
   font: clamp(15px, 1vw + 0.7rem, 16px)/1.5 var(--sans);
   letter-spacing: 0.2px;
   color: var(--text);

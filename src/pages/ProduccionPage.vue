@@ -51,6 +51,7 @@ import ProduccionRecetasView from '../components/produccion/ProduccionRecetasVie
 import PlanificacionClient from '../client/PlanificacionClient.js'
 import RecetaClient from '../client/RecetaClient'
 import { useMensajes } from '../composables/useMensajes.js'
+import { useAuth } from '../composables/useAuth.js'
 
 export default {
     components: {
@@ -59,11 +60,14 @@ export default {
         ProduccionRecetasView
     },
 
+    setup() {
+        const { mensaje, mostrarMensaje } = useMensajes()
+        const { usuarioId, usuarioNombre } = useAuth()
+        return { mensaje, mostrarMensaje, operadorId: usuarioId, operadorNombre: usuarioNombre }
+    },
+
     data() {
-        const { state, mostrarMensaje } = useMensajes()
         return {
-            mensaje: state,
-            mostrarMensaje,
             guardando: false,
             ultimaGuardada: null,
             producciones: [],
@@ -74,8 +78,6 @@ export default {
             contadorRecetaDefaultTotal: 6,
 
             // Planificación del operador
-            operadorId: localStorage.getItem('usuarioId') || null,
-            operadorNombre: localStorage.getItem('usuarioNombre') || null,
             recetasPlanificadasIds: null,   // null = sin cargar | Array = filtro activo
             planificacionFecha: null,
             cargandoPlanificacion: false,

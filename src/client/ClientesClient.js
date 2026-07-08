@@ -1,4 +1,4 @@
-import { supabase } from '../supabase'
+import { supabase } from './supabase'
 
 export default {
   // Obtiene la lista completa de clientes y resuelve la relación recursiva del broker
