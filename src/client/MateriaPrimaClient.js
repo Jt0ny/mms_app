@@ -1,5 +1,6 @@
 import axios from "axios";
 import { supabase } from "./supabase";
+import { obtenerFechaHoy } from "../utils/date.js";
 
 const API_URL = `http://localhost:8070/materia-prima`;
 
@@ -23,7 +24,7 @@ export default {
         id: String(mp.id),
         variedad: mp.variedad,
         cantidad_total: mp.cantidadTotal ?? mp.cantidad_total ?? mp.cantidad ?? 0,
-        fecha_ingreso: mp.fecha || mp.fecha_ingreso || new Date().toISOString().split('T')[0]
+        fecha_ingreso: mp.fecha || mp.fecha_ingreso || obtenerFechaHoy()
       }));
 
       if (!forceOverwrite) {
@@ -96,24 +97,57 @@ export default {
   },
 
   /**
-   * Carga múltiples materias primas (bulk import) en el servidor externo (puerto 8070)
-   * y luego ejecuta la sincronización con Supabase.
+   * Carga múltiples materias primas (bulk import) directamente en Supabase.
+   * Si la variedad ya existe, actualiza la cantidad.
    */
   async cargarMateriaPrima(data) {
     try {
-      const response = await axios.post(API_URL + '/importar', data);
+      // Obtener existentes para resolver IDs por variedad
+      const { data: existentes, error: queryErr } = await supabase
+        .from('materia_prima')
+        .select('id, variedad');
 
-      // Intentar sincronizar los datos recién cargados en Supabase (forzando sobreescritura)
-      try {
-        await this.sincronizarConSupabase(true);
-      } catch (syncError) {
-        console.warn("Materia prima importada en API 8070, pero falló la sincronización con Supabase:", syncError);
-      }
+      if (queryErr) throw queryErr;
 
-      return response.data;
+      const mapExistentes = new Map(
+        (existentes || []).map(e => [e.variedad.toLowerCase().trim(), e.id])
+      );
+
+      const payload = data.map(mp => {
+        const variedad = String(mp.variedad || '').trim();
+        const existingId = mapExistentes.get(variedad.toLowerCase());
+        return {
+          id: existingId || crypto.randomUUID(),
+          variedad,
+          cantidad_total: mp.cantidad_total ?? mp.cantidadTotal ?? 0,
+          fecha_ingreso: mp.fecha_ingreso || mp.fecha || obtenerFechaHoy()
+        };
+      });
+
+      const { error } = await supabase
+        .from('materia_prima')
+        .upsert(payload);
+
+      if (error) throw error;
+
+      console.log(`${payload.length} materias primas guardadas directamente en Supabase.`);
     } catch (error) {
-      console.error("Error al guardar materias primas en el servidor externo:", error);
+      console.error("Error al guardar materias primas en Supabase:", error);
       throw error;
     }
+  },
+
+  /**
+   * Actualiza el stock de materia prima.
+   * @param {string} id — UUID de la materia prima
+   * @param {number} nuevaCantidad — nueva cantidad total
+   */
+  async actualizarStockMateriaPrima(id, nuevaCantidad) {
+    const { error } = await supabase
+      .from('materia_prima')
+      .update({ cantidad_total: nuevaCantidad })
+      .eq('id', id);
+
+    if (error) throw error;
   }
 }

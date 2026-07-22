@@ -1,6 +1,8 @@
 import axios from "axios";
 import { supabase } from "./supabase";
 import ClientesClient from "./ClientesClient";
+import RecetaClient from "./RecetaClient";
+import { obtenerFechaHoy } from "../utils/date.js";
 
 const API_URL = "http://localhost:8060/pedidos";
 
@@ -131,6 +133,7 @@ export default {
         const shipName = (item.clienteEnvio || item.cliente_envio || "").trim();
         const category = (item.categoria || "").trim();
         const stemsVal = parseInt(item.stems) || 0;
+        const precioVal = parseFloat(item.precio) || 0;
 
         if (!billName) continue; // No se puede procesar sin cliente de facturación
 
@@ -161,7 +164,7 @@ export default {
           id: pedidoIdStr,
           cliente_facturacion_id: billId,
           cliente_envio_id: shipId,
-          fecha_pedido: item.fecha_ingreso || item.fecha || new Date().toISOString().split('T')[0],
+          fecha_pedido: item.fecha_ingreso || item.fecha || obtenerFechaHoy(),
           estado: item.estado || 'Pendiente'
         });
 
@@ -169,7 +172,8 @@ export default {
           pedido_id: pedidoIdStr,
           receta_id: recetaId,
           stems: stemsVal,
-          cantidad: 1
+          cantidad: 1,
+          precio: precioVal
         });
       }
 
@@ -229,6 +233,7 @@ export default {
           cliente_envio:cliente_envio_id ( id, nombre ),
           pedido_detalles (
             stems,
+            precio,
             recetas (
               id,
               nombre,
@@ -252,6 +257,7 @@ export default {
             cliente_envio: item.cliente_envio?.nombre || '',
             categoria: '',
             stems: 0,
+            precio: 0,
             fecha: item.fecha_pedido,
             estado: item.estado,
             operadorId: item.operador_id,
@@ -267,6 +273,7 @@ export default {
               cliente_envio: item.cliente_envio?.nombre || '',
               categoria: det.recetas?.categoria || '',
               stems: det.stems || 0,
+              precio: det.precio || 0,
               fecha: item.fecha_pedido,
               estado: item.estado,
               operadorId: item.operador_id,
@@ -310,23 +317,174 @@ export default {
   },
 
   /**
-   * Envía los pedidos al servidor externo (puerto 8060) para importarlos
-   * y luego ejecuta la sincronización con Supabase.
+   * Guarda pedidos directamente en Supabase, resolviendo clientes y recetas.
+   * Recibe los datos procesados del Excel (array de objetos con cliente_facturacion, cliente_envio, categoria, stems).
    */
   async agregarPedido(data) {
     try {
-      const response = await axios.post(`${API_URL}/importar`, data);
+      // 1. Obtener catálogos de clientes y recetas desde Supabase
+      let [clientes, recetas] = await Promise.all([
+        ClientesClient.obtenerClientes(),
+        RecetaClient.obtenerRecetas()
+      ]);
 
-      // Sincronizar inmediatamente los pedidos importados a Supabase
-      try {
-        await this.sincronizarConSupabase();
-      } catch (syncError) {
-        console.warn("Pedidos guardados en el puerto 8060, pero falló la sincronización con Supabase:", syncError);
+      const mapClientes = new Map(clientes.map(c => [c.nombre.toLowerCase().trim(), c.id]));
+
+      // Rastrear nombres faltantes
+      const billNames = new Set();
+      const shipNames = new Set();
+
+      for (const item of data) {
+        const billName = (item.cliente_facturacion || item.clienteFacturacion || "").trim();
+        const shipName = (item.cliente_envio || item.clienteEnvio || "").trim();
+
+        if (billName && !mapClientes.has(billName.toLowerCase())) {
+          billNames.add(billName);
+        }
+        if (shipName && !mapClientes.has(shipName.toLowerCase())) {
+          shipNames.add(shipName);
+        }
       }
 
-      return response.data;
+      const missingClientNames = new Set([...billNames, ...shipNames]);
+
+      if (missingClientNames.size > 0) {
+        const payloadClientes = [...missingClientNames].map(name => {
+          const esBill = billNames.has(name);
+          const esShip = shipNames.has(name);
+          let tipo = 'Ambos';
+          if (esBill && !esShip) tipo = 'Facturación';
+          else if (!esBill && esShip) tipo = 'Envío';
+
+          return {
+            nombre: name,
+            tipo,
+            email: '',
+            telefono: '',
+            direccion: '',
+            notas: 'Autogenerado durante carga de pedidos'
+          };
+        });
+
+        const { data: creadosClientes, error: cliError } = await supabase
+          .from('clientes')
+          .insert(payloadClientes)
+          .select();
+
+        if (cliError) throw cliError;
+
+        if (creadosClientes) {
+          creadosClientes.forEach(c => {
+            mapClientes.set(c.nombre.toLowerCase().trim(), c.id);
+          });
+        }
+      }
+
+      // Mapear recetas por categoría
+      const mapRecetas = new Map();
+      recetas.forEach(r => {
+        if (r.categoria) {
+          const catKey = r.categoria.toLowerCase().trim();
+          if (!mapRecetas.has(catKey)) {
+            mapRecetas.set(catKey, r.id);
+          }
+        }
+      });
+
+      // Resolver recetas placeholder para categorías faltantes
+      const missingCategories = [...new Set(
+        data
+          .map(item => (item.categoria || "").trim())
+          .filter(cat => cat && !mapRecetas.has(cat.toLowerCase()))
+      )];
+
+      if (missingCategories.length > 0) {
+        const payloadRecetas = missingCategories.map(category => ({
+          nombre: `Receta Genérica ${category}`,
+          categoria: category,
+          instrucciones: "Receta autogenerada para carga de pedidos"
+        }));
+
+        const { data: creadas, error: recError } = await supabase
+          .from('recetas')
+          .insert(payloadRecetas)
+          .select();
+
+        if (recError) throw recError;
+
+        if (creadas) {
+          creadas.forEach(r => {
+            mapRecetas.set(r.categoria.toLowerCase(), r.id);
+          });
+        }
+      }
+
+      // 2. Construir pedidos y detalles
+      const pedidosMap = new Map();
+      const detallesToInsert = [];
+
+      for (const item of data) {
+        const billName = (item.cliente_facturacion || item.clienteFacturacion || "").trim();
+        const shipName = (item.cliente_envio || item.clienteEnvio || "").trim();
+        const category = (item.categoria || "").trim();
+        const stemsVal = parseInt(item.stems) || 0;
+
+        if (!billName) continue;
+
+        let billId = mapClientes.get(billName.toLowerCase());
+        if (!billId) continue;
+
+        let shipId = shipName ? (mapClientes.get(shipName.toLowerCase()) || null) : null;
+
+        let recetaId = category ? (mapRecetas.get(category.toLowerCase()) || null) : null;
+        if (!recetaId) continue;
+
+        // Generar un ID único para cada pedido basado en el contenido
+        const pedidoKey = `${billName}-${shipName}-${item.fecha_ingreso || ''}`;
+        if (!pedidosMap.has(pedidoKey)) {
+          const pedidoIdStr = crypto.randomUUID();
+          pedidosMap.set(pedidoKey, {
+            id: pedidoIdStr,
+            cliente_facturacion_id: billId,
+            cliente_envio_id: shipId,
+            fecha_pedido: item.fecha_ingreso || item.fecha || obtenerFechaHoy(),
+            estado: 'Pendiente'
+          });
+        }
+
+        const pedido = pedidosMap.get(pedidoKey);
+        detallesToInsert.push({
+          pedido_id: pedido.id,
+          receta_id: recetaId,
+          stems: stemsVal,
+          cantidad: 1,
+          precio: item.precio || 0
+        });
+      }
+
+      const pedidosToInsert = Array.from(pedidosMap.values());
+
+      if (pedidosToInsert.length === 0) {
+        console.log("No hay registros válidos para guardar.");
+        return;
+      }
+
+      // 3. Insertar en Supabase
+      const { error: pedError } = await supabase
+        .from('pedidos')
+        .insert(pedidosToInsert);
+
+      if (pedError) throw pedError;
+
+      const { error: detError } = await supabase
+        .from('pedido_detalles')
+        .insert(detallesToInsert);
+
+      if (detError) throw detError;
+
+      console.log(`${pedidosToInsert.length} pedidos con ${detallesToInsert.length} detalles guardados en Supabase.`);
     } catch (error) {
-      console.error("Error al agregar pedido en el servidor externo:", error);
+      console.error("Error al guardar pedidos en Supabase:", error);
       throw error;
     }
   },

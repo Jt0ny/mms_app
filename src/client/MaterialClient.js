@@ -85,100 +85,101 @@ export default {
   },
 
   /**
-   * Carga múltiples materiales (bulk import) en el servidor externo (puerto 8090)
-   * y luego ejecuta la sincronización con Supabase.
+   * Carga múltiples materiales (bulk import) directamente en Supabase.
+   * Si el nombre ya existe, actualiza la cantidad.
    */
   async cargarMateriales(data) {
     try {
-      const response = await axios.post(API_URL + '/importar', data);
+      // Obtener existentes para resolver IDs por nombre
+      const { data: existentes, error: queryErr } = await supabase
+        .from('materiales')
+        .select('id, nombre');
 
-      // Intentar sincronizar los datos recién cargados en Supabase (forzando sobreescritura)
-      try {
-        await this.sincronizarConSupabase(true);
-      } catch (syncError) {
-        console.warn("Materiales importados en API 8090, pero falló la sincronización con Supabase:", syncError);
-      }
+      if (queryErr) throw queryErr;
 
-      return response.data;
+      const mapExistentes = new Map(
+        (existentes || []).map(e => [e.nombre.toLowerCase().trim(), e.id])
+      );
+
+      const payload = data.map(m => {
+        const nombre = String(m.nombre || '').trim();
+        const existingId = mapExistentes.get(nombre.toLowerCase());
+        return {
+          id: existingId || crypto.randomUUID(),
+          nombre,
+          cantidad: parseInt(m.cantidad) || 0,
+          descripcion: m.descripcion || null
+        };
+      });
+
+      const { error } = await supabase
+        .from('materiales')
+        .upsert(payload);
+
+      if (error) throw error;
+
+      console.log(`${payload.length} materiales guardados directamente en Supabase.`);
     } catch (error) {
-      console.error("Error al guardar materiales en el servidor externo:", error);
+      console.error("Error al guardar materiales en Supabase:", error);
       throw error;
     }
   },
 
   /**
-   * Agrega un nuevo material en el servidor externo (puerto 8090)
-   * y luego sincroniza los cambios en Supabase.
+   * Agrega un nuevo material directamente en Supabase.
    */
   async agregarMaterial(data) {
     try {
-      const response = await axios.post(API_URL, {
-        nombre: data.nombre,
-        cantidad: parseInt(data.cantidad) || 0,
-        descripcion: data.descripcion || null
-      });
+      const { error } = await supabase
+        .from('materiales')
+        .insert({
+          id: crypto.randomUUID(),
+          nombre: data.nombre,
+          cantidad: parseInt(data.cantidad) || 0,
+          descripcion: data.descripcion || null
+        });
 
-      // Sincronizar inmediatamente (forzando sobreescritura)
-      try {
-        await this.sincronizarConSupabase(true);
-      } catch (syncError) {
-        console.warn("Material agregado en el puerto 8090, pero falló la sincronización con Supabase:", syncError);
-      }
-
-      return response.data;
+      if (error) throw error;
     } catch (error) {
-      console.error("Error al agregar material en el servidor externo:", error);
+      console.error("Error al agregar material en Supabase:", error);
       throw error;
     }
   },
 
   /**
-   * Actualiza un material existente en el servidor externo (puerto 8090)
-   * y luego sincroniza los cambios en Supabase.
+   * Actualiza un material existente directamente en Supabase.
    */
   async actualizarMaterial(id, data) {
     try {
-      const response = await axios.put(`${API_URL}/${id}`, {
-        nombre: data.nombre,
-        cantidad: parseInt(data.cantidad) || 0,
-        descripcion: data.descripcion || null
-      });
+      const { error } = await supabase
+        .from('materiales')
+        .update({
+          nombre: data.nombre,
+          cantidad: parseInt(data.cantidad) || 0,
+          descripcion: data.descripcion || null
+        })
+        .eq('id', id);
 
-      // Sincronizar inmediatamente (forzando sobreescritura)
-      try {
-        await this.sincronizarConSupabase(true);
-      } catch (syncError) {
-        console.warn(`Material actualizado en el puerto 8090, pero falló la sincronización del ID ${id} con Supabase:`, syncError);
-      }
-
-      return response.data;
+      if (error) throw error;
     } catch (error) {
-      console.error(`Error al actualizar material con ID ${id} en el servidor externo:`, error);
+      console.error(`Error al actualizar material con ID ${id} en Supabase:`, error);
       throw error;
     }
   },
 
   /**
-   * Elimina un material en el servidor externo (puerto 8090)
-   * y luego sincroniza los cambios en Supabase (eliminando el registro correspondiente).
+   * Elimina un material directamente en Supabase.
    */
   async eliminarMaterial(id) {
     try {
-      const response = await axios.delete(`${API_URL}/${id}`);
-
-      // Eliminar el registro en Supabase directamente para mantener consistencia inmediata
-      const { error: dbError } = await supabase
+      const { error } = await supabase
         .from('materiales')
         .delete()
         .eq('id', id);
 
-      if (dbError) {
-        console.warn(`Material eliminado del puerto 8090, pero falló la eliminación local en Supabase:`, dbError);
-      }
-
-      return response.data;
+      if (error) throw error;
     } catch (error) {
-      console.error(`Error al eliminar material con ID ${id} en el servidor externo:`, error);
+      console.error(`Error al eliminar material con ID ${id} en Supabase:`, error);
       throw error;
     }
   },

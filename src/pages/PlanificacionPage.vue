@@ -1,22 +1,23 @@
 <template>
-	<div class="container planificacion-page">
-		<div class="content-wrap">
+	<div class="page-container planificacion-page">
+		<div class="page-content-wrap">
 
 			<!-- Header / Selector de Fecha y Acciones -->
-			<PlanificacionAsignacion
-				v-model:fechaSeleccionada="fechaSeleccionada"
-				:cargando-auto="cargandoAuto"
-				:guardando="guardando"
-				:mostrar-limpiar="asignaciones.length > 0"
-				@distribuir="distribuirAutomaticamente"
-				@limpiar="limpiarTodo"
-			/>
+			<PlanificacionAsignacion v-model:fechaSeleccionada="fechaSeleccionada" :cargando-auto="cargandoAuto"
+				:guardando="guardando" :mostrar-limpiar="asignaciones.length > 0"
+				@distribuir="distribuirAutomaticamente" @limpiar="limpiarTodo" />
 
 			<!-- Feedback Global de Errores/Éxito en el Header -->
 			<Alertas :mensaje="mensaje" />
 
+			<!-- Vista de planificaciones guardadas (Si ya existe una planificación para este día) -->
+			<PlanificacionVista v-if="planificacionesGuardadas.length > 0" :planificaciones="planificacionesGuardadas"
+				:fecha-seleccionada="fechaSeleccionada" :eliminando="eliminandoPlanificaciones"
+				@eliminar="eliminarPlanificacionesDelDia" />
+
 			<!-- Estado inicial / vacío -->
-			<div v-if="!cargandoAuto && asignaciones.length === 0 && !mostrarMapeoWizard" class="summary-card-vacio">
+			<div v-else-if="!cargandoAuto && asignaciones.length === 0 && !mostrarMapeoWizard"
+				class="summary-card-vacio">
 				<p class="vacio-texto">
 					Selecciona una fecha y presiona <strong>⚡ Distribuir automáticamente</strong> para generar la
 					planificación según los pedidos pendientes del día.
@@ -29,39 +30,22 @@
 			</div>
 
 			<!-- Asistente de Mapeo de Recetas (Inline) -->
-			<PlanificacionMapeoRecetas
-				v-else-if="mostrarMapeoWizard"
-				:categorias-requeridas="categoriasRequeridas"
-				:todas-las-recetas="todasLasRecetas"
-				@confirmar="confirmarMapeoYPlanificar"
-				@cancelar="mostrarMapeoWizard = false; cargandoAuto = false"
-			/>
+			<PlanificacionMapeoRecetas v-else-if="mostrarMapeoWizard" :categorias-requeridas="categoriasRequeridas"
+				:todas-las-recetas="todasLasRecetas" @confirmar="confirmarMapeoYPlanificar"
+				@cancelar="mostrarMapeoWizard = false; cargandoAuto = false" />
 
 			<!-- Resumen de asignaciones y tarjetas de operadores -->
 			<template v-else-if="asignaciones.length > 0">
 				<!-- Resumen Global -->
-				<PlanificacionResumen
-					:fecha-seleccionada="fechaSeleccionada"
-					:total-operadores="asignaciones.length"
-					:total-recetas="totalRecetasGlobal"
-					:total-stems="totalStemsGlobal"
-					:guardando="guardando"
-					:mensaje-inline="mensajeInline"
-					@guardar="guardarTodas"
-				/>
+				<PlanificacionResumen :fecha-seleccionada="fechaSeleccionada" :total-operadores="asignaciones.length"
+					:total-recetas="totalRecetasGlobal" :total-stems="totalStemsGlobal" :guardando="guardando"
+					:mensaje-inline="mensajeInline" @guardar="guardarTodas" />
 
 				<!-- Grid de Tarjetas de Operadores -->
 				<div class="page-grid">
-					<PlanificacionOperadorCard
-						v-for="(asig, idx) in asignaciones"
-						:key="asig.operador.id"
-						:asig="asig"
-						:idx="idx"
-						:todas-las-recetas="todasLasRecetas"
-						@quitar-receta="quitarReceta"
-						@agregar-receta="agregarReceta"
-						@recalcular="recalcularStems"
-					/>
+					<PlanificacionOperadorCard v-for="(asig, idx) in asignaciones" :key="asig.operador.id" :asig="asig"
+						:idx="idx" :todas-las-recetas="todasLasRecetas" @quitar-receta="quitarReceta"
+						@agregar-receta="agregarReceta" @recalcular="recalcularStems" />
 				</div>
 			</template>
 
@@ -71,6 +55,7 @@
 
 <script>
 import PlanificacionClient from '../client/PlanificacionClient.js'
+import PlanificacionAlgoritmo from '../client/PlanificacionAlgoritmo.js'
 import UsuarioClient from '../client/UsuarioClient.js'
 import RecetaClient from '../client/RecetaClient.js'
 
@@ -78,8 +63,10 @@ import PlanificacionAsignacion from '../components/planificacion/PlanificacionAs
 import PlanificacionResumen from '../components/planificacion/PlanificacionResumen.vue'
 import PlanificacionOperadorCard from '../components/planificacion/PlanificacionOperadorCard.vue'
 import PlanificacionMapeoRecetas from '../components/planificacion/PlanificacionMapeoRecetas.vue'
+import PlanificacionVista from '../components/planificacion/PlanificacionVista.vue'
 import Alertas from '../components/Alertas.vue'
 import { useMensajes } from '../composables/useMensajes.js'
+import { obtenerFechaHoy } from '../utils/date.js'
 
 export default {
 	name: 'PlanificacionPage',
@@ -89,6 +76,7 @@ export default {
 		PlanificacionResumen,
 		PlanificacionOperadorCard,
 		PlanificacionMapeoRecetas,
+		PlanificacionVista,
 		Alertas
 	},
 
@@ -98,7 +86,7 @@ export default {
 	},
 
 	data() {
-		const hoy = new Date().toISOString().slice(0, 10)
+		const hoy = obtenerFechaHoy()
 		return {
 			fechaSeleccionada: hoy,
 			asignaciones: [],      // [{ operador, recetas: [{recetaId, nombre, categoria, cantidad}], stemsTotal }]
@@ -106,8 +94,11 @@ export default {
 			gruposRecetaBackup: [], // copia de respaldo con la información de pedidos por receta
 			cargandoAuto: false,
 			guardando: false,
+			planificacionesGuardadas: [],
+			cargandoPlanificaciones: false,
+			eliminandoPlanificaciones: false,
 			mensajeInline: { tipo: null, texto: '' }, // mensaje dentro del summary card
-			
+
 			// Estados del asistente interactivo de recetas
 			mostrarMapeoWizard: false,
 			categoriasRequeridas: [],
@@ -121,6 +112,15 @@ export default {
 		},
 		totalStemsGlobal() {
 			return this.asignaciones.reduce((acc, a) => acc + a.stemsTotal, 0)
+		}
+	},
+
+	watch: {
+		fechaSeleccionada: {
+			immediate: true,
+			handler() {
+				this.cargarPlanificacionesDelDia()
+			}
 		}
 	},
 
@@ -139,6 +139,38 @@ export default {
 			if (duracion > 0) setTimeout(() => { this.mensajeInline = { tipo: null, texto: '' } }, duracion)
 		},
 
+		async cargarPlanificacionesDelDia() {
+			this.cargandoPlanificaciones = true
+			this.planificacionesGuardadas = []
+			this.asignaciones = []
+			try {
+				const planes = await PlanificacionClient.obtenerPlanificacionesPorFecha(this.fechaSeleccionada)
+				this.planificacionesGuardadas = planes || []
+			} catch (error) {
+				console.error('Error cargando planificaciones del día', error)
+				this.mostrarMensaje('error', 'Error al cargar las planificaciones guardadas')
+			} finally {
+				this.cargandoPlanificaciones = false
+			}
+		},
+
+		async eliminarPlanificacionesDelDia() {
+			if (!confirm(`¿Estás seguro que deseas ELIMINAR todas las planificaciones del ${this.fechaSeleccionada}?\nEsto te permitirá volver a distribuir los pedidos.`)) return
+
+			this.eliminandoPlanificaciones = true
+			try {
+				await PlanificacionClient.eliminarPlanificacionesPorFecha(this.fechaSeleccionada)
+				this.mostrarMensaje('exito', 'Planificaciones eliminadas correctamente.')
+				this.planificacionesGuardadas = []
+				this.asignaciones = [] // Limpiamos para volver al estado inicial
+			} catch (error) {
+				console.error('Error eliminando planificaciones', error)
+				this.mostrarMensaje('error', '❌ Error al eliminar las planificaciones')
+			} finally {
+				this.eliminandoPlanificaciones = false
+			}
+		},
+
 		/* ─── Distribución automática ─────────────── */
 		async distribuirAutomaticamente() {
 			this.cargandoAuto = true
@@ -149,7 +181,7 @@ export default {
 
 			try {
 				// 1. Obtener los pedidos pendientes agrupados puramente por categoría de flor
-				const categorias = await PlanificacionClient.obtenerPedidosAgrupadosPorCategoria(
+				const categorias = await PlanificacionAlgoritmo.obtenerPedidosAgrupadosPorCategoria(
 					this.fechaSeleccionada
 				)
 
@@ -250,7 +282,7 @@ export default {
 				}
 
 				// 3. Algoritmo Greedy Least-Loaded
-				const dist = PlanificacionClient.distribuirEquitativamente(operadores, gruposReceta)
+				const dist = PlanificacionAlgoritmo.distribuirEquitativamente(operadores, gruposReceta)
 
 				// 4. Construir asignaciones editables
 				this.asignaciones = dist.map(d => {
@@ -368,7 +400,7 @@ export default {
 
 			this.guardando = true
 			try {
-				const resultado = await PlanificacionClient.crearPlanificacionesMasivas(
+				const resultado = await PlanificacionAlgoritmo.crearPlanificacionesMasivas(
 					validas.map(a => ({
 						operador: a.operador,
 						recetas: a.recetas.map(r => ({
@@ -383,14 +415,13 @@ export default {
 				)
 
 				if (resultado.fallidos.length === 0) {
-					this.mostrarMensaje(
-						'exito',
-						`✓ ${resultado.exitosos} planificación${resultado.exitosos !== 1 ? 'es' : ''} guardada${resultado.exitosos !== 1 ? 's' : ''} correctamente.`
-					)
+					this.mostrarMensaje('exito', '✅ Todas las planificaciones se han guardado correctamente', 3000)
 					this.asignaciones = []
 					this.gruposRecetaBackup = []
 					this.categoriasRequeridas = []
 					this.mapeoSeleccionado = null
+					// Recargar para mostrar vista de solo lectura
+					await this.cargarPlanificacionesDelDia()
 				} else {
 					const nombres = resultado.fallidos.map(f => `${f.nombre}: ${f.motivo}`).join(' · ')
 					this.mostrarMensajeInline(
@@ -413,11 +444,9 @@ export default {
 
 <style scoped>
 /* ── Layout base ─────────────────────────── */
-.container {
-	padding: 24px;
-}
 
-.content-wrap {
+
+.page-content-wrap {
 	max-width: 1400px;
 	margin: 0 auto;
 	display: grid;
@@ -493,7 +522,7 @@ export default {
 }
 
 @media (max-width: 768px) {
-	.container {
+	.page-container {
 		padding: 12px;
 	}
 }

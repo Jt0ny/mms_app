@@ -44,14 +44,14 @@
                         </ul>
                     </div>
 
-                    <button
-                        class="receta-accion"
-                        :class="{ 'receta-accion--seleccionada': modo === 'seleccionar' && isSelected(receta) }"
-                        type="button"
-                        @click="emitirAccion(receta)"
-                    >
+                    <button class="receta-accion"
+                        :class="{ 
+                            'receta-accion--seleccionada': modo === 'seleccionar' && isSelected(receta),
+                            'receta-accion--completada': modo === 'contador' && isCompletada(receta.id)
+                        }"
+                        type="button" @click="emitirAccion(receta)">
                         <template v-if="modo === 'contador'">
-                            {{ textoBotonPorReceta(receta) }}
+                            {{ obtenerContadorTexto(receta.id) }}
                         </template>
                         <template v-else>
                             {{ isSelected(receta) ? '\u2713 Seleccionada' : textoSeleccionar }}
@@ -115,22 +115,6 @@ export default {
     },
 
     computed: {
-        isSelected() {
-            return receta => this.recetasSeleccionadasIds.includes(receta?.id)
-        },
-
-        textoBotonPorReceta() {
-            return receta => {
-                if (this.modo !== 'contador') {
-                    return this.textoSeleccionar
-                }
-
-                const estado = this.contadorPorReceta?.[receta?.id] || {}
-                const actual = estado.actual ?? this.contadorActual
-                const total = estado.total ?? this.contadorTotal
-                return `${actual}/${total}`
-            }
-        },
 
         filteredRecetas() {
             // Si se pasa recetasFiltradas, solo mostrar esas recetas
@@ -153,6 +137,10 @@ export default {
     },
 
     methods: {
+        isSelected(receta) {
+            return this.recetasSeleccionadasIds.includes(receta?.id)
+        },
+
         emitirAccion(receta) {
             this.$emit('accion-receta', {
                 receta,
@@ -160,6 +148,18 @@ export default {
                 contadorActual: this.contadorActual,
                 contadorTotal: this.contadorTotal
             })
+        },
+
+        obtenerContadorTexto(recetaId) {
+            const estado = this.contadorPorReceta?.[recetaId]
+            if (!estado) return this.contadorTotal
+            return `${estado.actual} / ${estado.total}`
+        },
+
+        isCompletada(recetaId) {
+            const estado = this.contadorPorReceta?.[recetaId]
+            if (!estado) return false
+            return estado.actual >= estado.total && estado.total > 0
         },
 
         async buscarRecetas() {
@@ -250,6 +250,13 @@ export default {
     color: white;
 }
 
+.receta-accion--completada {
+    background: #16a34a;
+    color: white;
+    pointer-events: none;
+    opacity: 0.85;
+}
+
 .receta-accion:hover {
     filter: brightness(0.95);
 }
@@ -260,9 +267,18 @@ export default {
 }
 
 /* Scrollbar — ya no hay scroll interno, por si se reactiva en futuro */
-.receta-list::-webkit-scrollbar { width: 8px; }
-.receta-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 8px; }
-.receta-list::-webkit-scrollbar-track { background: transparent; }
+.receta-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.receta-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+}
+
+.receta-list::-webkit-scrollbar-track {
+    background: transparent;
+}
 
 .receta-head {
     display: flex;

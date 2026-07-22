@@ -1,7 +1,7 @@
 <template>
-    <div class="container materiales-page">
+    <div class="page-container materiales-page">
 
-        <div class="content-wrap">
+        <div class="page-content-wrap">
 
             <!-- TÍTULO -->
             <h1 class="page-title">Carga de Materiales</h1>
@@ -44,8 +44,8 @@
 
                 <!-- PANEL DERECHO: Preview Excel -->
                 <PreviewTable :items="datosProcesados" :loading="cargando" item-label="materiales encontrados"
-                    confirm-text="Guardar Materiales" loading-text="Guardando..."
-                    @cancelar="limpiarDatos" @confirmar="confirmarYSubir">
+                    confirm-text="Guardar Materiales" loading-text="Guardando..." @cancelar="limpiarDatos"
+                    @confirmar="confirmarYSubir">
                     <template #header>
                         <th>Nombre</th>
                         <th>Cantidad</th>
@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import * as XLSX from 'xlsx'
+import { useExcel } from '../composables/useExcel.js'
 import MaterialClient from '../client/MaterialClient.js'
 
 import CargaArchivo from '../components/CargaArchivo.vue'
@@ -92,7 +92,8 @@ export default {
 
     setup() {
         const { mensaje, mostrarMensaje } = useMensajes()
-        return { mensaje, mostrarMensaje }
+        const { leerExcel, cargandoExcel } = useExcel()
+        return { mensaje, mostrarMensaje, leerExcel, cargandoExcel }
     },
 
     data() {
@@ -148,16 +149,8 @@ export default {
         /* ================= EXCEL ================= */
         async procesarArchivo(file) {
             try {
-                const data = await file.arrayBuffer()
-                const workbook = XLSX.read(data, { type: 'array' })
-                const sheet = workbook.Sheets[workbook.SheetNames[0]]
-                const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: '' })
-
-                if (!jsonData.length) {
-                    this.mostrarMensaje('error', '❌ Archivo vacío')
-                    return
-                }
-
+                if (!file) return
+                const jsonData = await this.leerExcel(file)
                 this.datosProcesados = this.procesarDatos(jsonData)
 
                 if (!this.datosProcesados.length) {
@@ -166,10 +159,9 @@ export default {
                 }
 
                 this.mostrarMensaje('exito', `✓ ${this.datosProcesados.length} materiales cargados`)
-
             } catch (error) {
                 console.error(error)
-                this.mostrarMensaje('error', '❌ Error al leer archivo Excel')
+                this.mostrarMensaje('error', `❌ ${error.message || 'Error al leer archivo Excel'}`)
             }
         },
 
@@ -282,14 +274,7 @@ export default {
 </script>
 
 <style scoped>
-.container {
-    width: 100%;
-    min-height: 100%;
-    padding: 24px;
-    background: var(--bg-secondary);
-}
-
-.content-wrap {
+.page-content-wrap {
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
@@ -370,7 +355,7 @@ export default {
         grid-template-columns: 1fr;
     }
 
-    .container {
+    .page-container {
         padding: 12px;
     }
 }

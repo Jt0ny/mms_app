@@ -9,14 +9,6 @@
         </article>
 
         <article class="stat-card">
-            <div class="stat-icon green">📈</div>
-            <div class="stat-info">
-                <span>Eficiencia General</span>
-                <strong>{{ eficienciaGlobal }}%</strong>
-            </div>
-        </article>
-
-        <article class="stat-card">
             <div class="stat-icon pink">🌸</div>
             <div class="stat-info">
                 <span>Merma de Hoy</span>
@@ -39,10 +31,6 @@ export default {
     name: 'DashboardKPIs',
     props: {
         totalPedidosStems: {
-            type: Number,
-            default: 0
-        },
-        eficienciaGlobal: {
             type: Number,
             default: 0
         },

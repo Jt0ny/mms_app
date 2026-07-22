@@ -1,6 +1,6 @@
 <template>
-    <div class="container produccion-page">
-        <div class="content-wrap">
+    <div class="page-container produccion-page">
+        <div class="page-content-wrap">
             <header class="page-header">
                 <div>
                     <h1 class="page-title">Producción diaria</h1>
@@ -23,8 +23,9 @@
             <div class="page-grid">
                 <ProduccionForm :guardando="guardando" :ultima-guardada="ultimaGuardada" :edicion="editingProduccion"
                     :categorias-permitidas="categoriasRecetasAsignadas" :cantidades-externas="cantidadesExternas"
-                    @guardar="guardarProduccion" @notificar="mostrarMensaje($event.tipo, $event.texto, $event.duracion)"
-                    @cancelar="editingProduccion = null" />
+                    :limites-por-categoria="limitesPorCategoria" @guardar="guardarProduccion"
+                    @notificar="mostrarMensaje($event.tipo, $event.texto, $event.duracion)"
+                    @cancelar="editingProduccion = null" @cantidad-cambiada="sincronizarContadorReceta" />
 
                 <!-- Panel de recetas: muestra solo las asignadas o mensaje vacío -->
                 <div v-if="sinPlanificacion && !cargandoPlanificacion" class="sin-planificacion">
@@ -35,8 +36,7 @@
                 </div>
 
                 <ProduccionRecetasView v-else modo="contador" :contador-por-receta="contadorRecetaPorId"
-                    :contador-actual="contadorRecetaDefaultActual" :contador-total="contadorRecetaDefaultTotal"
-                    :recetas-filtradas="recetasPlanificadasIds" @recetas-cargadas="inicializarContadoresReceta"
+                    :contador-actual="0" :contador-total="0" :recetas-filtradas="recetasPlanificadasIds"
                     @accion-receta="manejarAccionReceta" />
             </div>
         </div>
@@ -52,6 +52,7 @@ import PlanificacionClient from '../client/PlanificacionClient.js'
 import RecetaClient from '../client/RecetaClient'
 import { useMensajes } from '../composables/useMensajes.js'
 import { useAuth } from '../composables/useAuth.js'
+import { obtenerFechaHoy } from '../utils/date.js'
 
 export default {
     components: {
@@ -74,8 +75,6 @@ export default {
             cargandoProducciones: false,
             editingProduccion: null,
             contadorRecetaPorId: {},
-            contadorRecetaDefaultActual: 1,
-            contadorRecetaDefaultTotal: 6,
 
             // Planificación del operador
             recetasPlanificadasIds: null,   // null = sin cargar | Array = filtro activo
@@ -88,9 +87,38 @@ export default {
         }
     },
 
-    mounted() {
-        this.cargarProducciones()
-        this.cargarPlanificacion()
+    computed: {
+        limitesPorCategoria() {
+            const limites = {}
+            for (const recetaId in this.recetaCategoriaMap) {
+                const categoria = this.recetaCategoriaMap[recetaId]
+                const totalPlanificado = this.contadorRecetaPorId[recetaId]?.total || 0
+                limites[categoria] = (limites[categoria] || 0) + totalPlanificado
+            }
+            return limites
+        }
+    },
+
+    watch: {
+        operadorId: {
+            immediate: true,
+            async handler(newVal, oldVal) {
+                if (!newVal) return
+                // Resetear estado del operador anterior
+                this.contadorRecetaPorId = {}
+                this.recetasPlanificadasIds = null
+                this.planificacionFecha = null
+                this.sinPlanificacion = false
+                this.categoriasRecetasAsignadas = null
+                this.recetaCategoriaMap = {}
+                this.cantidadesExternas = {}
+                this.editingProduccion = null
+
+                // Cargar producciones PRIMERO, luego planificación (que depende de producciones)
+                await this.cargarProducciones()
+                await this.cargarPlanificacion()
+            }
+        }
     },
 
     methods: {
@@ -113,14 +141,36 @@ export default {
                     return
                 }
 
-                // Tomar la planificación más reciente
-                const planificacion = planificaciones.sort(
+                // Filtrar solo las planificaciones de HOY
+                const hoy = obtenerFechaHoy()
+                const planificacionesHoy = planificaciones.filter(p => p.fecha === hoy)
+
+                if (planificacionesHoy.length === 0) {
+                    this.sinPlanificacion = true
+                    this.recetasPlanificadasIds = null
+                    return
+                }
+
+                // Tomar la planificación más reciente de hoy
+                const planificacion = planificacionesHoy.sort(
                     (a, b) => new Date(b.creado_en) - new Date(a.creado_en)
                 )[0]
 
                 this.planificacionFecha = planificacion.fecha
                 const ids = (planificacion.recetas || []).map(r => r.recetaId)
                 this.recetasPlanificadasIds = ids
+
+                // Calcular lo que este operador ya ha producido hoy
+                const produccionesHoy = this.producciones.filter(
+                    p => p.fecha === hoy && p.operador_id === this.operadorId
+                )
+                const producidoPorCategoria = {}
+                produccionesHoy.forEach(prod => {
+                    (prod.detalle || []).forEach(det => {
+                        producidoPorCategoria[det.categoria] = 
+                            (producidoPorCategoria[det.categoria] || 0) + parseInt(det.cantidad || 0)
+                    })
+                })
 
                 // Inicializar contadores con las cantidades planificadas
                 const contadores = {}
@@ -145,6 +195,22 @@ export default {
                     this.categoriasRecetasAsignadas = categoriasSet.size > 0
                         ? [...categoriasSet]
                         : null
+
+                    // Asignar progreso actual basado en producción existente
+                    const contadoresActualizados = { ...this.contadorRecetaPorId }
+                    for (const recetaId in contadoresActualizados) {
+                        const categoria = map[recetaId]
+                        if (categoria && producidoPorCategoria[categoria]) {
+                            contadoresActualizados[recetaId] = {
+                                ...contadoresActualizados[recetaId],
+                                actual: Math.min(
+                                    producidoPorCategoria[categoria],
+                                    contadoresActualizados[recetaId].total
+                                )
+                            }
+                        }
+                    }
+                    this.contadorRecetaPorId = contadoresActualizados
                 } catch {
                     this.categoriasRecetasAsignadas = null
                 }
@@ -222,27 +288,13 @@ export default {
             }
         },
 
-        inicializarContadoresReceta(recetas) {
-            // Solo inicializa si no hay una planificación cargada (evita sobreescribir los totales)
-            if (this.recetasPlanificadasIds !== null) return
-
-            const estadoInicial = {}
-            for (const receta of recetas || []) {
-                estadoInicial[receta.id] = {
-                    actual: this.contadorRecetaDefaultActual,
-                    total: this.contadorRecetaDefaultTotal
-                }
-            }
-            this.contadorRecetaPorId = estadoInicial
-        },
-
         manejarAccionReceta({ receta } = {}) {
             const recetaId = receta?.id
             if (recetaId == null) return
 
             const estadoActual = this.contadorRecetaPorId[recetaId] || {
-                actual: this.contadorRecetaDefaultActual,
-                total: this.contadorRecetaDefaultTotal
+                actual: 0,
+                total: 1
             }
 
             if (estadoActual.actual < estadoActual.total) {
@@ -264,17 +316,30 @@ export default {
             }
 
             this.mostrarMensaje('info', `El contador de ${receta.nombre} ya llegó al total configurado`, 2500)
+        },
+
+        sincronizarContadorReceta({ categoria, cantidad }) {
+            // Encuentra la primera receta que pertenece a esa categoría
+            const recetaId = Object.keys(this.recetaCategoriaMap).find(id => this.recetaCategoriaMap[id] === categoria)
+            if (recetaId && this.contadorRecetaPorId[recetaId]) {
+                const total = this.contadorRecetaPorId[recetaId].total
+                // Evitar que exceda el total planificado si se desea, aunque si el usuario digita de más lo permitimos visualmente o lo capamos
+                const nuevoActual = Math.min(cantidad, total)
+                this.contadorRecetaPorId = {
+                    ...this.contadorRecetaPorId,
+                    [recetaId]: {
+                        ...this.contadorRecetaPorId[recetaId],
+                        actual: nuevoActual
+                    }
+                }
+            }
         }
     }
 }
 </script>
 
 <style scoped>
-.container {
-    padding: 24px;
-}
-
-.content-wrap {
+.page-content-wrap {
     max-width: 1400px;
     margin: 0 auto;
     display: grid;
@@ -380,7 +445,7 @@ export default {
 }
 
 @media (max-width: 768px) {
-    .container {
+    .page-container {
         padding: 12px;
     }
 }

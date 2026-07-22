@@ -1,7 +1,7 @@
 <!-- ClientesPage.vue -->
 <template>
-  <div class="container clientes-page">
-    <div class="content-wrap">
+  <div class="page-container clientes-page">
+    <div class="page-content-wrap">
       <!-- Encabezado -->
       <div class="page-header">
         <div>
@@ -283,14 +283,7 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  width: 100%;
-  min-height: 100vh;
-  padding: 24px;
-  background: var(--bg-secondary);
-}
-
-.content-wrap {
+.page-content-wrap {
   width: 100%;
   max-width: 1500px;
   margin: 0 auto;

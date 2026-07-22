@@ -1,6 +1,6 @@
 <template>
-    <div class="container dashboard-page">
-        <div class="content-wrap">
+    <div class="page-container dashboard-page">
+        <div class="page-content-wrap">
             <!-- Encabezado -->
             <header class="page-header">
                 <div>
@@ -21,7 +21,7 @@
             </div>
 
             <!-- KPIs Principales -->
-            <DashboardKPIs :totalPedidosStems="kpis.totalPedidosStems" :eficienciaGlobal="kpis.eficienciaGlobal"
+            <DashboardKPIs :totalPedidosStems="kpis.totalPedidosStems"
                 :totalMermasStems="kpis.totalMermasStems" :totalAlertasStock="alertasStock.length" />
 
             <!-- Layout de Gráficos e Indicadores -->
@@ -32,6 +32,9 @@
                 <!-- Distribución y Análisis de Mermas -->
                 <DashboardDistribucionMermas :mermasMotivos="mermasMotivos" :topMermasInsumos="topMermasInsumos"
                     :cargando="cargando" />
+
+                <!-- Estado de Pedidos de Hoy -->
+                <DashboardEstadoPedidos :pedidos="estadoPedidos" :cargando="cargando" class="pedidos-widget" />
             </div>
         </div>
     </div>
@@ -43,6 +46,8 @@ import Alertas from '../components/Alertas.vue'
 import DashboardKPIs from '../components/dashboard/DashboardKPIs.vue'
 import DashboardAvanceOperador from '../components/dashboard/DashboardAvanceOperador.vue'
 import DashboardDistribucionMermas from '../components/dashboard/DashboardDistribucionMermas.vue'
+import DashboardEstadoPedidos from '../components/dashboard/DashboardEstadoPedidos.vue'
+import { obtenerFechaHoy } from '../utils/date.js'
 
 export default {
     name: 'DashboardPage',
@@ -50,7 +55,8 @@ export default {
         Alertas,
         DashboardKPIs,
         DashboardAvanceOperador,
-        DashboardDistribucionMermas
+        DashboardDistribucionMermas,
+        DashboardEstadoPedidos
     },
     data() {
         return {
@@ -58,12 +64,12 @@ export default {
             alertasStock: [],
             kpis: {
                 totalPedidosStems: 0,
-                eficienciaGlobal: 0,
                 totalMermasStems: 0
             },
             avanceOperadores: [],
             mermasMotivos: [],
-            topMermasInsumos: []
+            topMermasInsumos: [],
+            estadoPedidos: []
         }
     },
     mounted() {
@@ -75,7 +81,7 @@ export default {
             this.alertasStock = []
 
             try {
-                const today = new Date().toISOString().split('T')[0]
+                const today = obtenerFechaHoy()
                 const datos = await DashboardClient.obtenerDatosDashboard(today)
 
                 this.kpis = datos.kpis
@@ -83,6 +89,7 @@ export default {
                 this.mermasMotivos = datos.mermasMotivos
                 this.topMermasInsumos = datos.topMermasInsumos
                 this.alertasStock = datos.alertasStock
+                this.estadoPedidos = datos.estadoPedidos
             } catch (err) {
                 console.error("Error al cargar dashboard completo:", err)
             } finally {
@@ -94,11 +101,7 @@ export default {
 </script>
 
 <style scoped>
-.container {
-    padding: 24px;
-}
-
-.content-wrap {
+.page-content-wrap {
     max-width: 1400px;
     margin: 0 auto;
     display: flex;
@@ -167,6 +170,10 @@ export default {
     grid-template-columns: 1fr 1fr;
     gap: 24px;
     align-items: start;
+}
+
+.pedidos-widget {
+    grid-column: 1 / -1;
 }
 
 @media (max-width: 1024px) {

@@ -1,7 +1,7 @@
 <template>
-    <div class="container recetas-page">
+    <div class="page-container recetas-page">
 
-        <div class="content-wrap">
+        <div class="page-content-wrap">
 
             <!-- TÍTULO -->
             <h1 class="page-title">Creación de Recetas</h1>
@@ -241,18 +241,7 @@ export default {
 </script>
 
 <style scoped>
-.container {
-    width: 100%;
-    min-height: 100%;
-    padding: 24px;
-    background: var(--bg-secondary);
-}
 
-.content-wrap {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-}
 
 .page-title {
     margin-bottom: 24px;
@@ -276,8 +265,6 @@ export default {
         grid-template-columns: 1fr;
     }
 
-    .container {
-        padding: 12px;
-    }
+    .page-container { padding: 12px; }
 }
 </style>

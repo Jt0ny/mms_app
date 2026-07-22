@@ -182,3 +182,18 @@ p {
   resize: vertical;
 }
 
+/* =========================================
+   PAGE GLOBAL LAYOUT (Refactor Phase 4)
+   ========================================= */
+.page-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 24px;
+  background: var(--bg-secondary);
+}
+
+.page-content-wrap {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}

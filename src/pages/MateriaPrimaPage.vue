@@ -1,7 +1,7 @@
 <template>
-    <div class="container materia-prima-page">
+    <div class="page-container materia-prima-page">
 
-        <div class="content-wrap">
+        <div class="page-content-wrap">
 
             <!-- TÍTULO -->
             <h1 class="page-title">Carga de Materia Prima</h1>
@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import * as XLSX from 'xlsx'
+import { useExcel } from '../composables/useExcel.js'
 import materiaPrimaClient from '../client/MateriaPrimaClient'
 
 import CargaArchivo from '../components/CargaArchivo.vue'
@@ -69,6 +69,7 @@ import Alertas from '../components/Alertas.vue'
 import InventoryTable from '../components/shared/InventoryTable.vue'
 import PreviewTable from '../components/shared/PreviewTable.vue'
 import { useMensajes } from '../composables/useMensajes.js'
+import { obtenerFechaHoy } from '../utils/date.js'
 
 export default {
 
@@ -81,7 +82,8 @@ export default {
 
     setup() {
         const { mensaje, mostrarMensaje } = useMensajes()
-        return { mensaje, mostrarMensaje }
+        const { leerExcel, cargandoExcel } = useExcel()
+        return { mensaje, mostrarMensaje, leerExcel, cargandoExcel }
     },
 
     data() {
@@ -139,18 +141,9 @@ export default {
 
         async procesarArchivo(file) {
             try {
-                const data =
-                    await file.arrayBuffer()
-                const workbook = XLSX.read(data, { type: 'array' })
-                const sheet = workbook.Sheets[workbook.SheetNames[0]]
-                const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: '' })
-                if (!jsonData.length) {
-                    this.mostrarMensaje('error', '❌ Archivo vacío')
-                    return
-                }
-
-                this.datosProcesados =
-                    this.procesarDatos(jsonData)
+                if (!file) return
+                const jsonData = await this.leerExcel(file)
+                this.datosProcesados = this.procesarDatos(jsonData)
 
                 if (!this.datosProcesados.length) {
                     this.mostrarMensaje('error', '❌ No se encontraron datos válidos')
@@ -158,10 +151,9 @@ export default {
                 }
 
                 this.mostrarMensaje('exito', `✓ ${this.datosProcesados.length} variedades cargadas`)
-
             } catch (error) {
                 console.error(error)
-                this.mostrarMensaje('error', '❌ Error al leer archivo Excel')
+                this.mostrarMensaje('error', `❌ ${error.message || 'Error al leer archivo Excel'}`)
             }
         },
 
@@ -183,8 +175,11 @@ export default {
                 if (!variedad || tallos <= 0) return
 
                 if (!resumen[variedad]) {
-
-                    resumen[variedad] = { variedad: String(variedad).trim(), cantidad_total: 0, fecha_ingreso: new Date().toISOString().split('T')[0] }
+                    resumen[variedad] = {
+                        variedad: String(variedad).trim(),
+                        cantidad_total: 0,
+                        fecha_ingreso: obtenerFechaHoy()
+                    }
                 }
                 resumen[variedad].cantidad_total += tallos
             })
@@ -227,19 +222,6 @@ export default {
 </script>
 
 <style scoped>
-.container {
-    width: 100%;
-    min-height: 100%;
-    padding: 24px;
-    background: var(--bg-secondary);
-}
-
-.content-wrap {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
 .main-layout {
     display: grid;
     grid-template-columns: 1fr;
@@ -279,7 +261,7 @@ export default {
         grid-template-columns: 1fr;
     }
 
-    .container {
+    .page-container {
         padding: 12px;
     }
 }

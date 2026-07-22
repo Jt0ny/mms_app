@@ -43,7 +43,7 @@ export default {
       this.mostrarLogin = false
 
       const rol = (usuario.rol || '').toLowerCase()
-      const rutaInicial = rol === 'operador' ? '/app/produccion' : '/app/pedidos'
+      const rutaInicial = rol === 'operador' ? '/app/produccion' : '/app/dashboard'
       this.$router.push(rutaInicial)
     },
 

@@ -10,9 +10,9 @@ import { reactive, computed } from 'vue'
 
 // Estado global compartido entre todas las instancias
 const state = reactive({
-    rol: localStorage.getItem('rol') || null,
-    usuarioId: localStorage.getItem('usuarioId') || null,
-    usuarioNombre: localStorage.getItem('usuarioNombre') || null
+    rol: sessionStorage.getItem('rol') || null,
+    usuarioId: sessionStorage.getItem('usuarioId') || null,
+    usuarioNombre: sessionStorage.getItem('usuarioNombre') || null
 })
 
 /**
@@ -27,9 +27,9 @@ export function useAuth() {
         state.usuarioId = usuario.id ?? ''
         state.usuarioNombre = usuario.nombre ?? ''
 
-        localStorage.setItem('rol', rol)
-        localStorage.setItem('usuarioId', state.usuarioId)
-        localStorage.setItem('usuarioNombre', state.usuarioNombre)
+        sessionStorage.setItem('rol', rol)
+        sessionStorage.setItem('usuarioId', state.usuarioId)
+        sessionStorage.setItem('usuarioNombre', state.usuarioNombre)
     }
 
     function logout() {
@@ -37,9 +37,9 @@ export function useAuth() {
         state.usuarioId = null
         state.usuarioNombre = null
 
-        localStorage.removeItem('rol')
-        localStorage.removeItem('usuarioId')
-        localStorage.removeItem('usuarioNombre')
+        sessionStorage.removeItem('rol')
+        sessionStorage.removeItem('usuarioId')
+        sessionStorage.removeItem('usuarioNombre')
     }
 
     return {
@@ -56,7 +56,7 @@ export function useAuth() {
  * Funciones helper para uso fuera de componentes Vue (router, scripts)
  */
 export function getRol() {
-    return state.rol || localStorage.getItem('rol')
+    return state.rol || sessionStorage.getItem('rol')
 }
 
 export function getIsLogged() {

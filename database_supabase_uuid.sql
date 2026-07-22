@@ -133,6 +133,7 @@ CREATE TABLE pedido_detalles (
     receta_id UUID NOT NULL,
     stems INT NOT NULL,
     cantidad INT NOT NULL DEFAULT 1,
+    precio DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     CONSTRAINT pk_pedido_detalles PRIMARY KEY (pedido_id, receta_id),
     CONSTRAINT fk_pedido_detalles_pedido FOREIGN KEY (pedido_id) REFERENCES pedidos (id) ON DELETE CASCADE,
     CONSTRAINT fk_pedido_detalles_receta FOREIGN KEY (receta_id) REFERENCES recetas (id) ON DELETE RESTRICT

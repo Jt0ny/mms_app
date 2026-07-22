@@ -207,14 +207,17 @@ export default {
   text-align: left;
 }
 
+.mermas-table thead {
+  background: var(--primary);
+  color: white;
+}
+
 .mermas-table th {
-  background: var(--bg-secondary);
   padding: 14px 20px;
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--text-light);
-  border-bottom: 1px solid var(--border);
+  border: none;
   letter-spacing: 0.5px;
 }
 

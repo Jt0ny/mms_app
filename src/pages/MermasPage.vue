@@ -1,6 +1,6 @@
 <template>
-  <div class="container mermas-page">
-    <div class="content-wrap">
+  <div class="page-container mermas-page">
+    <div class="page-content-wrap">
       <!-- Encabezado -->
       <header class="page-header">
         <div>
@@ -43,7 +43,6 @@ import MateriaPrimaClient from '../client/MateriaPrimaClient'
 import RecetaClient from '../client/RecetaClient'
 import UsuarioClient from '../client/UsuarioClient'
 import PlanificacionClient from '../client/PlanificacionClient'
-import DashboardClient from '../client/DashboardClient'
 import { useMensajes } from '../composables/useMensajes.js'
 
 export default {
@@ -68,6 +67,7 @@ export default {
       materiaPrimaFiltrada: [],
       materialesFiltrados: [],
       recetasFiltradas: [],
+      recetasCompletas: [],
       filtroActivoInfo: null,
       cargandoMermas: false,
       cargandoRecursos: false,
@@ -110,6 +110,7 @@ export default {
         this.materiales = materialesRes ?? []
         this.materialesFiltrados = this.materiales
         this.recetas = recetasRes ?? []
+        this.recetasCompletas = recetasRes ?? []
         this.recetasFiltradas = this.recetas
       } catch (error) {
         console.error('Error al cargar materiales o recetas:', error)
@@ -160,13 +161,43 @@ export default {
 
             // Actualizar stock de materia prima en Supabase
             try {
-              await DashboardClient.actualizarStockMateriaPrima(mp.id, nuevaCantidad)
+              await MateriaPrimaClient.actualizarStockMateriaPrima(mp.id, nuevaCantidad)
               mp.cantidad_total = nuevaCantidad
               mp.cantidadTotal = nuevaCantidad
               this.mostrarMensaje('exito', `✓ Merma registrada e inventario de "${mp.variedad}" actualizado.`)
             } catch {
               this.mostrarMensaje('exito', '✓ Merma registrada con éxito.')
             }
+          } else {
+            this.mostrarMensaje('exito', '✓ Merma registrada con éxito.')
+          }
+        } else if (payload.tipo === 'producto_terminado') {
+          const receta = this.recetasCompletas.find(r => r.id === payload.referenciaId)
+          if (receta) {
+            for (const rmp of (receta.receta_materia_prima || [])) {
+              const tallosConsumidos = rmp.cantidad * Number(payload.cantidad)
+              const mpItem = this.materiaPrima.find(m => m.id === rmp.materia_prima_id)
+              if (mpItem) {
+                const nuevoStock = Math.max(0, (Number(mpItem.cantidad_total) || 0) - tallosConsumidos)
+                try {
+                  await MateriaPrimaClient.actualizarStockMateriaPrima(mpItem.id, nuevoStock)
+                  mpItem.cantidad_total = nuevoStock
+                  mpItem.cantidadTotal = nuevoStock
+                } catch { /* silencioso */ }
+              }
+            }
+            for (const rm of (receta.receta_materiales || [])) {
+              const insumosConsumidos = rm.cantidad * Number(payload.cantidad)
+              const matItem = this.materiales.find(m => m.id === rm.material_id)
+              if (matItem) {
+                const nuevoStock = Math.max(0, (Number(matItem.cantidad) || 0) - insumosConsumidos)
+                try {
+                  await MaterialClient.actualizarMaterial(matItem.id, { ...matItem, cantidad: nuevoStock })
+                  matItem.cantidad = nuevoStock
+                } catch { /* silencioso */ }
+              }
+            }
+            this.mostrarMensaje('exito', `✓ Merma de producto terminado registrada e inventario ajustado según la receta "${receta.nombre}".`)
           } else {
             this.mostrarMensaje('exito', '✓ Merma registrada con éxito.')
           }
@@ -276,11 +307,7 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  padding: 24px;
-}
-
-.content-wrap {
+.page-content-wrap {
   max-width: 1400px;
   margin: 0 auto;
   display: flex;

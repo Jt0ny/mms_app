@@ -8,20 +8,54 @@ export default {
      * @param {string} fecha — formato 'YYYY-MM-DD'
      */
     async obtenerDatosDashboard(fecha) {
-        // 1. Obtener Pedidos del Día
+        // 1. Obtener Pedidos del Día y Atrasados (con categorías de recetas para la evaluación)
         const { data: pedidosHoy, error: pedErr } = await supabase
             .from('pedidos')
-            .select('id, pedido_detalles(stems)')
-            .eq('fecha_pedido', fecha)
+            .select(`
+                id, 
+                fecha_pedido,
+                estado,
+                cliente_facturacion:cliente_facturacion_id(nombre),
+                pedido_detalles(
+                    stems,
+                    recetas(categoria)
+                )
+            `)
+            .or(`fecha_pedido.eq.${fecha},and(fecha_pedido.lt.${fecha},estado.eq.Pendiente)`)
+            .order('fecha_creacion', { ascending: false })
 
         let totalStemsPedidos = 0
+        const estadoPedidos = []
+
         if (!pedErr && pedidosHoy) {
             pedidosHoy.forEach(p => {
+                let stemsPedido = 0
                 if (p.pedido_detalles) {
                     p.pedido_detalles.forEach(d => {
-                        totalStemsPedidos += parseInt(d.stems) || 0
+                        const val = parseInt(d.stems) || 0
+                        totalStemsPedidos += val
+                        stemsPedido += val
                     })
                 }
+
+                let estadoVisual = p.estado
+                if (p.estado === 'Pendiente' && p.fecha_pedido < fecha) {
+                    estadoVisual = 'Atrasado'
+                }
+
+                estadoPedidos.push({
+                    id: p.id,
+                    clienteFacturacion: p.cliente_facturacion?.nombre || 'Desconocido',
+                    estado: estadoVisual,
+                    stems: stemsPedido
+                })
+            })
+
+            // Ordenar: Pendientes primero
+            estadoPedidos.sort((a, b) => {
+                if (a.estado === 'Pendiente' && b.estado !== 'Pendiente') return -1;
+                if (a.estado !== 'Pendiente' && b.estado === 'Pendiente') return 1;
+                return 0;
             })
         }
 
@@ -39,13 +73,14 @@ export default {
             `)
             .eq('fecha', fecha)
 
-        // 3. Obtener Producción del Día
+        // 3. Obtener Producción del Día (cabeceras + detalle por categoría)
         const { data: produccionesHoy, error: prodErr } = await supabase
             .from('producciones')
             .select(`
                 id,
                 total,
-                operador_id
+                operador_id,
+                produccion_detalle(categoria, cantidad)
             `)
             .eq('fecha', fecha)
 
@@ -98,11 +133,9 @@ export default {
         let totalPlanificadosGlobal = 0
         let totalProducidosGlobal = 0
 
+        // Calcular eficiencia de operadores (lo mantenemos para el gráfico de barras)
         const avanceOperadores = []
         mapAvance.forEach(val => {
-            totalPlanificadosGlobal += val.planificado
-            totalProducidosGlobal += val.producido
-
             if (val.planificado > 0) {
                 val.porcentaje = Math.min(100, Math.round((val.producido / val.planificado) * 100))
             } else if (val.producido > 0) {
@@ -111,12 +144,102 @@ export default {
             avanceOperadores.push(val)
         })
 
-        // Calcular eficiencia global
-        let eficienciaGlobal = 0
-        if (totalPlanificadosGlobal > 0) {
-            eficienciaGlobal = Math.min(100, Math.round((totalProducidosGlobal / totalPlanificadosGlobal) * 100))
-        } else if (totalProducidosGlobal > 0) {
-            eficienciaGlobal = 100
+        // ============ AUTO-COMPLETAR PEDIDOS SEGÚN PRODUCCIÓN ============
+        // Sumar producción total del día agrupada por categoría
+        const produccionPorCategoria = new Map()
+        if (!prodErr && produccionesHoy) {
+            produccionesHoy.forEach(prod => {
+                if (prod.produccion_detalle) {
+                    prod.produccion_detalle.forEach(det => {
+                        const cat = (det.categoria || '').toUpperCase().trim()
+                        if (cat) {
+                            produccionPorCategoria.set(
+                                cat,
+                                (produccionPorCategoria.get(cat) || 0) + (parseInt(det.cantidad) || 0)
+                            )
+                        }
+                    })
+                }
+            })
+        }
+
+        // Evaluar pedidos para auto-completar
+        if (!pedErr && pedidosHoy) {
+            // 1. Restar la producción ya consumida por pedidos que YA están completados
+            const pedidosCompletadosHoy = pedidosHoy.filter(p => p.estado === 'Completado')
+            for (const pedido of pedidosCompletadosHoy) {
+                for (const det of (pedido.pedido_detalles || [])) {
+                    const cat = (det.recetas?.categoria || '').toUpperCase().trim()
+                    if (cat) {
+                        const actual = produccionPorCategoria.get(cat) || 0
+                        produccionPorCategoria.set(cat, Math.max(0, actual - (parseInt(det.stems) || 0)))
+                    }
+                }
+            }
+
+            // 2. Evaluar pedidos pendientes
+            const pedidosPendientes = pedidosHoy.filter(p => p.estado === 'Pendiente')
+            const idsParaCompletar = []
+
+            for (const pedido of pedidosPendientes) {
+                // Agrupar los stems pedidos por categoría para este pedido
+                const pedidoPorCategoria = new Map()
+                for (const det of (pedido.pedido_detalles || [])) {
+                    const cat = (det.recetas?.categoria || '').toUpperCase().trim()
+                    if (cat) {
+                        pedidoPorCategoria.set(
+                            cat,
+                            (pedidoPorCategoria.get(cat) || 0) + (parseInt(det.stems) || 0)
+                        )
+                    }
+                }
+
+                // Verificar si TODAS las categorías de este pedido están cubiertas
+                if (pedidoPorCategoria.size > 0) {
+                    let todoCubierto = true
+                    pedidoPorCategoria.forEach((stemsPedidos, cat) => {
+                        const stemsProducidos = produccionPorCategoria.get(cat) || 0
+                        if (stemsProducidos < stemsPedidos) {
+                            todoCubierto = false
+                        }
+                    })
+
+                    if (todoCubierto) {
+                        idsParaCompletar.push(pedido.id)
+                        
+                        // Descontar la producción utilizada para este pedido de la "bolsa"
+                        pedidoPorCategoria.forEach((stemsPedidos, cat) => {
+                            const stemsActuales = produccionPorCategoria.get(cat) || 0
+                            produccionPorCategoria.set(cat, Math.max(0, stemsActuales - stemsPedidos))
+                        })
+                    }
+                }
+            }
+
+            // Actualizar en Supabase los pedidos que ya están cubiertos
+            if (idsParaCompletar.length > 0) {
+                const { error: updateErr } = await supabase
+                    .from('pedidos')
+                    .update({ estado: 'Completado' })
+                    .in('id', idsParaCompletar)
+
+                if (!updateErr) {
+                    // Reflejar el cambio en el arreglo local
+                    for (const ep of estadoPedidos) {
+                        if (idsParaCompletar.includes(ep.id)) {
+                            ep.estado = 'Completado'
+                        }
+                    }
+                    // Re-ordenar: Pendientes primero
+                    estadoPedidos.sort((a, b) => {
+                        if (a.estado === 'Pendiente' && b.estado !== 'Pendiente') return -1;
+                        if (a.estado !== 'Pendiente' && b.estado === 'Pendiente') return 1;
+                        return 0;
+                    })
+                } else {
+                    console.error('Error al auto-completar pedidos:', updateErr)
+                }
+            }
         }
 
         // 4. Obtener Mermas del Día
@@ -233,7 +356,7 @@ export default {
             if (stockActual < demand) {
                 alertasStock.push({
                     tipo: 'error',
-                    texto: `⚠️ Inventario Insuficiente: Se requieren ${demand} tallos de flor "${itemStock?.variedad || 'Desconocida'}" para cubrir la planificación de hoy, pero solo cuentas con ${stockActual} tallos en stock (Déficit: ${stockActual - demand} tallos).`
+                    texto: `⚠️ Inventario Insuficiente: Se requieren ${demand} tallos de flor "${itemStock?.variedad || 'Desconocida'}" para cubrir la planificación de hoy, pero solo cuentas con ${stockActual} tallos en stock (Déficit: ${demand - stockActual} tallos).`
                 })
             }
         })
@@ -244,7 +367,7 @@ export default {
             if (stockActual < demand) {
                 alertasStock.push({
                     tipo: 'error',
-                    texto: `⚠️ Material Insuficiente: Se requieren ${demand} unidades de "${itemStock?.nombre || 'Desconocido'}" para la producción de hoy, pero solo tienes ${stockActual} en inventario (Déficit: ${stockActual - demand} unidades).`
+                    texto: `⚠️ Inventario Insuficiente: Se requieren ${demand} unidades de "${itemStock?.nombre || 'Desconocido'}" para la producción de hoy, pero solo tienes ${stockActual} en inventario (Déficit: ${demand - stockActual} unidades).`
                 })
             }
         })
@@ -262,30 +385,30 @@ export default {
             })
         }
 
+        if (matStockRes.data) {
+            matStockRes.data.forEach(mat => {
+                const stock = parseInt(mat.cantidad) || 0
+                const yaAlertado = alertasStock.some(a => a.texto.includes(`"${mat.nombre}"`))
+                // Puedes ajustar el límite de stock mínimo para materiales si lo deseas (ej. 200, 500, etc.)
+                if (stock < 200 && !yaAlertado) {
+                    alertasStock.push({
+                        tipo: 'info',
+                        texto: `💡 Alerta de Reabastecimiento: El material "${mat.nombre}" cuenta con stock bajo de ${stock} unidades.`
+                    })
+                }
+            })
+        }
+
         return {
             kpis: {
                 totalPedidosStems: totalStemsPedidos,
-                eficienciaGlobal,
                 totalMermasStems
             },
             avanceOperadores,
             mermasMotivos,
             topMermasInsumos,
-            alertasStock
+            alertasStock,
+            estadoPedidos
         }
-    },
-
-    /**
-     * Actualiza el stock de materia prima (usado por MermasPage para descontar inventario)
-     * @param {string} id — UUID de la materia prima
-     * @param {number} nuevaCantidad — nueva cantidad total
-     */
-    async actualizarStockMateriaPrima(id, nuevaCantidad) {
-        const { error } = await supabase
-            .from('materia_prima')
-            .update({ cantidad_total: nuevaCantidad })
-            .eq('id', id)
-
-        if (error) throw error
     }
 }

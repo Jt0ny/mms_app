@@ -111,6 +111,11 @@ export default {
             // El form lo observa y aplica el delta como incremento.
             type: Object,
             default: () => ({})
+        },
+        limitesPorCategoria: {
+            // Límites de cantidad por categoría: { [categoria]: totalPlanificado }.
+            type: Object,
+            default: () => ({})
         }
     },
 
@@ -166,9 +171,19 @@ export default {
                 const delta = total - anterior
                 if (delta > 0) {
                     const actual = Number(this.cantidadesPorCategoria[categoria] || 0)
+                    const limite = this.limitesPorCategoria?.[categoria]
+                    let nuevaCantidad = actual + delta
+                    if (limite !== undefined && nuevaCantidad >= limite) {
+                        if (nuevaCantidad > limite) {
+                            nuevaCantidad = limite
+                            this.notificar('info', `El total planificado para la categoría ${categoria} es ${limite} y ya ha sido completado.`, 3000)
+                        } else if (nuevaCantidad === limite) {
+                            this.notificar('exito', `✓ ¡Has completado la cantidad requerida para ${categoria}!`, 3000)
+                        }
+                    }
                     this.cantidadesPorCategoria = {
                         ...this.cantidadesPorCategoria,
-                        [categoria]: actual + delta
+                        [categoria]: nuevaCantidad
                     }
                 }
             }
@@ -247,11 +262,23 @@ export default {
         },
 
         actualizarCantidad(categoria, valor) {
-            const cantidad = Math.max(0, Math.trunc(Number(valor) || 0))
+            let cantidad = Math.max(0, Math.trunc(Number(valor) || 0))
+            const limite = this.limitesPorCategoria?.[categoria]
+
+            if (limite !== undefined && cantidad >= limite) {
+                if (cantidad > limite) {
+                    cantidad = limite
+                    this.notificar('info', `El total planificado para la categoría ${categoria} es ${limite} y ya ha sido completado.`, 3000)
+                } else if (cantidad === limite) {
+                    this.notificar('exito', `✓ ¡Has completado la cantidad requerida para ${categoria}!`, 3000)
+                }
+            }
+
             this.cantidadesPorCategoria = {
                 ...this.cantidadesPorCategoria,
                 [categoria]: cantidad
             }
+            this.$emit('cantidad-cambiada', { categoria, cantidad })
         },
 
         construirDetalle() {

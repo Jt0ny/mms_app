@@ -283,15 +283,16 @@ export default {
 }
 
 .clientes-table th {
-  background: var(--bg-secondary);
-  font-weight: 600;
-  color: var(--text-light);
+  background: var(--primary);
+  font-weight: 700;
+  color: white;
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.5px;
   position: sticky;
   top: 0;
   z-index: 5;
+  border: none;
 }
 
 .client-row {

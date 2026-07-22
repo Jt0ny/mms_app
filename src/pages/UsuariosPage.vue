@@ -60,9 +60,6 @@ export default {
         },
 
         async eliminarUsuario(id) {
-            const confirmado = window.confirm('¿Seguro que deseas eliminar este usuario?')
-
-            if (!confirmado) return
 
             try {
                 await UsuarioClient.eliminarUsuario(id)
