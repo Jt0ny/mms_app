@@ -79,7 +79,10 @@ export default {
   props: {
     clienteSeleccionado: {
       type: Object,
-      default: null
+      default: null,
+      validator: (value) => {
+        return value === null || (typeof value === 'object' && !Array.isArray(value))
+      }
     },
     guardando: {
       type: Boolean,

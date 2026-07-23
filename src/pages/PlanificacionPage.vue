@@ -39,13 +39,14 @@
 				<!-- Resumen Global -->
 				<PlanificacionResumen :fecha-seleccionada="fechaSeleccionada" :total-operadores="asignaciones.length"
 					:total-recetas="totalRecetasGlobal" :total-stems="totalStemsGlobal" :guardando="guardando"
-					:mensaje-inline="mensajeInline" @guardar="guardarTodas" />
+					:mensaje-inline="mensajeInline" :asignaciones="asignaciones" @guardar="guardarTodas" />
 
 				<!-- Grid de Tarjetas de Operadores -->
 				<div class="page-grid">
 					<PlanificacionOperadorCard v-for="(asig, idx) in asignaciones" :key="asig.operador.id" :asig="asig"
 						:idx="idx" :todas-las-recetas="todasLasRecetas" @quitar-receta="quitarReceta"
-						@agregar-receta="agregarReceta" @recalcular="recalcularStems" />
+						@agregar-receta="agregarReceta" @recalcular="recalcularStems"
+						@excluir-operador="excluirOperador(idx)" />
 				</div>
 			</template>
 
@@ -56,8 +57,7 @@
 <script>
 import PlanificacionClient from '../client/PlanificacionClient.js'
 import PlanificacionAlgoritmo from '../client/PlanificacionAlgoritmo.js'
-import UsuarioClient from '../client/UsuarioClient.js'
-import RecetaClient from '../client/RecetaClient.js'
+import { useCatalogos } from '../composables/useCatalogos.js'
 
 import PlanificacionAsignacion from '../components/planificacion/PlanificacionAsignacion.vue'
 import PlanificacionResumen from '../components/planificacion/PlanificacionResumen.vue'
@@ -82,7 +82,8 @@ export default {
 
 	setup() {
 		const { mensaje, mostrarMensaje } = useMensajes()
-		return { mensaje, mostrarMensaje }
+		const catalogos = useCatalogos()
+		return { mensaje, mostrarMensaje, catalogos }
 	},
 
 	data() {
@@ -98,6 +99,7 @@ export default {
 			cargandoPlanificaciones: false,
 			eliminandoPlanificaciones: false,
 			mensajeInline: { tipo: null, texto: '' }, // mensaje dentro del summary card
+			operadoresActivos: [],
 
 			// Estados del asistente interactivo de recetas
 			mostrarMapeoWizard: false,
@@ -126,7 +128,7 @@ export default {
 
 	async mounted() {
 		try {
-			this.todasLasRecetas = await RecetaClient.obtenerRecetas()
+			this.todasLasRecetas = await this.catalogos.obtenerRecetas()
 		} catch (e) {
 			console.warn('No se pudieron cargar las recetas para el selector:', e)
 		}
@@ -155,7 +157,6 @@ export default {
 		},
 
 		async eliminarPlanificacionesDelDia() {
-			if (!confirm(`¿Estás seguro que deseas ELIMINAR todas las planificaciones del ${this.fechaSeleccionada}?\nEsto te permitirá volver a distribuir los pedidos.`)) return
 
 			this.eliminandoPlanificaciones = true
 			try {
@@ -272,17 +273,17 @@ export default {
 				this.gruposRecetaBackup = gruposReceta
 
 				// 2. Obtener operadores disponibles
-				const todosUsuarios = await UsuarioClient.obtenerUsuarios()
-				const operadores = todosUsuarios.filter(u => String(u.rol).toLowerCase() === 'operador')
+				const operadores = await this.catalogos.obtenerOperadores()
 
 				if (!operadores.length) {
 					this.mostrarMensaje('error', '👥 No hay operadores disponibles.')
 					this.cargandoAuto = false
 					return
 				}
+				this.operadoresActivos = operadores
 
-				// 3. Algoritmo Greedy Least-Loaded
-				const dist = PlanificacionAlgoritmo.distribuirEquitativamente(operadores, gruposReceta)
+				// 3. Algoritmo de distribución equitativa
+				const dist = PlanificacionAlgoritmo.distribuirEquitativamente(this.operadoresActivos, gruposReceta)
 
 				// 4. Construir asignaciones editables
 				this.asignaciones = dist.map(d => {
@@ -316,6 +317,51 @@ export default {
 				this.mostrarMensaje('error', '❌ Error al distribuir carga entre operadores.')
 			} finally {
 				this.cargandoAuto = false
+			}
+		},
+
+		/* ─── Excluir Operador (Ausencia) ─────────── */
+		excluirOperador(idx) {
+			const asig = this.asignaciones[idx]
+			if (!asig || !asig.operador) return
+
+			// Quitar de la lista de operadores activos
+			this.operadoresActivos = this.operadoresActivos.filter(op => op.id !== asig.operador.id)
+
+			if (this.operadoresActivos.length === 0) {
+				this.mostrarMensaje('error', '❌ No puedes excluir a todos los operadores. Al menos uno debe quedar.')
+				// Revertir
+				this.operadoresActivos.push(asig.operador)
+				return
+			}
+
+			try {
+				// Volver a distribuir con la lista original de recetas y los operadores restantes
+				const dist = PlanificacionAlgoritmo.distribuirEquitativamente(this.operadoresActivos, this.gruposRecetaBackup)
+
+				this.asignaciones = dist.map(d => {
+					return {
+						operador: d.operador,
+						recetas: d.recetas.map(r => ({
+							recetaId: r.recetaId,
+							nombre: r.nombre,
+							categoria: this.gruposRecetaBackup.find(g => g.recetaId === r.recetaId)?.categoria || '',
+							cantidad: r.cantidad
+						})),
+						pedidosAsignados: [],
+						stemsTotal: d.stemsTotal
+					}
+				})
+
+				// Resolver pedidos
+				for (let i = 0; i < this.asignaciones.length; i++) {
+					this.recalcularPedidosYStems(i)
+				}
+
+				this.mostrarMensaje('exito', `✓ Operador ${asig.operador.nombre} excluido. Carga redistribuida equitativamente.`)
+			} catch (error) {
+				console.error('Error al redistribuir', error)
+				this.mostrarMensaje('error', '❌ Error al redistribuir la carga.')
 			}
 		},
 

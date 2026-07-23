@@ -31,7 +31,6 @@ export default {
             nombre: '',
             contrasena: '',
             cargando: false,
-
             mensaje: {
                 tipo: null,
                 texto: ''
@@ -90,6 +89,7 @@ export default {
     flex-direction: column;
     gap: 18px;
     width: min(420px, 100%);
+    margin: auto;
     padding: 36px;
     background: white;
     border-radius: 22px;
@@ -164,14 +164,26 @@ button:active {
     transform: scale(0.99);
 }
 
-@media (max-width: 480px) {
+@media (max-width: 480px),
+(max-height: 600px) {
     .login-card {
-        padding: 28px 22px;
+        padding: 20px 22px;
         border-radius: 18px;
+        gap: 12px;
+    }
+
+    h1 {
+        font-size: clamp(1.5rem, 3.5vw, 1.8rem);
+    }
+
+    input {
+        padding: 10px 14px;
     }
 
     button {
         font-size: 15px;
+        padding: 12px;
+        margin-top: 4px;
     }
 }
 </style>

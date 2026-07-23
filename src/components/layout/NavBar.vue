@@ -6,7 +6,7 @@
       <div class="logo" aria-label="Gestión de manufactura">
         <div class="logo-mark">GM</div>
         <div class="logo-copy">
-          <span>Floricultura</span>
+          <span>Floricola</span>
           <strong>Sistema MMS</strong>
         </div>
       </div>

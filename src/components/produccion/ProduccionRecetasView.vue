@@ -64,12 +64,16 @@
 </template>
 
 <script>
-import RecetaClient from '../../client/RecetaClient'
+import { useCatalogos } from '../../composables/useCatalogos.js'
 import Alertas from '../Alertas.vue'
 
 export default {
     name: 'ProduccionRecetasView',
     components: { Alertas },
+    setup() {
+        const catalogos = useCatalogos()
+        return { catalogos }
+    },
     props: {
         modo: {
             type: String,
@@ -167,7 +171,7 @@ export default {
             this.error = null
             this.mensaje = { tipo: 'info', texto: 'Cargando recetas...' }
             try {
-                const data = await RecetaClient.obtenerRecetas()
+                const data = await this.catalogos.obtenerRecetas()
                 this.recetas = data ?? []
                 this.$emit('recetas-cargadas', this.recetas)
             } catch (err) {

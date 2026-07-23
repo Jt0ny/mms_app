@@ -10,10 +10,10 @@
             <Alertas :mensaje="mensaje" />
 
             <!-- LAYOUT -->
-            <div class="main-layout" :class="{ 'with-preview': datosProcesados.length > 0 }">
+            <div class="main-layout-split" :class="{ 'with-preview': datosProcesados.length > 0 }">
 
                 <!-- PANEL IZQUIERDO -->
-                <div class="left-panel">
+                <div class="panel-column">
 
                     <!-- UPLOAD -->
                     <CargaArchivo nombreModulo="Producción" :cargando="cargando"
@@ -29,9 +29,9 @@
                             <th>Fecha Ingreso</th>
                         </template>
                         <template #row="{ item }">
-                            <td class="variety">{{ item.variedad }}</td>
-                            <td class="quantity">{{ item.cantidadTotal }}</td>
-                            <td class="date">{{ formatearFecha(item.fecha) }}</td>
+                            <td class="text-variety">{{ item.variedad }}</td>
+                            <td class="text-quantity">{{ item.cantidadTotal }}</td>
+                            <td class="text-date">{{ formatearFecha(item.fecha) }}</td>
                         </template>
                     </InventoryTable>
 
@@ -47,9 +47,9 @@
                         <th>Fecha Ingreso</th>
                     </template>
                     <template #row="{ item }">
-                        <td class="variety" data-label="Variedad">{{ item.variedad }}</td>
-                        <td class="quantity" data-label="Cantidad (Tallos)">{{ item.cantidad_total }}</td>
-                        <td class="date" data-label="Fecha Ingreso">{{ item.fecha_ingreso }}</td>
+                        <td class="text-variety" data-label="Variedad">{{ item.variedad }}</td>
+                        <td class="text-quantity" data-label="Cantidad (Tallos)">{{ item.cantidad_total }}</td>
+                        <td class="text-date" data-label="Fecha Ingreso">{{ item.fecha_ingreso }}</td>
                     </template>
                 </PreviewTable>
 
@@ -63,6 +63,7 @@
 <script>
 import { useExcel } from '../composables/useExcel.js'
 import materiaPrimaClient from '../client/MateriaPrimaClient'
+import { useCatalogos } from '../composables/useCatalogos.js'
 
 import CargaArchivo from '../components/CargaArchivo.vue'
 import Alertas from '../components/Alertas.vue'
@@ -83,7 +84,8 @@ export default {
     setup() {
         const { mensaje, mostrarMensaje } = useMensajes()
         const { leerExcel, cargandoExcel } = useExcel()
-        return { mensaje, mostrarMensaje, leerExcel, cargandoExcel }
+        const catalogos = useCatalogos()
+        return { mensaje, mostrarMensaje, leerExcel, cargandoExcel, catalogos }
     },
 
     data() {
@@ -109,11 +111,11 @@ export default {
             }
         },
         /* ================= INVENTARIO ================= */
-        async cargarInventario() {
+        async cargarInventario(forceRefresh = false) {
             this.cargandoInventario = true
             try {
-                // Cargar los datos locales de Supabase (sin disparar sincronización externa automática)
-                const datos = await materiaPrimaClient.obtenerMateriaPrima()
+                // Cargar los datos locales
+                const datos = await this.catalogos.obtenerMateriaPrima(forceRefresh)
                 this.inventarioActual = datos ?? []
             } catch (error) {
                 console.error(error)
@@ -129,7 +131,7 @@ export default {
                 this.mostrarMensaje('info', '⚡ Sincronizando con la API externa...', 0)
                 await materiaPrimaClient.sincronizarConSupabase(true) // forceOverwrite = true
                 this.mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
-                await this.cargarInventario()
+                await this.cargarInventario(true)
             } catch (error) {
                 console.error(error)
                 this.mostrarMensaje('error', '❌ Error al sincronizar con la API externa')
@@ -207,8 +209,7 @@ export default {
                 )
 
                 this.datosProcesados = []
-
-                await this.cargarInventario()
+                await this.cargarInventario(true)
 
             } catch (error) {
                 console.error(error)
@@ -222,47 +223,4 @@ export default {
 </script>
 
 <style scoped>
-.main-layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
-    margin-top: 24px;
-}
-
-.main-layout.with-preview {
-    grid-template-columns: minmax(220px, 360px) 1fr;
-}
-
-.left-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.variety {
-    color: var(--text-h);
-    font-weight: 600;
-}
-
-.quantity {
-    color: var(--primary);
-    font-weight: 700;
-}
-
-.date {
-    color: var(--text-light);
-    font-size: 13px;
-}
-
-@media (max-width: 768px) {
-
-    .main-layout,
-    .main-layout.with-preview {
-        grid-template-columns: 1fr;
-    }
-
-    .page-container {
-        padding: 12px;
-    }
-}
 </style>

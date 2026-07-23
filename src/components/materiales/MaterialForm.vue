@@ -47,7 +47,10 @@ export default {
     props: {
         material: {
             type: Object,
-            required: true
+            required: true,
+            validator: (value) => {
+                return value !== null && typeof value === 'object' && 'nombre' in value
+            }
         },
         cargando: {
             type: Boolean,

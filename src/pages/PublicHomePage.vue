@@ -76,9 +76,10 @@ export default {
   display: grid;
   place-items: center;
   padding: 24px;
-  background: rgba(17, 24, 39, 0.24);
+  background: rgba(17, 24, 39, 0.4);
   backdrop-filter: blur(4px);
-  z-index: 30;
+  z-index: 50;
+  overflow-y: auto;
 }
 
 .fade-enter-active,

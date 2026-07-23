@@ -58,9 +58,7 @@ export default {
                     operador_id,
                     fecha,
                     creado_en,
-                    usuarios (
-                        nombre
-                    ),
+                    usuarios (nombre),
                     planificacion_recetas (
                         cantidad,
                         recetas (

@@ -20,6 +20,23 @@
 			{{ guardando ? 'Guardando...' : '💾 Guardar todas las planificaciones' }}
 		</button>
 
+		<!-- Indicador visual de balance -->
+		<div v-if="balanceOperadores.length" class="balance-section">
+			<span class="summary-label">Balance de carga</span>
+			<div v-for="op in balanceOperadores" :key="op.nombre" class="balance-row">
+				<span class="balance-name">{{ op.nombre }}</span>
+				<div class="balance-bar-track">
+					<div class="balance-bar-fill" :class="'balance-' + op.estado"
+						:style="{ width: op.porcentaje + '%' }">
+					</div>
+				</div>
+				<span class="balance-info">
+					{{ op.stems }} stems ({{ op.porcentaje }}%)
+					{{ op.estado === 'balanceado' ? '✅' : op.estado === 'aceptable' ? '⚠️' : '❌' }}
+				</span>
+			</div>
+		</div>
+
 		<!-- Mensaje inline -->
 		<Alertas :mensaje="mensajeInline" style="grid-column: 1 / -1; margin-top: 10px;" />
 	</div>
@@ -57,6 +74,37 @@ export default {
 		mensajeInline: {
 			type: Object,
 			default: () => ({ tipo: null, texto: '' })
+		},
+		asignaciones: {
+			type: Array,
+			default: () => []
+		}
+	},
+	computed: {
+		promedioStems() {
+			if (!this.asignaciones.length) return 0
+			return Math.round(this.totalStems / this.asignaciones.length)
+		},
+		balanceOperadores() {
+			if (!this.asignaciones.length) return []
+			return this.asignaciones.map(a => {
+				const porcentaje = this.totalStems > 0
+					? Math.round((a.stemsTotal / this.totalStems) * 100)
+					: 0
+				const desviacion = this.promedioStems > 0
+					? Math.abs(a.stemsTotal - this.promedioStems) / this.promedioStems
+					: 0
+				// < 15% de desviación = balanceado, < 30% = aceptable, >= 30% = desbalanceado
+				let estado = 'balanceado'
+				if (desviacion >= 0.30) estado = 'desbalanceado'
+				else if (desviacion >= 0.15) estado = 'aceptable'
+				return {
+					nombre: a.operador.nombre,
+					stems: a.stemsTotal,
+					porcentaje,
+					estado
+				}
+			})
 		}
 	},
 	emits: ['guardar']
@@ -111,9 +159,72 @@ export default {
 	cursor: progress;
 }
 
+/* ── Balance indicator ── */
+.balance-section {
+	grid-column: 1 / -1;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-top: 4px;
+}
+
+.balance-row {
+	display: grid;
+	grid-template-columns: 120px 1fr auto;
+	gap: 12px;
+	align-items: center;
+}
+
+.balance-name {
+	font-weight: 600;
+	font-size: 13px;
+	color: var(--text-h);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.balance-bar-track {
+	height: 8px;
+	background: var(--bg-secondary, #f1f5f9);
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.balance-bar-fill {
+	height: 100%;
+	border-radius: 4px;
+	transition: width 0.5s ease;
+}
+
+.balance-balanceado {
+	background: var(--success, #22c55e);
+}
+
+.balance-aceptable {
+	background: var(--warning, #f59e0b);
+}
+
+.balance-desbalanceado {
+	background: var(--error, #ef4444);
+}
+
+.balance-info {
+	font-size: 12px;
+	color: var(--text-light);
+	white-space: nowrap;
+}
+
 @media (max-width: 1100px) {
 	.summary-card {
 		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 768px) {
+	.balance-row {
+		grid-template-columns: 1fr;
+		gap: 4px;
 	}
 }
 </style>

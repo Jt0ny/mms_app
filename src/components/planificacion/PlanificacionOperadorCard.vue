@@ -6,7 +6,12 @@
 				<h2>{{ asig.operador.nombre }}</h2>
 				<p>{{ asig.stemsTotal }} stems asignados</p>
 			</div>
-			<span class="operador-rol">Operador</span>
+			<div class="header-actions">
+				<span class="operador-rol">Operador</span>
+				<button class="btn-excluir" title="Excluir operador de la distribución" type="button" @click="$emit('excluir-operador')">
+					✕
+				</button>
+			</div>
 		</header>
 
 		<!-- Tabla de recetas asignadas -->
@@ -80,7 +85,10 @@ export default {
 	props: {
 		asig: {
 			type: Object,
-			required: true
+			required: true,
+			validator: (value) => {
+				return value !== null && typeof value === 'object' && 'operador' in value && Array.isArray(value.recetas)
+			}
 		},
 		idx: {
 			type: Number,
@@ -91,7 +99,7 @@ export default {
 			required: true
 		}
 	},
-	emits: ['quitar-receta', 'agregar-receta', 'recalcular'],
+	emits: ['quitar-receta', 'agregar-receta', 'recalcular', 'excluir-operador'],
 	computed: {
 		recetasDisponibles() {
 			const yaAsignadas = new Set(this.asig.recetas.map(r => r.recetaId))
@@ -113,22 +121,33 @@ export default {
 }
 
 .operadores-header {
+	background: var(--primary);
+	color: white;
+	padding: 16px 20px;
 	display: flex;
 	justify-content: space-between;
-	gap: 16px;
 	align-items: center;
+	border-bottom: 3px solid rgba(0, 0, 0, 0.1);
+}
+
+.header-actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
 }
 
 .operadores-header h2 {
 	margin: 0;
-	font-size: 20px;
-	color: var(--text-h);
+	font-size: 16px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
 }
 
 .operadores-header p {
 	margin: 4px 0 0;
-	color: #64748b;
-	font-size: 13px;
+	font-size: 12px;
+	opacity: 0.9;
+	font-weight: 500;
 }
 
 .operador-rol {
@@ -136,13 +155,34 @@ export default {
 	width: fit-content;
 	padding: 5px 10px;
 	border-radius: 999px;
-	background: #dbeafe;
-	color: #1d4ed8;
-	font-size: 12px;
-	font-weight: 700;
+	background: rgba(255, 255, 255, 0.2);
+	color: white;
+	font-size: 11px;
+	font-weight: 600;
 	text-transform: uppercase;
-	letter-spacing: 0.04em;
+	letter-spacing: 0.5px;
 	flex-shrink: 0;
+}
+
+.btn-excluir {
+	background: transparent;
+	color: rgba(255, 255, 255, 0.7);
+	border: none;
+	border-radius: 50%;
+	width: 26px;
+	height: 26px;
+	font-size: 14px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-excluir:hover {
+	background: rgba(255, 255, 255, 0.2);
+	color: white;
+	transform: scale(1.05);
 }
 
 .summary-recetas-col {

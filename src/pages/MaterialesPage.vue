@@ -10,10 +10,10 @@
             <Alertas :mensaje="mensaje" />
 
             <!-- LAYOUT -->
-            <div class="main-layout" :class="{ 'with-preview': datosProcesados.length > 0 }">
+            <div class="main-layout-split" :class="{ 'with-preview': datosProcesados.length > 0 }">
 
                 <!-- PANEL IZQUIERDO -->
-                <div class="left-panel">
+                <div class="panel-column">
 
                     <!-- UPLOAD -->
                     <CargaArchivo nombreModulo="Materiales" :cargando="cargando"
@@ -30,12 +30,12 @@
                             <th>Acciones</th>
                         </template>
                         <template #row="{ item }">
-                            <td class="variety">{{ item.nombre }}</td>
-                            <td class="quantity">{{ item.cantidad }}</td>
+                            <td class="text-variety">{{ item.nombre }}</td>
+                            <td class="text-quantity">{{ item.cantidad }}</td>
                             <td>{{ item.descripcion || '-' }}</td>
                             <td class="actions-column">
-                                <button class="btn-action btn-edit" @click="editarMaterial(item)">✏️</button>
-                                <button class="btn-action btn-delete" @click="eliminarMaterial(item.id)">🗑️</button>
+                                <button class="btn-action btn-action-edit" @click="editarMaterial(item)">✏️</button>
+                                <button class="btn-action btn-action-delete" @click="eliminarMaterial(item.id)">🗑️</button>
                             </td>
                         </template>
                     </InventoryTable>
@@ -52,9 +52,9 @@
                         <th>Descripción</th>
                     </template>
                     <template #row="{ item }">
-                        <td class="nombre" data-label="Nombre">{{ item.nombre }}</td>
-                        <td class="quantity" data-label="Cantidad">{{ item.cantidad }}</td>
-                        <td class="descripcion" data-label="Descripción">{{ item.descripcion || '-' }}</td>
+                        <td class="text-variety" data-label="Nombre">{{ item.nombre }}</td>
+                        <td class="text-quantity" data-label="Cantidad">{{ item.cantidad }}</td>
+                        <td class="text-date" data-label="Descripción">{{ item.descripcion || '-' }}</td>
                     </template>
                 </PreviewTable>
 
@@ -72,6 +72,7 @@
 <script>
 import { useExcel } from '../composables/useExcel.js'
 import MaterialClient from '../client/MaterialClient.js'
+import { useCatalogos } from '../composables/useCatalogos.js'
 
 import CargaArchivo from '../components/CargaArchivo.vue'
 import Alertas from '../components/Alertas.vue'
@@ -93,7 +94,8 @@ export default {
     setup() {
         const { mensaje, mostrarMensaje } = useMensajes()
         const { leerExcel, cargandoExcel } = useExcel()
-        return { mensaje, mostrarMensaje, leerExcel, cargandoExcel }
+        const catalogos = useCatalogos()
+        return { mensaje, mostrarMensaje, leerExcel, cargandoExcel, catalogos }
     },
 
     data() {
@@ -118,11 +120,11 @@ export default {
 
     methods: {
         /* ================= INVENTARIO ================= */
-        async cargarInventario() {
+        async cargarInventario(forceRefresh = false) {
             this.cargandoInventario = true
             try {
-                // Cargar los datos locales de Supabase (sin disparar sincronización externa automática)
-                const datos = await MaterialClient.obtenerMateriales()
+                // Cargar los datos locales
+                const datos = await this.catalogos.obtenerMateriales(forceRefresh)
                 this.inventarioActual = datos ?? []
             } catch (error) {
                 console.error(error)
@@ -138,7 +140,7 @@ export default {
                 this.mostrarMensaje('info', '⚡ Sincronizando con la API externa...', 0)
                 await MaterialClient.sincronizarConSupabase(true) // forceOverwrite = true
                 this.mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
-                await this.cargarInventario()
+                await this.cargarInventario(true)
             } catch (error) {
                 console.error(error)
                 this.mostrarMensaje('error', '❌ Error al sincronizar con la API externa')
@@ -199,7 +201,7 @@ export default {
                 await MaterialClient.cargarMateriales(this.datosProcesados)
                 this.mostrarMensaje('exito', `✓ ${this.datosProcesados.length} materiales guardados`)
                 this.datosProcesados = []
-                await this.cargarInventario()
+                await this.cargarInventario(true)
             } catch (error) {
                 console.error(error)
                 this.mostrarMensaje('error', '❌ Error al guardar materiales', 0)
@@ -215,7 +217,7 @@ export default {
                 await MaterialClient.agregarMaterial(material)
                 this.mostrarMensaje('exito', '✓ Material agregado')
                 this.resetForm()
-                await this.cargarInventario()
+                await this.cargarInventario(true)
             } catch (error) {
                 console.error(error)
                 this.mostrarMensaje('error', '❌ Error al guardar material')
@@ -238,7 +240,7 @@ export default {
                 await MaterialClient.actualizarMaterial(this.idEditando, material)
                 this.mostrarMensaje('exito', '✓ Material actualizado')
                 this.resetForm()
-                await this.cargarInventario()
+                await this.cargarInventario(true)
             } catch (error) {
                 console.error(error)
                 this.mostrarMensaje('error', '❌ Error al actualizar')
@@ -252,7 +254,7 @@ export default {
             try {
                 await MaterialClient.eliminarMaterial(id)
                 this.mostrarMensaje('exito', '✓ Material eliminado')
-                await this.cargarInventario()
+                await this.cargarInventario(true)
             } catch (error) {
                 console.error(error)
                 this.mostrarMensaje('error', '❌ Error al eliminar')
@@ -274,89 +276,8 @@ export default {
 </script>
 
 <style scoped>
-.page-content-wrap {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.page-title {
-    margin: 0;
-}
-
-.main-layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
-}
-
-.main-layout.with-preview {
-    grid-template-columns: minmax(220px, 360px) 1fr;
-}
-
-.left-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.variety {
-    color: var(--text-h);
-    font-weight: 600;
-}
-
-.quantity {
-    color: var(--primary);
-    font-weight: 700;
-}
-
-.nombre {
-    color: var(--text-h);
-    font-weight: 600;
-}
-
-.descripcion {
-    color: var(--text-light);
-    font-size: 13px;
-}
-
 .actions-column {
     display: flex;
     gap: 8px;
-}
-
-.btn-action {
-    border: none;
-    border-radius: 6px;
-    padding: 8px 10px;
-    cursor: pointer;
-    transition: 0.3s ease;
-}
-
-.btn-edit {
-    background: #dbeafe;
-}
-
-.btn-delete {
-    background: #fee2e2;
-}
-
-.btn-action:hover {
-    transform: scale(1.05);
-}
-
-@media (max-width: 768px) {
-
-    .main-layout,
-    .main-layout.with-preview {
-        grid-template-columns: 1fr;
-    }
-
-    .page-container {
-        padding: 12px;
-    }
 }
 </style>

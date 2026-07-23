@@ -50,7 +50,10 @@ export default {
 
         receta: {
             type: Object,
-            required: true
+            required: true,
+            validator: (value) => {
+                return value !== null && typeof value === 'object' && 'nombre' in value
+            }
         },
 
         categorias: {

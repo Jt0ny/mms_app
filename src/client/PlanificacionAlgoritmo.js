@@ -3,6 +3,34 @@ import PlanificacionClient from './PlanificacionClient'
 
 export default {
     /**
+     * Helper: Obtiene los pedidos pendientes de la base de datos
+     */
+    async _obtenerPedidosPendientes(fecha) {
+        const { data, error } = await supabase
+            .from('pedidos')
+            .select(`
+                id,
+                fecha_pedido,
+                estado,
+                cliente_facturacion:cliente_facturacion_id ( nombre ),
+                pedido_detalles (
+                    stems,
+                    recetas (
+                        id,
+                        nombre,
+                        categoria
+                    )
+                )
+            `)
+            .lte('fecha_pedido', fecha)
+            .eq('estado', 'Pendiente')
+            .order('fecha_pedido', { ascending: true });
+
+        if (error) throw error;
+        return data || [];
+    },
+
+    /**
      * Obtiene todos los pedidos con estado='Pendiente' para una fecha dada
      * y los agrupa por receta, sumando el total de stems de cada una.
      * @param {string} fecha — formato 'YYYY-MM-DD'
@@ -10,27 +38,7 @@ export default {
      */
     async obtenerPedidosPendientesPorFecha(fecha) {
         try {
-            const { data, error } = await supabase
-                .from('pedidos')
-                .select(`
-                    id,
-                    fecha_pedido,
-                    estado,
-                    cliente_facturacion:cliente_facturacion_id ( nombre ),
-                    pedido_detalles (
-                        stems,
-                        recetas (
-                            id,
-                            nombre,
-                            categoria
-                        )
-                    )
-                `)
-                .lte('fecha_pedido', fecha)
-                .eq('estado', 'Pendiente')
-                .order('fecha_pedido', { ascending: true });
-
-            if (error) throw error;
+            const data = await this._obtenerPedidosPendientes(fecha);
 
             // Agrupar por receta_id sumando stems
             const mapaRecetas = new Map();
@@ -87,9 +95,10 @@ export default {
     },
 
     /**
-     * Algoritmo Greedy Least-Loaded:
-     * Distribuye los grupos de recetas entre los operadores de forma equitativa
-     * asignando siempre la siguiente receta al operador con menos stems acumulados.
+     * Algoritmo de distribución equitativa mejorado.
+     * Divide los stems de cada receta proporcionalmente entre los operadores,
+     * de modo que cada operador reciba una cantidad similar de stems totales.
+     * Las recetas que excedan la carga promedio por operador se dividen entre varios.
      *
      * @param {Array<{ id: string, nombre: string }>} operadores
      * @param {Array<{ recetaId: string, nombre: string, categoria: string, totalStems: number }>} gruposReceta
@@ -98,6 +107,10 @@ export default {
     distribuirEquitativamente(operadores, gruposReceta) {
         if (!operadores.length || !gruposReceta.length) return [];
 
+        const totalStemsGlobal = gruposReceta.reduce((s, g) => s + g.totalStems, 0);
+        const numOperadores = operadores.length;
+        const stemsPorOperador = Math.ceil(totalStemsGlobal / numOperadores);
+
         // Inicializar carga de cada operador en 0
         const carga = operadores.map(op => ({
             operador: op,
@@ -105,18 +118,44 @@ export default {
             stemsTotal: 0
         }));
 
-        // Greedy: asignar cada grupo de receta al operador con menos stems
-        for (const grupo of gruposReceta) {
-            // Encontrar el operador con menor carga acumulada
+        // Ordenar recetas de mayor a menor stems para mejor distribución
+        const recetasOrdenadas = [...gruposReceta].sort((a, b) => b.totalStems - a.totalStems);
+
+        for (const grupo of recetasOrdenadas) {
+            let stemsRestantes = grupo.totalStems;
+
+            // Encontrar el operador con menos carga
             carga.sort((a, b) => a.stemsTotal - b.stemsTotal);
             const destino = carga[0];
 
-            destino.recetas.push({
-                recetaId: grupo.recetaId,
-                nombre: grupo.nombre,
-                cantidad: grupo.totalStems  // cantidad = stems totales del pedido
-            });
-            destino.stemsTotal += grupo.totalStems;
+            // Si la receta cabe completa sin exceder la carga promedio, asignarla entera
+            if (stemsRestantes <= stemsPorOperador - destino.stemsTotal || stemsRestantes <= stemsPorOperador) {
+                destino.recetas.push({
+                    recetaId: grupo.recetaId,
+                    nombre: grupo.nombre,
+                    cantidad: grupo.totalStems
+                });
+                destino.stemsTotal += grupo.totalStems;
+            } else {
+                // La receta es muy grande: dividirla entre operadores
+                while (stemsRestantes > 0) {
+                    carga.sort((a, b) => a.stemsTotal - b.stemsTotal);
+                    const op = carga[0];
+                    const porcion = Math.min(stemsRestantes, Math.max(1, stemsPorOperador - op.stemsTotal));
+                    const stemsParaEste = porcion > 0 ? porcion : stemsRestantes;
+
+                    op.recetas.push({
+                        recetaId: grupo.recetaId,
+                        nombre: grupo.nombre,
+                        cantidad: stemsParaEste
+                    });
+                    op.stemsTotal += stemsParaEste;
+                    stemsRestantes -= stemsParaEste;
+
+                    // Prevenir bucle infinito
+                    if (stemsParaEste <= 0) break;
+                }
+            }
         }
 
         // Filtrar operadores sin asignación (más operadores que recetas)
@@ -351,27 +390,7 @@ export default {
      */
     async obtenerPedidosAgrupadosPorCategoria(fecha) {
         try {
-            const { data, error } = await supabase
-                .from('pedidos')
-                .select(`
-                    id,
-                    fecha_pedido,
-                    estado,
-                    cliente_facturacion:cliente_facturacion_id ( nombre ),
-                    pedido_detalles (
-                        stems,
-                        recetas (
-                            id,
-                            nombre,
-                            categoria
-                        )
-                    )
-                `)
-                .lte('fecha_pedido', fecha)
-                .eq('estado', 'Pendiente')
-                .order('fecha_pedido', { ascending: true });
-
-            if (error) throw error;
+            const data = await this._obtenerPedidosPendientes(fecha);
 
             const mapaCategorias = new Map();
 

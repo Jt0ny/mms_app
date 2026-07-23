@@ -1,4 +1,6 @@
 import { supabase } from './supabase'
+import MaterialClient from './MaterialClient'
+import MateriaPrimaClient from './MateriaPrimaClient'
 
 /**
  * Función auxiliar para verificar si un ID de operador es un UUID válido de Supabase
@@ -163,6 +165,79 @@ export default {
             return true;
         } catch (error) {
             console.error(`Error al eliminar merma con ID ${id} en Supabase:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Registra una merma y actualiza los stocks correspondientes según el tipo.
+     * Retorna la nueva merma y un objeto con los stocks actualizados para sincronizar la UI.
+     */
+    async registrarMermaConDescuento(payload, { materiales, materiaPrima, recetasCompletas }) {
+        try {
+            // 1. Guardar la merma en la base de datos
+            const nuevaMerma = await this.agregarMerma(payload);
+            const stocksActualizados = { materiales: [], materiaPrima: [] };
+            let mensajeExito = '✓ Merma registrada con éxito.';
+
+            // 2. Descontar del inventario según el tipo
+            if (payload.tipo === 'material') {
+                const material = materiales.find(m => m.id === payload.referenciaId);
+                if (material) {
+                    const nuevaCantidad = Math.max(0, (Number(material.cantidad) || 0) - Number(payload.cantidad));
+                    await MaterialClient.actualizarMaterial(material.id, {
+                        ...material,
+                        cantidad: nuevaCantidad
+                    });
+                    stocksActualizados.materiales.push({ id: material.id, cantidad: nuevaCantidad });
+                    mensajeExito = `✓ Merma registrada e inventario de "${material.nombre}" actualizado.`;
+                }
+            } else if (payload.tipo === 'materia_prima') {
+                const mp = materiaPrima.find(m => m.id === payload.referenciaId || m.variedad === payload.referenciaId);
+                if (mp) {
+                    const nuevaCantidad = Math.max(0, (Number(mp.cantidad_total) || 0) - Number(payload.cantidad));
+                    try {
+                        await MateriaPrimaClient.actualizarStockMateriaPrima(mp.id, nuevaCantidad);
+                        stocksActualizados.materiaPrima.push({ id: mp.id, cantidad_total: nuevaCantidad });
+                        mensajeExito = `✓ Merma registrada e inventario de "${mp.variedad}" actualizado.`;
+                    } catch (e) {
+                        // Silencioso, fallback al mensaje por defecto
+                    }
+                }
+            } else if (payload.tipo === 'producto_terminado') {
+                const receta = recetasCompletas.find(r => r.id === payload.referenciaId);
+                if (receta) {
+                    // Descontar materia prima
+                    for (const rmp of (receta.materiaPrima || [])) {
+                        const tallosConsumidos = rmp.cantidad * Number(payload.cantidad);
+                        const mpItem = materiaPrima.find(m => m.id === rmp.materia_prima_id);
+                        if (mpItem) {
+                            const nuevoStock = Math.max(0, (Number(mpItem.cantidad_total) || 0) - tallosConsumidos);
+                            try {
+                                await MateriaPrimaClient.actualizarStockMateriaPrima(mpItem.id, nuevoStock);
+                                stocksActualizados.materiaPrima.push({ id: mpItem.id, cantidad_total: nuevoStock });
+                            } catch (e) { /* silencioso */ }
+                        }
+                    }
+                    // Descontar materiales
+                    for (const rm of (receta.materiales || [])) {
+                        const insumosConsumidos = rm.cantidad * Number(payload.cantidad);
+                        const matItem = materiales.find(m => m.id === rm.material_id);
+                        if (matItem) {
+                            const nuevoStock = Math.max(0, (Number(matItem.cantidad) || 0) - insumosConsumidos);
+                            try {
+                                await MaterialClient.actualizarMaterial(matItem.id, { ...matItem, cantidad: nuevoStock });
+                                stocksActualizados.materiales.push({ id: matItem.id, cantidad: nuevoStock });
+                            } catch (e) { /* silencioso */ }
+                        }
+                    }
+                    mensajeExito = `✓ Merma de producto terminado registrada e inventario ajustado según la receta "${receta.nombre}".`;
+                }
+            }
+
+            return { nuevaMerma, stocksActualizados, mensajeExito };
+        } catch (error) {
+            console.error('Error en registrarMermaConDescuento:', error);
             throw error;
         }
     }

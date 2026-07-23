@@ -1,5 +1,6 @@
 import ClientesClient from '../client/ClientesClient'
 import { obtenerFechaHoy } from '../utils/date.js'
+import { useCatalogos } from './useCatalogos.js'
 
 export function usePedidoExcel() {
 
@@ -101,7 +102,8 @@ export function usePedidoExcel() {
 
     async function sincronizarClientes(datosPedidos) {
         try {
-            const clientesExistentes = await ClientesClient.obtenerClientes()
+            const catalogos = useCatalogos()
+            const clientesExistentes = await catalogos.obtenerClientes()
             const mapaClientes = new Map(clientesExistentes.map(c => [c.nombre.toLowerCase().trim(), c]))
 
             const clientesParaAgregarFacturacion = []
@@ -234,6 +236,10 @@ export function usePedidoExcel() {
                     }
                 })
                 await ClientesClient.upsertClientesMasivos(payloadUpsert)
+            }
+
+            if (clientesParaAgregarFacturacion.length > 0 || clientesParaAgregarEnvio.length > 0 || clientesParaActualizar.length > 0) {
+                catalogos.obtenerClientes(true).catch(console.error)
             }
 
         } catch (error) {

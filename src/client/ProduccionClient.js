@@ -112,6 +112,8 @@ export default {
             }
 
             const consumosInsertar = [];
+            const consumosMP = new Map();
+            const consumosMat = new Map();
 
             for (const d of payload.detalle) {
                 const cantProducida = parseInt(d.cantidad) || 0;
@@ -151,64 +153,82 @@ export default {
                 }
 
                 console.log(`[ProduccionClient] Categoría: "${d.categoria}". Receta seleccionada para descuento: "${recetaElegida?.nombre}" (ID: ${recetaElegida?.id})`);
-                console.log(`[ProduccionClient] Materia prima de la receta:`, recetaElegida?.receta_materia_prima);
-                console.log(`[ProduccionClient] Materiales de la receta:`, recetaElegida?.receta_materiales);
 
-                // 3a. Descontar y preparar consumo de Materia Prima (Tallos)
+                // 3a. Acumular consumo de Materia Prima (Tallos)
                 for (const rm of (recetaElegida.receta_materia_prima || [])) {
+                    const mpId = rm.materia_prima_id || rm.id;
+                    if (!mpId) continue;
                     const stemsConsumidos = rm.cantidad * cantProducida;
 
-                    // Obtener stock actual de la materia prima
-                    const { data: stockMP } = await supabase
-                        .from('materia_prima')
-                        .select('cantidad_total')
-                        .eq('id', rm.materia_prima_id)
-                        .single();
+                    const actual = consumosMP.get(mpId) || 0;
+                    consumosMP.set(mpId, actual + stemsConsumidos);
 
-                    if (stockMP) {
-                        const nuevoStock = Math.max(0, (stockMP.cantidad_total || 0) - stemsConsumidos);
-                        await supabase
-                            .from('materia_prima')
-                            .update({ cantidad_total: nuevoStock })
-                            .eq('id', rm.materia_prima_id);
-
-                        consumosInsertar.push({
-                            produccion_id: prod.id,
-                            tipo: 'materia_prima',
-                            materia_prima_id: rm.materia_prima_id,
-                            material_id: null,
-                            cantidad_consumida: stemsConsumidos
-                        });
-                    }
+                    consumosInsertar.push({
+                        produccion_id: prod.id,
+                        tipo: 'materia_prima',
+                        materia_prima_id: mpId,
+                        material_id: null,
+                        cantidad_consumida: stemsConsumidos
+                    });
                 }
 
-                // 3b. Descontar y preparar consumo de Materiales (Ligas, capuchones, cartón)
+                // 3b. Acumular consumo de Materiales (Ligas, capuchones, cartón)
                 for (const mat of (recetaElegida.receta_materiales || [])) {
+                    const matId = mat.material_id || mat.id;
+                    if (!matId) continue;
                     const insumosConsumidos = mat.cantidad * cantProducida;
 
-                    // Obtener stock actual del material
-                    const { data: stockMat } = await supabase
-                        .from('materiales')
-                        .select('cantidad')
-                        .eq('id', mat.material_id)
-                        .single();
+                    const actual = consumosMat.get(matId) || 0;
+                    consumosMat.set(matId, actual + insumosConsumidos);
 
-                    if (stockMat) {
-                        const nuevoStock = Math.max(0, (stockMat.cantidad || 0) - insumosConsumidos);
-                        await supabase
-                            .from('materiales')
-                            .update({ cantidad: nuevoStock })
-                            .eq('id', mat.material_id);
-
-                        consumosInsertar.push({
-                            produccion_id: prod.id,
-                            tipo: 'material',
-                            materia_prima_id: null,
-                            material_id: mat.material_id,
-                            cantidad_consumida: insumosConsumidos
-                        });
-                    }
+                    consumosInsertar.push({
+                        produccion_id: prod.id,
+                        tipo: 'material',
+                        materia_prima_id: null,
+                        material_id: matId,
+                        cantidad_consumida: insumosConsumidos
+                    });
                 }
+            }
+
+            // 4. Obtener stocks actuales en bloque y preparar actualizaciones
+            const updatePromises = [];
+            const mpIds = Array.from(consumosMP.keys());
+            const matIds = Array.from(consumosMat.keys());
+
+            if (mpIds.length > 0) {
+                const { data: stocksMP } = await supabase
+                    .from('materia_prima')
+                    .select('id, cantidad_total')
+                    .in('id', mpIds);
+
+                for (const stock of (stocksMP || [])) {
+                    const consumido = consumosMP.get(stock.id) || 0;
+                    const nuevoStock = Math.max(0, (stock.cantidad_total || 0) - consumido);
+                    updatePromises.push(
+                        supabase.from('materia_prima').update({ cantidad_total: nuevoStock }).eq('id', stock.id)
+                    );
+                }
+            }
+
+            if (matIds.length > 0) {
+                const { data: stocksMat } = await supabase
+                    .from('materiales')
+                    .select('id, cantidad')
+                    .in('id', matIds);
+
+                for (const stock of (stocksMat || [])) {
+                    const consumido = consumosMat.get(stock.id) || 0;
+                    const nuevoStock = Math.max(0, (stock.cantidad || 0) - consumido);
+                    updatePromises.push(
+                        supabase.from('materiales').update({ cantidad: nuevoStock }).eq('id', stock.id)
+                    );
+                }
+            }
+
+            // Ejecutar todas las actualizaciones de stock en paralelo
+            if (updatePromises.length > 0) {
+                await Promise.all(updatePromises);
             }
 
             // 4. Registrar todos los consumos en la tabla histórica

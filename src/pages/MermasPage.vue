@@ -13,9 +13,9 @@
       <Alertas :mensaje="mensaje" />
 
       <!-- Layout Principal: Formulario + Listado -->
-      <div class="main-layout">
+      <div class="main-layout-split with-preview">
         <!-- Formulario (Lado Izquierdo) -->
-        <div class="left-panel">
+        <div class="panel-column">
           <MermaForm :materia-prima-lista="materiaPrimaFiltrada" :materiales-lista="materialesFiltrados"
             :recetas-lista="recetasFiltradas" :operadores-lista="operadores" :filtro-info="filtroActivoInfo"
             :cargando-recursos="cargandoRecursos" :guardando="guardando" @guardar="registrarMerma"
@@ -23,7 +23,7 @@
         </div>
 
         <!-- Historial/Tabla (Lado Derecho) -->
-        <div class="right-panel">
+        <div class="panel-column">
           <MermaList :mermas="mermas" :cargando="cargandoMermas" @eliminar="confirmarEliminarMerma" />
         </div>
       </div>
@@ -38,12 +38,9 @@ import MermaList from '../components/mermas/MermaList.vue'
 
 // Clientes API
 import MermaClient from '../client/MermaClient'
-import MaterialClient from '../client/MaterialClient'
-import MateriaPrimaClient from '../client/MateriaPrimaClient'
-import RecetaClient from '../client/RecetaClient'
-import UsuarioClient from '../client/UsuarioClient'
 import PlanificacionClient from '../client/PlanificacionClient'
 import { useMensajes } from '../composables/useMensajes.js'
+import { useCatalogos } from '../composables/useCatalogos.js'
 
 export default {
   name: 'MermasPage',
@@ -54,7 +51,8 @@ export default {
   },
   setup() {
     const { mensaje, mostrarMensaje } = useMensajes()
-    return { mensaje, mostrarMensaje }
+    const catalogos = useCatalogos()
+    return { mensaje, mostrarMensaje, catalogos }
   },
 
   data() {
@@ -95,8 +93,7 @@ export default {
 
       // Cargar operadores
       try {
-        const usuariosRes = await UsuarioClient.obtenerUsuarios()
-        this.operadores = (usuariosRes ?? []).filter(u => String(u.rol).toLowerCase().trim() === 'operador')
+        this.operadores = await this.catalogos.obtenerOperadores()
       } catch (error) {
         console.error('Error al obtener operadores:', error)
       }
@@ -104,8 +101,8 @@ export default {
       // Cargar catálogos
       try {
         const [materialesRes, recetasRes] = await Promise.all([
-          MaterialClient.obtenerMateriales(),
-          RecetaClient.obtenerRecetas()
+          this.catalogos.obtenerMateriales(),
+          this.catalogos.obtenerRecetas()
         ])
         this.materiales = materialesRes ?? []
         this.materialesFiltrados = this.materiales
@@ -118,7 +115,7 @@ export default {
 
       // Cargar materia prima (desde Supabase directamente)
       try {
-        const mpRes = await MateriaPrimaClient.obtenerMateriaPrima()
+        const mpRes = await this.catalogos.obtenerMateriaPrima()
         this.materiaPrima = mpRes ?? []
         this.materiaPrimaFiltrada = this.materiaPrima
         this.cargandoRecursos = false // Liberar estado de carga inicial de recursos
@@ -132,79 +129,35 @@ export default {
     async registrarMerma(payload) {
       this.guardando = true
       try {
-        // 1. Guardar la merma en la base de datos
-        const nuevaMerma = await MermaClient.agregarMerma(payload)
+        const { nuevaMerma, stocksActualizados, mensajeExito } = await MermaClient.registrarMermaConDescuento(
+            payload, 
+            { 
+                materiales: this.materiales, 
+                materiaPrima: this.materiaPrima, 
+                recetasCompletas: this.recetasCompletas 
+            }
+        )
+
         this.mermas.push(nuevaMerma)
 
-        // 2. Descontar del inventario si es de tipo "material" o "materia_prima"
-        if (payload.tipo === 'material') {
-          const material = this.materiales.find(m => m.id === payload.referenciaId)
-          if (material) {
-            const nuevaCantidad = Math.max(0, (Number(material.cantidad) || 0) - Number(payload.cantidad))
-
-            // Actualizar stock de materiales en la base de datos
-            await MaterialClient.actualizarMaterial(material.id, {
-              ...material,
-              cantidad: nuevaCantidad
+        // Sincronizar memoria local con los nuevos stocks devueltos
+        if (stocksActualizados.materiales?.length) {
+            stocksActualizados.materiales.forEach(update => {
+                const item = this.materiales.find(m => m.id === update.id)
+                if (item) item.cantidad = update.cantidad
             })
-
-            // Refrescar inventario de materiales en memoria
-            material.cantidad = nuevaCantidad
-            this.mostrarMensaje('exito', `✓ Merma registrada e inventario de "${material.nombre}" actualizado.`)
-          } else {
-            this.mostrarMensaje('exito', '✓ Merma registrada con éxito.')
-          }
-        } else if (payload.tipo === 'materia_prima') {
-          const mp = this.materiaPrima.find(m => m.id === payload.referenciaId || m.variedad === payload.referenciaId)
-          if (mp) {
-            const nuevaCantidad = Math.max(0, (Number(mp.cantidad_total) || 0) - Number(payload.cantidad))
-
-            // Actualizar stock de materia prima en Supabase
-            try {
-              await MateriaPrimaClient.actualizarStockMateriaPrima(mp.id, nuevaCantidad)
-              mp.cantidad_total = nuevaCantidad
-              mp.cantidadTotal = nuevaCantidad
-              this.mostrarMensaje('exito', `✓ Merma registrada e inventario de "${mp.variedad}" actualizado.`)
-            } catch {
-              this.mostrarMensaje('exito', '✓ Merma registrada con éxito.')
-            }
-          } else {
-            this.mostrarMensaje('exito', '✓ Merma registrada con éxito.')
-          }
-        } else if (payload.tipo === 'producto_terminado') {
-          const receta = this.recetasCompletas.find(r => r.id === payload.referenciaId)
-          if (receta) {
-            for (const rmp of (receta.receta_materia_prima || [])) {
-              const tallosConsumidos = rmp.cantidad * Number(payload.cantidad)
-              const mpItem = this.materiaPrima.find(m => m.id === rmp.materia_prima_id)
-              if (mpItem) {
-                const nuevoStock = Math.max(0, (Number(mpItem.cantidad_total) || 0) - tallosConsumidos)
-                try {
-                  await MateriaPrimaClient.actualizarStockMateriaPrima(mpItem.id, nuevoStock)
-                  mpItem.cantidad_total = nuevoStock
-                  mpItem.cantidadTotal = nuevoStock
-                } catch { /* silencioso */ }
-              }
-            }
-            for (const rm of (receta.receta_materiales || [])) {
-              const insumosConsumidos = rm.cantidad * Number(payload.cantidad)
-              const matItem = this.materiales.find(m => m.id === rm.material_id)
-              if (matItem) {
-                const nuevoStock = Math.max(0, (Number(matItem.cantidad) || 0) - insumosConsumidos)
-                try {
-                  await MaterialClient.actualizarMaterial(matItem.id, { ...matItem, cantidad: nuevoStock })
-                  matItem.cantidad = nuevoStock
-                } catch { /* silencioso */ }
-              }
-            }
-            this.mostrarMensaje('exito', `✓ Merma de producto terminado registrada e inventario ajustado según la receta "${receta.nombre}".`)
-          } else {
-            this.mostrarMensaje('exito', '✓ Merma registrada con éxito.')
-          }
-        } else {
-          this.mostrarMensaje('exito', '✓ Merma registrada con éxito.')
+        }
+        if (stocksActualizados.materiaPrima?.length) {
+            stocksActualizados.materiaPrima.forEach(update => {
+                const item = this.materiaPrima.find(m => m.id === update.id)
+                if (item) {
+                    item.cantidad_total = update.cantidad_total
+                    item.cantidadTotal = update.cantidad_total
+                }
+            })
         }
 
+        this.mostrarMensaje('exito', mensajeExito)
       } catch (error) {
         console.error('Error al registrar merma:', error)
         this.mostrarMensaje('error', '❌ No se pudo registrar la merma.')
@@ -241,7 +194,7 @@ export default {
         }
 
         // Obtener recetas completas para saber qué ingredientes usan
-        const todasLasRecetas = await RecetaClient.obtenerRecetas()
+        const todasLasRecetas = await this.catalogos.obtenerRecetas()
 
         const recetasPlanIds = plan.recetas.map(r => r.recetaId)
         const recetasPlanificadas = todasLasRecetas.filter(r => recetasPlanIds.includes(r.id))
@@ -307,30 +260,6 @@ export default {
 </script>
 
 <style scoped>
-.page-content-wrap {
-  max-width: 1400px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-/* Encabezado */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.page-title {
-  margin: 0 0 6px;
-  font-size: clamp(24px, 3vw, 32px);
-  font-weight: 800;
-  color: var(--text-h);
-}
-
-
-
 /* Grid de Estadísticas */
 .stats-grid {
   display: grid;
@@ -395,31 +324,7 @@ export default {
   font-weight: 400;
 }
 
-/* Layout Principal */
-.main-layout {
-  display: grid;
-  grid-template-columns: minmax(320px, 400px) 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-.left-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.right-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
 @media (max-width: 1024px) {
-  .main-layout {
-    grid-template-columns: 1fr;
-  }
-
   .stats-grid {
     grid-template-columns: 1fr;
     gap: 12px;

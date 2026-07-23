@@ -8,9 +8,9 @@
         <Alertas :mensaje="mensaje" />
 
         <div class="main-layout">
-            <UsuarioForm @guardado="cargarUsuarios" />
+            <UsuarioForm @guardado="cargarUsuarios(true)" />
 
-            <UsuarioTablaActual :usuarios="usuarios" :cargando="cargandoUsuarios" @actualizar="cargarUsuarios"
+            <UsuarioTablaActual :usuarios="usuarios" :cargando="cargandoUsuarios" @actualizar="cargarUsuarios(true)"
                 @eliminar="eliminarUsuario" />
         </div>
     </div>
@@ -21,6 +21,7 @@ import UsuarioClient from '../client/UsuarioClient.js'
 import UsuarioForm from '../components/usuarios/UsuarioForm.vue'
 import UsuarioTablaActual from '../components/usuarios/UsuarioTablaActual.vue'
 import { useMensajes } from '../composables/useMensajes.js'
+import { useCatalogos } from '../composables/useCatalogos.js'
 
 export default {
     components: {
@@ -31,7 +32,8 @@ export default {
 
     setup() {
         const { mensaje, mostrarMensaje } = useMensajes()
-        return { mensaje, mostrarMensaje }
+        const catalogos = useCatalogos()
+        return { mensaje, mostrarMensaje, catalogos }
     },
 
     data() {
@@ -46,10 +48,10 @@ export default {
     },
 
     methods: {
-        async cargarUsuarios() {
+        async cargarUsuarios(forceRefresh = false) {
             this.cargandoUsuarios = true
             try {
-                const datos = await UsuarioClient.obtenerUsuarios()
+                const datos = await this.catalogos.obtenerUsuarios(forceRefresh)
                 this.usuarios = datos ?? []
             } catch (error) {
                 console.error(error)
@@ -64,7 +66,7 @@ export default {
             try {
                 await UsuarioClient.eliminarUsuario(id)
                 this.mostrarMensaje('exito', 'Usuario eliminado correctamente.')
-                await this.cargarUsuarios()
+                await this.cargarUsuarios(true)
             } catch (error) {
                 console.error(error)
                 this.mostrarMensaje('error', 'No se pudo eliminar el usuario.')

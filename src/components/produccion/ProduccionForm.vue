@@ -98,7 +98,10 @@ export default {
         },
         edicion: {
             type: Object,
-            default: null
+            default: null,
+            validator: (value) => {
+                return value === null || (typeof value === 'object' && !Array.isArray(value))
+            }
         },
         categoriasPermitidas: {
             // Array de strings con las categorías de las recetas asignadas.
@@ -110,12 +113,18 @@ export default {
             // Acumulador externo: { [categoria]: totalClicks }.
             // El form lo observa y aplica el delta como incremento.
             type: Object,
-            default: () => ({})
+            default: () => ({}),
+            validator: (value) => {
+                return value !== null && typeof value === 'object' && !Array.isArray(value)
+            }
         },
         limitesPorCategoria: {
             // Límites de cantidad por categoría: { [categoria]: totalPlanificado }.
             type: Object,
-            default: () => ({})
+            default: () => ({}),
+            validator: (value) => {
+                return value !== null && typeof value === 'object' && !Array.isArray(value)
+            }
         }
     },
 

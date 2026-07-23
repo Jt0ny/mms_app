@@ -1,5 +1,5 @@
 <template>
-    <div class="page-container materia-prima-page">
+    <div class="page-container pedido-page">
 
         <div class="page-content-wrap">
 
@@ -10,10 +10,10 @@
             <Alertas :mensaje="mensaje" />
 
             <!-- LAYOUT -->
-            <div class="main-layout" :class="{ 'with-preview': datosProcesados.length > 0 }">
+            <div class="main-layout-split" :class="{ 'with-preview': datosProcesados.length > 0 }">
 
                 <!-- PANEL IZQUIERDO -->
-                <div class="left-panel">
+                <div class="panel-column">
 
                     <!-- UPLOAD -->
                     <CargaArchivo nombreModulo="Ventas" :cargando="cargando" @archivo-seleccionado="procesarArchivo" />
@@ -29,9 +29,9 @@
 
                         </template>
                         <template #row="{ item }">
-                            <td class="variety">{{ item.clienteFacturacion }}</td>
-                            <td>{{ item.categoria }}</td>
-                            <td class="quantity">{{ item.stems }}</td>
+                            <td class="text-variety">{{ item.clienteFacturacion }}</td>
+                            <td class="text-category">{{ item.categoria }}</td>
+                            <td class="text-quantity">{{ item.stems }}</td>
 
                         </template>
                     </InventoryTable>
@@ -50,12 +50,12 @@
 
                     </template>
                     <template #row="{ item }">
-                        <td class="variety" data-label="Cliente (Bill)" :title="item.cliente_facturacion">{{
+                        <td class="text-variety" data-label="Cliente (Bill)" :title="item.cliente_facturacion">{{
                             item.cliente_facturacion }}</td>
-                        <td class="variety" data-label="Destino (Ship)" :title="item.cliente_envio">{{
+                        <td class="text-variety" data-label="Destino (Ship)" :title="item.cliente_envio">{{
                             item.cliente_envio }}</td>
-                        <td class="category" data-label="Categoría">{{ item.categoria }}</td>
-                        <td class="quantity" data-label="Tallos">{{ item.stems }}</td>
+                        <td class="text-category" data-label="Categoría">{{ item.categoria }}</td>
+                        <td class="text-quantity" data-label="Tallos">{{ item.stems }}</td>
 
                     </template>
                 </PreviewTable>
@@ -196,50 +196,4 @@ export default {
     }
 }
 </script>
-<style scoped>
-.main-layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
-    margin-top: 24px;
-}
-
-.main-layout.with-preview {
-    grid-template-columns: minmax(220px, 360px) 1fr;
-}
-
-.left-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.variety {
-    color: var(--text-h);
-    font-weight: 600;
-}
-
-.category {
-    color: var(--text-h);
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 13px;
-}
-
-.quantity {
-    color: var(--primary);
-    font-weight: 700;
-}
-
-@media (max-width: 768px) {
-
-    .main-layout,
-    .main-layout.with-preview {
-        grid-template-columns: 1fr;
-    }
-
-    .page-container {
-        padding: 12px;
-    }
-}
-</style>
+<style scoped></style>

@@ -49,7 +49,7 @@ import ProduccionForm from '../components/produccion/ProduccionForm.vue'
 import ProduccionClient from '../client/ProduccionClient'
 import ProduccionRecetasView from '../components/produccion/ProduccionRecetasView.vue'
 import PlanificacionClient from '../client/PlanificacionClient.js'
-import RecetaClient from '../client/RecetaClient'
+import { useCatalogos } from '../composables/useCatalogos.js'
 import { useMensajes } from '../composables/useMensajes.js'
 import { useAuth } from '../composables/useAuth.js'
 import { obtenerFechaHoy } from '../utils/date.js'
@@ -64,7 +64,8 @@ export default {
     setup() {
         const { mensaje, mostrarMensaje } = useMensajes()
         const { usuarioId, usuarioNombre } = useAuth()
-        return { mensaje, mostrarMensaje, operadorId: usuarioId, operadorNombre: usuarioNombre }
+        const catalogos = useCatalogos()
+        return { mensaje, mostrarMensaje, operadorId: usuarioId, operadorNombre: usuarioNombre, catalogos }
     },
 
     data() {
@@ -181,7 +182,7 @@ export default {
 
                 // Cargar recetas completas para extraer sus categorías
                 try {
-                    const todasLasRecetas = await RecetaClient.obtenerRecetas()
+                    const todasLasRecetas = await this.catalogos.obtenerRecetas()
                     const categoriasSet = new Set()
                     const map = {}
                     for (const id of ids) {
@@ -339,30 +340,6 @@ export default {
 </script>
 
 <style scoped>
-.page-content-wrap {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: grid;
-    gap: 20px;
-}
-
-/* ── Header ─────────────────────────── */
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-}
-
-.page-title {
-    margin: 0;
-}
-
-.page-subtitle {
-    margin: 6px 0 0;
-    color: var(--text-light);
-}
-
 /* ── Badges de estado ───────────────── */
 .badge {
     padding: 8px 14px;
@@ -427,26 +404,9 @@ export default {
     align-items: start;
 }
 
-@media (min-width: 769px) and (max-width: 1100px) {
-    .page-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
     .page-grid {
         grid-template-columns: 1fr;
-    }
-
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
-@media (max-width: 768px) {
-    .page-container {
-        padding: 12px;
     }
 }
 </style>

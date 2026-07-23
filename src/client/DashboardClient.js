@@ -1,5 +1,8 @@
 import { supabase } from './supabase'
 import RecetaClient from './RecetaClient'
+import PlanificacionClient from './PlanificacionClient'
+import PedidoClient from './PedidoClient'
+import { useCatalogos } from '../composables/useCatalogos.js'
 
 export default {
     /**
@@ -144,103 +147,6 @@ export default {
             avanceOperadores.push(val)
         })
 
-        // ============ AUTO-COMPLETAR PEDIDOS SEGÚN PRODUCCIÓN ============
-        // Sumar producción total del día agrupada por categoría
-        const produccionPorCategoria = new Map()
-        if (!prodErr && produccionesHoy) {
-            produccionesHoy.forEach(prod => {
-                if (prod.produccion_detalle) {
-                    prod.produccion_detalle.forEach(det => {
-                        const cat = (det.categoria || '').toUpperCase().trim()
-                        if (cat) {
-                            produccionPorCategoria.set(
-                                cat,
-                                (produccionPorCategoria.get(cat) || 0) + (parseInt(det.cantidad) || 0)
-                            )
-                        }
-                    })
-                }
-            })
-        }
-
-        // Evaluar pedidos para auto-completar
-        if (!pedErr && pedidosHoy) {
-            // 1. Restar la producción ya consumida por pedidos que YA están completados
-            const pedidosCompletadosHoy = pedidosHoy.filter(p => p.estado === 'Completado')
-            for (const pedido of pedidosCompletadosHoy) {
-                for (const det of (pedido.pedido_detalles || [])) {
-                    const cat = (det.recetas?.categoria || '').toUpperCase().trim()
-                    if (cat) {
-                        const actual = produccionPorCategoria.get(cat) || 0
-                        produccionPorCategoria.set(cat, Math.max(0, actual - (parseInt(det.stems) || 0)))
-                    }
-                }
-            }
-
-            // 2. Evaluar pedidos pendientes
-            const pedidosPendientes = pedidosHoy.filter(p => p.estado === 'Pendiente')
-            const idsParaCompletar = []
-
-            for (const pedido of pedidosPendientes) {
-                // Agrupar los stems pedidos por categoría para este pedido
-                const pedidoPorCategoria = new Map()
-                for (const det of (pedido.pedido_detalles || [])) {
-                    const cat = (det.recetas?.categoria || '').toUpperCase().trim()
-                    if (cat) {
-                        pedidoPorCategoria.set(
-                            cat,
-                            (pedidoPorCategoria.get(cat) || 0) + (parseInt(det.stems) || 0)
-                        )
-                    }
-                }
-
-                // Verificar si TODAS las categorías de este pedido están cubiertas
-                if (pedidoPorCategoria.size > 0) {
-                    let todoCubierto = true
-                    pedidoPorCategoria.forEach((stemsPedidos, cat) => {
-                        const stemsProducidos = produccionPorCategoria.get(cat) || 0
-                        if (stemsProducidos < stemsPedidos) {
-                            todoCubierto = false
-                        }
-                    })
-
-                    if (todoCubierto) {
-                        idsParaCompletar.push(pedido.id)
-                        
-                        // Descontar la producción utilizada para este pedido de la "bolsa"
-                        pedidoPorCategoria.forEach((stemsPedidos, cat) => {
-                            const stemsActuales = produccionPorCategoria.get(cat) || 0
-                            produccionPorCategoria.set(cat, Math.max(0, stemsActuales - stemsPedidos))
-                        })
-                    }
-                }
-            }
-
-            // Actualizar en Supabase los pedidos que ya están cubiertos
-            if (idsParaCompletar.length > 0) {
-                const { error: updateErr } = await supabase
-                    .from('pedidos')
-                    .update({ estado: 'Completado' })
-                    .in('id', idsParaCompletar)
-
-                if (!updateErr) {
-                    // Reflejar el cambio en el arreglo local
-                    for (const ep of estadoPedidos) {
-                        if (idsParaCompletar.includes(ep.id)) {
-                            ep.estado = 'Completado'
-                        }
-                    }
-                    // Re-ordenar: Pendientes primero
-                    estadoPedidos.sort((a, b) => {
-                        if (a.estado === 'Pendiente' && b.estado !== 'Pendiente') return -1;
-                        if (a.estado !== 'Pendiente' && b.estado === 'Pendiente') return 1;
-                        return 0;
-                    })
-                } else {
-                    console.error('Error al auto-completar pedidos:', updateErr)
-                }
-            }
-        }
 
         // 4. Obtener Mermas del Día
         const { data: mermasHoy, error: mermaErr } = await supabase
@@ -311,7 +217,7 @@ export default {
         const [mpStockRes, matStockRes, recetasCompletas] = await Promise.all([
             supabase.from('materia_prima').select('id, variedad, cantidad_total'),
             supabase.from('materiales').select('id, nombre, cantidad'),
-            RecetaClient.obtenerRecetas()
+            useCatalogos().obtenerRecetas()
         ])
 
         const mapMPStock = new Map(mpStockRes.data?.map(m => [m.id, m]) || [])
@@ -329,16 +235,22 @@ export default {
                         const cantRamosPlaneados = pr.cantidad
 
                         if (receta) {
-                            if (receta.receta_materia_prima) {
-                                receta.receta_materia_prima.forEach(rmp => {
-                                    const totalReq = rmp.cantidad * cantRamosPlaneados
-                                    demandaMP.set(rmp.materia_prima_id, (demandaMP.get(rmp.materia_prima_id) || 0) + totalReq)
+                            if (receta.materiaPrima) {
+                                receta.materiaPrima.forEach(rmp => {
+                                    const mpId = rmp.materia_prima_id || rmp.id
+                                    if (mpId) {
+                                        const totalReq = rmp.cantidad * cantRamosPlaneados
+                                        demandaMP.set(mpId, (demandaMP.get(mpId) || 0) + totalReq)
+                                    }
                                 })
                             }
-                            if (receta.receta_materiales) {
-                                receta.receta_materiales.forEach(rmat => {
-                                    const totalReq = rmat.cantidad * cantRamosPlaneados
-                                    demandaMat.set(rmat.material_id, (demandaMat.get(rmat.material_id) || 0) + totalReq)
+                            if (receta.materiales) {
+                                receta.materiales.forEach(rmat => {
+                                    const matId = rmat.material_id || rmat.id
+                                    if (matId) {
+                                        const totalReq = rmat.cantidad * cantRamosPlaneados
+                                        demandaMat.set(matId, (demandaMat.get(matId) || 0) + totalReq)
+                                    }
                                 })
                             }
                         }
@@ -410,5 +322,110 @@ export default {
             alertasStock,
             estadoPedidos
         }
+    },
+
+    /**
+     * Evalúa la producción del día y completa automáticamente los pedidos pendientes que puedan ser cubiertos.
+     * Este método solo ejecuta side-effects (escrituras) en la base de datos.
+     * @param {string} fecha — formato 'YYYY-MM-DD'
+     */
+    async autoCompletarPedidos(fecha) {
+        // 1. Obtener Pedidos (igual que en obtenerDatosDashboard)
+        const { data: pedidosHoy, error: pedErr } = await supabase
+            .from('pedidos')
+            .select(`
+                id, 
+                fecha_pedido,
+                estado,
+                pedido_detalles(
+                    stems,
+                    recetas(categoria)
+                )
+            `)
+            .or(`fecha_pedido.eq.${fecha},and(fecha_pedido.lt.${fecha},estado.eq.Pendiente)`);
+
+        // 2. Obtener Producción (cabeceras + detalle por categoría)
+        const { data: produccionesHoy, error: prodErr } = await supabase
+            .from('producciones')
+            .select(`
+                id,
+                produccion_detalle(categoria, cantidad)
+            `)
+            .eq('fecha', fecha);
+
+        if (pedErr || prodErr || !pedidosHoy || !produccionesHoy) return;
+
+        // Sumar producción total del día agrupada por categoría
+        const produccionPorCategoria = new Map();
+        produccionesHoy.forEach(prod => {
+            if (prod.produccion_detalle) {
+                prod.produccion_detalle.forEach(det => {
+                    const cat = (det.categoria || '').toUpperCase().trim();
+                    if (cat) {
+                        produccionPorCategoria.set(
+                            cat,
+                            (produccionPorCategoria.get(cat) || 0) + (parseInt(det.cantidad) || 0)
+                        );
+                    }
+                });
+            }
+        });
+
+        // Restar la producción ya consumida por pedidos que YA están completados
+        const pedidosCompletadosHoy = pedidosHoy.filter(p => p.estado === 'Completado');
+        for (const pedido of pedidosCompletadosHoy) {
+            for (const det of (pedido.pedido_detalles || [])) {
+                const cat = (det.recetas?.categoria || '').toUpperCase().trim();
+                if (cat) {
+                    const actual = produccionPorCategoria.get(cat) || 0;
+                    produccionPorCategoria.set(cat, Math.max(0, actual - (parseInt(det.stems) || 0)));
+                }
+            }
+        }
+
+        // Evaluar pedidos pendientes
+        const pedidosPendientes = pedidosHoy.filter(p => p.estado === 'Pendiente');
+        const idsParaCompletar = [];
+
+        for (const pedido of pedidosPendientes) {
+            const pedidoPorCategoria = new Map();
+            for (const det of (pedido.pedido_detalles || [])) {
+                const cat = (det.recetas?.categoria || '').toUpperCase().trim();
+                if (cat) {
+                    pedidoPorCategoria.set(
+                        cat,
+                        (pedidoPorCategoria.get(cat) || 0) + (parseInt(det.stems) || 0)
+                    );
+                }
+            }
+
+            if (pedidoPorCategoria.size > 0) {
+                let todoCubierto = true;
+                pedidoPorCategoria.forEach((stemsPedidos, cat) => {
+                    const stemsProducidos = produccionPorCategoria.get(cat) || 0;
+                    if (stemsProducidos < stemsPedidos) {
+                        todoCubierto = false;
+                    }
+                });
+
+                if (todoCubierto) {
+                    idsParaCompletar.push(pedido.id);
+                    // Descontar la producción utilizada para este pedido de la "bolsa"
+                    pedidoPorCategoria.forEach((stemsPedidos, cat) => {
+                        const stemsActuales = produccionPorCategoria.get(cat) || 0;
+                        produccionPorCategoria.set(cat, Math.max(0, stemsActuales - stemsPedidos));
+                    });
+                }
+            }
+        }
+
+        // Actualizar en Supabase los pedidos que ya están cubiertos
+        if (idsParaCompletar.length > 0) {
+            await supabase
+                .from('pedidos')
+                .update({ estado: 'Completado', fecha_pedido: fecha })
+                .in('id', idsParaCompletar);
+        }
     }
 }
+

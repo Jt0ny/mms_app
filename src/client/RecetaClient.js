@@ -46,15 +46,19 @@ export default {
         fecha_creacion: item.fecha_creacion,
         materiales: (item.receta_materiales || []).map(rm => ({
           id: rm.materiales?.id,
+          material_id: rm.materiales?.id,
           nombre: rm.materiales?.nombre || rm.materiales?.descripcion || '',
           cantidad: rm.cantidad
         })),
         materiaPrima: (item.receta_materia_prima || []).map(rmp => ({
           id: rmp.materia_prima?.id,
+          materia_prima_id: rmp.materia_prima?.id,
           nombre: rmp.materia_prima?.variedad || '',
           variedad: rmp.materia_prima?.variedad || '',
           cantidad: rmp.cantidad
-        }))
+        })),
+        receta_materia_prima: item.receta_materia_prima || [],
+        receta_materiales: item.receta_materiales || []
       }));
     } catch (error) {
       console.error("Error al obtener recetas desde Supabase:", error);

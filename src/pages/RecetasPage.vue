@@ -10,7 +10,7 @@
             <Alertas :mensaje="mensaje" />
 
             <!-- LAYOUT -->
-            <div class="main-layout">
+            <div class="panel-column">
 
                 <!-- FORMULARIO -->
                 <RecetaForm :receta="nuevaReceta" :categorias="categorias" :totalSeleccionados="totalSeleccionados"
@@ -42,10 +42,9 @@
 </template>
 
 <script>
-import MaterialClient from '../client/MaterialClient'
-import MateriaPrimaClient from '../client/MateriaPrimaClient'
 import RecetaClient from '../client/RecetaClient'
 import PedidoClient from '../client/PedidoClient'
+import { useCatalogos } from '../composables/useCatalogos.js'
 
 import RecetaForm from '../components/recetas/RecetaForm.vue'
 import RecetaMaterialesTabla from '../components/recetas/RecetaMaterialesTabla.vue'
@@ -66,7 +65,8 @@ export default {
 
     setup() {
         const { mensaje, mostrarMensaje } = useMensajes()
-        return { mensaje, mostrarMensaje }
+        const catalogos = useCatalogos()
+        return { mensaje, mostrarMensaje, catalogos }
     },
 
     data() {
@@ -106,7 +106,7 @@ export default {
         async cargarMateriales() {
             this.cargandoMateriales = true
             try {
-                const data = await MaterialClient.obtenerMateriales()
+                const data = await this.catalogos.obtenerMateriales()
                 this.materiales = data ?? []
             } catch (error) {
                 console.error(error)
@@ -119,7 +119,7 @@ export default {
         async cargarMateriaPrima() {
             this.cargandoMateriaPrima = true
             try {
-                const data = await MateriaPrimaClient.obtenerMateriaPrima()
+                const data = await this.catalogos.obtenerMateriaPrima()
                 this.materiaPrima = data ?? []
             } catch (error) {
                 console.error(error)
@@ -132,7 +132,7 @@ export default {
         async cargarCategorias() {
             try {
                 const [recetas, pedidos] = await Promise.all([
-                    RecetaClient.obtenerRecetas(),
+                    this.catalogos.obtenerRecetas(),
                     PedidoClient.obtenerPedidos()
                 ])
 
@@ -211,6 +211,7 @@ export default {
             try {
                 const payload = { ...this.nuevaReceta, materiales: this.materialesSeleccionados, materiaPrima: this.materiaPrimaSeleccionada, fecha_creacion: new Date().toISOString() }
                 await RecetaClient.agregarReceta(payload)
+                await this.catalogos.obtenerRecetas(true) // Force refresh the cache
 
                 this.mostrarMensaje('exito', 'Receta guardada correctamente')
 
@@ -241,30 +242,16 @@ export default {
 </script>
 
 <style scoped>
-
-
-.page-title {
-    margin-bottom: 24px;
-}
-
-.main-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
 .tables-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
 
     .tables-grid {
         grid-template-columns: 1fr;
     }
-
-    .page-container { padding: 12px; }
 }
 </style>

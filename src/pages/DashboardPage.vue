@@ -8,7 +8,7 @@
                     <p class="page-subtitle">Monitoreo de producción, inventarios y mermas en tiempo real</p>
                 </div>
                 <div class="header-actions">
-                    <button @click="cargarDatosDashboard" :disabled="cargando" class="btn-refresh">
+                    <button @click="cargarDatosDashboard" :disabled="cargando" class="btn btn-primary">
                         {{ cargando ? '⟳ Cargando...' : '↻ Actualizar Panel' }}
                     </button>
                 </div>
@@ -82,6 +82,11 @@ export default {
 
             try {
                 const today = obtenerFechaHoy()
+                
+                // 1. Ejecutar las reglas de negocio de auto-completar primero (Side-effects)
+                await DashboardClient.autoCompletarPedidos(today)
+                
+                // 2. Traer la información puramente para lectura (Read-only)
                 const datos = await DashboardClient.obtenerDatosDashboard(today)
 
                 this.kpis = datos.kpis
@@ -101,57 +106,6 @@ export default {
 </script>
 
 <style scoped>
-.page-content-wrap {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-/* Encabezado */
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.page-title {
-    margin: 0 0 6px;
-    font-size: clamp(24px, 3vw, 32px);
-    font-weight: 800;
-    color: var(--text-h);
-}
-
-.page-subtitle {
-    margin: 0;
-    color: var(--text-light);
-    font-size: 14px;
-}
-
-.btn-refresh {
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    box-shadow: var(--shadow-sm);
-}
-
-.btn-refresh:hover:not(:disabled) {
-    background: var(--primary-dark);
-    transform: translateY(-1px);
-}
-
-.btn-refresh:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
 /* Alertas */
 .alertas-stock-wrap {
     display: flex;
