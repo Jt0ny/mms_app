@@ -30,14 +30,15 @@ export default {
         id: item.id,
         nombre: item.nombre,
         tipo: item.tipo,
-        cliente_facturacion_id: item.cliente_facturacion_id,
+        // Mapeo snake_case a camelCase
+        clienteFacturacionId: item.cliente_facturacion_id,
         // Asignamos el nombre del broker para que las vistas de Vue lo muestren sin cambios
         clienteFacturacionAsociado: item.parent ? item.parent.nombre : '',
         email: item.email || '',
         telefono: item.telefono || '',
         direccion: item.direccion || '',
         notas: item.notas || '',
-        creado_en: item.creado_en
+        creadoEn: item.creado_en
       }))
     } catch (error) {
       console.error("Error al obtener clientes desde Supabase:", error)
@@ -145,9 +146,16 @@ export default {
   // Inserta múltiples clientes de golpe en Supabase
   async agregarClientesMasivos(payload) {
     try {
+      const dbPayload = payload.map(c => ({
+        ...c,
+        cliente_facturacion_id: c.clienteFacturacionId
+      }))
+      // Limpiar camelCase
+      dbPayload.forEach(c => delete c.clienteFacturacionId)
+
       const { data, error } = await supabase
         .from('clientes')
-        .insert(payload)
+        .insert(dbPayload)
         .select()
 
       if (error) throw error
@@ -161,9 +169,16 @@ export default {
   // Actualiza múltiples clientes usando upsert en Supabase
   async upsertClientesMasivos(payload) {
     try {
+      const dbPayload = payload.map(c => ({
+        ...c,
+        cliente_facturacion_id: c.clienteFacturacionId
+      }))
+      // Limpiar camelCase
+      dbPayload.forEach(c => delete c.clienteFacturacionId)
+
       const { data, error } = await supabase
         .from('clientes')
-        .upsert(payload)
+        .upsert(dbPayload)
         .select()
 
       if (error) throw error

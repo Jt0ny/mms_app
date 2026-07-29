@@ -34,7 +34,6 @@
                             <td class="text-quantity">{{ item.cantidad }}</td>
                             <td>{{ item.descripcion || '-' }}</td>
                             <td class="actions-column">
-                                <button class="btn-action btn-action-edit" @click="editarMaterial(item)">✏️</button>
                                 <button class="btn-action btn-action-delete" @click="eliminarMaterial(item.id)">🗑️</button>
                             </td>
                         </template>
@@ -61,8 +60,7 @@
             </div>
 
             <!-- FORMULARIO MANUAL (debajo del layout principal) -->
-            <MaterialForm :material="nuevoMaterial" :modoEdicion="modoEdicion" :cargando="cargando"
-                @guardar="guardarMaterial" @actualizar="actualizarMaterial" @cancelar="resetForm" />
+            <MaterialForm :material="nuevoMaterial" :cargando="cargando" @guardar="guardarMaterial" />
 
         </div>
 
@@ -93,9 +91,9 @@ export default {
 
     setup() {
         const { mensaje, mostrarMensaje } = useMensajes()
-        const { leerExcel, cargandoExcel } = useExcel()
+        const { leerExcel } = useExcel()
         const catalogos = useCatalogos()
-        return { mensaje, mostrarMensaje, leerExcel, cargandoExcel, catalogos }
+        return { mensaje, mostrarMensaje, leerExcel, catalogos }
     },
 
     data() {
@@ -104,8 +102,6 @@ export default {
             inventarioActual: [],
             cargando: false,
             cargandoInventario: false,
-            modoEdicion: false,
-            idEditando: null,
             nuevoMaterial: {
                 nombre: '',
                 cantidad: null,
@@ -138,7 +134,7 @@ export default {
             this.cargandoInventario = true
             try {
                 this.mostrarMensaje('info', '⚡ Sincronizando con la API externa...', 0)
-                await MaterialClient.sincronizarConSupabase(true) // forceOverwrite = true
+                await MaterialClient.sincronizarConSupabase()
                 this.mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
                 await this.cargarInventario(true)
             } catch (error) {
@@ -226,29 +222,6 @@ export default {
             }
         },
 
-        /* ================= EDITAR ================= */
-        editarMaterial(material) {
-            this.modoEdicion = true
-            this.idEditando = material.id
-            this.nuevoMaterial = { ...material }
-        },
-
-        /* ================= ACTUALIZAR ================= */
-        async actualizarMaterial(material) {
-            this.cargando = true
-            try {
-                await MaterialClient.actualizarMaterial(this.idEditando, material)
-                this.mostrarMensaje('exito', '✓ Material actualizado')
-                this.resetForm()
-                await this.cargarInventario(true)
-            } catch (error) {
-                console.error(error)
-                this.mostrarMensaje('error', '❌ Error al actualizar')
-            } finally {
-                this.cargando = false
-            }
-        },
-
         /* ================= ELIMINAR ================= */
         async eliminarMaterial(id) {
             try {
@@ -263,8 +236,6 @@ export default {
 
         /* ================= RESET ================= */
         resetForm() {
-            this.modoEdicion = false
-            this.idEditando = null
             this.nuevoMaterial = {
                 nombre: '',
                 cantidad: null,

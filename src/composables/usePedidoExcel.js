@@ -72,12 +72,12 @@ export function usePedidoExcel() {
 
             columnasCategoria.forEach(map => {
                 if (map.indiceStems === undefined) return
-                
+
                 let stems = parseInt(String(fila[map.indiceStems] || '0').replace(/\s+/g, ''), 10)
                 if (isNaN(stems)) {
                     stems = 0
                 }
-                
+
                 let precioCategoria = 0
                 if (map.indiceSales !== undefined) {
                     precioCategoria = parseFloat(String(fila[map.indiceSales] || '0').replace(/[^0-9.-]+/g, ''))
@@ -85,12 +85,12 @@ export function usePedidoExcel() {
                 }
 
                 if (stems > 0) {
-                    resultados.push({ 
-                        cliente_facturacion: billCustomer, 
-                        cliente_envio: shipCustomer, 
-                        categoria: map.categoria, 
-                        stems, 
-                        fecha_ingreso: fechaHoy,
+                    resultados.push({
+                        clienteFacturacion: billCustomer,
+                        clienteEnvio: shipCustomer,
+                        categoria: map.categoria,
+                        stems,
+                        fechaIngreso: fechaHoy,
                         precio: precioCategoria
                     })
                 }
@@ -111,8 +111,8 @@ export function usePedidoExcel() {
             const clientesParaActualizar = []
 
             for (const order of datosPedidos) {
-                const billName = (order.cliente_facturacion || '').trim()
-                const shipName = (order.cliente_envio || '').trim()
+                const billName = (order.clienteFacturacion || '').trim()
+                const shipName = (order.clienteEnvio || '').trim()
 
                 if (billName) {
                     const billKey = billName.toLowerCase()
@@ -179,7 +179,7 @@ export function usePedidoExcel() {
                     clientesParaAgregarFacturacion.map(c => ({
                         nombre: c.nombre.trim(),
                         tipo: c.tipo,
-                        cliente_facturacion_id: null,
+                        clienteFacturacionId: null,
                         email: null,
                         telefono: null,
                         direccion: null,
@@ -204,7 +204,7 @@ export function usePedidoExcel() {
                     return {
                         nombre: c.nombre.trim(),
                         tipo: c.tipo,
-                        cliente_facturacion_id: parentId,
+                        clienteFacturacionId: parentId,
                         email: null,
                         telefono: null,
                         direccion: null,
@@ -217,7 +217,7 @@ export function usePedidoExcel() {
             // 4. Actualizar clientes modificados de golpe usando bulk upsert
             if (clientesParaActualizar.length > 0) {
                 const payloadUpsert = clientesParaActualizar.map(c => {
-                    let parentId = c.cliente_facturacion_id || null
+                    let parentId = c.clienteFacturacionId || null
                     if (c.clienteFacturacionAsociado) {
                         const parentObj = mapaClientes.get(c.clienteFacturacionAsociado.toLowerCase().trim())
                         if (parentObj && parentObj.id) {
@@ -228,7 +228,7 @@ export function usePedidoExcel() {
                         id: c.id,
                         nombre: c.nombre.trim(),
                         tipo: c.tipo,
-                        cliente_facturacion_id: parentId,
+                        clienteFacturacionId: parentId,
                         email: c.email || null,
                         telefono: c.telefono || null,
                         direccion: c.direccion || null,

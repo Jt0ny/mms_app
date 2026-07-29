@@ -45,7 +45,7 @@
                             </strong>
 
                             <div class="row-subtitle">
-                                Fecha:{{ item.fecha || '-' }}
+                                Fecha:{{ item.fechaIngreso || '-' }}
                             </div>
 
                         </td>
@@ -58,7 +58,8 @@
                         <!-- CANTIDAD -->
                         <td>
                             <input type="number" min="1" class="qty-input" :disabled="!esSeleccionado(item.id)"
-                                :value="getCantidad(item.id)" @input="$emit('cantidad', item.id, $event.target.value)" />
+                                :value="getCantidad(item.id)"
+                                @input="$emit('cantidad', item.id, $event.target.value)" />
                         </td>
                     </tr>
                 </tbody>

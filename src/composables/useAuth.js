@@ -7,6 +7,7 @@
  */
 
 import { reactive, computed } from 'vue'
+import { useCatalogos } from './useCatalogos'
 
 // Estado global compartido entre todas las instancias
 const state = reactive({
@@ -40,6 +41,10 @@ export function useAuth() {
         sessionStorage.removeItem('rol')
         sessionStorage.removeItem('usuarioId')
         sessionStorage.removeItem('usuarioNombre')
+
+        // Invalidar el estado global de catálogos para evitar fuga de datos entre sesiones
+        const { invalidar } = useCatalogos()
+        invalidar()
     }
 
     return {

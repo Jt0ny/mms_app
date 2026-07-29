@@ -79,9 +79,8 @@
 </template>
 
 <script>
-import PedidoClient from '../../client/PedidoClient'
 import Alertas from '../Alertas.vue'
-import { obtenerFechaHoy } from '../../utils/date.js'
+import { useProduccionForm } from '../../composables/useProduccionForm'
 
 export default {
     name: 'ProduccionForm',
@@ -128,203 +127,35 @@ export default {
         }
     },
 
-    emits: ['guardar', 'notificar', 'cancelar'],
+    emits: ['guardar', 'notificar', 'cancelar', 'cantidad-cambiada'],
 
-    data() {
+    setup(props, { emit }) {
+        const {
+            cargandoCategorias,
+            categorias,
+            cantidadesPorCategoria,
+            mensaje,
+            form,
+            totalDelDia,
+            categoriasConCantidad,
+            obtenerCantidad,
+            actualizarCantidad,
+            enviarFormulario,
+            handleCancelar
+        } = useProduccionForm(props, emit)
+
         return {
-            cargandoCategorias: false,
-            categorias: [],
-            cantidadesPorCategoria: {},
-            mensaje: { tipo: null, texto: '' },
-            form: {
-                fecha: obtenerFechaHoy()
-            }
-        }
-    },
-
-    computed: {
-        totalDelDia() {
-            return this.categorias.reduce((total, categoria) => {
-                return total + this.obtenerCantidadNumerica(categoria)
-            }, 0)
-        },
-        categoriasConCantidad() {
-            return this.categorias.filter(categoria => this.obtenerCantidadNumerica(categoria) > 0).length
-        }
-    },
-
-    watch: {
-        ultimaGuardada(newVal, oldVal) {
-            if (!newVal || newVal === oldVal) return
-            const cantidades = {}
-            this.categorias.forEach(categoria => {
-                cantidades[categoria] = 0
-            })
-            this.cantidadesPorCategoria = cantidades
-        },
-
-        edicion() {
-            this.applyEdicion()
-        },
-        categorias() {
-            this.applyEdicion()
-        },
-        // Recargar categorías cuando cambia el filtro desde el padre
-        categoriasPermitidas() {
-            this.cargarCategorias()
-        },
-        // Sincronizar inputs cuando el contador de recetas avanza
-        cantidadesExternas(newVal, oldVal) {
-            for (const [categoria, total] of Object.entries(newVal || {})) {
-                const anterior = (oldVal || {})[categoria] || 0
-                const delta = total - anterior
-                if (delta > 0) {
-                    const actual = Number(this.cantidadesPorCategoria[categoria] || 0)
-                    const limite = this.limitesPorCategoria?.[categoria]
-                    let nuevaCantidad = actual + delta
-                    if (limite !== undefined && nuevaCantidad >= limite) {
-                        if (nuevaCantidad > limite) {
-                            nuevaCantidad = limite
-                            this.notificar('info', `El total planificado para la categoría ${categoria} es ${limite} y ya ha sido completado.`, 3000)
-                        } else if (nuevaCantidad === limite) {
-                            this.notificar('exito', `✓ ¡Has completado la cantidad requerida para ${categoria}!`, 3000)
-                        }
-                    }
-                    this.cantidadesPorCategoria = {
-                        ...this.cantidadesPorCategoria,
-                        [categoria]: nuevaCantidad
-                    }
-                }
-            }
-        }
-    },
-
-    mounted() {
-        this.cargarCategorias()
-    },
-
-    methods: {
-        notificar(tipo, texto, duracion = 4000) {
-            // Mostrar alerta local en el formulario
-            this.mensaje = { tipo, texto }
-            // Emitir al padre para alertas globales
-            this.$emit('notificar', { tipo, texto, duracion })
-            if (duracion > 0) {
-                setTimeout(() => {
-                    this.mensaje = { tipo: null, texto: '' }
-                }, duracion)
-            }
-        },
-
-        async cargarCategorias() {
-            this.cargandoCategorias = true
-            try {
-                const pedidos = await PedidoClient.obtenerPedidos()
-                let categorias = (pedidos ?? [])
-                    .map(pedido => String(pedido?.categoria ?? '').trim())
-                    .filter(Boolean)
-
-                // Si hay categorías permitidas, filtrar solo esas
-                if (Array.isArray(this.categoriasPermitidas) && this.categoriasPermitidas.length) {
-                    const permitidas = this.categoriasPermitidas.map(c => c.trim().toUpperCase())
-                    categorias = categorias.filter(c => permitidas.includes(c.trim().toUpperCase()))
-                }
-
-                this.categorias = [...new Set(categorias)].sort((a, b) => a.localeCompare(b, 'es'))
-                const cantidades = {}
-                this.categorias.forEach(categoria => {
-                    cantidades[categoria] = 0
-                })
-                this.cantidadesPorCategoria = cantidades
-            } catch (error) {
-                console.error(error)
-                this.notificar('error', '❌ No se pudieron cargar las categorías de pedidos', 0)
-            } finally {
-                this.cargandoCategorias = false
-            }
-        },
-
-        applyEdicion() {
-            const e = this.edicion
-            if (!e) return
-            // set fecha
-            if (e.fecha) {
-                this.form.fecha = e.fecha
-            } else if (e.creado_en) {
-                this.form.fecha = e.creado_en.slice(0, 10)
-            }
-            const cantidades = {}
-            this.categorias.forEach(categoria => {
-                const item = (e.detalle || []).find(d => String(d.categoria) === String(categoria))
-                cantidades[categoria] = item ? (Number.isFinite(Number(item.cantidad)) ? Math.trunc(Number(item.cantidad)) : 0) : 0
-            })
-            this.cantidadesPorCategoria = cantidades
-        },
-
-        obtenerCantidad(categoria) {
-            return this.cantidadesPorCategoria[categoria] ?? 0
-        },
-
-        obtenerCantidadNumerica(categoria) {
-            const valor = Number(this.obtenerCantidad(categoria))
-            return Number.isFinite(valor) && valor > 0 ? Math.trunc(valor) : 0
-        },
-
-        actualizarCantidad(categoria, valor) {
-            let cantidad = Math.max(0, Math.trunc(Number(valor) || 0))
-            const limite = this.limitesPorCategoria?.[categoria]
-
-            if (limite !== undefined && cantidad >= limite) {
-                if (cantidad > limite) {
-                    cantidad = limite
-                    this.notificar('info', `El total planificado para la categoría ${categoria} es ${limite} y ya ha sido completado.`, 3000)
-                } else if (cantidad === limite) {
-                    this.notificar('exito', `✓ ¡Has completado la cantidad requerida para ${categoria}!`, 3000)
-                }
-            }
-
-            this.cantidadesPorCategoria = {
-                ...this.cantidadesPorCategoria,
-                [categoria]: cantidad
-            }
-            this.$emit('cantidad-cambiada', { categoria, cantidad })
-        },
-
-        construirDetalle() {
-            return this.categorias
-                .map(categoria => ({
-                    categoria,
-                    cantidad: this.obtenerCantidadNumerica(categoria)
-                }))
-                .filter(item => item.cantidad > 0)
-        },
-
-        enviarFormulario() {
-            const detalle = this.construirDetalle()
-            if (!detalle.length) {
-                this.notificar('error', 'Completa al menos una categoría con cantidad mayor a cero', 0)
-                return
-            }
-            const payload = {
-                fecha: this.form.fecha,
-                total: this.totalDelDia,
-                detalle,
-                creado_en: new Date().toISOString()
-            }
-            if (this.edicion && this.edicion.id) {
-                payload.id = this.edicion.id
-            }
-            this.$emit('guardar', payload)
-        },
-
-        handleCancelar() {
-            const cantidades = {}
-            this.categorias.forEach(categoria => {
-                cantidades[categoria] = 0
-            })
-            this.cantidadesPorCategoria = cantidades
-            this.form.fecha = obtenerFechaHoy()
-            this.$emit('cancelar')
+            cargandoCategorias,
+            categorias,
+            cantidadesPorCategoria,
+            mensaje,
+            form,
+            totalDelDia,
+            categoriasConCantidad,
+            obtenerCantidad,
+            actualizarCantidad,
+            enviarFormulario,
+            handleCancelar
         }
     }
 }

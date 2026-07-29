@@ -26,12 +26,8 @@
 
             <!-- BOTONES -->
             <div class="actions">
-                <button v-if="modoEdicion" type="button" class="btn btn-secondary" @click="$emit('cancelar')">
-                    Cancelar</button>
-
                 <button type="submit" class="btn btn-primary" :disabled="cargando">
-                    {{ cargando ? (modoEdicion ? 'Actualizando...' : 'Guardando...')
-                        : (modoEdicion ? 'Actualizar Material' : 'Agregar Material')}}
+                    {{ cargando ? 'Guardando...' : 'Agregar Material' }}
                 </button>
 
             </div>
@@ -55,17 +51,11 @@ export default {
         cargando: {
             type: Boolean,
             default: false
-        },
-        modoEdicion: {
-            type: Boolean,
-            default: false
         }
     },
 
     emits: [
-        'guardar',
-        'actualizar',
-        'cancelar'
+        'guardar'
     ],
 
     data() {
@@ -88,11 +78,7 @@ export default {
 
     methods: {
         enviarFormulario() {
-            if (this.modoEdicion) {
-                this.$emit('actualizar',this.materialLocal)
-                } else {
-                this.$emit( 'guardar',this.materialLocal)
-            }
+            this.$emit('guardar', this.materialLocal)
         }
     }
 }
@@ -113,36 +99,5 @@ export default {
     margin-top: 24px;
 }
 
-.btn {
-    border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
 
-.btn-primary {
-    background: var(--primary);
-    color: white;
-}
-
-.btn-primary:hover {
-    background: var(--primary-dark);
-}
-
-.btn-secondary {
-    background: var(--text-light);
-    color: white;
-}
-
-.btn-secondary:hover {
-    background: #4b5563;
-}
-
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
 </style>

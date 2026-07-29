@@ -1,7 +1,4 @@
 import { supabase } from './supabase'
-import RecetaClient from './RecetaClient'
-import PlanificacionClient from './PlanificacionClient'
-import PedidoClient from './PedidoClient'
 import { useCatalogos } from '../composables/useCatalogos.js'
 
 export default {

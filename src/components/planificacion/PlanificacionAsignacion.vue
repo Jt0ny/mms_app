@@ -56,33 +56,7 @@ export default {
 </script>
 
 <style scoped>
-.page-header {
-	display: flex;
-	justify-content: space-between;
-	gap: 16px;
-	align-items: flex-end;
-	flex-wrap: wrap;
-}
 
-.page-title {
-	margin: 0;
-	font-size: 28px;
-	font-weight: 800;
-	color: var(--text-h);
-}
-
-.page-subtitle {
-	margin: 6px 0 0;
-	color: var(--text-light);
-	font-size: 14px;
-}
-
-.header-actions {
-	display: flex;
-	align-items: flex-end;
-	gap: 10px;
-	flex-wrap: wrap;
-}
 
 .fecha-group {
 	display: grid;
@@ -155,16 +129,6 @@ export default {
 }
 
 @media (max-width: 768px) {
-	.page-header {
-		flex-direction: column;
-		align-items: stretch;
-	}
-
-	.header-actions {
-		flex-direction: column;
-		align-items: stretch;
-	}
-
 	.btn-distribuir,
 	.btn-limpiar {
 		width: 100%;

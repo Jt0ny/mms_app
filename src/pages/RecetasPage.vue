@@ -209,7 +209,7 @@ export default {
             this.guardandoReceta = true
 
             try {
-                const payload = { ...this.nuevaReceta, materiales: this.materialesSeleccionados, materiaPrima: this.materiaPrimaSeleccionada, fecha_creacion: new Date().toISOString() }
+                const payload = { ...this.nuevaReceta, materiales: this.materialesSeleccionados, materiaPrima: this.materiaPrimaSeleccionada, fechaCreacion: new Date().toISOString() }
                 await RecetaClient.agregarReceta(payload)
                 await this.catalogos.obtenerRecetas(true) // Force refresh the cache
 

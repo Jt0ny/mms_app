@@ -28,9 +28,10 @@ export default {
                 id: p.id,
                 fecha: p.fecha,
                 total: p.total,
-                operador_id: p.operador_id,
+                // Mapeo snake_case a camelCase
+                operadorId: p.operador_id,
                 operadorNombre: p.usuarios?.nombre || '',
-                creado_en: p.creado_en,
+                creadoEn: p.creado_en,
                 detalle: p.detalle || []
             }));
         } catch (error) {
@@ -51,7 +52,7 @@ export default {
                 .insert([{
                     fecha: payload.fecha,
                     total: payload.total,
-                    operador_id: payload.operador_id || null
+                    operador_id: payload.operadorId || null
                 }])
                 .select()
                 .single();
@@ -93,7 +94,7 @@ export default {
 
             // Consultar planificación del operador para el día de producción (para mapear con mayor precisión)
             let recetasPlanificadasIds = [];
-            if (payload.operador_id) {
+            if (payload.operadorId) {
                 const { data: plan } = await supabase
                     .from('planificaciones')
                     .select(`
@@ -102,7 +103,7 @@ export default {
                             receta_id
                         )
                     `)
-                    .eq('operador_id', payload.operador_id)
+                    .eq('operador_id', payload.operadorId)
                     .eq('fecha', payload.fecha)
                     .maybeSingle();
 

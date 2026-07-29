@@ -35,7 +35,7 @@
                             </span>
                         </td>
                         <td class="actions-column">
-                            <button type="button" class="btn-action btn-delete" @click="$emit('eliminar', usuario.id)">
+                            <button type="button" class="btn-action-ghost delete" @click="$emit('eliminar', usuario.id)">
                                 🗑️ Eliminar
                             </button>
                         </td>
@@ -193,13 +193,13 @@ export default {
 }
 
 .role-supervisor {
-    background: #dcfce7;
-    color: #166534;
+    background: var(--alert-success-bg);
+    color: var(--alert-success-text);
 }
 
 .role-operador {
-    background: #dbeafe;
-    color: #1d4ed8;
+    background: var(--alert-info-bg);
+    color: var(--alert-info-text);
 }
 
 .actions-column {
@@ -207,23 +207,7 @@ export default {
     white-space: nowrap;
 }
 
-.btn-action {
-    border: none;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.15s ease, opacity 0.15s ease;
-}
 
-.btn-action:hover {
-    transform: translateY(-1px);
-}
-
-.btn-delete {
-    background: #fee2e2;
-    color: #991b1b;
-}
 
 @media (max-width: 768px) {
     .usuario-table-header {

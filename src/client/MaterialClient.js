@@ -8,9 +8,9 @@ export default {
    * Sincroniza los materiales desde la API externa (puerto 8090) hacia Supabase.
    * Usa upsert para no duplicar registros existentes.
    */
-  async sincronizarConSupabase(forceOverwrite = false) {
+  async sincronizarConSupabase() {
     try {
-      console.log(`Iniciando sincronización de materiales (forceOverwrite: ${forceOverwrite}) desde API externa...`);
+      console.log(`Iniciando sincronización de materiales desde API externa...`);
       const response = await axios.get(API_URL);
       const materialesExternos = response.data || [];
 
@@ -19,47 +19,51 @@ export default {
         return;
       }
 
-      // Mapear los datos de la API externa al esquema de Supabase
-      const payloadUpsert = materialesExternos.map(m => ({
-        id: String(m.id),
-        nombre: m.nombre,
-        cantidad: m.cantidad ?? m.cantidadTotal ?? m.cantidad_total ?? 0,
-        descripcion: m.descripcion || null
-      }));
+      // 1. Obtener catálogo existente en una sola consulta
+      const { data: existentes, error: queryErr } = await supabase
+        .from('materiales').select('*'); // Traemos todo para no perder descripciones locales
 
-      if (!forceOverwrite) {
-        // Obtener los IDs y cantidades actuales en Supabase
-        const { data: existentes, error: queryErr } = await supabase
-          .from('materiales')
-          .select('id, cantidad');
+      if (queryErr) throw queryErr;
 
-        if (!queryErr && existentes) {
-          const mapExistentes = new Map(existentes.map(e => [String(e.id), e.cantidad]));
+      const mapExistentes = new Map(
+        (existentes || []).map(e => [String(e.id), e])
+      );
 
-          // Solo insertar los que NO existen en Supabase
-          const nuevosRegistros = payloadUpsert.filter(item => !mapExistentes.has(item.id));
+      // 2. Preparar los datos (insertar nuevos o actualizar solo cantidad)
+      const upsertData = [];
+      for (const m of materialesExternos) {
+        const idStr = String(m.id);
+        const cantidadExterna = m.cantidad ?? m.cantidadTotal ?? m.cantidad_total ?? 0;
 
-          if (nuevosRegistros.length === 0) {
-            console.log("No hay nuevos materiales para insertar (preservando stock actual).");
-            return;
-          }
-
-          const { error: insErr } = await supabase
-            .from('materiales')
-            .upsert(nuevosRegistros);
-          if (insErr) throw insErr;
-          return;
+        if (mapExistentes.has(idStr)) {
+          // Si existe, preservamos sus datos actuales y solo actualizamos la cantidad
+          const actual = mapExistentes.get(idStr);
+          upsertData.push({
+            ...actual,
+            cantidad: cantidadExterna
+          });
+        } else {
+          // Si es nuevo, insertamos todos sus datos
+          upsertData.push({
+            id: idStr,
+            nombre: m.nombre,
+            cantidad: cantidadExterna,
+            descripcion: m.descripcion || null
+          });
         }
       }
 
-      // Realizar upsert en la tabla materiales de Supabase
-      const { error } = await supabase
-        .from('materiales')
-        .upsert(payloadUpsert);
+      // 3. Una sola petición para hacer upsert masivo
+      if (upsertData.length > 0) {
+        const { error } = await supabase
+          .from('materiales')
+          .upsert(upsertData);
 
-      if (error) throw error;
-
-      console.log(`Sincronización exitosa. ${payloadUpsert.length} materiales sincronizados en Supabase.`);
+        if (error) throw error;
+        console.log(`Sincronización exitosa. ${upsertData.length} materiales sincronizados (nuevos y actualizados) en Supabase.`);
+      } else {
+        console.log("No hubo datos para procesar en la sincronización.");
+      }
     } catch (error) {
       console.error("Error al sincronizar materiales con Supabase:", error);
       throw error;

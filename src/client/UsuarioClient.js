@@ -55,6 +55,8 @@ export default {
     }
   },
 
+  // ─── RESERVADO PARA FUTURO CRUD ─────────────────────────────────────
+  /*
   // Obtiene un usuario específico por su UUID
   async obtenerUsuario(id) {
     try {
@@ -71,7 +73,9 @@ export default {
       throw error
     }
   },
+  */
 
+  /*
   // Actualiza los datos de un usuario
   async actualizarUsuario(id, usuario) {
     try {
@@ -92,6 +96,7 @@ export default {
       throw error
     }
   },
+  */
 
   // Elimina un usuario por su UUID
   async eliminarUsuario(id) {

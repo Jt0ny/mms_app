@@ -327,6 +327,16 @@ p {
 }
 
 /* =========================================
+   GENERIC PAGE GRID
+   ========================================= */
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+/* =========================================
    ACTION BUTTONS (inline in tables)
    ========================================= */
 .btn-action {
@@ -382,6 +392,9 @@ p {
   .main-layout-split.with-preview {
     grid-template-columns: 1fr; /* Stack columns on tablets */
   }
+  .page-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
@@ -404,3 +417,65 @@ p {
     gap: 16px;
   }
 }
+
+/* =========================================
+   NUEVAS CLASES GLOBALES (Refactor Phase)
+   ========================================= */
+
+/* Botones de acción ligeros */
+.btn-action-ghost {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  background: transparent;
+}
+.btn-action-ghost:hover {
+  transform: scale(1.05);
+}
+.btn-action-ghost.edit {
+  background: var(--alert-info-bg);
+  color: var(--alert-info-text);
+}
+.btn-action-ghost.delete {
+  background: var(--alert-error-bg);
+  color: var(--alert-error-text);
+}
+
+/* Estado vacío / Empty States */
+.empty-state-card {
+  text-align: center;
+  padding: 40px;
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  color: var(--text-light);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Badges (píldoras de estado) */
+.badge-ok,
+.badge-error {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.badge-ok {
+  background-color: var(--alert-success-bg);
+  color: var(--alert-success-text);
+  border: 1px solid var(--alert-success-border);
+}
+
+.badge-error {
+  background-color: var(--alert-error-bg);
+  color: var(--alert-error-text);
+  border: 1px solid var(--alert-error-border);
+}
+

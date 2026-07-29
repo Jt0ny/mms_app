@@ -42,23 +42,22 @@ export default {
         nombre: item.nombre,
         categoria: item.categoria,
         instrucciones: item.instrucciones || '',
-        total_items: item.total_items,
-        fecha_creacion: item.fecha_creacion,
+        // Mapeo snake_case a camelCase
+        totalItems: item.total_items,
+        fechaCreacion: item.fecha_creacion,
         materiales: (item.receta_materiales || []).map(rm => ({
           id: rm.materiales?.id,
-          material_id: rm.materiales?.id,
+          materialId: rm.materiales?.id,
           nombre: rm.materiales?.nombre || rm.materiales?.descripcion || '',
           cantidad: rm.cantidad
         })),
         materiaPrima: (item.receta_materia_prima || []).map(rmp => ({
           id: rmp.materia_prima?.id,
-          materia_prima_id: rmp.materia_prima?.id,
+          materiaPrimaId: rmp.materia_prima?.id,
           nombre: rmp.materia_prima?.variedad || '',
           variedad: rmp.materia_prima?.variedad || '',
           cantidad: rmp.cantidad
-        })),
-        receta_materia_prima: item.receta_materia_prima || [],
-        receta_materiales: item.receta_materiales || []
+        }))
       }));
     } catch (error) {
       console.error("Error al obtener recetas desde Supabase:", error);
@@ -81,7 +80,7 @@ export default {
           categoria: payload.categoria,
           instrucciones: payload.instrucciones,
           total_items: totalItems,
-          fecha_creacion: payload.fecha_creacion || new Date().toISOString()
+          fecha_creacion: payload.fechaCreacion || new Date().toISOString()
         })
         .select()
         .single();
@@ -125,8 +124,9 @@ export default {
         nombre: recetaData.nombre,
         categoria: recetaData.categoria,
         instrucciones: recetaData.instrucciones,
-        total_items: recetaData.total_items,
-        fecha_creacion: recetaData.fecha_creacion,
+        // Mapeo snake_case a camelCase
+        totalItems: recetaData.total_items,
+        fechaCreacion: recetaData.fecha_creacion,
         materiales: payload.materiales || [],
         materiaPrima: payload.materiaPrima || []
       };
@@ -136,9 +136,8 @@ export default {
     }
   },
 
-  /**
-   * Actualiza una receta existente y vuelve a asociar sus materiales y materias primas
-   */
+  // ─── RESERVADO PARA FUTURO CRUD ─────────────────────────────────────
+  /*
   async actualizarReceta(id, payload) {
     try {
       const totalItems = (payload.materiales?.length || 0) + (payload.materiaPrima?.length || 0);
@@ -209,10 +208,9 @@ export default {
       throw error;
     }
   },
+  */
 
-  /**
-   * Elimina una receta de la base de datos (con efecto cascada automático en Supabase)
-   */
+  /*
   async eliminarReceta(id) {
     try {
       const { error } = await supabase
@@ -227,4 +225,5 @@ export default {
       throw error;
     }
   }
+  */
 }

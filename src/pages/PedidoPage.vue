@@ -50,10 +50,10 @@
 
                     </template>
                     <template #row="{ item }">
-                        <td class="text-variety" data-label="Cliente (Bill)" :title="item.cliente_facturacion">{{
-                            item.cliente_facturacion }}</td>
-                        <td class="text-variety" data-label="Destino (Ship)" :title="item.cliente_envio">{{
-                            item.cliente_envio }}</td>
+                        <td class="text-variety" data-label="Cliente (Bill)" :title="item.clienteFacturacion">{{
+                            item.clienteFacturacion }}</td>
+                        <td class="text-variety" data-label="Destino (Ship)" :title="item.clienteEnvio">{{
+                            item.clienteEnvio }}</td>
                         <td class="text-category" data-label="Categoría">{{ item.categoria }}</td>
                         <td class="text-quantity" data-label="Tallos">{{ item.stems }}</td>
 
@@ -88,9 +88,9 @@ export default {
 
     setup() {
         const { mensaje, mostrarMensaje } = useMensajes()
-        const { leerExcel, cargandoExcel } = useExcel()
+        const { leerExcel } = useExcel()
         const { procesarDatosVentas, sincronizarClientes } = usePedidoExcel()
-        return { mensaje, mostrarMensaje, leerExcel, cargandoExcel, procesarDatosVentas, sincronizarClientes }
+        return { mensaje, mostrarMensaje, leerExcel, procesarDatosVentas, sincronizarClientes }
     },
 
     data() {
@@ -196,4 +196,3 @@ export default {
     }
 }
 </script>
-<style scoped></style>

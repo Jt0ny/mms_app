@@ -302,8 +302,8 @@ export default {
 }
 
 .status-perfect {
-	background: #dcfce7;
-	color: #15803d;
+	background: var(--alert-success-bg);
+	color: var(--alert-success-text);
 }
 
 .status-incomplete {
@@ -312,8 +312,8 @@ export default {
 }
 
 .status-overflow {
-	background: #fee2e2;
-	color: #dc2626;
+	background: var(--alert-error-bg);
+	color: var(--alert-error-text);
 }
 
 .recetas-asignadas-list {
@@ -397,8 +397,8 @@ export default {
 }
 
 .btn-eliminar-row:hover {
-	color: #dc2626;
-	background: #fee2e2;
+	color: var(--alert-error-text);
+	background: var(--alert-error-bg);
 }
 
 .add-row-action {

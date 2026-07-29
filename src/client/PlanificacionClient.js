@@ -1,9 +1,8 @@
 import { supabase } from './supabase'
 
 export default {
-    /**
-     * Obtiene todas las planificaciones desde Supabase con sus relaciones resueltas
-     */
+    // ─── RESERVADO PARA FUTURO CRUD ─────────────────────────────────────
+    /*
     async obtenerPlanificaciones() {
         try {
             const { data, error } = await supabase
@@ -30,10 +29,11 @@ export default {
 
             return (data || []).map(item => ({
                 id: item.id,
+                // Mapeo snake_case a camelCase
                 operadorId: item.operador_id,
                 operadorNombre: item.usuarios?.nombre || 'Operador Desconocido',
                 fecha: item.fecha,
-                creado_en: item.creado_en,
+                creadoEn: item.creado_en,
                 recetas: (item.planificacion_recetas || []).map(pr => ({
                     recetaId: pr.recetas?.id,
                     nombre: pr.recetas?.nombre || 'Receta Desconocida',
@@ -45,6 +45,7 @@ export default {
             throw error;
         }
     },
+    */
 
     /**
      * Obtiene las planificaciones de una fecha específica
@@ -75,10 +76,11 @@ export default {
 
             return (data || []).map(item => ({
                 id: item.id,
+                // Mapeo snake_case a camelCase
                 operadorId: item.operador_id,
                 operadorNombre: item.usuarios?.nombre || 'Operador Desconocido',
                 fecha: item.fecha,
-                creado_en: item.creado_en,
+                creadoEn: item.creado_en,
                 recetas: (item.planificacion_recetas || []).map(pr => ({
                     recetaId: pr.recetas?.id,
                     nombre: pr.recetas?.nombre || 'Receta Desconocida',
@@ -140,10 +142,11 @@ export default {
 
             return (data || []).map(item => ({
                 id: item.id,
+                // Mapeo snake_case a camelCase
                 operadorId: item.operador_id,
                 operadorNombre: item.usuarios?.nombre || 'Operador Desconocido',
                 fecha: item.fecha,
-                creado_en: item.creado_en,
+                creadoEn: item.creado_en,
                 recetas: (item.planificacion_recetas || []).map(pr => ({
                     recetaId: pr.recetas?.id,
                     nombre: pr.recetas?.nombre || 'Receta Desconocida',
@@ -169,7 +172,7 @@ export default {
                 .insert({
                     operador_id: data.operadorId,
                     fecha: data.fecha,
-                    creado_en: data.creado_en || new Date().toISOString()
+                    creado_en: data.creadoEn || new Date().toISOString()
                 })
                 .select()
                 .single();
@@ -194,10 +197,11 @@ export default {
 
             return {
                 id: planId,
+                // Mapeo snake_case a camelCase
                 operadorId: planData.operador_id,
                 operadorNombre: data.operadorNombre,
                 fecha: planData.fecha,
-                creado_en: planData.creado_en,
+                creadoEn: planData.creado_en,
                 recetas: data.recetas || []
             };
         } catch (error) {
@@ -206,9 +210,8 @@ export default {
         }
     },
 
-    /**
-     * Elimina una planificación por ID (ON DELETE CASCADE se encarga de los detalles)
-     */
+    // ─── RESERVADO PARA FUTURO CRUD ─────────────────────────────────────
+    /*
     async eliminarPlanificacion(id) {
         try {
             const { error } = await supabase
@@ -223,5 +226,6 @@ export default {
             throw error;
         }
     },
+    */
 
 }

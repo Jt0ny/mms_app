@@ -23,8 +23,8 @@
 
             <!-- RESUMEN -->
             <div class="resume-box">
-                <p><strong>{{ totalSeleccionados }}</strong>insumos seleccionados</p>
-                <p><strong>{{ totalMateriales }}</strong>materiales y<strong>{{ totalMateriaPrima }}</strong>materias
+                <p><strong>{{ totalSeleccionados }}</strong> insumos seleccionados</p>
+                <p><strong>{{ totalMateriales }}</strong> materiales y <strong>{{ totalMateriaPrima }}</strong> materias
                     primas</p>
             </div>
 

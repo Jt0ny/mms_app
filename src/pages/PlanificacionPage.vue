@@ -16,8 +16,7 @@
 				@eliminar="eliminarPlanificacionesDelDia" />
 
 			<!-- Estado inicial / vacío -->
-			<div v-else-if="!cargandoAuto && asignaciones.length === 0 && !mostrarMapeoWizard"
-				class="summary-card-vacio">
+			<div v-else-if="!cargandoAuto && asignaciones.length === 0 && !mostrarMapeoWizard" class="empty-state-card">
 				<p class="vacio-texto">
 					Selecciona una fecha y presiona <strong>⚡ Distribuir automáticamente</strong> para generar la
 					planificación según los pedidos pendientes del día.
@@ -25,7 +24,7 @@
 			</div>
 
 			<!-- Estado: distribuyendo -->
-			<div v-else-if="cargandoAuto && !mostrarMapeoWizard" class="summary-card-vacio">
+			<div v-else-if="cargandoAuto && !mostrarMapeoWizard" class="empty-state-card">
 				<p class="vacio-texto">⟳ Analizando pedidos y distribuyendo carga entre operadores...</p>
 			</div>
 
@@ -56,6 +55,7 @@
 
 <script>
 import PlanificacionClient from '../client/PlanificacionClient.js'
+
 import PlanificacionAlgoritmo from '../client/PlanificacionAlgoritmo.js'
 import { useCatalogos } from '../composables/useCatalogos.js'
 
@@ -209,70 +209,6 @@ export default {
 			this.mostrarMapeoWizard = false
 
 			try {
-				// 1. Reconstruir los grupos de receta y distribuir pedidos basándonos en la elección del supervisor
-				const gruposReceta = []
-				for (const cat of this.categoriasRequeridas) {
-					const mappings = mapeo[cat.categoria] || []
-					const targetRecipes = mappings.map(m => {
-						const recetaObj = this.todasLasRecetas.find(r => r.id === m.recetaId)
-						return {
-							recetaId: m.recetaId,
-							nombre: recetaObj ? recetaObj.nombre : `Receta ${cat.categoria}`,
-							categoria: cat.categoria,
-							capacity: parseInt(m.stems) || 0,
-							pedidos: []
-						}
-					})
-
-					// Algoritmo FIFO para asignar pedidos individuales de la categoría a las recetas físicas
-					let recipeIdx = 0
-					for (const p of cat.pedidos) {
-						let remainingStems = p.stems
-						while (remainingStems > 0 && recipeIdx < targetRecipes.length) {
-							const currentRecipe = targetRecipes[recipeIdx]
-							const allocatedStems = Math.min(remainingStems, currentRecipe.capacity)
-
-							if (allocatedStems > 0) {
-								currentRecipe.pedidos.push({
-									pedidoId: p.pedidoId,
-									cliente: p.cliente,
-									categoria: p.categoria,
-									stems: allocatedStems
-								})
-								currentRecipe.capacity -= allocatedStems
-								remainingStems -= allocatedStems
-							}
-
-							if (currentRecipe.capacity <= 0) {
-								recipeIdx++
-							}
-						}
-
-						if (remainingStems > 0) {
-							const lastRecipe = targetRecipes[targetRecipes.length - 1] || targetRecipes[0]
-							if (lastRecipe) {
-								lastRecipe.pedidos.push({
-									pedidoId: p.pedidoId,
-									cliente: p.cliente,
-									categoria: p.categoria,
-									stems: remainingStems
-								})
-							}
-						}
-					}
-
-					// Restablecer el totalStems e ingresarlo en la lista final para Greedy
-					mappings.forEach((m, i) => {
-						if (targetRecipes[i]) {
-							targetRecipes[i].totalStems = parseInt(m.stems) || 0
-							gruposReceta.push(targetRecipes[i])
-						}
-					})
-				}
-
-				this.gruposRecetaBackup = gruposReceta
-
-				// 2. Obtener operadores disponibles
 				const operadores = await this.catalogos.obtenerOperadores()
 
 				if (!operadores.length) {
@@ -282,33 +218,19 @@ export default {
 				}
 				this.operadoresActivos = operadores
 
-				// 3. Algoritmo de distribución equitativa
-				const dist = PlanificacionAlgoritmo.distribuirEquitativamente(this.operadoresActivos, gruposReceta)
+				const { asignaciones, gruposRecetaBackup } = PlanificacionAlgoritmo.asignarYDistribuir(
+					this.categoriasRequeridas,
+					mapeo,
+					this.todasLasRecetas,
+					this.operadoresActivos
+				)
 
-				// 4. Construir asignaciones editables
-				this.asignaciones = dist.map(d => {
-					const asigObj = {
-						operador: d.operador,
-						recetas: d.recetas.map(r => ({
-							recetaId: r.recetaId,
-							nombre: r.nombre,
-							categoria: gruposReceta.find(g => g.recetaId === r.recetaId)?.categoria || '',
-							cantidad: r.cantidad
-						})),
-						pedidosAsignados: [],
-						stemsTotal: d.stemsTotal
-					}
-					return asigObj
-				})
-
-				// Resolver pedidos asignados a cada operador inicialmente
-				for (let i = 0; i < this.asignaciones.length; i++) {
-					this.recalcularPedidosYStems(i)
-				}
+				this.asignaciones = asignaciones
+				this.gruposRecetaBackup = gruposRecetaBackup
 
 				this.mostrarMensaje(
 					'exito',
-					`✓ ${gruposReceta.length} recetas de producción distribuidas entre ${dist.length} operadores según la carga de stems.`,
+					`✓ ${gruposRecetaBackup.length} recetas de producción distribuidas entre ${this.asignaciones.length} operadores según la carga de stems.`,
 					7000
 				)
 
@@ -336,28 +258,7 @@ export default {
 			}
 
 			try {
-				// Volver a distribuir con la lista original de recetas y los operadores restantes
-				const dist = PlanificacionAlgoritmo.distribuirEquitativamente(this.operadoresActivos, this.gruposRecetaBackup)
-
-				this.asignaciones = dist.map(d => {
-					return {
-						operador: d.operador,
-						recetas: d.recetas.map(r => ({
-							recetaId: r.recetaId,
-							nombre: r.nombre,
-							categoria: this.gruposRecetaBackup.find(g => g.recetaId === r.recetaId)?.categoria || '',
-							cantidad: r.cantidad
-						})),
-						pedidosAsignados: [],
-						stemsTotal: d.stemsTotal
-					}
-				})
-
-				// Resolver pedidos
-				for (let i = 0; i < this.asignaciones.length; i++) {
-					this.recalcularPedidosYStems(i)
-				}
-
+				this.asignaciones = PlanificacionAlgoritmo.redistribuirCarga(this.operadoresActivos, this.gruposRecetaBackup)
 				this.mostrarMensaje('exito', `✓ Operador ${asig.operador.nombre} excluido. Carga redistribuida equitativamente.`)
 			} catch (error) {
 				console.error('Error al redistribuir', error)
@@ -491,55 +392,12 @@ export default {
 <style scoped>
 /* ── Layout base ─────────────────────────── */
 
-
-.page-content-wrap {
-	max-width: 1400px;
-	margin: 0 auto;
-	display: grid;
-	gap: 24px;
-}
-
-/* ── Estado Vacío / Cargas ──────────────── */
-.summary-card-vacio {
-	display: grid;
-	padding: 24px;
-	border-radius: 20px;
-	background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-	box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-	justify-content: center;
-	align-items: center;
-}
-
 .vacio-texto {
 	margin: 0;
 	color: var(--text-light);
 	text-align: center;
 	font-size: 14px;
 	padding: 16px 0;
-}
-
-/* ── Feedback ───────────────────────── */
-.msg-feedback {
-	margin: 0;
-	font-size: 13px;
-	font-weight: 600;
-	padding: 8px 12px;
-	border-radius: 8px;
-}
-
-.msg-exito {
-	background: #dcfce7;
-	color: #15803d;
-}
-
-.msg-error {
-	background: #fee2e2;
-	color: #dc2626;
-}
-
-.msg-info {
-	background: #e0f2fe;
-	color: #0369a1;
 }
 
 .fade-msg-enter-active,
@@ -552,20 +410,7 @@ export default {
 	opacity: 0;
 }
 
-/* ── Grid de Tarjetas ─────────────────── */
-.page-grid {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 24px;
-	align-items: start;
-}
 
-/* ── Responsive ──────────────────────── */
-@media (max-width: 1100px) {
-	.page-grid {
-		grid-template-columns: 1fr;
-	}
-}
 
 @media (max-width: 768px) {
 	.page-container {

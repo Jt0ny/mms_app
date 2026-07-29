@@ -87,7 +87,7 @@ export default {
     }
   },
   mounted() {
-    this.cargarClientes()
+    this.cargarClientes(true)
   },
   methods: {
     async cargarClientes(forceRefresh = false) {

@@ -8,9 +8,9 @@ export default {
   /**
    * Sincroniza la materia prima desde la API externa (puerto 8070) hacia Supabase
    */
-  async sincronizarConSupabase(forceOverwrite = false) {
+  async sincronizarConSupabase() {
     try {
-      console.log(`Iniciando sincronización de materia prima (forceOverwrite: ${forceOverwrite}) desde API externa...`);
+      console.log(`Iniciando sincronización de materia prima desde API externa...`);
       const response = await axios.get(API_URL);
       const materiasPrimasExternas = response.data || [];
 
@@ -19,48 +19,51 @@ export default {
         return;
       }
 
-      // Mapear los datos de la API externa al esquema de Supabase
-      const payloadUpsert = materiasPrimasExternas.map(mp => ({
-        id: String(mp.id),
-        variedad: mp.variedad,
-        cantidad_total: mp.cantidadTotal ?? mp.cantidad_total ?? mp.cantidad ?? 0,
-        fecha_ingreso: mp.fecha || mp.fecha_ingreso || obtenerFechaHoy()
-      }));
+      // 1. Obtener catálogo existente en una sola consulta
+      const { data: existentes, error: queryErr } = await supabase
+        .from('materia_prima').select('*'); // Traemos todo para no perder fechas o nombres locales
 
-      if (!forceOverwrite) {
-        // Obtener los IDs y cantidades actuales en Supabase
-        const { data: existentes, error: queryErr } = await supabase
-          .from('materia_prima')
-          .select('id, cantidad_total');
+      if (queryErr) throw queryErr;
 
-        if (!queryErr && existentes) {
-          const mapExistentes = new Map(existentes.map(e => [String(e.id), e.cantidad_total]));
+      const mapExistentes = new Map(
+        (existentes || []).map(e => [String(e.id), e])
+      );
 
-          // Solo insertar los que NO existen en Supabase
-          const nuevosRegistros = payloadUpsert.filter(item => !mapExistentes.has(item.id));
+      // 2. Preparar los datos (insertar nuevos o actualizar solo cantidad)
+      const upsertData = [];
+      for (const mp of materiasPrimasExternas) {
+        const idStr = String(mp.id);
+        const externaCantidad = mp.cantidadTotal ?? mp.cantidad ?? 0;
 
-          if (nuevosRegistros.length === 0) {
-            console.log("No hay nuevas materias primas para insertar (preservando stock actual).");
-            return;
-          }
-
-          const { error: insErr } = await supabase
-            .from('materia_prima')
-            .upsert(nuevosRegistros);
-          if (insErr) throw insErr;
-          return;
+        if (mapExistentes.has(idStr)) {
+          // Si existe, preservamos sus datos actuales y solo actualizamos la cantidad
+          const actual = mapExistentes.get(idStr);
+          upsertData.push({
+            ...actual,
+            cantidad_total: externaCantidad
+          });
+        } else {
+          // Si es nuevo, insertamos todos sus datos
+          upsertData.push({
+            id: idStr,
+            variedad: mp.variedad,
+            cantidad_total: externaCantidad,
+            fecha_ingreso: mp.fechaIngreso || mp.fecha || obtenerFechaHoy()
+          });
         }
       }
 
-      // Realizar upsert en la tabla materia_prima de Supabase
-      const { error } = await supabase
-        .from('materia_prima')
-        .upsert(payloadUpsert);
+      // 3. Una sola petición para hacer upsert masivo
+      if (upsertData.length > 0) {
+        const { error } = await supabase
+          .from('materia_prima')
+          .upsert(upsertData);
 
-      if (error) {
-        throw error;
+        if (error) throw error;
+        console.log(`Sincronización exitosa. ${upsertData.length} materias primas sincronizadas (nuevas y actualizadas) en Supabase.`);
+      } else {
+        console.log("No hubo datos para procesar en la sincronización.");
       }
-      console.log(`Sincronización exitosa. ${payloadUpsert.length} materias primas sincronizadas en Supabase.`);
     } catch (error) {
       console.error("Error al sincronizar materias primas con Supabase:", error);
       throw error;
@@ -85,10 +88,8 @@ export default {
       return (data || []).map(item => ({
         id: item.id,
         variedad: item.variedad,
-        cantidad_total: item.cantidad_total,
         cantidadTotal: item.cantidad_total,
-        fecha: item.fecha_ingreso,
-        fecha_ingreso: item.fecha_ingreso
+        fechaIngreso: item.fecha_ingreso
       }));
     } catch (error) {
       console.error("Error al obtener materias primas desde Supabase:", error);
@@ -119,8 +120,8 @@ export default {
         return {
           id: existingId || crypto.randomUUID(),
           variedad,
-          cantidad_total: mp.cantidad_total ?? mp.cantidadTotal ?? 0,
-          fecha_ingreso: mp.fecha_ingreso || mp.fecha || obtenerFechaHoy()
+          cantidad_total: mp.cantidadTotal ?? 0,
+          fecha_ingreso: mp.fechaIngreso || mp.fecha || obtenerFechaHoy()
         };
       });
 

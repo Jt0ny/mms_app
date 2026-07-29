@@ -61,7 +61,7 @@
             <td class="quantity-col">{{ item.cantidad }}</td>
             <td class="reason-col" :title="item.motivo">{{ item.motivo }}</td>
             <td class="actions-col">
-              <button class="btn-delete" @click="$emit('eliminar', item)" title="Eliminar registro"
+              <button class="btn-action-ghost delete" @click="$emit('eliminar', item)" title="Eliminar registro"
                 aria-label="Eliminar">
                 🗑️
               </button>
@@ -106,7 +106,7 @@ export default {
         const tipoMatch = this.filtros.tipo ? item.tipo === this.filtros.tipo : true
         const fechaMatch = this.filtros.fecha ? item.fecha === this.filtros.fecha : true
         return searchMatch && tipoMatch && fechaMatch
-      }).sort((a, b) => new Date(b.fecha || b.creado_en) - new Date(a.fecha || a.creado_en))
+      }).sort((a, b) => new Date(b.fecha || b.creadoEn) - new Date(a.fecha || a.creadoEn))
     }
   },
   methods: {
@@ -292,21 +292,7 @@ export default {
   text-align: right;
 }
 
-.btn-delete {
-  background: rgba(185, 28, 28, 0.1);
-  color: var(--error);
-  border: none;
-  border-radius: 6px;
-  padding: 6px 10px;
-  cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s ease;
-  font-size: 14px;
-}
 
-.btn-delete:hover {
-  background: rgba(185, 28, 28, 0.2);
-  transform: scale(1.05);
-}
 
 /* Loading & Empty States */
 .loading-state,

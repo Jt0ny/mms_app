@@ -153,8 +153,8 @@ export default {
 
 .btn-eliminar {
     padding: 10px 16px;
-    background: #fee2e2;
-    color: #b91c1c;
+    background: var(--alert-error-bg);
+    color: var(--alert-error-text);
     border: none;
     border-radius: 8px;
     font-weight: 600;
@@ -163,8 +163,8 @@ export default {
 }
 
 .btn-eliminar:hover:not(:disabled) {
-    background: #fca5a5;
-    color: #991b1b;
+    background: var(--alert-error-border);
+    color: var(--alert-error-text);
 }
 
 .btn-eliminar:disabled {

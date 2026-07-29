@@ -130,11 +130,7 @@ export default {
 	border-bottom: 3px solid rgba(0, 0, 0, 0.1);
 }
 
-.header-actions {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-}
+
 
 .operadores-header h2 {
 	margin: 0;
@@ -277,8 +273,8 @@ export default {
 }
 
 .btn-quitar:hover {
-	color: #dc2626;
-	background: #fee2e2;
+	color: var(--alert-error-text);
+	background: var(--alert-error-bg);
 }
 
 .agregar-receta-wrap {

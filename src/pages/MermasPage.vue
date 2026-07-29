@@ -130,31 +130,30 @@ export default {
       this.guardando = true
       try {
         const { nuevaMerma, stocksActualizados, mensajeExito } = await MermaClient.registrarMermaConDescuento(
-            payload, 
-            { 
-                materiales: this.materiales, 
-                materiaPrima: this.materiaPrima, 
-                recetasCompletas: this.recetasCompletas 
-            }
+          payload,
+          {
+            materiales: this.materiales,
+            materiaPrima: this.materiaPrima,
+            recetasCompletas: this.recetasCompletas
+          }
         )
 
         this.mermas.push(nuevaMerma)
 
         // Sincronizar memoria local con los nuevos stocks devueltos
         if (stocksActualizados.materiales?.length) {
-            stocksActualizados.materiales.forEach(update => {
-                const item = this.materiales.find(m => m.id === update.id)
-                if (item) item.cantidad = update.cantidad
-            })
+          stocksActualizados.materiales.forEach(update => {
+            const item = this.materiales.find(m => m.id === update.id)
+            if (item) item.cantidad = update.cantidad
+          })
         }
         if (stocksActualizados.materiaPrima?.length) {
-            stocksActualizados.materiaPrima.forEach(update => {
-                const item = this.materiaPrima.find(m => m.id === update.id)
-                if (item) {
-                    item.cantidad_total = update.cantidad_total
-                    item.cantidadTotal = update.cantidad_total
-                }
-            })
+          stocksActualizados.materiaPrima.forEach(update => {
+            const item = this.materiaPrima.find(m => m.id === update.id)
+            if (item) {
+              item.cantidadTotal = update.cantidadTotal
+            }
+          })
         }
 
         this.mostrarMensaje('exito', mensajeExito)
@@ -207,15 +206,11 @@ export default {
 
         for (const receta of recetasPlanificadas) {
           if (receta.materiaPrima && Array.isArray(receta.materiaPrima)) {
-            receta.materiaPrima.forEach(rm => materiaPrimaIds.add(rm.materia_prima_id || rm.materiaPrimaId || rm.id))
-          } else if (receta.receta_materia_prima) {
-            receta.receta_materia_prima.forEach(rm => materiaPrimaIds.add(rm.materia_prima_id))
+            receta.materiaPrima.forEach(rm => materiaPrimaIds.add(rm.materiaPrimaId || rm.id))
           }
 
           if (receta.materiales && Array.isArray(receta.materiales)) {
-            receta.materiales.forEach(rm => materialesIds.add(rm.material_id || rm.materialId || rm.id))
-          } else if (receta.receta_materiales) {
-            receta.receta_materiales.forEach(rm => materialesIds.add(rm.material_id))
+            receta.materiales.forEach(rm => materialesIds.add(rm.materialId || rm.id))
           }
         }
 

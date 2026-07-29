@@ -104,7 +104,7 @@ export default {
         telefono: '',
         direccion: '',
         notas: '',
-        creado_en: ''
+        creadoEn: ''
       }
     }
   },
@@ -144,7 +144,7 @@ export default {
         telefono: this.form.telefono ? this.form.telefono.trim() : '',
         direccion: this.form.direccion ? this.form.direccion.trim() : '',
         notas: this.form.notas ? this.form.notas.trim() : '',
-        creado_en: this.form.creado_en || new Date().toISOString()
+        creadoEn: this.form.creadoEn || new Date().toISOString()
       }
 
       this.$emit('guardar', payload)
@@ -158,7 +158,7 @@ export default {
         telefono: '',
         direccion: '',
         notas: '',
-        creado_en: ''
+        creadoEn: ''
       }
     }
   }
@@ -207,38 +207,5 @@ export default {
   margin-top: 16px;
 }
 
-.btn {
-  border: none;
-  border-radius: 8px;
-  padding: 10px 18px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
 
-.btn-primary {
-  background: var(--primary);
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  color: var(--text);
-}
-
-.btn-secondary:hover {
-  background: var(--border-light);
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
 </style>

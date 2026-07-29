@@ -6,7 +6,7 @@
       <div class="logo" aria-label="Gestión de manufactura">
         <div class="logo-mark">GM</div>
         <div class="logo-copy">
-          <span>Floricola</span>
+          <span>Florícola</span>
           <strong>Sistema MMS</strong>
         </div>
       </div>
@@ -18,7 +18,7 @@
 
       <!-- Botón -->
       <div class="acciones">
-        <button class="btn" type="button" @click="onAction">{{ buttonLabel }}</button>
+        <button class="btn btn-primary" type="button" @click="onAction">{{ buttonLabel }}</button>
       </div>
 
     </nav>
@@ -156,28 +156,7 @@ export default {
   grid-area: acciones;
 }
 
-.btn {
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  font-weight: 600;
-  font-size: 13px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  letter-spacing: 0.3px;
-}
 
-.btn:hover {
-  background: var(--primary-dark);
-  box-shadow: var(--shadow-sm);
-  transform: translateY(-2px);
-}
-
-.btn:active {
-  transform: translateY(0);
-}
 
 @media (max-width: 768px) {
   .container-nav {

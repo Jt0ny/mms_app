@@ -63,7 +63,8 @@ export default {
                     nombre: nombre,
                     cantidad: item.cantidad,
                     motivo: item.motivo,
-                    creado_en: item.creado_en,
+                    // Mapeo snake_case a camelCase
+                    creadoEn: item.creado_en,
                     operadorId: item.operador_id,
                     operadorNombre: item.usuarios?.nombre || 'sistema'
                 };
@@ -89,7 +90,7 @@ export default {
                 cantidad: parseInt(data.cantidad) || 0,
                 motivo: data.motivo,
                 operador_id: operadorId,
-                creado_en: data.creado_en || new Date().toISOString(),
+                creado_en: data.creadoEn || new Date().toISOString(),
                 material_id: data.tipo === 'material' ? data.referenciaId : null,
                 materia_prima_id: data.tipo === 'materia_prima' ? String(data.referenciaId) : null,
                 receta_id: data.tipo === 'producto_terminado' ? data.referenciaId : null
@@ -141,7 +142,8 @@ export default {
                 nombre: nombre,
                 cantidad: resData.cantidad,
                 motivo: resData.motivo,
-                creado_en: resData.creado_en,
+                // Mapeo snake_case a camelCase
+                creadoEn: resData.creado_en,
                 operadorId: resData.operador_id,
                 operadorNombre: resData.usuarios?.nombre || 'sistema'
             };
@@ -195,10 +197,10 @@ export default {
             } else if (payload.tipo === 'materia_prima') {
                 const mp = materiaPrima.find(m => m.id === payload.referenciaId || m.variedad === payload.referenciaId);
                 if (mp) {
-                    const nuevaCantidad = Math.max(0, (Number(mp.cantidad_total) || 0) - Number(payload.cantidad));
+                    const nuevaCantidad = Math.max(0, (Number(mp.cantidadTotal) || 0) - Number(payload.cantidad));
                     try {
                         await MateriaPrimaClient.actualizarStockMateriaPrima(mp.id, nuevaCantidad);
-                        stocksActualizados.materiaPrima.push({ id: mp.id, cantidad_total: nuevaCantidad });
+                        stocksActualizados.materiaPrima.push({ id: mp.id, cantidadTotal: nuevaCantidad });
                         mensajeExito = `✓ Merma registrada e inventario de "${mp.variedad}" actualizado.`;
                     } catch (e) {
                         // Silencioso, fallback al mensaje por defecto
@@ -210,19 +212,19 @@ export default {
                     // Descontar materia prima
                     for (const rmp of (receta.materiaPrima || [])) {
                         const tallosConsumidos = rmp.cantidad * Number(payload.cantidad);
-                        const mpItem = materiaPrima.find(m => m.id === rmp.materia_prima_id);
+                        const mpItem = materiaPrima.find(m => m.id === rmp.materiaPrimaId);
                         if (mpItem) {
-                            const nuevoStock = Math.max(0, (Number(mpItem.cantidad_total) || 0) - tallosConsumidos);
+                            const nuevoStock = Math.max(0, (Number(mpItem.cantidadTotal) || 0) - tallosConsumidos);
                             try {
                                 await MateriaPrimaClient.actualizarStockMateriaPrima(mpItem.id, nuevoStock);
-                                stocksActualizados.materiaPrima.push({ id: mpItem.id, cantidad_total: nuevoStock });
+                                stocksActualizados.materiaPrima.push({ id: mpItem.id, cantidadTotal: nuevoStock });
                             } catch (e) { /* silencioso */ }
                         }
                     }
                     // Descontar materiales
                     for (const rm of (receta.materiales || [])) {
                         const insumosConsumidos = rm.cantidad * Number(payload.cantidad);
-                        const matItem = materiales.find(m => m.id === rm.material_id);
+                        const matItem = materiales.find(m => m.id === rm.materialId);
                         if (matItem) {
                             const nuevoStock = Math.max(0, (Number(matItem.cantidad) || 0) - insumosConsumidos);
                             try {

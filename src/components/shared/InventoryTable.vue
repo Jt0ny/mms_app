@@ -80,11 +80,7 @@ export default {
     font-weight: 700;
 }
 
-.header-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
+
 
 .btn-refresh {
     background: rgba(255, 255, 255, 0.2);

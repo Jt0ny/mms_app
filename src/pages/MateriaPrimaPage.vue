@@ -31,7 +31,7 @@
                         <template #row="{ item }">
                             <td class="text-variety">{{ item.variedad }}</td>
                             <td class="text-quantity">{{ item.cantidadTotal }}</td>
-                            <td class="text-date">{{ formatearFecha(item.fecha) }}</td>
+                            <td class="text-date">{{ formatearFecha(item.fechaIngreso) }}</td>
                         </template>
                     </InventoryTable>
 
@@ -48,8 +48,8 @@
                     </template>
                     <template #row="{ item }">
                         <td class="text-variety" data-label="Variedad">{{ item.variedad }}</td>
-                        <td class="text-quantity" data-label="Cantidad (Tallos)">{{ item.cantidad_total }}</td>
-                        <td class="text-date" data-label="Fecha Ingreso">{{ item.fecha_ingreso }}</td>
+                        <td class="text-quantity" data-label="Cantidad (Tallos)">{{ item.cantidadTotal }}</td>
+                        <td class="text-date" data-label="Fecha Ingreso">{{ item.fechaIngreso }}</td>
                     </template>
                 </PreviewTable>
 
@@ -83,9 +83,9 @@ export default {
 
     setup() {
         const { mensaje, mostrarMensaje } = useMensajes()
-        const { leerExcel, cargandoExcel } = useExcel()
+        const { leerExcel } = useExcel()
         const catalogos = useCatalogos()
-        return { mensaje, mostrarMensaje, leerExcel, cargandoExcel, catalogos }
+        return { mensaje, mostrarMensaje, leerExcel, catalogos }
     },
 
     data() {
@@ -129,7 +129,7 @@ export default {
             this.cargandoInventario = true
             try {
                 this.mostrarMensaje('info', '⚡ Sincronizando con la API externa...', 0)
-                await materiaPrimaClient.sincronizarConSupabase(true) // forceOverwrite = true
+                await materiaPrimaClient.sincronizarConSupabase()
                 this.mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
                 await this.cargarInventario(true)
             } catch (error) {
@@ -179,11 +179,11 @@ export default {
                 if (!resumen[variedad]) {
                     resumen[variedad] = {
                         variedad: String(variedad).trim(),
-                        cantidad_total: 0,
-                        fecha_ingreso: obtenerFechaHoy()
+                        cantidadTotal: 0,
+                        fechaIngreso: obtenerFechaHoy()
                     }
                 }
-                resumen[variedad].cantidad_total += tallos
+                resumen[variedad].cantidadTotal += tallos
             })
             return Object.values(resumen)
         },
@@ -221,6 +221,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-</style>

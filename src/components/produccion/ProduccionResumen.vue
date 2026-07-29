@@ -12,7 +12,8 @@
                 </div>
 
                 <div class="info-right">
-                    <button v-if="production" class="btn-action btn-edit" @click="$emit('editar', production)"> Editar</button>
+                    <button v-if="production" class="btn-action btn-edit" @click="$emit('editar', production)">
+                        Editar</button>
                 </div>
             </div>
 
@@ -93,18 +94,18 @@ export default {
 
             // filtrar producciones que correspondan exactamente al día objetivo
             const sameDay = this.producciones.filter(p => {
-                const pdate = dateOnly(p.fecha) || dateOnly(p.creado_en)
+                const pdate = dateOnly(p.fecha) || dateOnly(p.creadoEn)
                 return pdate === target
             })
 
             if (!sameDay.length) return null
 
-            // si hay varias del mismo día, devolver la más reciente por creado_en
+            // si hay varias del mismo día, devolver la más reciente por creadoEn
             if (sameDay.length === 1) return sameDay[0]
 
             return sameDay.slice().sort((a, b) => {
-                const da = a.creado_en ? new Date(a.creado_en).getTime() : 0
-                const db = b.creado_en ? new Date(b.creado_en).getTime() : 0
+                const da = a.creadoEn ? new Date(a.creadoEn).getTime() : 0
+                const db = b.creadoEn ? new Date(b.creadoEn).getTime() : 0
                 return db - da
             })[0] || null
         }
@@ -177,11 +178,11 @@ export default {
 }
 
 .inventory-table tbody tr:nth-child(odd) {
-    background: rgba(0,0,0,0.02);
+    background: rgba(0, 0, 0, 0.02);
 }
 
 .inventory-table tbody tr:hover {
-    background: rgba(0,0,0,0.04);
+    background: rgba(0, 0, 0, 0.04);
 }
 
 .btn-edit {
@@ -218,10 +219,37 @@ export default {
 
 /* Responsive: convertir tabla a filas apiladas en pantallas pequeñas */
 @media (max-width: 700px) {
-    .inventory-table thead { display: none; }
-    .inventory-table, .inventory-table tbody, .inventory-table tr, .inventory-table td { display: block; width: 100%; }
-    .inventory-table tr { margin-bottom: 10px; border: 1px solid var(--border-light); border-radius: 8px; overflow: hidden; }
-    .inventory-table td { padding: 10px 12px; border-top: none; display: flex; justify-content: space-between; }
-    .inventory-table td::before { content: attr(data-label); color: var(--text-light); font-weight: 600; margin-right: 8px; }
+    .inventory-table thead {
+        display: none;
+    }
+
+    .inventory-table,
+    .inventory-table tbody,
+    .inventory-table tr,
+    .inventory-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .inventory-table tr {
+        margin-bottom: 10px;
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .inventory-table td {
+        padding: 10px 12px;
+        border-top: none;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .inventory-table td::before {
+        content: attr(data-label);
+        color: var(--text-light);
+        font-weight: 600;
+        margin-right: 8px;
+    }
 }
 </style>

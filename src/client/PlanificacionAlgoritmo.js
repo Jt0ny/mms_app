@@ -30,12 +30,8 @@ export default {
         return data || [];
     },
 
-    /**
-     * Obtiene todos los pedidos con estado='Pendiente' para una fecha dada
-     * y los agrupa por receta, sumando el total de stems de cada una.
-     * @param {string} fecha — formato 'YYYY-MM-DD'
-     * @returns {Array<{ recetaId: string, nombre: string, categoria: string, totalStems: number }>}
-     */
+    // ─── RESERVADO PARA USO EXTERNO (Actualmente no usado desde UI) ──────
+    /*
     async obtenerPedidosPendientesPorFecha(fecha) {
         try {
             const data = await this._obtenerPedidosPendientes(fecha);
@@ -93,6 +89,7 @@ export default {
             throw error;
         }
     },
+    */
 
     /**
      * Algoritmo de distribución equitativa mejorado.
@@ -160,6 +157,171 @@ export default {
 
         // Filtrar operadores sin asignación (más operadores que recetas)
         return carga.filter(c => c.recetas.length > 0);
+    },
+
+    /**
+     * Reconstruye los grupos de receta, asigna pedidos por FIFO, distribuye a operadores
+     * y arma la estructura de asignaciones inicial.
+     * @param {Array} categoriasRequeridas 
+     * @param {Object} mapeo 
+     * @param {Array} todasLasRecetas 
+     * @param {Array} operadoresActivos 
+     * @returns {{ asignaciones: Array, gruposRecetaBackup: Array }}
+     */
+    asignarYDistribuir(categoriasRequeridas, mapeo, todasLasRecetas, operadoresActivos) {
+        const gruposReceta = []
+        for (const cat of categoriasRequeridas) {
+            const mappings = mapeo[cat.categoria] || []
+            const targetRecipes = mappings.map(m => {
+                const recetaObj = todasLasRecetas.find(r => r.id === m.recetaId)
+                return {
+                    recetaId: m.recetaId,
+                    nombre: recetaObj ? recetaObj.nombre : `Receta ${cat.categoria}`,
+                    categoria: cat.categoria,
+                    capacity: parseInt(m.stems) || 0,
+                    pedidos: []
+                }
+            })
+
+            // Algoritmo FIFO para asignar pedidos individuales de la categoría a las recetas físicas
+            let recipeIdx = 0
+            for (const p of cat.pedidos) {
+                let remainingStems = p.stems
+                while (remainingStems > 0 && recipeIdx < targetRecipes.length) {
+                    const currentRecipe = targetRecipes[recipeIdx]
+                    const allocatedStems = Math.min(remainingStems, currentRecipe.capacity)
+
+                    if (allocatedStems > 0) {
+                        currentRecipe.pedidos.push({
+                            pedidoId: p.pedidoId,
+                            cliente: p.cliente,
+                            categoria: p.categoria,
+                            stems: allocatedStems
+                        })
+                        currentRecipe.capacity -= allocatedStems
+                        remainingStems -= allocatedStems
+                    }
+
+                    if (currentRecipe.capacity <= 0) {
+                        recipeIdx++
+                    }
+                }
+
+                if (remainingStems > 0) {
+                    const lastRecipe = targetRecipes[targetRecipes.length - 1] || targetRecipes[0]
+                    if (lastRecipe) {
+                        lastRecipe.pedidos.push({
+                            pedidoId: p.pedidoId,
+                            cliente: p.cliente,
+                            categoria: p.categoria,
+                            stems: remainingStems
+                        })
+                    }
+                }
+            }
+
+            // Restablecer el totalStems e ingresarlo en la lista final para Greedy
+            mappings.forEach((m, i) => {
+                if (targetRecipes[i]) {
+                    targetRecipes[i].totalStems = parseInt(m.stems) || 0
+                    gruposReceta.push(targetRecipes[i])
+                }
+            })
+        }
+
+        const dist = this.distribuirEquitativamente(operadoresActivos, gruposReceta)
+
+        const asignaciones = dist.map(d => {
+            return {
+                operador: d.operador,
+                recetas: d.recetas.map(r => ({
+                    recetaId: r.recetaId,
+                    nombre: r.nombre,
+                    categoria: gruposReceta.find(g => g.recetaId === r.recetaId)?.categoria || '',
+                    cantidad: r.cantidad
+                })),
+                pedidosAsignados: [],
+                stemsTotal: d.stemsTotal
+            }
+        })
+
+        // Resolver pedidos inicialmente
+        for (let i = 0; i < asignaciones.length; i++) {
+            const asig = asignaciones[i]
+            const pedidosMapa = new Map()
+            asig.recetas.forEach(r => {
+                const grupo = gruposReceta.find(g => g.recetaId === r.recetaId)
+                if (grupo && grupo.pedidos) {
+                    grupo.pedidos.forEach(p => {
+                        const key = `${p.pedidoId}-${p.categoria}`
+                        if (pedidosMapa.has(key)) {
+                            pedidosMapa.get(key).stems += p.stems
+                        } else {
+                            pedidosMapa.set(key, {
+                                pedidoId: p.pedidoId,
+                                cliente: p.cliente,
+                                categoria: p.categoria || '',
+                                stems: p.stems
+                            })
+                        }
+                    })
+                }
+            })
+            asig.pedidosAsignados = Array.from(pedidosMapa.values())
+        }
+
+        return { asignaciones, gruposRecetaBackup: gruposReceta }
+    },
+
+    /**
+     * Redistribuye la carga (usado cuando se excluye un operador)
+     * @param {Array} operadoresActivos 
+     * @param {Array} gruposRecetaBackup 
+     * @returns {Array} asignaciones
+     */
+    redistribuirCarga(operadoresActivos, gruposRecetaBackup) {
+        const dist = this.distribuirEquitativamente(operadoresActivos, gruposRecetaBackup)
+
+        const asignaciones = dist.map(d => {
+            return {
+                operador: d.operador,
+                recetas: d.recetas.map(r => ({
+                    recetaId: r.recetaId,
+                    nombre: r.nombre,
+                    categoria: gruposRecetaBackup.find(g => g.recetaId === r.recetaId)?.categoria || '',
+                    cantidad: r.cantidad
+                })),
+                pedidosAsignados: [],
+                stemsTotal: d.stemsTotal
+            }
+        })
+
+        // Resolver pedidos
+        for (let i = 0; i < asignaciones.length; i++) {
+            const asig = asignaciones[i]
+            const pedidosMapa = new Map()
+            asig.recetas.forEach(r => {
+                const grupo = gruposRecetaBackup.find(g => g.recetaId === r.recetaId)
+                if (grupo && grupo.pedidos) {
+                    grupo.pedidos.forEach(p => {
+                        const key = `${p.pedidoId}-${p.categoria}`
+                        if (pedidosMapa.has(key)) {
+                            pedidosMapa.get(key).stems += p.stems
+                        } else {
+                            pedidosMapa.set(key, {
+                                pedidoId: p.pedidoId,
+                                cliente: p.cliente,
+                                categoria: p.categoria || '',
+                                stems: p.stems
+                            })
+                        }
+                    })
+                }
+            })
+            asig.pedidosAsignados = Array.from(pedidosMapa.values())
+        }
+
+        return asignaciones
     },
 
     /**

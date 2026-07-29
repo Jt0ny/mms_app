@@ -111,6 +111,8 @@ export default {
     if (updatesRelacion.length > 0) {
       await Promise.allSettled(updatesRelacion);
       console.log(`${updatesRelacion.length} relaciones envío→facturación establecidas.`);
+      const catalogos = useCatalogos();
+      catalogos.obtenerClientes(true).catch(console.error);
     }
   },
 
@@ -373,6 +375,8 @@ export default {
     }
   },
 
+  // ─── RESERVADO PARA FUTURO CRUD ─────────────────────────────────────
+  /*
   async actualizarOperadorPedido(pedidoId, operadorId) {
     try {
       const { data, error } = await supabase
@@ -387,21 +391,6 @@ export default {
       console.error(`Error al actualizar operador:`, error);
       throw error;
     }
-  },
-
-  async obtenerClientesFacturacion() {
-    try {
-      const pedidos = await this.obtenerPedidos();
-      const clientes = pedidos
-        .map((pedido) => pedido.cliente_facturacion ?? pedido.clienteFacturacion)
-        .filter((cliente) => cliente != null)
-        .map((cliente) => String(cliente).trim())
-        .filter((cliente) => cliente.length > 0);
-
-      return [...new Set(clientes)];
-    } catch (error) {
-      console.error("Error al obtener clientes de facturación:", error);
-      throw error;
-    }
   }
+  */
 }

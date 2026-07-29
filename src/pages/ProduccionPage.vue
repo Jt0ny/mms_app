@@ -20,7 +20,7 @@
 
             <Alertas :mensaje="mensaje" />
 
-            <div class="page-grid">
+            <div class="page-grid page-grid-produccion">
                 <ProduccionForm :guardando="guardando" :ultima-guardada="ultimaGuardada" :edicion="editingProduccion"
                     :categorias-permitidas="categoriasRecetasAsignadas" :cantidades-externas="cantidadesExternas"
                     :limites-por-categoria="limitesPorCategoria" @guardar="guardarProduccion"
@@ -28,7 +28,7 @@
                     @cancelar="editingProduccion = null" @cantidad-cambiada="sincronizarContadorReceta" />
 
                 <!-- Panel de recetas: muestra solo las asignadas o mensaje vacío -->
-                <div v-if="sinPlanificacion && !cargandoPlanificacion" class="sin-planificacion">
+                <div v-if="sinPlanificacion && !cargandoPlanificacion" class="empty-state-card">
                     <span class="sin-plan-icon">📋</span>
                     <p>No tienes recetas asignadas para hoy.</p>
                     <p class="sin-plan-sub">El supervisor debe asignarte una planificación desde la sección
@@ -154,7 +154,7 @@ export default {
 
                 // Tomar la planificación más reciente de hoy
                 const planificacion = planificacionesHoy.sort(
-                    (a, b) => new Date(b.creado_en) - new Date(a.creado_en)
+                    (a, b) => new Date(b.creadoEn) - new Date(a.creadoEn)
                 )[0]
 
                 this.planificacionFecha = planificacion.fecha
@@ -163,12 +163,12 @@ export default {
 
                 // Calcular lo que este operador ya ha producido hoy
                 const produccionesHoy = this.producciones.filter(
-                    p => p.fecha === hoy && p.operador_id === this.operadorId
+                    p => p.fecha === hoy && p.operadorId === this.operadorId
                 )
                 const producidoPorCategoria = {}
                 produccionesHoy.forEach(prod => {
                     (prod.detalle || []).forEach(det => {
-                        producidoPorCategoria[det.categoria] = 
+                        producidoPorCategoria[det.categoria] =
                             (producidoPorCategoria[det.categoria] || 0) + parseInt(det.cantidad || 0)
                     })
                 })
@@ -229,7 +229,7 @@ export default {
             this.guardando = true
             try {
                 // Vincular el operador actual que registra la producción
-                payload.operador_id = this.operadorId
+                payload.operadorId = this.operadorId
 
                 if (payload.id) {
                     await ProduccionClient.editarProduccion(payload.id, payload)
@@ -354,10 +354,7 @@ export default {
     color: var(--text-light);
 }
 
-.badge-ok {
-    background: #dcfce7;
-    color: #15803d;
-}
+
 
 .badge-warning {
     background: #fef9c3;
@@ -365,18 +362,7 @@ export default {
 }
 
 /* ── Sin planificación ──────────────── */
-.sin-planificacion {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 12px;
-    padding: 48px 32px;
-    border-radius: 20px;
-    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-}
+
 
 .sin-plan-icon {
     font-size: 48px;
@@ -397,16 +383,7 @@ export default {
 }
 
 /* ── Grid ───────────────────────────── */
-.page-grid {
-    display: grid;
+.page-grid-produccion {
     grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.85fr);
-    gap: 24px;
-    align-items: start;
-}
-
-@media (max-width: 1024px) {
-    .page-grid {
-        grid-template-columns: 1fr;
-    }
 }
 </style>

@@ -61,12 +61,22 @@ export function useCatalogos() {
     return clientesCache.value
   }
 
+  function invalidar() {
+    recetasCache.value = null
+    operadoresCache.value = null
+    usuariosCache.value = null
+    materialesCache.value = null
+    materiaPrimaCache.value = null
+    clientesCache.value = null
+  }
+
   return {
     obtenerRecetas,
     obtenerUsuarios,
     obtenerOperadores,
     obtenerMateriales,
     obtenerMateriaPrima,
-    obtenerClientes
+    obtenerClientes,
+    invalidar
   }
 }

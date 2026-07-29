@@ -131,7 +131,7 @@ export default {
         return this.materiaPrimaLista.map(item => ({
           id: item.id || item.variedad,
           nombre: item.variedad,
-          extraInfo: item.cantidad_total !== undefined ? `${item.cantidad_total} tallos en stock` : ''
+          extraInfo: item.cantidadTotal !== undefined ? `${item.cantidadTotal} tallos en stock` : ''
         }))
       } else if (this.form.tipo === 'material') {
         return this.materialesLista.map(item => ({
@@ -190,7 +190,7 @@ export default {
         motivo: motivoFinal,
         operadorId: this.form.operadorId,
         operadorNombre: opObj ? opObj.nombre : 'operador',
-        creado_en: new Date().toISOString()
+        creadoEn: new Date().toISOString()
       }
       this.$emit('guardar', payload)
       this.resetearFormulario()
@@ -238,29 +238,7 @@ export default {
   margin-top: 16px;
 }
 
-.btn {
-  border: none;
-  border-radius: 8px;
-  padding: 10px 18px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.actions .btn {
   width: 100%;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 </style>
