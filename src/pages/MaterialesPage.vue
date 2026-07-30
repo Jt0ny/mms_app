@@ -34,7 +34,8 @@
                             <td class="text-quantity">{{ item.cantidad }}</td>
                             <td>{{ item.descripcion || '-' }}</td>
                             <td class="actions-column">
-                                <button class="btn-action btn-action-delete" @click="eliminarMaterial(item.id)">🗑️</button>
+                                <button class="btn-action btn-action-delete"
+                                    @click="eliminarMaterial(item.id)">🗑️</button>
                             </td>
                         </template>
                     </InventoryTable>
@@ -111,7 +112,7 @@ export default {
     },
 
     mounted() {
-        this.cargarInventario()
+        this.cargarInventario(true)
     },
 
     methods: {

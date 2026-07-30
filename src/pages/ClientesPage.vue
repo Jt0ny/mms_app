@@ -261,7 +261,7 @@ export default {
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
   .main-layout.with-form {
     grid-template-columns: 1fr 1fr;
   }

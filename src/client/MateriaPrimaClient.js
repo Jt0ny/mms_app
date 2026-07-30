@@ -10,12 +10,12 @@ export default {
    */
   async sincronizarConSupabase() {
     try {
-      console.log(`Iniciando sincronización de materia prima desde API externa...`);
+
       const response = await axios.get(API_URL);
       const materiasPrimasExternas = response.data || [];
 
       if (materiasPrimasExternas.length === 0) {
-        console.log("No se encontró materia prima en la API externa para sincronizar.");
+
         return;
       }
 
@@ -60,9 +60,9 @@ export default {
           .upsert(upsertData);
 
         if (error) throw error;
-        console.log(`Sincronización exitosa. ${upsertData.length} materias primas sincronizadas (nuevas y actualizadas) en Supabase.`);
+
       } else {
-        console.log("No hubo datos para procesar en la sincronización.");
+
       }
     } catch (error) {
       console.error("Error al sincronizar materias primas con Supabase:", error);
@@ -131,7 +131,7 @@ export default {
 
       if (error) throw error;
 
-      console.log(`${payload.length} materias primas guardadas directamente en Supabase.`);
+
     } catch (error) {
       console.error("Error al guardar materias primas en Supabase:", error);
       throw error;

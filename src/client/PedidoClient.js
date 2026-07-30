@@ -59,7 +59,7 @@ export default {
     const missingClientNames = new Set([...billNames, ...shipNames]);
 
     if (missingClientNames.size > 0) {
-      console.log(`Creando clientes placeholder para nombres faltantes:`, [...missingClientNames]);
+
 
       const payloadClientes = [...missingClientNames].map(name => {
         const esBill = billNames.has(name);
@@ -110,7 +110,7 @@ export default {
     }
     if (updatesRelacion.length > 0) {
       await Promise.allSettled(updatesRelacion);
-      console.log(`${updatesRelacion.length} relaciones envío→facturación establecidas.`);
+
       const catalogos = useCatalogos();
       catalogos.obtenerClientes(true).catch(console.error);
     }
@@ -124,7 +124,7 @@ export default {
     )];
 
     if (missingCategories.length > 0) {
-      console.log(`Creando recetas placeholder para categorías faltantes:`, missingCategories);
+
 
       const payloadRecetas = missingCategories.map(category => ({
         nombre: `Receta Genérica ${category}`,
@@ -158,12 +158,12 @@ export default {
    */
   async sincronizarConSupabase() {
     try {
-      console.log("Iniciando sincronización de pedidos desde API externa...");
+
       const response = await axios.get(API_URL);
       const pedidosExternos = response.data || [];
 
       if (pedidosExternos.length === 0) {
-        console.log("No se encontraron pedidos en la API externa para sincronizar.");
+
         return;
       }
 
@@ -219,7 +219,7 @@ export default {
       const pedidosToUpsert = Array.from(pedidosMap.values());
       if (pedidosToUpsert.length === 0) return;
 
-      console.log(`Guardando ${pedidosToUpsert.length} cabeceras de pedido...`);
+
       const { error: pedError } = await supabase.from('pedidos').upsert(pedidosToUpsert);
       if (pedError) throw pedError;
 
@@ -227,11 +227,11 @@ export default {
       const { error: cleanError } = await supabase.from('pedido_detalles').delete().in('pedido_id', pedidoIds);
       if (cleanError) throw cleanError;
 
-      console.log(`Guardando ${detallesToUpsert.length} detalles de pedido...`);
+
       const { error: detError } = await supabase.from('pedido_detalles').upsert(detallesToUpsert);
       if (detError) throw detError;
 
-      console.log("Sincronización de pedidos completada.");
+
     } catch (error) {
       console.error("Error al sincronizar pedidos:", error);
       throw error;
@@ -295,7 +295,7 @@ export default {
       const { error: detError } = await supabase.from('pedido_detalles').insert(detallesToInsert);
       if (detError) throw detError;
 
-      console.log(`${pedidosToInsert.length} pedidos guardados en Supabase.`);
+
     } catch (error) {
       console.error("Error al guardar pedidos:", error);
       throw error;

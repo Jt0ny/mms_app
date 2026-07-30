@@ -153,7 +153,7 @@ export default {
                     recetaElegida = recetasCategoria[0];
                 }
 
-                console.log(`[ProduccionClient] Categoría: "${d.categoria}". Receta seleccionada para descuento: "${recetaElegida?.nombre}" (ID: ${recetaElegida?.id})`);
+
 
                 // 3a. Acumular consumo de Materia Prima (Tallos)
                 for (const rm of (recetaElegida.receta_materia_prima || [])) {

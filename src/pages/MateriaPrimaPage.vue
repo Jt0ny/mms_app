@@ -98,7 +98,7 @@ export default {
     },
 
     mounted() {
-        this.cargarInventario()
+        this.cargarInventario(true)
     },
 
     methods: {

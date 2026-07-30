@@ -218,7 +218,7 @@ export default {
 }
 
 /* Responsive: convertir tabla a filas apiladas en pantallas pequeñas */
-@media (max-width: 700px) {
+@media (max-width: 768px) {
     .inventory-table thead {
         display: none;
     }

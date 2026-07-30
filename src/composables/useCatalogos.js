@@ -14,7 +14,7 @@ const materiaPrimaCache = ref(null)
 const clientesCache = ref(null)
 
 export function useCatalogos() {
-  
+
   async function obtenerRecetas(forceRefresh = false) {
     if (!recetasCache.value || forceRefresh) {
       recetasCache.value = await RecetaClient.obtenerRecetas()

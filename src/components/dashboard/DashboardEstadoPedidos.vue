@@ -156,7 +156,7 @@ export default {
     width: 100%;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
     .tables-wrapper {
         grid-template-columns: 1fr;
     }

@@ -470,7 +470,7 @@ export default {
 	cursor: not-allowed;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 480px) {
 	.receta-mapping-row {
 		flex-direction: column;
 		align-items: stretch;

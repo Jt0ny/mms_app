@@ -14,68 +14,68 @@
 			</div>
 		</header>
 
-		<!-- Tabla de recetas asignadas -->
-		<div class="summary-recetas-col">
-			<span class="summary-label">Recetas ({{ asig.recetas.length }})</span>
+		<div class="operadores-body">
+			<!-- Tabla de recetas asignadas -->
+			<div class="summary-recetas-col">
+				<span class="summary-label">Recetas ({{ asig.recetas.length }})</span>
 
-			<span v-if="!asig.recetas.length" class="summary-none">Sin recetas asignadas</span>
+				<span v-if="!asig.recetas.length" class="summary-none">Sin recetas asignadas</span>
 
-			<table v-else class="recetas-tabla">
-				<thead>
-					<tr>
-						<th>Receta</th>
-						<th>Categoría</th>
-						<th>Stems</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="(r, ri) in asig.recetas" :key="r.recetaId">
-						<td class="receta-nombre-cell">{{ r.nombre }}</td>
-						<td class="receta-cat-cell">{{ r.categoria || '—' }}</td>
-						<td class="cantidad-cell">
-							<input v-model.number="r.cantidad" type="number" min="1" class="cantidad-input"
-								@change="$emit('recalcular', idx)" />
-						</td>
-						<td>
-							<button class="btn-quitar" type="button" title="Quitar"
-								@click="$emit('quitar-receta', { idx, ri })">✕</button>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-
-		<!-- Pedidos atendidos por este operador -->
-		<div class="summary-pedidos-col">
-			<span class="summary-label">Pedidos Atendidos ({{ asig.pedidosAsignados ? asig.pedidosAsignados.length : 0
-			}})</span>
-			<span v-if="!asig.pedidosAsignados || !asig.pedidosAsignados.length" class="summary-none">Sin pedidos
-				asignados</span>
-			<div v-else class="pedidos-tabla-wrapper">
-				<table class="pedidos-tabla">
+				<table v-else class="recetas-tabla">
 					<thead>
 						<tr>
-							<th>Pedido</th>
-							<th>Cliente</th>
+							<th>Receta</th>
 							<th>Categoría</th>
-							<th class="text-right">Stems</th>
+							<th>Stems</th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr v-for="p in asig.pedidosAsignados" :key="p.pedidoId + '-' + p.categoria">
-							<td class="pedido-id-cell">#{{ p.pedidoId.length > 8 ? p.pedidoId.substring(0, 8) :
-								p.pedidoId }}</td>
-							<td class="pedido-cliente-cell">{{ p.cliente }}</td>
-							<td class="pedido-categoria-cell">{{ p.categoria || '—' }}</td>
-							<td class="pedido-stems-cell text-right">{{ p.stems }}</td>
+						<tr v-for="(r, ri) in asig.recetas" :key="r.recetaId">
+							<td class="receta-nombre-cell">{{ r.nombre }}</td>
+							<td class="receta-cat-cell">{{ r.categoria || '—' }}</td>
+							<td class="cantidad-cell">
+								<input v-model.number="r.cantidad" type="number" min="1" class="cantidad-input"
+									@change="$emit('recalcular', idx)" />
+							</td>
+							<td>
+								<button class="btn-quitar" type="button" title="Quitar"
+									@click="$emit('quitar-receta', { idx, ri })">✕</button>
+							</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
+
+			<!-- Pedidos atendidos por este operador -->
+			<div class="summary-pedidos-col">
+				<span class="summary-label">Pedidos Atendidos ({{ asig.pedidosAsignados ? asig.pedidosAsignados.length : 0
+				}})</span>
+				<span v-if="!asig.pedidosAsignados || !asig.pedidosAsignados.length" class="summary-none">Sin pedidos
+					asignados</span>
+				<div v-else class="pedidos-tabla-wrapper">
+					<table class="pedidos-tabla">
+						<thead>
+							<tr>
+								<th>Pedido</th>
+								<th>Cliente</th>
+								<th>Categoría</th>
+								<th class="text-right">Stems</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="p in asig.pedidosAsignados" :key="p.pedidoId + '-' + p.categoria">
+								<td class="pedido-id-cell">#{{ p.pedidoId.length > 8 ? p.pedidoId.substring(0, 8) :
+									p.pedidoId }}</td>
+								<td class="pedido-cliente-cell">{{ p.cliente }}</td>
+								<td class="pedido-categoria-cell">{{ p.categoria || '—' }}</td>
+								<td class="pedido-stems-cell text-right">{{ p.stems }}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
-
-
 	</div>
 </template>
 
@@ -112,22 +112,29 @@ export default {
 
 <style scoped>
 .operadores-panel {
-	display: grid;
-	gap: 18px;
-	padding: 24px;
+	display: flex;
+	flex-direction: column;
 	border-radius: 20px;
 	background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 	box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+	overflow: hidden;
 }
 
 .operadores-header {
 	background: var(--primary);
 	color: white;
-	padding: 16px 20px;
+	padding: 16px 24px;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	border-bottom: 3px solid rgba(0, 0, 0, 0.1);
+}
+
+.operadores-body {
+	padding: 24px;
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
 }
 
 

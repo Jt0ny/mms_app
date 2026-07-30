@@ -336,7 +336,7 @@ export default {
     cursor: not-allowed;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
 
     .header,
     .form-footer {

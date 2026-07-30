@@ -101,7 +101,7 @@ export default {
     gap: 24px;
 }
 
-@media (min-width: 1100px) {
+@media (min-width: 1024px) {
     .main-layout {
         grid-template-columns: 1fr 1fr;
         align-items: start;

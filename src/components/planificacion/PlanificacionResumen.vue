@@ -215,7 +215,7 @@ export default {
 	white-space: nowrap;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
 	.summary-card {
 		grid-template-columns: 1fr;
 	}
