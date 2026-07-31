@@ -28,5 +28,18 @@ export function useExcel() {
         }
     }
 
-    return { cargandoExcel, leerExcel }
+    /**
+     * Normaliza las claves de un objeto Excel (minúsculas, sin espacios).
+     * @param {Object} fila - objeto con claves originales del Excel
+     * @returns {Object} - objeto con claves normalizadas
+     */
+    function normalizarClaves(fila) {
+        const norm = {}
+        Object.keys(fila).forEach(key => {
+            norm[key.toLowerCase().replace(/\s+/g, '')] = fila[key]
+        })
+        return norm
+    }
+
+    return { cargandoExcel, leerExcel, normalizarClaves }
 }

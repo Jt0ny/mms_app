@@ -81,16 +81,16 @@ export default {
 	},
 
 	setup() {
-		const { mensaje, mostrarMensaje } = useMensajes()
+		const { mensaje, mostrarMensaje, mensajeInline, mostrarMensajeInline } = useMensajes()
 		const catalogos = useCatalogos()
-		return { mensaje, mostrarMensaje, catalogos }
+		return { mensaje, mostrarMensaje, mensajeInline, mostrarMensajeInline, catalogos }
 	},
 
 	data() {
 		const hoy = obtenerFechaHoy()
 		return {
 			fechaSeleccionada: hoy,
-			asignaciones: [],      // [{ operador, recetas: [{recetaId, nombre, categoria, cantidad}], stemsTotal }]
+			asignaciones: [],      // [{operador, recetas: [{recetaId, nombre, categoria, cantidad}], stemsTotal }]
 			todasLasRecetas: [],   // cache para el select de agregar receta
 			gruposRecetaBackup: [], // copia de respaldo con la información de pedidos por receta
 			cargandoAuto: false,
@@ -98,7 +98,6 @@ export default {
 			planificacionesGuardadas: [],
 			cargandoPlanificaciones: false,
 			eliminandoPlanificaciones: false,
-			mensajeInline: { tipo: null, texto: '' }, // mensaje dentro del summary card
 			operadoresActivos: [],
 
 			// Estados del asistente interactivo de recetas
@@ -135,12 +134,6 @@ export default {
 	},
 
 	methods: {
-		/* ─── Utilidades ─────────────────────────── */
-		mostrarMensajeInline(tipo, texto, duracion = 5000) {
-			this.mensajeInline = { tipo, texto }
-			if (duracion > 0) setTimeout(() => { this.mensajeInline = { tipo: null, texto: '' } }, duracion)
-		},
-
 		async cargarPlanificacionesDelDia() {
 			this.cargandoPlanificaciones = true
 			this.planificacionesGuardadas = []

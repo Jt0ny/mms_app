@@ -111,22 +111,7 @@ export default {
     height: 100%;
 }
 
-.section-header {
-    margin-bottom: 24px;
-}
 
-.section-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-main);
-    margin: 0 0 4px 0;
-}
-
-.section-subtitle {
-    font-size: 0.85rem;
-    color: var(--text-light);
-    margin: 0;
-}
 
 .estado-pedidos-card {
     min-height: 200px;
@@ -261,32 +246,5 @@ export default {
     font-weight: 500;
 }
 
-.badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-}
 
-.badge-warning {
-    background-color: #FEF3C7;
-    color: #92400E;
-    border: 1px solid #FDE68A;
-}
-
-.badge-success {
-    background-color: #D1FAE5;
-    color: #065F46;
-    border: 1px solid #A7F3D0;
-}
-
-.badge-danger {
-    background-color: #FEE2E2;
-    color: #991B1B;
-    border: 1px solid #FECACA;
-}
 </style>

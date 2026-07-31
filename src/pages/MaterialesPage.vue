@@ -70,6 +70,7 @@
 
 <script>
 import { useExcel } from '../composables/useExcel.js'
+import { useInventario } from '../composables/useInventario.js'
 import MaterialClient from '../client/MaterialClient.js'
 import { useCatalogos } from '../composables/useCatalogos.js'
 
@@ -92,17 +93,25 @@ export default {
 
     setup() {
         const { mensaje, mostrarMensaje } = useMensajes()
-        const { leerExcel } = useExcel()
+        const { leerExcel, normalizarClaves } = useExcel()
         const catalogos = useCatalogos()
-        return { mensaje, mostrarMensaje, leerExcel, catalogos }
+        
+        const { inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI } = useInventario({
+            obtenerDatos: (force) => catalogos.obtenerMateriales(force),
+            sincronizar: () => MaterialClient.sincronizarConSupabase(),
+            nombreModulo: 'materiales'
+        })
+
+        return { 
+            mensaje, mostrarMensaje, leerExcel, normalizarClaves, catalogos,
+            inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI
+        }
     },
 
     data() {
         return {
             datosProcesados: [],
-            inventarioActual: [],
             cargando: false,
-            cargandoInventario: false,
             nuevoMaterial: {
                 nombre: '',
                 cantidad: null,
@@ -116,35 +125,6 @@ export default {
     },
 
     methods: {
-        /* ================= INVENTARIO ================= */
-        async cargarInventario(forceRefresh = false) {
-            this.cargandoInventario = true
-            try {
-                // Cargar los datos locales
-                const datos = await this.catalogos.obtenerMateriales(forceRefresh)
-                this.inventarioActual = datos ?? []
-            } catch (error) {
-                console.error(error)
-                this.mostrarMensaje('error', '❌ Error al cargar materiales', 0)
-            } finally {
-                this.cargandoInventario = false
-            }
-        },
-
-        async sincronizarAPI() {
-            this.cargandoInventario = true
-            try {
-                this.mostrarMensaje('info', '⚡ Sincronizando con la API externa...', 0)
-                await MaterialClient.sincronizarConSupabase()
-                this.mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
-                await this.cargarInventario(true)
-            } catch (error) {
-                console.error(error)
-                this.mostrarMensaje('error', '❌ Error al sincronizar con la API externa')
-                this.cargandoInventario = false
-            }
-        },
-
         /* ================= EXCEL ================= */
         async procesarArchivo(file) {
             try {
@@ -168,11 +148,7 @@ export default {
         procesarDatos(data) {
             return data
                 .map(fila => {
-                    // Normalizar claves del Excel (quitar espacios, minúsculas)
-                    const norm = {}
-                    Object.keys(fila).forEach(key => {
-                        norm[key.toLowerCase().replace(/\s+/g, '')] = fila[key]
-                    })
+                    const norm = this.normalizarClaves(fila)
 
                     const nombre = String(norm.nombre || norm.name || norm.material || '').trim()
                     const cantidad = parseInt(norm.cantidad || norm.quantity || norm.qty || 0) || 0

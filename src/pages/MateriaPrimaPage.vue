@@ -62,6 +62,7 @@
 
 <script>
 import { useExcel } from '../composables/useExcel.js'
+import { useInventario } from '../composables/useInventario.js'
 import materiaPrimaClient from '../client/MateriaPrimaClient'
 import { useCatalogos } from '../composables/useCatalogos.js'
 
@@ -70,7 +71,7 @@ import Alertas from '../components/Alertas.vue'
 import InventoryTable from '../components/shared/InventoryTable.vue'
 import PreviewTable from '../components/shared/PreviewTable.vue'
 import { useMensajes } from '../composables/useMensajes.js'
-import { obtenerFechaHoy } from '../utils/date.js'
+import { obtenerFechaHoy, formatearFecha } from '../utils/date.js'
 
 export default {
 
@@ -83,17 +84,25 @@ export default {
 
     setup() {
         const { mensaje, mostrarMensaje } = useMensajes()
-        const { leerExcel } = useExcel()
+        const { leerExcel, normalizarClaves } = useExcel()
         const catalogos = useCatalogos()
-        return { mensaje, mostrarMensaje, leerExcel, catalogos }
+
+        const { inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI } = useInventario({
+            obtenerDatos: (force) => catalogos.obtenerMateriaPrima(force),
+            sincronizar: () => materiaPrimaClient.sincronizarConSupabase(),
+            nombreModulo: 'Materia prima'
+        })
+
+        return {
+            mensaje, mostrarMensaje, leerExcel, normalizarClaves, catalogos, formatearFecha,
+            inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI
+        }
     },
 
     data() {
         return {
             datosProcesados: [],
-            inventarioActual: [],
-            cargando: false,
-            cargandoInventario: false
+            cargando: false
         }
     },
 
@@ -102,43 +111,6 @@ export default {
     },
 
     methods: {
-        formatearFecha(fecha) {
-            if (!fecha) return '-'
-            try {
-                return new Date(fecha).toLocaleDateString('es-EC')
-            } catch {
-                return fecha
-            }
-        },
-        /* ================= INVENTARIO ================= */
-        async cargarInventario(forceRefresh = false) {
-            this.cargandoInventario = true
-            try {
-                // Cargar los datos locales
-                const datos = await this.catalogos.obtenerMateriaPrima(forceRefresh)
-                this.inventarioActual = datos ?? []
-            } catch (error) {
-                console.error(error)
-                this.mostrarMensaje('error', '❌ Error al cargar inventario', 0)
-            } finally {
-                this.cargandoInventario = false
-            }
-        },
-
-        async sincronizarAPI() {
-            this.cargandoInventario = true
-            try {
-                this.mostrarMensaje('info', '⚡ Sincronizando con la API externa...', 0)
-                await materiaPrimaClient.sincronizarConSupabase()
-                this.mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
-                await this.cargarInventario(true)
-            } catch (error) {
-                console.error(error)
-                this.mostrarMensaje('error', '❌ Error al sincronizar con la API externa')
-                this.cargandoInventario = false
-            }
-        },
-
         /* ================= EXCEL ================= */
 
         async procesarArchivo(file) {
@@ -163,11 +135,7 @@ export default {
         procesarDatos(data) {
             const resumen = {}
             data.forEach((fila) => {
-                const filaNormalizada = {}
-                Object.keys(fila).forEach((key) => {
-                    const keyNorm = key.toLowerCase().replace(/\s+/g, '')
-                    filaNormalizada[keyNorm] = fila[key]
-                })
+                const filaNormalizada = this.normalizarClaves(fila)
 
                 const variedad = filaNormalizada.variety || filaNormalizada.variedad
 

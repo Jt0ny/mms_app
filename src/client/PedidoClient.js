@@ -247,7 +247,7 @@ export default {
       await this._resolverClientesFaltantes(data, mapClientes);
       await this._resolverRecetasFaltantes(data, mapRecetas);
 
-      const pedidosMap = new Map();
+      const pedidosToInsert = [];
       const detallesToInsert = [];
 
       for (const item of data) {
@@ -265,20 +265,17 @@ export default {
         let recetaId = category ? (mapRecetas.get(category.toLowerCase()) || null) : null;
         if (!recetaId) continue;
 
-        const pedidoKey = `${billName}-${shipName}-${item.fecha_ingreso || ''}`;
-        if (!pedidosMap.has(pedidoKey)) {
-          pedidosMap.set(pedidoKey, {
-            id: crypto.randomUUID(),
-            cliente_facturacion_id: billId,
-            cliente_envio_id: shipId,
-            fecha_pedido: item.fecha_ingreso || item.fecha || obtenerFechaHoy(),
-            estado: 'Pendiente'
-          });
-        }
+        const pedidoId = crypto.randomUUID();
+        pedidosToInsert.push({
+          id: pedidoId,
+          cliente_facturacion_id: billId,
+          cliente_envio_id: shipId,
+          fecha_pedido: item.fechaIngreso || item.fecha_ingreso || item.fecha || obtenerFechaHoy(),
+          estado: 'Pendiente'
+        });
 
-        const pedido = pedidosMap.get(pedidoKey);
         detallesToInsert.push({
-          pedido_id: pedido.id,
+          pedido_id: pedidoId,
           receta_id: recetaId,
           stems: stemsVal,
           cantidad: 1,
@@ -286,7 +283,6 @@ export default {
         });
       }
 
-      const pedidosToInsert = Array.from(pedidosMap.values());
       if (pedidosToInsert.length === 0) return;
 
       const { error: pedError } = await supabase.from('pedidos').insert(pedidosToInsert);

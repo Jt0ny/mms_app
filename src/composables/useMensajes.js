@@ -1,8 +1,9 @@
 import { reactive } from 'vue'
 
-export function useMensajes() {
+const mensaje = reactive({ tipo: null, texto: '' })
+const mensajeInline = reactive({ tipo: null, texto: '' })
 
-    const mensaje = reactive({ tipo: null, texto: '' })
+export function useMensajes() {
 
     function mostrarMensaje(tipo, texto, duracion = 4000) {
         mensaje.tipo = tipo
@@ -12,5 +13,13 @@ export function useMensajes() {
         }
     }
 
-    return { mensaje, mostrarMensaje }
+    function mostrarMensajeInline(tipo, texto, duracion = 5000) {
+        mensajeInline.tipo = tipo
+        mensajeInline.texto = texto
+        if (duracion > 0) {
+            setTimeout(() => { mensajeInline.tipo = null; mensajeInline.texto = '' }, duracion)
+        }
+    }
+
+    return { mensaje, mostrarMensaje, mensajeInline, mostrarMensajeInline }
 }

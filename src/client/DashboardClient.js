@@ -21,7 +21,7 @@ export default {
                     recetas(categoria)
                 )
             `)
-            .or(`fecha_pedido.eq.${fecha},and(fecha_pedido.lt.${fecha},estado.eq.Pendiente)`)
+            .or(`estado.eq.Pendiente,and(fecha_completado.eq.${fecha},estado.eq.Completado),and(fecha_pedido.eq.${fecha},estado.eq.Completado)`)
             .order('fecha_creacion', { ascending: false })
 
         let totalStemsPedidos = 0
@@ -52,10 +52,9 @@ export default {
             })
 
             // Ordenar: Pendientes primero
+            const prioridadEstado = { 'Atrasado': 0, 'Pendiente': 1, 'Completado': 2 }
             estadoPedidos.sort((a, b) => {
-                if (a.estado === 'Pendiente' && b.estado !== 'Pendiente') return -1;
-                if (a.estado !== 'Pendiente' && b.estado === 'Pendiente') return 1;
-                return 0;
+                return (prioridadEstado[a.estado] ?? 3) - (prioridadEstado[b.estado] ?? 3)
             })
         }
 
@@ -339,7 +338,7 @@ export default {
                     recetas(categoria)
                 )
             `)
-            .or(`fecha_pedido.eq.${fecha},and(fecha_pedido.lt.${fecha},estado.eq.Pendiente)`);
+            .or(`estado.eq.Pendiente,and(fecha_completado.eq.${fecha},estado.eq.Completado),and(fecha_pedido.eq.${fecha},estado.eq.Completado)`);
 
         // 2. Obtener Producción (cabeceras + detalle por categoría)
         const { data: produccionesHoy, error: prodErr } = await supabase
@@ -420,7 +419,7 @@ export default {
         if (idsParaCompletar.length > 0) {
             await supabase
                 .from('pedidos')
-                .update({ estado: 'Completado', fecha_pedido: fecha })
+                .update({ estado: 'Completado', fecha_completado: fecha })
                 .in('id', idsParaCompletar);
         }
     }

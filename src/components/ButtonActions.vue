@@ -62,9 +62,5 @@ export default {
     gap: 8px;
     align-items: stretch;
   }
-
-  .btn {
-    width: 100%;
-  }
 }
 </style>

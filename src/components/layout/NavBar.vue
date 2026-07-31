@@ -188,10 +188,9 @@ export default {
   }
 
   .btn {
-    padding: 8px 14px;
-    font-size: 12px;
     width: 100%;
   }
+
 
   .menu li {
     font-size: 12px;
@@ -226,7 +225,6 @@ export default {
 
   .btn {
     width: 100%;
-    min-width: 0;
   }
 
   .menu {

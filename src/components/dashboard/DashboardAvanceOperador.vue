@@ -1,7 +1,7 @@
 <template>
     <div class="avance-card">
-        <div class="card-header">
-            <h3>📈 Avance y Cumplimiento por Operador</h3>
+        <div class="section-header">
+            <h3 class="section-title">Avance de Operadores</h3>
         </div>
 
         <div v-if="cargando" class="loading-state">
@@ -68,12 +68,6 @@ export default {
     box-shadow: var(--shadow);
 }
 
-.card-header h3 {
-    margin: 0 0 20px;
-    font-size: 18px;
-    color: var(--text-h);
-    font-weight: 700;
-}
 
 .loading-state, .empty-state {
     text-align: center;
