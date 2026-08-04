@@ -151,22 +151,18 @@ export default {
   },
 
   /**
-   * Actualiza un material existente directamente en Supabase.
+   * Actualiza el stock de un material directamente en Supabase.
    */
-  async actualizarMaterial(id, data) {
+  async actualizarStockMaterial(id, nuevaCantidad) {
     try {
       const { error } = await supabase
         .from('materiales')
-        .update({
-          nombre: data.nombre,
-          cantidad: parseInt(data.cantidad) || 0,
-          descripcion: data.descripcion || null
-        })
+        .update({ cantidad: nuevaCantidad })
         .eq('id', id);
 
       if (error) throw error;
     } catch (error) {
-      console.error(`Error al actualizar material con ID ${id} en Supabase:`, error);
+      console.error(`Error al actualizar stock de material con ID ${id} en Supabase:`, error);
       throw error;
     }
   },

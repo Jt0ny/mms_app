@@ -4,53 +4,11 @@ export default {
     // ─── RESERVADO PARA FUTURO CRUD ─────────────────────────────────────
     /*
     async obtenerPlanificaciones() {
-        try {
-            const { data, error } = await supabase
-                .from('planificaciones')
-                .select(`
-                    id,
-                    operador_id,
-                    fecha,
-                    creado_en,
-                    usuarios (
-                        nombre
-                    ),
-                    planificacion_recetas (
-                        cantidad,
-                        recetas (
-                            id,
-                            nombre
-                        )
-                    )
-                `)
-                .order('creado_en', { ascending: false });
-
-            if (error) throw error;
-
-            return (data || []).map(item => ({
-                id: item.id,
-                // Mapeo snake_case a camelCase
-                operadorId: item.operador_id,
-                operadorNombre: item.usuarios?.nombre || 'Operador Desconocido',
-                fecha: item.fecha,
-                creadoEn: item.creado_en,
-                recetas: (item.planificacion_recetas || []).map(pr => ({
-                    recetaId: pr.recetas?.id,
-                    nombre: pr.recetas?.nombre || 'Receta Desconocida',
-                    cantidad: pr.cantidad
-                }))
-            }));
-        } catch (error) {
-            console.error('Error al obtener planificaciones desde Supabase:', error);
-            throw error;
-        }
-    },
+      // ...
+    }
     */
 
-    /**
-     * Obtiene las planificaciones de una fecha específica
-     */
-    async obtenerPlanificacionesPorFecha(fecha) {
+    async _queryPlanificaciones(filtroColumna, filtroValor) {
         try {
             const { data, error } = await supabase
                 .from('planificaciones')
@@ -69,7 +27,7 @@ export default {
                         )
                     )
                 `)
-                .eq('fecha', fecha)
+                .eq(filtroColumna, filtroValor)
                 .order('creado_en', { ascending: false });
 
             if (error) throw error;
@@ -89,9 +47,16 @@ export default {
                 }))
             }));
         } catch (error) {
-            console.error('Error al obtener planificaciones por fecha desde Supabase:', error);
+            console.error(`Error al obtener planificaciones por ${filtroColumna} desde Supabase:`, error);
             throw error;
         }
+    },
+
+    /**
+     * Obtiene las planificaciones de una fecha específica
+     */
+    async obtenerPlanificacionesPorFecha(fecha) {
+        return await this._queryPlanificaciones('fecha', fecha);
     },
 
     /**
@@ -116,47 +81,7 @@ export default {
      * Obtiene las planificaciones de un operador específico
      */
     async obtenerPlanificacionesPorOperador(operadorId) {
-        try {
-            const { data, error } = await supabase
-                .from('planificaciones')
-                .select(`
-                    id,
-                    operador_id,
-                    fecha,
-                    creado_en,
-                    usuarios (
-                        nombre
-                    ),
-                    planificacion_recetas (
-                        cantidad,
-                        recetas (
-                            id,
-                            nombre
-                        )
-                    )
-                `)
-                .eq('operador_id', operadorId)
-                .order('creado_en', { ascending: false });
-
-            if (error) throw error;
-
-            return (data || []).map(item => ({
-                id: item.id,
-                // Mapeo snake_case a camelCase
-                operadorId: item.operador_id,
-                operadorNombre: item.usuarios?.nombre || 'Operador Desconocido',
-                fecha: item.fecha,
-                creadoEn: item.creado_en,
-                recetas: (item.planificacion_recetas || []).map(pr => ({
-                    recetaId: pr.recetas?.id,
-                    nombre: pr.recetas?.nombre || 'Receta Desconocida',
-                    cantidad: pr.cantidad
-                }))
-            }));
-        } catch (error) {
-            console.error('Error al obtener planificaciones del operador desde Supabase:', error);
-            throw error;
-        }
+        return await this._queryPlanificaciones('operador_id', operadorId);
     },
 
     /**

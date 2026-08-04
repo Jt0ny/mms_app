@@ -187,5 +187,152 @@ export default {
       console.error("Error al hacer upsert masivo de clientes en Supabase:", error)
       throw error
     }
+  },
+
+  // Centraliza la lógica de crear clientes (Facturación/Envío) a partir de pedidos
+  async resolverClientesDePedidos(pedidos, mapaClientes = null) {
+    try {
+      if (!mapaClientes) {
+        const clientesExistentes = await this.obtenerClientes()
+        mapaClientes = new Map(clientesExistentes.map(c => [c.nombre.toLowerCase().trim(), c]))
+      }
+
+      const clientesParaAgregarFacturacion = []
+      const clientesParaAgregarEnvio = []
+      const clientesParaActualizar = []
+
+      for (const order of pedidos) {
+          const billName = (order.clienteFacturacion || order.cliente_facturacion || '').trim()
+          const shipName = (order.clienteEnvio || order.cliente_envio || '').trim()
+
+          if (billName) {
+              const billKey = billName.toLowerCase()
+              if (!mapaClientes.has(billKey)) {
+                  const nuevo = {
+                      nombre: billName,
+                      tipo: 'Facturación',
+                      clienteFacturacionAsociado: '',
+                      email: '',
+                      telefono: '',
+                      direccion: '',
+                      notas: ''
+                  }
+                  mapaClientes.set(billKey, nuevo)
+                  clientesParaAgregarFacturacion.push(nuevo)
+              } else {
+                  const existente = mapaClientes.get(billKey)
+                  if (existente.tipo === 'Envío') {
+                      existente.tipo = 'Ambos'
+                      if (!clientesParaActualizar.some(c => c.id === existente.id)) {
+                          clientesParaActualizar.push(existente)
+                      }
+                  }
+              }
+          }
+
+          if (shipName) {
+              const shipKey = shipName.toLowerCase()
+              if (!mapaClientes.has(shipKey)) {
+                  const nuevo = {
+                      nombre: shipName,
+                      tipo: 'Envío',
+                      clienteFacturacionAsociado: billName || '',
+                      email: '',
+                      telefono: '',
+                      direccion: '',
+                      notas: ''
+                  }
+                  mapaClientes.set(shipKey, nuevo)
+                  clientesParaAgregarEnvio.push(nuevo)
+              } else {
+                  const existente = mapaClientes.get(shipKey)
+                  let modificado = false
+                  if (existente.tipo === 'Facturación') {
+                      existente.tipo = 'Ambos'
+                      modificado = true
+                  }
+                  if (!existente.clienteFacturacionAsociado && billName && existente.nombre !== billName) {
+                      existente.clienteFacturacionAsociado = billName
+                      modificado = true
+                  }
+                  if (modificado) {
+                      if (!clientesParaActualizar.some(c => c.id === existente.id)) {
+                          clientesParaActualizar.push(existente)
+                      }
+                  }
+              }
+          }
+      }
+
+      // Insertar Facturación
+      if (clientesParaAgregarFacturacion.length > 0) {
+          const insertadosFact = await this.agregarClientesMasivos(
+              clientesParaAgregarFacturacion.map(c => ({
+                  nombre: c.nombre.trim(),
+                  tipo: c.tipo,
+                  clienteFacturacionId: null,
+                  email: null,
+                  telefono: null,
+                  direccion: null,
+                  notas: null
+              }))
+          )
+          insertadosFact.forEach(c => {
+              mapaClientes.set(c.nombre.toLowerCase().trim(), c)
+          })
+      }
+
+      // Insertar Envío
+      if (clientesParaAgregarEnvio.length > 0) {
+          const payloadEnvio = clientesParaAgregarEnvio.map(c => {
+              let parentId = null
+              if (c.clienteFacturacionAsociado) {
+                  const parentObj = mapaClientes.get(c.clienteFacturacionAsociado.toLowerCase().trim())
+                  if (parentObj && parentObj.id) {
+                      parentId = parentObj.id
+                  }
+              }
+              return {
+                  nombre: c.nombre.trim(),
+                  tipo: c.tipo,
+                  clienteFacturacionId: parentId,
+                  email: null,
+                  telefono: null,
+                  direccion: null,
+                  notas: null
+              }
+          })
+          await this.agregarClientesMasivos(payloadEnvio)
+      }
+
+      // Actualizar Upserts
+      if (clientesParaActualizar.length > 0) {
+          const payloadUpsert = clientesParaActualizar.map(c => {
+              let parentId = c.clienteFacturacionId || null
+              if (c.clienteFacturacionAsociado) {
+                  const parentObj = mapaClientes.get(c.clienteFacturacionAsociado.toLowerCase().trim())
+                  if (parentObj && parentObj.id) {
+                      parentId = parentObj.id
+                  }
+              }
+              return {
+                  id: c.id,
+                  nombre: c.nombre.trim(),
+                  tipo: c.tipo,
+                  clienteFacturacionId: parentId,
+                  email: c.email || null,
+                  telefono: c.telefono || null,
+                  direccion: c.direccion || null,
+                  notas: c.notas || null
+              }
+          })
+          await this.upsertClientesMasivos(payloadUpsert)
+      }
+
+      return (clientesParaAgregarFacturacion.length > 0 || clientesParaAgregarEnvio.length > 0 || clientesParaActualizar.length > 0)
+    } catch (error) {
+        console.error('Error al resolver clientes de pedidos:', error)
+        throw error
+    }
   }
 }

@@ -187,12 +187,15 @@ export default {
                 const material = materiales.find(m => m.id === payload.referenciaId);
                 if (material) {
                     const nuevaCantidad = Math.max(0, (Number(material.cantidad) || 0) - Number(payload.cantidad));
-                    await MaterialClient.actualizarMaterial(material.id, {
-                        ...material,
-                        cantidad: nuevaCantidad
-                    });
-                    stocksActualizados.materiales.push({ id: material.id, cantidad: nuevaCantidad });
-                    mensajeExito = `✓ Merma registrada e inventario de "${material.nombre}" actualizado.`;
+                    
+                    try {
+                        await MaterialClient.actualizarStockMaterial(material.id, nuevaCantidad);
+                        stocksActualizados.materiales.push({ id: material.id, cantidad: nuevaCantidad });
+                        mensajeExito = `✓ Merma registrada e inventario de "${material.nombre}" actualizado.`;
+                    } catch (e) {
+                        console.error('Error al descontar material en merma:', e);
+                        mensajeExito = '⚠️ Merma registrada pero hubo un error al descontar inventario de material. Verifica el stock manualmente.';
+                    }
                 }
             } else if (payload.tipo === 'materia_prima') {
                 const mp = materiaPrima.find(m => m.id === payload.referenciaId || m.variedad === payload.referenciaId);
@@ -203,12 +206,15 @@ export default {
                         stocksActualizados.materiaPrima.push({ id: mp.id, cantidadTotal: nuevaCantidad });
                         mensajeExito = `✓ Merma registrada e inventario de "${mp.variedad}" actualizado.`;
                     } catch (e) {
-                        // Silencioso, fallback al mensaje por defecto
+                        console.error('Error al descontar materia prima en merma:', e);
+                        mensajeExito = '⚠️ Merma registrada pero hubo un error al descontar inventario de materia prima. Verifica el stock manualmente.';
                     }
                 }
             } else if (payload.tipo === 'producto_terminado') {
                 const receta = recetasCompletas.find(r => r.id === payload.referenciaId);
                 if (receta) {
+                    let huboErrorDescuento = false;
+
                     // Descontar materia prima
                     for (const rmp of (receta.materiaPrima || [])) {
                         const tallosConsumidos = rmp.cantidad * Number(payload.cantidad);
@@ -218,7 +224,10 @@ export default {
                             try {
                                 await MateriaPrimaClient.actualizarStockMateriaPrima(mpItem.id, nuevoStock);
                                 stocksActualizados.materiaPrima.push({ id: mpItem.id, cantidadTotal: nuevoStock });
-                            } catch (e) { /* silencioso */ }
+                            } catch (e) {
+                                console.error('Error al descontar materia prima (prod. term.):', e);
+                                huboErrorDescuento = true;
+                            }
                         }
                     }
                     // Descontar materiales
@@ -228,12 +237,20 @@ export default {
                         if (matItem) {
                             const nuevoStock = Math.max(0, (Number(matItem.cantidad) || 0) - insumosConsumidos);
                             try {
-                                await MaterialClient.actualizarMaterial(matItem.id, { ...matItem, cantidad: nuevoStock });
+                                await MaterialClient.actualizarStockMaterial(matItem.id, nuevoStock);
                                 stocksActualizados.materiales.push({ id: matItem.id, cantidad: nuevoStock });
-                            } catch (e) { /* silencioso */ }
+                            } catch (e) {
+                                console.error('Error al descontar material (prod. term.):', e);
+                                huboErrorDescuento = true;
+                            }
                         }
                     }
-                    mensajeExito = `✓ Merma de producto terminado registrada e inventario ajustado según la receta "${receta.nombre}".`;
+                    
+                    if (huboErrorDescuento) {
+                        mensajeExito = '⚠️ Merma de producto registrada, pero hubo un error descontando algunos componentes del inventario. Verifica el stock manualmente.';
+                    } else {
+                        mensajeExito = `✓ Merma de producto terminado registrada e inventario ajustado según la receta "${receta.nombre}".`;
+                    }
                 }
             }
 

@@ -95,14 +95,14 @@ export default {
         const { mensaje, mostrarMensaje } = useMensajes()
         const { leerExcel, normalizarClaves } = useExcel()
         const catalogos = useCatalogos()
-        
+
         const { inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI } = useInventario({
             obtenerDatos: (force) => catalogos.obtenerMateriales(force),
             sincronizar: () => MaterialClient.sincronizarConSupabase(),
             nombreModulo: 'materiales'
         })
 
-        return { 
+        return {
             mensaje, mostrarMensaje, leerExcel, normalizarClaves, catalogos,
             inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI
         }

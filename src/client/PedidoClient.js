@@ -34,87 +34,6 @@ export default {
     return { mapClientes, mapRecetas };
   },
 
-  async _resolverClientesFaltantes(pedidos, mapClientes) {
-    const billNames = new Set();
-    const shipNames = new Set();
-    const shipParent = new Map();
-
-    for (const item of pedidos) {
-      const billName = (item.clienteFacturacion || item.cliente_facturacion || "").trim();
-      const shipName = (item.clienteEnvio || item.cliente_envio || "").trim();
-
-      if (billName && !mapClientes.has(billName.toLowerCase())) {
-        billNames.add(billName);
-      }
-      if (shipName && !mapClientes.has(shipName.toLowerCase())) {
-        shipNames.add(shipName);
-      }
-      if (shipName && billName && shipName !== billName) {
-        if (!shipParent.has(shipName.toLowerCase())) {
-          shipParent.set(shipName.toLowerCase(), billName);
-        }
-      }
-    }
-
-    const missingClientNames = new Set([...billNames, ...shipNames]);
-
-    if (missingClientNames.size > 0) {
-
-
-      const payloadClientes = [...missingClientNames].map(name => {
-        const esBill = billNames.has(name);
-        const esShip = shipNames.has(name);
-        let tipo = 'Ambos';
-        if (esBill && !esShip) tipo = 'Facturación';
-        else if (!esBill && esShip) tipo = 'Envío';
-
-        return {
-          nombre: name,
-          tipo,
-          email: '',
-          telefono: '',
-          direccion: '',
-          notas: 'Autogenerado durante sincronización de pedidos'
-        };
-      });
-
-      const { data: creadosClientes, error: cliError } = await supabase
-        .from('clientes')
-        .insert(payloadClientes)
-        .select();
-
-      if (cliError) throw cliError;
-
-      if (creadosClientes) {
-        creadosClientes.forEach(c => {
-          mapClientes.set(c.nombre.toLowerCase().trim(), c.id);
-        });
-        const catalogos = useCatalogos();
-        catalogos.obtenerClientes(true).catch(console.error);
-      }
-    }
-
-    // Establecer relación envío → facturación
-    const updatesRelacion = [];
-    for (const [shipKey, billName] of shipParent) {
-      const shipId = mapClientes.get(shipKey);
-      const billId = mapClientes.get(billName.toLowerCase().trim());
-      if (shipId && billId) {
-        updatesRelacion.push(
-          supabase.from('clientes')
-            .update({ cliente_facturacion_id: billId })
-            .eq('id', shipId)
-            .is('cliente_facturacion_id', null)
-        );
-      }
-    }
-    if (updatesRelacion.length > 0) {
-      await Promise.allSettled(updatesRelacion);
-
-      const catalogos = useCatalogos();
-      catalogos.obtenerClientes(true).catch(console.error);
-    }
-  },
 
   async _resolverRecetasFaltantes(pedidos, mapRecetas) {
     const missingCategories = [...new Set(
@@ -167,8 +86,13 @@ export default {
         return;
       }
 
+      const huboCambiosCli = await ClientesClient.resolverClientesDePedidos(pedidosExternos);
+      if (huboCambiosCli) {
+          const catalogos = useCatalogos();
+          await catalogos.obtenerClientes(true);
+      }
+
       const { mapClientes, mapRecetas } = await this._obtenerCatalogos();
-      await this._resolverClientesFaltantes(pedidosExternos, mapClientes);
       await this._resolverRecetasFaltantes(pedidosExternos, mapRecetas);
 
       // Procesar cada pedido
@@ -243,8 +167,13 @@ export default {
    */
   async agregarPedido(data) {
     try {
+      const huboCambiosCli = await ClientesClient.resolverClientesDePedidos(data);
+      if (huboCambiosCli) {
+          const catalogos = useCatalogos();
+          await catalogos.obtenerClientes(true);
+      }
+
       const { mapClientes, mapRecetas } = await this._obtenerCatalogos();
-      await this._resolverClientesFaltantes(data, mapClientes);
       await this._resolverRecetasFaltantes(data, mapRecetas);
 
       const pedidosToInsert = [];

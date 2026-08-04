@@ -41,6 +41,7 @@ import MermaClient from '../client/MermaClient'
 import PlanificacionClient from '../client/PlanificacionClient'
 import { useMensajes } from '../composables/useMensajes.js'
 import { useCatalogos } from '../composables/useCatalogos.js'
+import { useFiltroRecursos } from '../composables/useFiltroRecursos.js'
 
 export default {
   name: 'MermasPage',
@@ -52,7 +53,20 @@ export default {
   setup() {
     const { mensaje, mostrarMensaje } = useMensajes()
     const catalogos = useCatalogos()
-    return { mensaje, mostrarMensaje, catalogos }
+
+    const filtro = useFiltroRecursos(catalogos)
+
+    return {
+      mensaje,
+      mostrarMensaje,
+      catalogos,
+      materiaPrimaFiltrada: filtro.materiaPrimaFiltrada,
+      materialesFiltrados: filtro.materialesFiltrados,
+      recetasFiltradas: filtro.recetasFiltradas,
+      filtroActivoInfo: filtro.filtroActivoInfo,
+      cargandoRecursos: filtro.cargandoRecursos,
+      _filtrarRecursos: filtro.filtrarRecursos
+    }
   },
 
   data() {
@@ -62,13 +76,8 @@ export default {
       materiaPrima: [],
       recetas: [],
       operadores: [],
-      materiaPrimaFiltrada: [],
-      materialesFiltrados: [],
-      recetasFiltradas: [],
       recetasCompletas: [],
-      filtroActivoInfo: null,
       cargandoMermas: false,
-      cargandoRecursos: false,
       guardando: false
     }
   },
@@ -165,76 +174,13 @@ export default {
       }
     },
 
-    async filtrarRecursos({ operadorId, fecha }) {
-      if (!operadorId || !fecha) {
-        this.materiaPrimaFiltrada = this.materiaPrima
-        this.materialesFiltrados = this.materiales
-        this.recetasFiltradas = this.recetas
-        this.filtroActivoInfo = null
-        return
-      }
-
-      this.cargandoRecursos = true
-      try {
-        const planificaciones = await PlanificacionClient.obtenerPlanificacionesPorOperador(operadorId)
-        const plan = planificaciones.find(p => p.fecha === fecha)
-
-        if (!plan || !plan.recetas || plan.recetas.length === 0) {
-          this.materiaPrimaFiltrada = this.materiaPrima
-          this.materialesFiltrados = this.materiales
-          this.recetasFiltradas = this.recetas
-
-          const op = this.operadores.find(o => o.id === operadorId)
-          this.filtroActivoInfo = {
-            tipo: 'info',
-            texto: `⚠️ El operador "${op ? op.nombre : ''}" no tiene planificación asignada para el ${fecha}. Mostrando catálogo completo.`
-          }
-          return
-        }
-
-        // Obtener recetas completas para saber qué ingredientes usan
-        const todasLasRecetas = await this.catalogos.obtenerRecetas()
-
-        const recetasPlanIds = plan.recetas.map(r => r.recetaId)
-        const recetasPlanificadas = todasLasRecetas.filter(r => recetasPlanIds.includes(r.id))
-
-        this.recetasFiltradas = recetasPlanificadas
-
-        // Extraer materias primas y materiales
-        const materiaPrimaIds = new Set()
-        const materialesIds = new Set()
-
-        for (const receta of recetasPlanificadas) {
-          if (receta.materiaPrima && Array.isArray(receta.materiaPrima)) {
-            receta.materiaPrima.forEach(rm => materiaPrimaIds.add(rm.materiaPrimaId || rm.id))
-          }
-
-          if (receta.materiales && Array.isArray(receta.materiales)) {
-            receta.materiales.forEach(rm => materialesIds.add(rm.materialId || rm.id))
-          }
-        }
-
-        this.materiaPrimaFiltrada = this.materiaPrima.filter(mp => materiaPrimaIds.has(mp.id))
-        this.materialesFiltrados = this.materiales.filter(mat => materialesIds.has(mat.id))
-
-        const op = this.operadores.find(o => o.id === operadorId)
-        this.filtroActivoInfo = {
-          tipo: 'exito',
-          texto: `✓ Filtro activo: mostrando recetas e insumos planificados para ${op ? op.nombre : ''} el ${fecha}.`
-        }
-
-      } catch (error) {
-        console.error('Error al filtrar recursos por planificación:', error)
-        this.materiaPrimaFiltrada = this.materiaPrima
-        this.materialesFiltrados = this.materiales
-        this.recetasFiltradas = this.recetas
-        this.filtroActivoInfo = {
-          tipo: 'error',
-          texto: '❌ Error al cargar la planificación del operador. Mostrando catálogo completo.'
-        }
-      } finally {
-        this.cargandoRecursos = false
-      }
+    async filtrarRecursos(params) {
+      await this._filtrarRecursos(params, {
+        materiaPrima: this.materiaPrima,
+        materiales: this.materiales,
+        recetas: this.recetas,
+        operadores: this.operadores
+      })
     },
     async confirmarEliminarMerma(item) {
       if (!confirm(`¿Estás seguro de eliminar el registro de merma de "${item.nombre}"?`)) {

@@ -144,11 +144,16 @@ export default {
    * @param {number} nuevaCantidad — nueva cantidad total
    */
   async actualizarStockMateriaPrima(id, nuevaCantidad) {
-    const { error } = await supabase
-      .from('materia_prima')
-      .update({ cantidad_total: nuevaCantidad })
-      .eq('id', id);
+    try {
+      const { error } = await supabase
+        .from('materia_prima')
+        .update({ cantidad_total: nuevaCantidad })
+        .eq('id', id);
 
-    if (error) throw error;
+      if (error) throw error;
+    } catch (error) {
+      console.error(`Error al actualizar stock de materia prima con ID ${id} en Supabase:`, error);
+      throw error;
+    }
   }
 }
