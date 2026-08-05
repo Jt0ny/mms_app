@@ -24,7 +24,7 @@ export default {
 
             if (error) throw error;
 
-            return (data || []).map(p => ({
+            return { success: true, data: (data || []).map(p => ({
                 id: p.id,
                 fecha: p.fecha,
                 total: p.total,
@@ -33,10 +33,10 @@ export default {
                 operadorNombre: p.usuarios?.nombre || '',
                 creadoEn: p.creado_en,
                 detalle: p.detalle || []
-            }));
+            }))};
         } catch (error) {
             console.error('Error al obtener producciones:', error);
-            throw error;
+            return { success: false, error };
         }
     },
 
@@ -241,10 +241,10 @@ export default {
                 if (consError) throw consError;
             }
 
-            return prod;
+            return { success: true, data: prod };
         } catch (error) {
             console.error('Error al agregar producción con descuento de stock:', error);
-            throw error;
+            return { success: false, error };
         }
     },
 
@@ -285,10 +285,10 @@ export default {
 
             if (insError) throw insError;
 
-            return { id };
+            return { success: true, data: { id } };
         } catch (error) {
             console.error('Error al editar producción:', error);
-            throw error;
+            return { success: false, error };
         }
     },
 
@@ -303,9 +303,10 @@ export default {
                 .eq('id', id);
 
             if (error) throw error;
+            return { success: true };
         } catch (error) {
             console.error('Error al eliminar producción:', error);
-            throw error;
+            return { success: false, error };
         }
     }
 }

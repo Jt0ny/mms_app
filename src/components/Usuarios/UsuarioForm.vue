@@ -69,24 +69,23 @@ export default {
 
             this.guardando = true
 
-            try {
-                const contrasenaEncriptada = await generarSHA256(this.contrasena)
+            const contrasenaEncriptada = await generarSHA256(this.contrasena)
+            const response = await UsuarioClient.agregarUsuario({
+                nombre: this.nombre.trim(),
+                contrasena: contrasenaEncriptada,
+                rol: this.rol.toLowerCase()
+            })
 
-                await UsuarioClient.agregarUsuario({
-                    nombre: this.nombre.trim(),
-                    contrasena: contrasenaEncriptada,
-                    rol: this.rol.toLowerCase()
-                })
+            this.guardando = false
 
+            if (response.success) {
                 this.mensaje = { tipo: 'exito', texto: 'Usuario guardado exitosamente.' }
                 this.$emit('guardado')
                 this.nombre = ''
                 this.contrasena = ''
                 this.rol = ''
-            } catch (error) {
+            } else {
                 this.mensaje = { tipo: 'error', texto: 'No se pudo guardar el usuario. Intenta nuevamente.' }
-            } finally {
-                this.guardando = false
             }
         }
     }

@@ -16,11 +16,17 @@ export function useInventario({ obtenerDatos, sincronizar, nombreModulo }) {
     async function cargarInventario(forceRefresh = false) {
         cargandoInventario.value = true
         try {
-            const datos = await obtenerDatos(forceRefresh)
-            inventarioActual.value = datos ?? []
+            const response = await obtenerDatos(forceRefresh)
+            if (response && response.success === false) {
+                console.error(response.error)
+                mostrarMensaje('error', `❌ Error al cargar ${nombreModulo}`, 3000)
+                inventarioActual.value = []
+            } else {
+                inventarioActual.value = response?.success ? (response.data ?? []) : (response ?? [])
+            }
         } catch (error) {
             console.error(error)
-            mostrarMensaje('error', `❌ Error al cargar ${nombreModulo}`, 500)
+            mostrarMensaje('error', `❌ Error al cargar ${nombreModulo}`, 3000)
         } finally {
             cargandoInventario.value = false
         }
@@ -28,12 +34,23 @@ export function useInventario({ obtenerDatos, sincronizar, nombreModulo }) {
 
     async function sincronizarAPI() {
         cargandoInventario.value = true
+        mostrarMensaje('info', '⚡ Sincronizando con la API externa...', 0)
+        
         try {
-            mostrarMensaje('info', '⚡ Sincronizando con la API externa...', 0)
-            await sincronizar()
+            const response = await sincronizar()
+            
+            // Verificar si la respuesta es el nuevo objeto {success, error}
+            if (response && response.success === false) {
+                console.error(response.error)
+                mostrarMensaje('error', '❌ Error al sincronizar con la API externa')
+                cargandoInventario.value = false
+                return
+            }
+
             mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
             await cargarInventario(true)
         } catch (error) {
+            // Fallback por si lanza una excepción (legacy)
             console.error(error)
             mostrarMensaje('error', '❌ Error al sincronizar con la API externa')
             cargandoInventario.value = false

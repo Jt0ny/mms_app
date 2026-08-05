@@ -65,7 +65,7 @@ export default {
       recetasFiltradas: filtro.recetasFiltradas,
       filtroActivoInfo: filtro.filtroActivoInfo,
       cargandoRecursos: filtro.cargandoRecursos,
-      _filtrarRecursos: filtro.filtrarRecursos
+      filtrarRecursosBase: filtro.filtrarRecursos
     }
   },
 
@@ -90,64 +90,58 @@ export default {
       this.cargandoRecursos = true
 
       // Cargar mermas
-      try {
-        const data = await MermaClient.obtenerMermas()
-        this.mermas = data ?? []
-      } catch (error) {
-        console.error('Error al cargar mermas:', error)
+      const responseMermas = await MermaClient.obtenerMermas()
+      if (responseMermas && responseMermas.success === false) {
+        this.mermas = []
         this.mostrarMensaje('error', '❌ Error al cargar el historial de mermas')
-      } finally {
-        this.cargandoMermas = false
+      } else {
+        this.mermas = responseMermas?.success ? responseMermas.data : (responseMermas ?? [])
       }
+      this.cargandoMermas = false
 
       // Cargar operadores
-      try {
-        this.operadores = await this.catalogos.obtenerOperadores()
-      } catch (error) {
-        console.error('Error al obtener operadores:', error)
-      }
+      const opRes = await this.catalogos.obtenerOperadores()
+      this.operadores = opRes?.success ? opRes.data : (opRes ?? [])
 
       // Cargar catálogos
-      try {
-        const [materialesRes, recetasRes] = await Promise.all([
-          this.catalogos.obtenerMateriales(),
-          this.catalogos.obtenerRecetas()
-        ])
-        this.materiales = materialesRes ?? []
-        this.materialesFiltrados = this.materiales
-        this.recetas = recetasRes ?? []
-        this.recetasCompletas = recetasRes ?? []
-        this.recetasFiltradas = this.recetas
-      } catch (error) {
-        console.error('Error al cargar materiales o recetas:', error)
-      }
+      const [materialesRes, recetasRes] = await Promise.all([
+        this.catalogos.obtenerMateriales(),
+        this.catalogos.obtenerRecetas()
+      ])
+      
+      const matsData = materialesRes?.success ? materialesRes.data : (materialesRes ?? [])
+      this.materiales = matsData
+      this.materialesFiltrados = this.materiales
+
+      const recsData = recetasRes?.success ? recetasRes.data : (recetasRes ?? [])
+      this.recetas = recsData
+      this.recetasCompletas = recsData
+      this.recetasFiltradas = this.recetas
 
       // Cargar materia prima (desde Supabase directamente)
-      try {
-        const mpRes = await this.catalogos.obtenerMateriaPrima()
-        this.materiaPrima = mpRes ?? []
-        this.materiaPrimaFiltrada = this.materiaPrima
-        this.cargandoRecursos = false // Liberar estado de carga inicial de recursos
-      } catch (error) {
-        console.error('Error al obtener materia prima:', error)
-        this.materiaPrima = []
-        this.materiaPrimaFiltrada = []
-        this.cargandoRecursos = false
-      }
+      const mpRes = await this.catalogos.obtenerMateriaPrima()
+      const mpData = mpRes?.success ? mpRes.data : (mpRes ?? [])
+      
+      this.materiaPrima = mpData
+      this.materiaPrimaFiltrada = this.materiaPrima
+      this.cargandoRecursos = false // Liberar estado de carga inicial de recursos
     },
     async registrarMerma(payload) {
       this.guardando = true
-      try {
-        const { nuevaMerma, stocksActualizados, mensajeExito } = await MermaClient.registrarMermaConDescuento(
-          payload,
-          {
-            materiales: this.materiales,
-            materiaPrima: this.materiaPrima,
-            recetasCompletas: this.recetasCompletas
-          }
-        )
+      
+      const response = await MermaClient.registrarMermaConDescuento(
+        payload,
+        {
+          materiales: this.materiales,
+          materiaPrima: this.materiaPrima,
+          recetasCompletas: this.recetasCompletas
+        }
+      )
 
-        this.mermas.push(nuevaMerma)
+      if (response.success) {
+        const { nuevaMerma, stocksActualizados, mensajeExito } = response.data
+
+        this.mermas.unshift(nuevaMerma) // Mejor unshift para que se vea de primero
 
         // Sincronizar memoria local con los nuevos stocks devueltos
         if (stocksActualizados.materiales?.length) {
@@ -166,16 +160,15 @@ export default {
         }
 
         this.mostrarMensaje('exito', mensajeExito)
-      } catch (error) {
-        console.error('Error al registrar merma:', error)
+      } else {
         this.mostrarMensaje('error', '❌ No se pudo registrar la merma.')
-      } finally {
-        this.guardando = false
       }
+      
+      this.guardando = false
     },
 
     async filtrarRecursos(params) {
-      await this._filtrarRecursos(params, {
+      await this.filtrarRecursosBase(params, {
         materiaPrima: this.materiaPrima,
         materiales: this.materiales,
         recetas: this.recetas,
@@ -187,12 +180,11 @@ export default {
         return
       }
 
-      try {
-        await MermaClient.eliminarMerma(item.id)
+      const response = await MermaClient.eliminarMerma(item.id)
+      if (response.success) {
         this.mermas = this.mermas.filter(m => m.id !== item.id)
         this.mostrarMensaje('exito', '✓ Registro de merma eliminado.')
-      } catch (error) {
-        console.error('Error al eliminar merma:', error)
+      } else {
         this.mostrarMensaje('error', '❌ No se pudo eliminar el registro.')
       }
     }
@@ -200,4 +192,3 @@ export default {
 }
 </script>
 
-<style scoped></style>

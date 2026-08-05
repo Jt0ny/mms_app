@@ -21,42 +21,46 @@ export function usePlanificacionOperador() {
         sinPlanificacion.value = false
         planificacionActual.value = null
 
-        try {
-            const planificaciones = await PlanificacionClient.obtenerPlanificacionesPorOperador(operadorId)
+        const response = await PlanificacionClient.obtenerPlanificacionesPorOperador(operadorId)
 
-            if (!planificaciones || planificaciones.length === 0) {
-                sinPlanificacion.value = true
-                recetasPlanificadasIds.value = null
-                return null
-            }
-
-            // Filtrar solo las planificaciones de HOY
-            const hoy = obtenerFechaHoy()
-            const planificacionesHoy = planificaciones.filter(p => p.fecha === hoy)
-
-            if (planificacionesHoy.length === 0) {
-                sinPlanificacion.value = true
-                recetasPlanificadasIds.value = null
-                return null
-            }
-
-            // Tomar la planificación más reciente de hoy
-            const planificacion = planificacionesHoy.sort(
-                (a, b) => new Date(b.creadoEn) - new Date(a.creadoEn)
-            )[0]
-
-            planificacionFecha.value = planificacion.fecha
-            recetasPlanificadasIds.value = (planificacion.recetas || []).map(r => r.recetaId)
-            planificacionActual.value = planificacion
-
-            return planificacion
-        } catch (error) {
-            console.error('Error al cargar planificación del operador:', error)
+        if (response && response.success === false) {
+            console.error('Error al cargar planificación del operador:', response.error)
             sinPlanificacion.value = true
-            return null
-        } finally {
             cargandoPlanificacion.value = false
+            return null
         }
+
+        const planificaciones = response?.success ? response.data : (response ?? [])
+
+        if (!planificaciones || planificaciones.length === 0) {
+            sinPlanificacion.value = true
+            recetasPlanificadasIds.value = null
+            cargandoPlanificacion.value = false
+            return null
+        }
+
+        // Filtrar solo las planificaciones de HOY
+        const hoy = obtenerFechaHoy()
+        const planificacionesHoy = planificaciones.filter(p => p.fecha === hoy)
+
+        if (planificacionesHoy.length === 0) {
+            sinPlanificacion.value = true
+            recetasPlanificadasIds.value = null
+            cargandoPlanificacion.value = false
+            return null
+        }
+
+        // Tomar la planificación más reciente de hoy
+        const planificacion = planificacionesHoy.sort(
+            (a, b) => new Date(b.creadoEn) - new Date(a.creadoEn)
+        )[0]
+
+        planificacionFecha.value = planificacion.fecha
+        recetasPlanificadasIds.value = (planificacion.recetas || []).map(r => r.recetaId)
+        planificacionActual.value = planificacion
+        
+        cargandoPlanificacion.value = false
+        return planificacion
     }
 
     return {

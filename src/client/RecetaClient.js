@@ -37,7 +37,7 @@ export default {
       if (error) throw error;
 
       // Transformar los datos al formato plano esperado por el frontend de Vue
-      return (data || []).map(item => ({
+      return { success: true, data: (data || []).map(item => ({
         id: item.id,
         nombre: item.nombre,
         categoria: item.categoria,
@@ -58,10 +58,10 @@ export default {
           variedad: rmp.materia_prima?.variedad || '',
           cantidad: rmp.cantidad
         }))
-      }));
+      }))};
     } catch (error) {
       console.error("Error al obtener recetas desde Supabase:", error);
-      throw error;
+      return { success: false, error };
     }
   },
 
@@ -119,7 +119,7 @@ export default {
         if (mpError) throw mpError;
       }
 
-      return {
+      return { success: true, data: {
         id: recetaId,
         nombre: recetaData.nombre,
         categoria: recetaData.categoria,
@@ -129,10 +129,10 @@ export default {
         fechaCreacion: recetaData.fecha_creacion,
         materiales: payload.materiales || [],
         materiaPrima: payload.materiaPrima || []
-      };
+      }};
     } catch (error) {
       console.error("Error al agregar receta en Supabase:", error);
-      throw error;
+      return { success: false, error };
     }
   },
 

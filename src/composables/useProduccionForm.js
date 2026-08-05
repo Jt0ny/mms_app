@@ -86,30 +86,32 @@ export function useProduccionForm(props, emit) {
 
     const cargarCategorias = async () => {
         cargandoCategorias.value = true
-        try {
-            const pedidos = await PedidoClient.obtenerPedidos()
-            let catList = (pedidos ?? [])
-                .map(pedido => String(pedido?.categoria ?? '').trim())
-                .filter(Boolean)
-
-            if (Array.isArray(props.categoriasPermitidas) && props.categoriasPermitidas.length) {
-                const permitidas = props.categoriasPermitidas.map(c => c.trim().toUpperCase())
-                catList = catList.filter(c => permitidas.includes(c.trim().toUpperCase()))
-            }
-
-            categorias.value = [...new Set(catList)].sort((a, b) => a.localeCompare(b, 'es'))
-            
-            const cantidades = {}
-            categorias.value.forEach(categoria => {
-                cantidades[categoria] = 0
-            })
-            cantidadesPorCategoria.value = cantidades
-        } catch (error) {
-            console.error(error)
+        
+        const response = await PedidoClient.obtenerPedidos()
+        if (response && response.success === false) {
             notificar('error', '❌ No se pudieron cargar las categorías de pedidos', 0)
-        } finally {
             cargandoCategorias.value = false
+            return
         }
+
+        let catList = (response?.success ? response.data : (response ?? []))
+            .map(pedido => String(pedido?.categoria ?? '').trim())
+            .filter(Boolean)
+
+        if (Array.isArray(props.categoriasPermitidas) && props.categoriasPermitidas.length) {
+            const permitidas = props.categoriasPermitidas.map(c => c.trim().toUpperCase())
+            catList = catList.filter(c => permitidas.includes(c.trim().toUpperCase()))
+        }
+
+        categorias.value = [...new Set(catList)].sort((a, b) => a.localeCompare(b, 'es'))
+        
+        const cantidades = {}
+        categorias.value.forEach(categoria => {
+            cantidades[categoria] = 0
+        })
+        cantidadesPorCategoria.value = cantidades
+        
+        cargandoCategorias.value = false
     }
 
     const applyEdicion = () => {

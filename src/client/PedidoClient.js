@@ -5,7 +5,7 @@ import RecetaClient from "./RecetaClient";
 import { obtenerFechaHoy } from "../utils/date.js";
 import { useCatalogos } from "../composables/useCatalogos.js";
 
-const API_URL = "http://localhost:8060/pedidos";
+const API_URL = import.meta.env.VITE_API_PEDIDOS_URL;
 
 export default {
 
@@ -88,8 +88,8 @@ export default {
 
       const huboCambiosCli = await ClientesClient.resolverClientesDePedidos(pedidosExternos);
       if (huboCambiosCli) {
-          const catalogos = useCatalogos();
-          await catalogos.obtenerClientes(true);
+        const catalogos = useCatalogos();
+        await catalogos.obtenerClientes(true);
       }
 
       const { mapClientes, mapRecetas } = await this._obtenerCatalogos();
@@ -156,9 +156,10 @@ export default {
       if (detError) throw detError;
 
 
+      return { success: true };
     } catch (error) {
       console.error("Error al sincronizar pedidos:", error);
-      throw error;
+      return { success: false, error };
     }
   },
 
@@ -169,8 +170,8 @@ export default {
     try {
       const huboCambiosCli = await ClientesClient.resolverClientesDePedidos(data);
       if (huboCambiosCli) {
-          const catalogos = useCatalogos();
-          await catalogos.obtenerClientes(true);
+        const catalogos = useCatalogos();
+        await catalogos.obtenerClientes(true);
       }
 
       const { mapClientes, mapRecetas } = await this._obtenerCatalogos();
@@ -221,9 +222,11 @@ export default {
       if (detError) throw detError;
 
 
+      return { success: true };
+
     } catch (error) {
       console.error("Error al guardar pedidos:", error);
-      throw error;
+      return { success: false, error };
     }
   },
 
@@ -293,10 +296,10 @@ export default {
         return nameA.localeCompare(nameB);
       });
 
-      return flatList;
+      return { success: true, data: flatList };
     } catch (error) {
       console.error("Error al obtener pedidos:", error);
-      throw error;
+      return { success: false, error };
     }
   },
 

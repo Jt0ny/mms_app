@@ -92,25 +92,25 @@ export default {
   methods: {
     async cargarClientes(forceRefresh = false) {
       this.cargando = true
-      try {
-        const listado = await this.catalogos.obtenerClientes(forceRefresh)
-        this.clientes = listado ?? []
-
-        // Mantener la fila seleccionada sincronizada si cambió de nombre
-        if (this.clienteFacturacionSeleccionado) {
-          const matching = this.clientes.find(c => c.id === this.clienteFacturacionSeleccionado.id)
-          if (matching) {
-            this.clienteFacturacionSeleccionado = matching
-          } else {
-            this.clienteFacturacionSeleccionado = null
-          }
-        }
-      } catch (error) {
-        console.error(error)
+      const response = await this.catalogos.obtenerClientes(forceRefresh)
+      
+      if (response && response.success === false) {
+        this.clientes = []
         this.mostrarMensaje('error', '❌ Error al cargar los clientes')
-      } finally {
-        this.cargando = false
+      } else {
+        this.clientes = response?.success ? response.data : (response ?? [])
       }
+
+      // Mantener la fila seleccionada sincronizada si cambió de nombre
+      if (this.clienteFacturacionSeleccionado) {
+        const matching = this.clientes.find(c => c.id === this.clienteFacturacionSeleccionado.id)
+        if (matching) {
+          this.clienteFacturacionSeleccionado = matching
+        } else {
+          this.clienteFacturacionSeleccionado = null
+        }
+      }
+      this.cargando = false
     },
     seleccionarFacturacion(cliente) {
       // Si hace clic en el ya seleccionado, limpiamos filtro (toggle)
@@ -134,40 +134,41 @@ export default {
     },
     async guardarCliente(payload) {
       this.guardando = true
-      try {
-        if (payload.id) {
-          await ClientesClient.actualizarCliente(payload.id, payload)
-          this.mostrarMensaje('exito', '✓ Cliente actualizado correctamente')
-        } else {
-          await ClientesClient.agregarCliente(payload)
-          this.mostrarMensaje('exito', '✓ Cliente registrado correctamente')
-        }
+
+      let response;
+      if (payload.id) {
+        response = await ClientesClient.actualizarCliente(payload.id, payload)
+      } else {
+        response = await ClientesClient.agregarCliente(payload)
+      }
+
+      this.guardando = false
+
+      if (response.success) {
+        this.mostrarMensaje('exito', payload.id ? '✓ Cliente actualizado correctamente' : '✓ Cliente registrado correctamente')
         this.cerrarFormulario()
         await this.cargarClientes(true)
-      } catch (error) {
-        console.error(error)
+      } else {
         this.mostrarMensaje('error', '❌ Error al guardar el cliente')
-      } finally {
-        this.guardando = false
       }
     },
     async confirmarEliminar(cliente) {
-      if (confirm(`¿Estás seguro de que deseas eliminar al cliente "${cliente.nombre}"? Esto podría afectar sus relaciones.`)) {
-        try {
-          await ClientesClient.eliminarCliente(cliente.id)
-          this.mostrarMensaje('exito', `✓ Cliente "${cliente.nombre}" eliminado correctamente`)
-          if (this.clienteParaEditar && this.clienteParaEditar.id === cliente.id) {
-            this.cerrarFormulario()
-          }
-          if (this.clienteFacturacionSeleccionado && this.clienteFacturacionSeleccionado.id === cliente.id) {
-            this.clienteFacturacionSeleccionado = null
-          }
-          await this.cargarClientes(true)
-        } catch (error) {
-          console.error(error)
-          this.mostrarMensaje('error', '❌ Error al eliminar el cliente')
+
+      const response = await ClientesClient.eliminarCliente(cliente.id)
+
+      if (response.success) {
+        this.mostrarMensaje('exito', `✓ Cliente "${cliente.nombre}" eliminado correctamente`)
+        if (this.clienteParaEditar && this.clienteParaEditar.id === cliente.id) {
+          this.cerrarFormulario()
         }
+        if (this.clienteFacturacionSeleccionado && this.clienteFacturacionSeleccionado.id === cliente.id) {
+          this.clienteFacturacionSeleccionado = null
+        }
+        await this.cargarClientes(true)
+      } else {
+        this.mostrarMensaje('error', '❌ Error al eliminar el cliente')
       }
+
     }
   }
 }

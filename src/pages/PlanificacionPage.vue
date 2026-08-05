@@ -126,10 +126,12 @@ export default {
 	},
 
 	async mounted() {
-		try {
-			this.todasLasRecetas = await this.catalogos.obtenerRecetas()
-		} catch (e) {
-			console.warn('No se pudieron cargar las recetas para el selector:', e)
+		const response = await this.catalogos.obtenerRecetas()
+		if (response && response.success === false) {
+			console.warn('No se pudieron cargar las recetas para el selector:', response.error)
+			this.todasLasRecetas = []
+		} else {
+			this.todasLasRecetas = response?.success ? response.data : (response ?? [])
 		}
 	},
 
@@ -138,31 +140,31 @@ export default {
 			this.cargandoPlanificaciones = true
 			this.planificacionesGuardadas = []
 			this.asignaciones = []
-			try {
-				const planes = await PlanificacionClient.obtenerPlanificacionesPorFecha(this.fechaSeleccionada)
-				this.planificacionesGuardadas = planes || []
-			} catch (error) {
-				console.error('Error cargando planificaciones del día', error)
+			
+			const response = await PlanificacionClient.obtenerPlanificacionesPorFecha(this.fechaSeleccionada)
+			if (response && response.success === false) {
 				this.mostrarMensaje('error', 'Error al cargar las planificaciones guardadas')
-			} finally {
-				this.cargandoPlanificaciones = false
+			} else {
+				this.planificacionesGuardadas = response?.success ? response.data : (response ?? [])
 			}
+			
+			this.cargandoPlanificaciones = false
 		},
 
 		async eliminarPlanificacionesDelDia() {
 
 			this.eliminandoPlanificaciones = true
-			try {
-				await PlanificacionClient.eliminarPlanificacionesPorFecha(this.fechaSeleccionada)
+			
+			const response = await PlanificacionClient.eliminarPlanificacionesPorFecha(this.fechaSeleccionada)
+			if (response.success) {
 				this.mostrarMensaje('exito', 'Planificaciones eliminadas correctamente.')
 				this.planificacionesGuardadas = []
 				this.asignaciones = [] // Limpiamos para volver al estado inicial
-			} catch (error) {
-				console.error('Error eliminando planificaciones', error)
+			} else {
 				this.mostrarMensaje('error', '❌ Error al eliminar las planificaciones')
-			} finally {
-				this.eliminandoPlanificaciones = false
 			}
+			
+			this.eliminandoPlanificaciones = false
 		},
 
 		/* ─── Distribución automática ─────────────── */
@@ -202,9 +204,10 @@ export default {
 			this.mostrarMapeoWizard = false
 
 			try {
-				const operadores = await this.catalogos.obtenerOperadores()
+				const responseOp = await this.catalogos.obtenerOperadores()
+				const operadores = responseOp?.success ? responseOp.data : (responseOp ?? [])
 
-				if (!operadores.length) {
+				if (!operadores || !operadores.length) {
 					this.mostrarMensaje('error', '👥 No hay operadores disponibles.')
 					this.cargandoAuto = false
 					return

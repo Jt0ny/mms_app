@@ -457,7 +457,8 @@ p {
 /* Badges (píldoras de estado) */
 .badge,
 .badge-ok,
-.badge-error {
+.badge-error,
+.badge-cargando {
   display: inline-flex;
   align-items: center;
   padding: 4px 10px;
@@ -466,6 +467,17 @@ p {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.02em;
+}
+
+.badge-cargando {
+  background: var(--bg-alt, #f1f5f9);
+  color: var(--text-light);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-transform: none;
 }
 
 .badge-ok {

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { supabase } from "./supabase";
 
-const API_URL = "http://localhost:8090/materiales";
+const API_URL = import.meta.env.VITE_API_MATERIALES_URL;
 
 export default {
   /**
@@ -66,7 +66,7 @@ export default {
       }
     } catch (error) {
       console.error("Error al sincronizar materiales con Supabase:", error);
-      throw error;
+      return { success: false, error };
     }
   },
 
@@ -81,10 +81,10 @@ export default {
         .order('nombre', { ascending: true });
 
       if (error) throw error;
-      return data || [];
+      return { success: true, data: data || [] };
     } catch (error) {
       console.error("Error al obtener materiales desde Supabase:", error);
-      throw error;
+      return { success: false, error };
     }
   },
 
@@ -121,11 +121,11 @@ export default {
         .upsert(payload);
 
       if (error) throw error;
-
-
+      
+      return { success: true };
     } catch (error) {
       console.error("Error al guardar materiales en Supabase:", error);
-      throw error;
+      return { success: false, error };
     }
   },
 
@@ -144,9 +144,10 @@ export default {
         });
 
       if (error) throw error;
+      return { success: true };
     } catch (error) {
       console.error("Error al agregar material en Supabase:", error);
-      throw error;
+      return { success: false, error };
     }
   },
 
@@ -161,9 +162,10 @@ export default {
         .eq('id', id);
 
       if (error) throw error;
+      return { success: true };
     } catch (error) {
       console.error(`Error al actualizar stock de material con ID ${id} en Supabase:`, error);
-      throw error;
+      return { success: false, error };
     }
   },
 
@@ -178,9 +180,11 @@ export default {
         .eq('id', id);
 
       if (error) throw error;
+      
+      return { success: true };
     } catch (error) {
       console.error(`Error al eliminar material con ID ${id} en Supabase:`, error);
-      throw error;
+      return { success: false, error };
     }
   },
 };

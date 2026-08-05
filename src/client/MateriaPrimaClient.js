@@ -2,7 +2,7 @@ import axios from "axios";
 import { supabase } from "./supabase";
 import { obtenerFechaHoy } from "../utils/date.js";
 
-const API_URL = `http://localhost:8070/materia-prima`;
+const API_URL = import.meta.env.VITE_API_MATERIA_PRIMA_URL;
 
 export default {
   /**
@@ -66,7 +66,7 @@ export default {
       }
     } catch (error) {
       console.error("Error al sincronizar materias primas con Supabase:", error);
-      throw error;
+      return { success: false, error };
     }
   },
 
@@ -85,15 +85,16 @@ export default {
       }
 
       // Mapear los nombres de campos para asegurar compatibilidad con camelCase y snake_case en los componentes Vue
-      return (data || []).map(item => ({
+      const dataMapped = (data || []).map(item => ({
         id: item.id,
         variedad: item.variedad,
         cantidadTotal: item.cantidad_total,
         fechaIngreso: item.fecha_ingreso
       }));
+      return { success: true, data: dataMapped };
     } catch (error) {
       console.error("Error al obtener materias primas desde Supabase:", error);
-      throw error;
+      return { success: false, error };
     }
   },
 
@@ -131,10 +132,10 @@ export default {
 
       if (error) throw error;
 
-
+      return { success: true };
     } catch (error) {
       console.error("Error al guardar materias primas en Supabase:", error);
-      throw error;
+      return { success: false, error };
     }
   },
 
@@ -151,9 +152,10 @@ export default {
         .eq('id', id);
 
       if (error) throw error;
+      return { success: true };
     } catch (error) {
       console.error(`Error al actualizar stock de materia prima con ID ${id} en Supabase:`, error);
-      throw error;
+      return { success: false, error };
     }
   }
 }

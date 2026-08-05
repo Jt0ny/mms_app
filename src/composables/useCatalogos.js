@@ -17,48 +17,59 @@ export function useCatalogos() {
 
   async function obtenerRecetas(forceRefresh = false) {
     if (!recetasCache.value || forceRefresh) {
-      recetasCache.value = await RecetaClient.obtenerRecetas()
+      const res = await RecetaClient.obtenerRecetas()
+      if (res?.success === false) return res; // Propaga el error a la vista
+      recetasCache.value = res?.success !== undefined ? (res.data || []) : (res || [])
     }
-    return recetasCache.value
+    return { success: true, data: recetasCache.value }
   }
 
   async function obtenerUsuarios(forceRefresh = false) {
     if (!usuariosCache.value || forceRefresh) {
-      usuariosCache.value = await UsuarioClient.obtenerUsuarios()
+      const res = await UsuarioClient.obtenerUsuarios()
+      if (res?.success === false) return res;
+      usuariosCache.value = res?.success !== undefined ? (res.data || []) : (res || [])
       // Actualizar también el caché derivado de operadores
       operadoresCache.value = (usuariosCache.value || []).filter(
         u => String(u.rol).toLowerCase().trim() === 'operador'
       )
     }
-    return usuariosCache.value
+    return { success: true, data: usuariosCache.value }
   }
 
   async function obtenerOperadores(forceRefresh = false) {
     if (!operadoresCache.value || forceRefresh) {
-      await obtenerUsuarios(forceRefresh) // obtenerUsuarios actualiza ambos cachés
+      const res = await obtenerUsuarios(forceRefresh) // obtenerUsuarios actualiza ambos cachés
+      if (res?.success === false) return res;
     }
-    return operadoresCache.value
+    return { success: true, data: operadoresCache.value }
   }
 
   async function obtenerMateriales(forceRefresh = false) {
     if (!materialesCache.value || forceRefresh) {
-      materialesCache.value = await MaterialClient.obtenerMateriales()
+      const res = await MaterialClient.obtenerMateriales()
+      if (res?.success === false) return res;
+      materialesCache.value = res?.success !== undefined ? (res.data || []) : (res || [])
     }
-    return materialesCache.value
+    return { success: true, data: materialesCache.value }
   }
 
   async function obtenerMateriaPrima(forceRefresh = false) {
     if (!materiaPrimaCache.value || forceRefresh) {
-      materiaPrimaCache.value = await MateriaPrimaClient.obtenerMateriaPrima()
+      const res = await MateriaPrimaClient.obtenerMateriaPrima()
+      if (res?.success === false) return res;
+      materiaPrimaCache.value = res?.success !== undefined ? (res.data || []) : (res || [])
     }
-    return materiaPrimaCache.value
+    return { success: true, data: materiaPrimaCache.value }
   }
 
   async function obtenerClientes(forceRefresh = false) {
     if (!clientesCache.value || forceRefresh) {
-      clientesCache.value = await ClientesClient.obtenerClientes()
+      const res = await ClientesClient.obtenerClientes()
+      if (res?.success === false) return res;
+      clientesCache.value = res?.success !== undefined ? (res.data || []) : (res || [])
     }
-    return clientesCache.value
+    return { success: true, data: clientesCache.value }
   }
 
   function invalidar() {

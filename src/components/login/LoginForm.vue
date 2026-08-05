@@ -61,21 +61,20 @@ export default {
 
             this.cargando = true
 
-            try {
-                const contrasenaEncriptada = await generarSHA256(contrasenaIngresada)
-                const usuario = await UsuarioClient.login(nombreIngresado, contrasenaEncriptada)
+            const contrasenaEncriptada = await generarSHA256(contrasenaIngresada)
+            const response = await UsuarioClient.login(nombreIngresado, contrasenaEncriptada)
 
-                if (!usuario) {
+            this.cargando = false
+
+            if (response.success) {
+                if (response.data) {
+                    this.mensaje = { tipo: null, texto: '' }
+                    this.$emit('ingresar', response.data)
+                } else {
                     this.mostrarMensaje('error', 'Usuario o contraseña incorrectos.')
-                    return
                 }
-
-                this.mensaje = { tipo: null, texto: '' }
-                this.$emit('ingresar', usuario)
-            } catch (error) {
+            } else {
                 this.mostrarMensaje('error', 'No se pudo validar el usuario. Revisa la conexion con la API.')
-            } finally {
-                this.cargando = false
             }
         }
     }

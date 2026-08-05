@@ -12,10 +12,10 @@ export default {
         .maybeSingle()
 
       if (error) throw error
-      return data // Retorna el usuario si coincide, o null si no existe
+      return { success: true, data } // Retorna el usuario si coincide, o null si no existe
     } catch (error) {
       console.error("Error al autenticar usuario:", error)
-      throw error
+      return { success: false, error }
     }
   },
 
@@ -28,10 +28,10 @@ export default {
         .order('nombre', { ascending: true })
 
       if (error) throw error
-      return data
+      return { success: true, data }
     } catch (error) {
       console.error("Error al obtener usuarios:", error)
-      throw error
+      return { success: false, error }
     }
   },
 
@@ -48,10 +48,10 @@ export default {
         .select()
 
       if (error) throw error
-      return data[0]
+      return { success: true, data: data[0] }
     } catch (error) {
       console.error("Error al agregar usuario:", error)
-      throw error
+      return { success: false, error }
     }
   },
 
@@ -107,9 +107,10 @@ export default {
         .eq('id', id)
 
       if (error) throw error
+      return { success: true }
     } catch (error) {
       console.error("Error al eliminar usuario:", error)
-      throw error
+      return { success: false, error }
     }
   }
 }

@@ -1,17 +1,21 @@
 <template>
-    <div class="usuarios-page">
-        <div class="page-copy">
-            <h1>Mantenimiento de Usuarios</h1>
-            <p>Registra usuarios nuevos y revisa los que ya existen en el sistema.</p>
-        </div>
+    <div class="page-container usuarios-page">
+        <div class="page-content-wrap">
+            <header class="page-header">
+                <div>
+                    <h1 class="page-title">Mantenimiento de Usuarios</h1>
+                    <p class="page-subtitle">Registra usuarios nuevos y revisa los que ya existen en el sistema.</p>
+                </div>
+            </header>
 
-        <Alertas :mensaje="mensaje" />
+            <Alertas :mensaje="mensaje" />
 
-        <div class="main-layout">
-            <UsuarioForm @guardado="cargarUsuarios(true)" />
+            <div class="page-grid">
+                <UsuarioForm @guardado="cargarUsuarios(true)" />
 
-            <UsuarioTablaActual :usuarios="usuarios" :cargando="cargandoUsuarios" @actualizar="cargarUsuarios(true)"
-                @eliminar="eliminarUsuario" />
+                <UsuarioTablaActual :usuarios="usuarios" :cargando="cargandoUsuarios" @actualizar="cargarUsuarios(true)"
+                    @eliminar="eliminarUsuario" />
+            </div>
         </div>
     </div>
 </template>
@@ -50,25 +54,24 @@ export default {
     methods: {
         async cargarUsuarios(forceRefresh = false) {
             this.cargandoUsuarios = true
-            try {
-                const datos = await this.catalogos.obtenerUsuarios(forceRefresh)
-                this.usuarios = datos ?? []
-            } catch (error) {
-                console.error(error)
-                this.mostrarMensaje('error', 'No se pudieron cargar los usuarios.')
-            } finally {
-                this.cargandoUsuarios = false
+            const response = await this.catalogos.obtenerUsuarios(forceRefresh)
+            
+            if (response && response.success === false) {
+                this.usuarios = []
+                this.mostrarMensaje('error', '❌ Error al cargar los usuarios')
+            } else {
+                this.usuarios = response?.success ? response.data : (response ?? [])
             }
+            
+            this.cargandoUsuarios = false
         },
 
         async eliminarUsuario(id) {
-
-            try {
-                await UsuarioClient.eliminarUsuario(id)
+            const response = await UsuarioClient.eliminarUsuario(id)
+            if (response.success) {
                 this.mostrarMensaje('exito', 'Usuario eliminado correctamente.')
                 await this.cargarUsuarios(true)
-            } catch (error) {
-                console.error(error)
+            } else {
                 this.mostrarMensaje('error', 'No se pudo eliminar el usuario.')
             }
         }
@@ -77,34 +80,5 @@ export default {
 </script>
 
 <style scoped>
-.usuarios-page {
-    display: grid;
-    gap: 20px;
-    padding: 24px;
-    background: var(--bg-secondary);
-    min-height: 100%;
-}
-
-.page-copy h1 {
-    margin: 0;
-    font-size: 32px;
-}
-
-.page-copy p {
-    margin: 8px 0 0;
-    color: #64748b;
-    max-width: 60ch;
-}
-
-.main-layout {
-    display: grid;
-    gap: 24px;
-}
-
-@media (min-width: 1024px) {
-    .main-layout {
-        grid-template-columns: 1fr 1fr;
-        align-items: start;
-    }
-}
+/* Sin estilos aislados. Toda la vista usa los layout globales. */
 </style>

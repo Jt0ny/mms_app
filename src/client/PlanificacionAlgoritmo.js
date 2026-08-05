@@ -467,19 +467,22 @@ export default {
             })
         );
 
-        const resultados = await Promise.allSettled(promesas);
+        const resultados = await Promise.all(promesas);
 
-        const exitosos = resultados.filter(r => r.status === 'fulfilled').length;
+        const exitosos = resultados.filter(r => r.success).length;
         const fallidos = resultados
-            .map((r, i) => r.status === 'rejected'
-                ? {
-                    nombre: distribuciones[i].operador.nombre,
-                    motivo: r.reason?.message?.includes('duplicate')
-                        ? `Ya tiene planificación para esta fecha`
-                        : (r.reason?.message || 'Error desconocido')
+            .map((r, i) => {
+                if (!r.success) {
+                    const errorMsg = r.error?.message || '';
+                    return {
+                        nombre: distribuciones[i].operador.nombre,
+                        motivo: errorMsg.includes('duplicate')
+                            ? `Ya tiene planificación para esta fecha`
+                            : (errorMsg || 'Error desconocido')
+                    };
                 }
-                : null
-            )
+                return null;
+            })
             .filter(Boolean);
 
         // 3. Si hubo planificaciones guardadas con éxito, asignar los pedidos correspondientes a los operadores

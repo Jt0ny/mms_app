@@ -14,6 +14,8 @@
                 </div>
             </header>
 
+            <Alertas :mensaje="mensaje" />
+
             <!-- Alertas Críticas de Stock Reutilizando el Componente Alertas -->
             <div class="alertas-stock-wrap" v-if="alertasStock.length > 0">
                 <Alertas v-for="(alerta, index) in alertasStock" :key="index" :mensaje="alerta"
@@ -48,6 +50,7 @@ import DashboardAvanceOperador from '../components/dashboard/DashboardAvanceOper
 import DashboardDistribucionMermas from '../components/dashboard/DashboardDistribucionMermas.vue'
 import DashboardEstadoPedidos from '../components/dashboard/DashboardEstadoPedidos.vue'
 import { obtenerFechaHoy } from '../utils/date.js'
+import { useMensajes } from '../composables/useMensajes.js'
 
 export default {
     name: 'DashboardPage',
@@ -57,6 +60,10 @@ export default {
         DashboardAvanceOperador,
         DashboardDistribucionMermas,
         DashboardEstadoPedidos
+    },
+    setup() {
+        const { mensaje, mostrarMensaje } = useMensajes()
+        return { mensaje, mostrarMensaje }
     },
     data() {
         return {
@@ -80,26 +87,30 @@ export default {
             this.cargando = true
             this.alertasStock = []
 
-            try {
-                const today = obtenerFechaHoy()
-                
-                // 1. Ejecutar las reglas de negocio de auto-completar primero (Side-effects)
-                await DashboardClient.autoCompletarPedidos(today)
-                
-                // 2. Traer la información puramente para lectura (Read-only)
-                const datos = await DashboardClient.obtenerDatosDashboard(today)
+            const today = obtenerFechaHoy()
+            
+            // 1. Ejecutar las reglas de negocio de auto-completar primero (Side-effects)
+            const autoRes = await DashboardClient.autoCompletarPedidos(today)
+            if (autoRes && !autoRes.success) {
+                console.error("Error al auto-completar pedidos:", autoRes.error)
+            }
+            
+            // 2. Traer la información puramente para lectura (Read-only)
+            const response = await DashboardClient.obtenerDatosDashboard(today)
 
+            if (response.success) {
+                const datos = response.data
                 this.kpis = datos.kpis
                 this.avanceOperadores = datos.avanceOperadores
                 this.mermasMotivos = datos.mermasMotivos
                 this.topMermasInsumos = datos.topMermasInsumos
                 this.alertasStock = datos.alertasStock
                 this.estadoPedidos = datos.estadoPedidos
-            } catch (err) {
-                console.error("Error al cargar dashboard completo:", err)
-            } finally {
-                this.cargando = false
+            } else {
+                this.mostrarMensaje('error', '❌ Error al cargar los datos del panel de control.')
             }
+
+            this.cargando = false
         }
     }
 }

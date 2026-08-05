@@ -89,7 +89,7 @@ export default {
             cantidadesExternas: contadorRecetas.cantidadesExternas,
             limitesPorCategoria: contadorRecetas.limitesPorCategoria,
             inicializarContadores: contadorRecetas.inicializarContadores,
-            _manejarAccionReceta: contadorRecetas.manejarAccionReceta,
+            manejarAccionRecetaBase: contadorRecetas.manejarAccionReceta,
             sincronizarContadorReceta: contadorRecetas.sincronizarContadorReceta,
             resetearContadores: contadorRecetas.resetearContadores
         }
@@ -144,18 +144,20 @@ export default {
         // ── Producción ─────────────────────────────────────────────
         async guardarProduccion(payload) {
             this.guardando = true
-            try {
-                // Vincular el operador actual que registra la producción
-                payload.operadorId = this.operadorId
+            
+            // Vincular el operador actual que registra la producción
+            payload.operadorId = this.operadorId
 
-                if (payload.id) {
-                    await ProduccionClient.editarProduccion(payload.id, payload)
-                    this.mostrarMensaje('exito', '✓ Producción actualizada correctamente')
-                } else {
-                    await ProduccionClient.agregarProduccion(payload)
-                    this.mostrarMensaje('exito', '✓ Producción registrada correctamente')
-                }
+            let response;
+            if (payload.id) {
+                response = await ProduccionClient.editarProduccion(payload.id, payload)
+            } else {
+                response = await ProduccionClient.agregarProduccion(payload)
+            }
 
+            if (response.success) {
+                this.mostrarMensaje('exito', payload.id ? '✓ Producción actualizada correctamente' : '✓ Producción registrada correctamente')
+                
                 this.ultimaGuardada = new Date().toISOString()
                 this.editingProduccion = null
                 await this.cargarProducciones()
@@ -166,25 +168,23 @@ export default {
                 } catch (e) {
                     console.error('Error al evaluar pedidos:', e)
                 }
-            } catch (error) {
-                console.error(error)
+            } else {
                 this.mostrarMensaje('error', '❌ No se pudo guardar la producción', 0)
-            } finally {
-                this.guardando = false
             }
+            
+            this.guardando = false
         },
 
         async cargarProducciones() {
             this.cargandoProducciones = true
-            try {
-                const data = await ProduccionClient.obtenerProducciones()
-                this.producciones = data ?? []
-            } catch (error) {
-                console.error(error)
+            const response = await ProduccionClient.obtenerProducciones()
+            if (response.success) {
+                this.producciones = response.data ?? []
+            } else {
+                this.producciones = []
                 this.mostrarMensaje('error', '❌ Error al cargar la producción', 0)
-            } finally {
-                this.cargandoProducciones = false
             }
+            this.cargandoProducciones = false
         },
 
         editarProduccion(p) {
@@ -203,34 +203,23 @@ export default {
                 return
             }
 
-            try {
-                await ProduccionClient.eliminarProduccion(p.id)
+            const response = await ProduccionClient.eliminarProduccion(p.id)
+            if (response.success) {
                 this.mostrarMensaje('exito', 'Registro eliminado')
                 await this.cargarProducciones()
-            } catch (error) {
-                console.error(error)
+            } else {
                 this.mostrarMensaje('error', 'No se pudo eliminar el registro', 0)
             }
         },
 
         manejarAccionReceta(payload) {
-            this._manejarAccionReceta(payload?.receta, this.mostrarMensaje)
+            this.manejarAccionRecetaBase(payload?.receta, this.mostrarMensaje)
         }
     }
 }
 </script>
 
 <style scoped>
-.badge-cargando {
-    background: var(--bg-alt, #f1f5f9);
-    color: var(--text-light);
-    padding: 8px 14px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 700;
-    white-space: nowrap;
-    display: inline-flex;
-}
 
 
 /* ── Sin planificación ──────────────── */

@@ -22,7 +22,7 @@
                     <!-- INVENTARIO -->
                     <InventoryTable title="📦 Inventario Actual" :items="inventarioActual" :loading="cargandoInventario"
                         item-label="materiales registrados" empty-text="📭 No hay materiales registrados"
-                        @actualizar="cargarInventario" @sincronizar="sincronizarAPI">
+                        @actualizar="cargarInventario(true)" @sincronizar="sincronizarAPI">
                         <template #header>
                             <th>Nombre</th>
                             <th>Cantidad</th>
@@ -170,43 +170,40 @@ export default {
         /* ================= CONFIRMAR EXCEL ================= */
         async confirmarYSubir() {
             this.cargando = true
-            try {
-                await MaterialClient.cargarMateriales(this.datosProcesados)
+            const response = await MaterialClient.cargarMateriales(this.datosProcesados)
+            this.cargando = false
+
+            if (response.success) {
                 this.mostrarMensaje('exito', `✓ ${this.datosProcesados.length} materiales guardados`)
                 this.datosProcesados = []
                 await this.cargarInventario(true)
-            } catch (error) {
-                console.error(error)
+            } else {
                 this.mostrarMensaje('error', '❌ Error al guardar materiales', 0)
-            } finally {
-                this.cargando = false
             }
         },
 
         /* ================= GUARDAR MANUAL ================= */
         async guardarMaterial(material) {
             this.cargando = true
-            try {
-                await MaterialClient.agregarMaterial(material)
+            const response = await MaterialClient.agregarMaterial(material)
+            this.cargando = false
+
+            if (response.success) {
                 this.mostrarMensaje('exito', '✓ Material agregado')
                 this.resetForm()
                 await this.cargarInventario(true)
-            } catch (error) {
-                console.error(error)
+            } else {
                 this.mostrarMensaje('error', '❌ Error al guardar material')
-            } finally {
-                this.cargando = false
             }
         },
 
         /* ================= ELIMINAR ================= */
         async eliminarMaterial(id) {
-            try {
-                await MaterialClient.eliminarMaterial(id)
+            const response = await MaterialClient.eliminarMaterial(id)
+            if (response.success) {
                 this.mostrarMensaje('exito', '✓ Material eliminado')
                 await this.cargarInventario(true)
-            } catch (error) {
-                console.error(error)
+            } else {
                 this.mostrarMensaje('error', '❌ Error al eliminar')
             }
         },

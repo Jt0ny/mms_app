@@ -22,7 +22,7 @@
                     <!-- INVENTARIO -->
                     <InventoryTable title="📦 Inventario Actual" :items="inventarioActual" :loading="cargandoInventario"
                         item-label="variedades en inventario" empty-text="📭 No hay datos en el inventario"
-                        @actualizar="cargarInventario" @sincronizar="sincronizarAPI">
+                        @actualizar="cargarInventario(true)" @sincronizar="sincronizarAPI">
                         <template #header>
                             <th>Variedad</th>
                             <th>Cantidad (Tallos)</th>
@@ -63,7 +63,7 @@
 <script>
 import { useExcel } from '../composables/useExcel.js'
 import { useInventario } from '../composables/useInventario.js'
-import materiaPrimaClient from '../client/MateriaPrimaClient'
+import MateriaPrimaClient from '../client/MateriaPrimaClient'
 import { useCatalogos } from '../composables/useCatalogos.js'
 
 import CargaArchivo from '../components/CargaArchivo.vue'
@@ -89,7 +89,7 @@ export default {
 
         const { inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI } = useInventario({
             obtenerDatos: (force) => catalogos.obtenerMateriaPrima(force),
-            sincronizar: () => materiaPrimaClient.sincronizarConSupabase(),
+            sincronizar: () => MateriaPrimaClient.sincronizarConSupabase(),
             nombreModulo: 'Materia prima'
         })
 
@@ -167,23 +167,16 @@ export default {
         /* ================= GUARDAR ================= */
         async confirmarYSubir() {
             this.cargando = true
+            
+            const response = await MateriaPrimaClient.cargarMateriaPrima(this.datosProcesados)
+            this.cargando = false
 
-            try {
-                await materiaPrimaClient.cargarMateriaPrima(this.datosProcesados)
-
-                this.mostrarMensaje(
-                    'exito',
-                    `✓ ${this.datosProcesados.length} registros guardados`
-                )
-
+            if (response.success) {
+                this.mostrarMensaje('exito', `✓ ${this.datosProcesados.length} registros guardados`)
                 this.datosProcesados = []
                 await this.cargarInventario(true)
-
-            } catch (error) {
-                console.error(error)
+            } else {
                 this.mostrarMensaje('error', '❌ Error al guardar registros', 0)
-            } finally {
-                this.cargando = false
             }
         }
     }

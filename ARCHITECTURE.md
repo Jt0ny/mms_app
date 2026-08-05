@@ -64,3 +64,16 @@ export default {
 ```
 
 Mantener estas fronteras limpias asegura que la lógica de negocio pueda probarse y reutilizarse sin depender de los componentes de Vue.
+
+## 4. Limitaciones Conocidas y Transaccionalidad
+
+Debido al diseño arquitectónico del proyecto, el cual prioriza una interacción directa entre la capa frontend (Vue) y el modelo Backend-as-a-Service (Supabase), se ha tomado una decisión de diseño respecto a la transaccionalidad de bases de datos relacionales:
+
+### El Problema
+Operaciones complejas, como la sincronización o actualización masiva (ej. `PedidoClient.js`), requieren a menudo limpiar un estado anterior (haciendo un `DELETE`) y reemplazarlo con un estado nuevo (haciendo un `INSERT`). En una arquitectura tradicional, esto se agruparía en una transacción SQL en el servidor (un `BEGIN...COMMIT`) para asegurar atomicidad.
+
+### La Limitación Aceptada
+Supabase (PostgreSQL) soporta transacciones nativas únicamente mediante el uso de *Remote Procedure Calls* (RPCs) escritos en PL/pgSQL dentro de la base de datos. Para mantener la arquitectura orientada al cliente y evitar desplazar lógica de negocio fundamental a funciones SQL ocultas en el dashboard de la base de datos, **se ha decidido prescindir del uso de transacciones formales**.
+
+### Conclusión y Riesgo
+Como resultado, clientes como `PedidoClient.js` envían múltiples solicitudes HTTP (un `DELETE` seguido de un `INSERT`). Esto introduce un riesgo (trade-off) muy marginal de inconsistencia de datos si la conexión a internet del cliente se cae exactamente en el milisegundo intermedio entre el borrado y la escritura. Este riesgo ha sido asumido y documentado como un límite aceptable para los requerimientos funcionales y el alcance técnico de esta aplicación de Tesis.

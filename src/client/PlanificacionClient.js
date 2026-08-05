@@ -32,7 +32,7 @@ export default {
 
             if (error) throw error;
 
-            return (data || []).map(item => ({
+            return { success: true, data: (data || []).map(item => ({
                 id: item.id,
                 // Mapeo snake_case a camelCase
                 operadorId: item.operador_id,
@@ -45,10 +45,10 @@ export default {
                     categoria: pr.recetas?.categoria || '',
                     cantidad: pr.cantidad
                 }))
-            }));
+            }))};
         } catch (error) {
             console.error(`Error al obtener planificaciones por ${filtroColumna} desde Supabase:`, error);
-            throw error;
+            return { success: false, error };
         }
     },
 
@@ -70,10 +70,10 @@ export default {
                 .eq('fecha', fecha);
 
             if (error) throw error;
-            return true;
+            return { success: true };
         } catch (error) {
             console.error('Error al eliminar planificaciones por fecha en Supabase:', error);
-            throw error;
+            return { success: false, error };
         }
     },
 
@@ -120,7 +120,7 @@ export default {
                 if (relError) throw relError;
             }
 
-            return {
+            return { success: true, data: {
                 id: planId,
                 // Mapeo snake_case a camelCase
                 operadorId: planData.operador_id,
@@ -128,10 +128,10 @@ export default {
                 fecha: planData.fecha,
                 creadoEn: planData.creado_en,
                 recetas: data.recetas || []
-            };
+            } };
         } catch (error) {
             console.error('Error al crear planificación en Supabase:', error);
-            throw error;
+            return { success: false, error };
         }
     },
 

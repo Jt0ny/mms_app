@@ -23,12 +23,12 @@
 
                     <!-- MATERIALES -->
                     <RecetaMaterialesTabla :materiales="materiales" :seleccionados="materialesSeleccionados"
-                        :cargando="cargandoMateriales" @actualizar="cargarMateriales" @alternar="alternarMaterial"
+                        :cargando="cargandoMateriales" @actualizar="cargarMateriales(true)" @alternar="alternarMaterial"
                         @cantidad="actualizarCantidadMaterial" />
 
                     <!-- MATERIA PRIMA -->
                     <RecetaMateriaPrimaTabla :materiaPrima="materiaPrima" :seleccionados="materiaPrimaSeleccionada"
-                        :cargando="cargandoMateriaPrima" @actualizar="cargarMateriaPrima"
+                        :cargando="cargandoMateriaPrima" @actualizar="cargarMateriaPrima(true)"
                         @alternar="alternarMateriaPrima" @cantidad="actualizarCantidadMateriaPrima" />
 
                 </div>
@@ -103,52 +103,52 @@ export default {
     methods: {
 
         /* ================= CARGAR ================= */
-        async cargarMateriales() {
+        async cargarMateriales(forceRefresh = false) {
             this.cargandoMateriales = true
-            try {
-                const data = await this.catalogos.obtenerMateriales()
-                this.materiales = data ?? []
-            } catch (error) {
-                console.error(error)
-                this.mostrarMensaje('error', 'Error al cargar materiales')
-            } finally {
-                this.cargandoMateriales = false
+            const response = await this.catalogos.obtenerMateriales(forceRefresh)
+            
+            if (response && response.success === false) {
+                this.materiales = []
+                this.mostrarMensaje('error', '❌ Error al cargar materiales')
+            } else {
+                this.materiales = response?.success ? response.data : (response ?? [])
             }
+            
+            this.cargandoMateriales = false
         },
 
-        async cargarMateriaPrima() {
+        async cargarMateriaPrima(forceRefresh = false) {
             this.cargandoMateriaPrima = true
-            try {
-                const data = await this.catalogos.obtenerMateriaPrima()
-                this.materiaPrima = data ?? []
-            } catch (error) {
-                console.error(error)
-                this.mostrarMensaje('error', 'Error al cargar materia prima')
-            } finally {
-                this.cargandoMateriaPrima = false
+            const response = await this.catalogos.obtenerMateriaPrima(forceRefresh)
+            
+            if (response && response.success === false) {
+                this.materiaPrima = []
+                this.mostrarMensaje('error', '❌ Error al cargar materia prima')
+            } else {
+                this.materiaPrima = response?.success ? response.data : (response ?? [])
             }
+            
+            this.cargandoMateriaPrima = false
         },
 
         async cargarCategorias() {
-            try {
-                const [recetas, pedidos] = await Promise.all([
-                    this.catalogos.obtenerRecetas(),
-                    PedidoClient.obtenerPedidos()
-                ])
+            const [resRecetas, resPedidos] = await Promise.all([
+                this.catalogos.obtenerRecetas(),
+                PedidoClient.obtenerPedidos() // PedidoClient aún no retorna objeto de respuesta, pero lo hará pronto. Manejaremos ambos formatos por seguridad.
+            ])
 
-                const categoriasRecetas = (recetas ?? [])
-                    .map(r => String(r?.categoria ?? '').trim())
-                    .filter(Boolean)
+            const arrRecetas = resRecetas?.success ? (resRecetas.data ?? []) : (resRecetas ?? [])
+            const arrPedidos = resPedidos?.success ? (resPedidos.data ?? []) : (resPedidos ?? [])
 
-                const categoriasPedidos = (pedidos ?? [])
-                    .map(p => String(p?.categoria ?? '').trim())
-                    .filter(Boolean)
+            const categoriasRecetas = arrRecetas
+                .map(r => String(r?.categoria ?? '').trim())
+                .filter(Boolean)
 
-                this.categorias = [...new Set([...categoriasRecetas, ...categoriasPedidos])]
-            } catch (error) {
-                console.error(error)
-                this.mostrarMensaje('error', 'Error al cargar categorías')
-            }
+            const categoriasPedidos = arrPedidos
+                .map(p => String(p?.categoria ?? '').trim())
+                .filter(Boolean)
+
+            this.categorias = [...new Set([...categoriasRecetas, ...categoriasPedidos])]
         },
 
         /* ================= SELECCIÓN ================= */
@@ -208,20 +208,17 @@ export default {
 
             this.guardandoReceta = true
 
-            try {
-                const payload = { ...this.nuevaReceta, materiales: this.materialesSeleccionados, materiaPrima: this.materiaPrimaSeleccionada, fechaCreacion: new Date().toISOString() }
-                await RecetaClient.agregarReceta(payload)
+            const payload = { ...this.nuevaReceta, materiales: this.materialesSeleccionados, materiaPrima: this.materiaPrimaSeleccionada, fechaCreacion: new Date().toISOString() }
+            const response = await RecetaClient.agregarReceta(payload)
+            
+            this.guardandoReceta = false
+
+            if (response.success) {
                 await this.catalogos.obtenerRecetas(true) // Force refresh the cache
-
-                this.mostrarMensaje('exito', 'Receta guardada correctamente')
-
+                this.mostrarMensaje('exito', '✓ Receta guardada correctamente')
                 this.resetearFormulario()
-
-            } catch (error) {
-                console.error(error)
-                this.mostrarMensaje('error', 'Error al guardar receta')
-            } finally {
-                this.guardandoReceta = false
+            } else {
+                this.mostrarMensaje('error', '❌ Error al guardar receta')
             }
         },
 

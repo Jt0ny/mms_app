@@ -216,30 +216,30 @@ El proyecto sigue un patrón **híbrido deliberado y bien documentado**:
 
 ### 🔴 Alta prioridad
 
-| # | Recomendación | Justificación |
-|---|---|---|
-| **N1** | **Fix: Pasar `forceRefresh=true` explícitamente en botones Actualizar** | 4 handlers pasan `MouseEvent` por coincidencia en vez de `true`. Frágil y confuso. |
-| **N2** | **Eliminar botón 🗑️ y método `eliminarMaterial` (§1.1)** | Riesgo de borrar materiales con referencias colgantes. |
+| # | Recomendación | Estado | Justificación |
+|---|---|---|---|
+| **N1** | **Fix: Pasar `forceRefresh=true` explícitamente en botones Actualizar** | ❌ Pendiente | 4 handlers pasan `MouseEvent` por coincidencia en vez de `true`. Frágil y confuso. |
+| **N2** | **Eliminar botón 🗑️ y método `eliminarMaterial` (§1.1)** | ✅ Completado | Riesgo de borrar materiales con referencias colgantes. |
 
 ### 🟡 Media prioridad
 
-| # | Recomendación | Justificación |
-|---|---|---|
-| **N3** | **Crear `useAsyncAction` composable (§2.1a)** | Centralizar el patrón try/catch repetido ~15 veces. Mejora DRY y mantenibilidad. |
-| **N4** | **Agregar timeout a llamadas Axios (§3.4)** | 3 llamadas a APIs externas sin timeout. Si la API está caída, la UI se bloquea indefinidamente. |
-| **N5** | **Centralizar URLs de APIs externas** | Mover a `.env` o `config.js`. |
-| **N6** | **Crear `utils/mapper.js` (§1.3)** | Centralizar conversión snake_case ↔ camelCase. |
+| # | Recomendación | Estado | Justificación |
+|---|---|---|---|
+| **N3** | **Crear `useAsyncAction` composable (§2.1a)** | ✅ Completado | Centralizar el patrón try/catch repetido ~15 veces. Mejora DRY y mantenibilidad. |
+| **N4** | **Agregar timeout a llamadas Axios (§3.4)** | ✅ Completado | 3 llamadas a APIs externas sin timeout. Si la API está caída, la UI se bloquea indefinidamente. |
+| **N5** | **Centralizar URLs de APIs externas** | ❌ Pendiente | Mover a `.env` o `config.js`. |
+| **N6** | **Crear `utils/mapper.js` (§1.3)** | ✅ Completado | Centralizar conversión snake_case ↔ camelCase. |
 
 ### 🟢 Baja prioridad
 
-| # | Recomendación | Justificación |
-|---|---|---|
-| **N7** | **Normalizar UsuariosPage al patrón de layout global** | Es la única página que no usa `.page-container` y tiene color hardcoded. |
-| **N8** | **Corregir import de `materiaPrimaClient` en MateriaPrimaPage** | Import en minúscula rompe la convención visual. |
-| **N9** | **Reorganizar archivos sueltos de la raíz (§3.1)** | `db.json`, archivos SQL, `generarExcelEjemplo.js`. |
-| **N10** | **Eliminar `<style scoped></style>` vacío en MermasPage** | Limpieza menor. |
-| **N11** | **Mover `.badge-cargando` a estilos globales** | Evitar CSS scoped duplicado. |
-| **N12** | **Documentar limitación de transaccionalidad (§2.4.2)** | Mantener como limitación documentada de la tesis. |
+| # | Recomendación | Estado | Justificación |
+|---|---|---|---|
+| **N7** | **Normalizar UsuariosPage al patrón de layout global** | ✅ Completado | Es la única página que no usa `.page-container` y tiene color hardcoded. |
+| **N8** | **Corregir import de `materiaPrimaClient` en MateriaPrimaPage** | ❌ Pendiente | Import en minúscula rompe la convención visual. |
+| **N9** | **Reorganizar archivos sueltos de la raíz (§3.1)** | ✅ Completado | `db.json`, archivos SQL, `generarExcelEjemplo.js`. |
+| **N10** | **Eliminar `<style scoped></style>` vacío en MermasPage** | ❌ Pendiente | Limpieza menor. |
+| **N11** | **Mover `.badge-cargando` a estilos globales** | ✅ Completado | Evitar CSS scoped duplicado. |
+| **N12** | **Documentar limitación de transaccionalidad (§2.4.2)** | ✅ Completado | Mantener como limitación documentada de la tesis. |
 
 ---
 

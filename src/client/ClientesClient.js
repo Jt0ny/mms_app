@@ -26,7 +26,7 @@ export default {
       if (error) throw error
 
       // Mapeamos el resultado para mantener la compatibilidad con el frontend
-      return data.map(item => ({
+      return { success: true, data: data.map(item => ({
         id: item.id,
         nombre: item.nombre,
         tipo: item.tipo,
@@ -39,10 +39,10 @@ export default {
         direccion: item.direccion || '',
         notas: item.notas || '',
         creadoEn: item.creado_en
-      }))
+      })) };
     } catch (error) {
       console.error("Error al obtener clientes desde Supabase:", error)
-      throw error
+      return { success: false, error }
     }
   },
 
@@ -78,10 +78,10 @@ export default {
         .select()
 
       if (error) throw error
-      return data[0]
+      return { success: true, data: data[0] }
     } catch (error) {
       console.error("Error al agregar cliente en Supabase:", error)
-      throw error
+      return { success: false, error }
     }
   },
 
@@ -89,7 +89,7 @@ export default {
   async actualizarCliente(id, cliente) {
     if (!id || id === 'undefined') {
       console.warn("Intento de actualizar cliente con ID inválido:", id)
-      return null
+      return { success: false, error: new Error("ID inválido") }
     }
     try {
       let parentId = null
@@ -121,10 +121,10 @@ export default {
         .select()
 
       if (error) throw error
-      return data[0]
+      return { success: true, data: data[0] }
     } catch (error) {
       console.error("Error al actualizar cliente en Supabase:", error)
-      throw error
+      return { success: false, error }
     }
   },
 
@@ -137,9 +137,10 @@ export default {
         .eq('id', id)
 
       if (error) throw error
+      return { success: true }
     } catch (error) {
       console.error("Error al eliminar cliente en Supabase:", error)
-      throw error
+      return { success: false, error }
     }
   },
 
@@ -159,10 +160,10 @@ export default {
         .select()
 
       if (error) throw error
-      return data
+      return { success: true, data }
     } catch (error) {
       console.error("Error al agregar clientes masivos en Supabase:", error)
-      throw error
+      return { success: false, error }
     }
   },
 
@@ -182,10 +183,10 @@ export default {
         .select()
 
       if (error) throw error
-      return data
+      return { success: true, data }
     } catch (error) {
       console.error("Error al hacer upsert masivo de clientes en Supabase:", error)
-      throw error
+      return { success: false, error }
     }
   },
 
@@ -193,7 +194,8 @@ export default {
   async resolverClientesDePedidos(pedidos, mapaClientes = null) {
     try {
       if (!mapaClientes) {
-        const clientesExistentes = await this.obtenerClientes()
+        const res = await this.obtenerClientes()
+        const clientesExistentes = res.success ? res.data : []
         mapaClientes = new Map(clientesExistentes.map(c => [c.nombre.toLowerCase().trim(), c]))
       }
 
@@ -329,10 +331,10 @@ export default {
           await this.upsertClientesMasivos(payloadUpsert)
       }
 
-      return (clientesParaAgregarFacturacion.length > 0 || clientesParaAgregarEnvio.length > 0 || clientesParaActualizar.length > 0)
+      return { success: true, data: (clientesParaAgregarFacturacion.length > 0 || clientesParaAgregarEnvio.length > 0 || clientesParaActualizar.length > 0) }
     } catch (error) {
         console.error('Error al resolver clientes de pedidos:', error)
-        throw error
+        return { success: false, error }
     }
   }
 }

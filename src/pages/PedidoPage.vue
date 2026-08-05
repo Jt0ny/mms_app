@@ -116,30 +116,31 @@ export default {
         /* ================= PEDIDOS ================= */
         async cargarPedidos() {
             this.cargandoPedidos = true
-            try {
-                // Cargar inmediatamente los pedidos locales de Supabase
-                const datos = await PedidoClient.obtenerPedidos()
-                this.pedidosActual = datos ?? []
-            } catch (error) {
-                console.error(error)
+            const response = await PedidoClient.obtenerPedidos()
+            
+            if (response && response.success === false) {
+                this.pedidosActual = []
                 this.mostrarMensaje('error', '❌ Error al cargar pedidos', 0)
-            } finally {
-                this.cargandoPedidos = false
+            } else {
+                this.pedidosActual = response?.success ? response.data : (response ?? [])
             }
+            this.cargandoPedidos = false
         },
 
         async sincronizarAPI() {
             this.cargandoPedidos = true
-            try {
-                this.mostrarMensaje('info', '⚡ Sincronizando pedidos con la API externa...', 0)
-                await PedidoClient.sincronizarConSupabase()
-                this.mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
-                await this.cargarPedidos()
-            } catch (error) {
-                console.error(error)
+            this.mostrarMensaje('info', '⚡ Sincronizando pedidos con la API externa...', 0)
+            
+            const response = await PedidoClient.sincronizarConSupabase()
+            
+            if (response && response.success === false) {
                 this.mostrarMensaje('error', '❌ Error al sincronizar con la API externa')
                 this.cargandoPedidos = false
+                return
             }
+
+            this.mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
+            await this.cargarPedidos()
         },
 
         /* ================= ARCHIVO ================= */
@@ -176,21 +177,19 @@ export default {
 
             this.cargando = true
 
-            try {
-                await PedidoClient.agregarPedido(this.datosProcesados)
+            const response = await PedidoClient.agregarPedido(this.datosProcesados)
 
+            this.cargando = false
+
+            if (response.success) {
                 // Sincronizar nuevos clientes en la base de datos local
                 await this.sincronizarClientes(this.datosProcesados)
 
                 this.mostrarMensaje('exito', '✓ Pedidos guardados correctamente')
                 this.datosProcesados = []
                 await this.cargarPedidos()
-
-            } catch (error) {
-                console.error(error)
+            } else {
                 this.mostrarMensaje('error', '❌ Error al guardar pedidos', 0)
-            } finally {
-                this.cargando = false
             }
         }
     }
