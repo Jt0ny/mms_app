@@ -107,11 +107,11 @@ export default {
             this.cargandoMateriales = true
             const response = await this.catalogos.obtenerMateriales(forceRefresh)
             
-            if (response && response.success === false) {
+            if (response?.success === false) {
                 this.materiales = []
                 this.mostrarMensaje('error', '❌ Error al cargar materiales')
             } else {
-                this.materiales = response?.success ? response.data : (response ?? [])
+                this.materiales = response?.data ?? []
             }
             
             this.cargandoMateriales = false
@@ -121,11 +121,11 @@ export default {
             this.cargandoMateriaPrima = true
             const response = await this.catalogos.obtenerMateriaPrima(forceRefresh)
             
-            if (response && response.success === false) {
+            if (response?.success === false) {
                 this.materiaPrima = []
                 this.mostrarMensaje('error', '❌ Error al cargar materia prima')
             } else {
-                this.materiaPrima = response?.success ? response.data : (response ?? [])
+                this.materiaPrima = response?.data ?? []
             }
             
             this.cargandoMateriaPrima = false

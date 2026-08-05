@@ -230,13 +230,6 @@ export default {
     line-height: 1;
 }
 
-.sin-planificacion p {
-    margin: 0;
-    color: var(--text-h);
-    font-weight: 600;
-    font-size: 16px;
-}
-
 .sin-plan-sub {
     color: var(--text-light) !important;
     font-weight: 400 !important;

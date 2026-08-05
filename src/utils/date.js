@@ -4,11 +4,7 @@ export function obtenerFechaHoy() {
     return fechaLocal.toISOString().slice(0, 10)
 }
 
-/**
- * Formatea una fecha ISO a formato legible local (es-EC).
- * @param {string|Date} fecha
- * @returns {string}
- */
+// Formatea una fecha ISO a formato legible local (es-EC)
 export function formatearFecha(fecha) {
     if (!fecha) return '-'
     try {

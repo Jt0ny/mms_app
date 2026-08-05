@@ -114,7 +114,7 @@ export default {
     padding: 10px 12px;
     border-radius: 8px;
     border: 1px solid var(--border);
-    background: white;
+    background: var(--bg);
     font: inherit;
 }
 
@@ -126,7 +126,7 @@ export default {
 .resume-box {
     padding: 14px;
     border-radius: 10px;
-    background: #f8faf8;
+    background: var(--bg-secondary);
     border: 1px solid var(--border-light);
     display: flex;
     flex-direction: column;

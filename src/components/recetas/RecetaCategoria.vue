@@ -77,7 +77,7 @@ export default {
     padding: 11px 14px;
     border-radius: 10px;
     border: 1px solid var(--border);
-    background: linear-gradient(180deg, #ffffff 0%, #f8faf8 100%);
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
     color: var(--text-h);
     font-weight: 600;
     box-shadow: var(--shadow-sm);

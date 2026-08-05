@@ -55,49 +55,6 @@ export default {
     }
   },
 
-  // ─── RESERVADO PARA FUTURO CRUD ─────────────────────────────────────
-  /*
-  // Obtiene un usuario específico por su UUID
-  async obtenerUsuario(id) {
-    try {
-      const { data, error } = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('id', id)
-        .single()
-
-      if (error) throw error
-      return data
-    } catch (error) {
-      console.error("Error al obtener usuario:", error)
-      throw error
-    }
-  },
-  */
-
-  /*
-  // Actualiza los datos de un usuario
-  async actualizarUsuario(id, usuario) {
-    try {
-      const { data, error } = await supabase
-        .from('usuarios')
-        .update({
-          nombre: usuario.nombre,
-          contrasena: usuario.contrasena,
-          rol: usuario.rol
-        })
-        .eq('id', id)
-        .select()
-
-      if (error) throw error
-      return data[0]
-    } catch (error) {
-      console.error("Error al actualizar usuario:", error)
-      throw error
-    }
-  },
-  */
-
   // Elimina un usuario por su UUID
   async eliminarUsuario(id) {
     try {

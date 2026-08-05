@@ -77,8 +77,4 @@ export default {
         }
     }
 }
-</script>
-
-<style scoped>
-/* Sin estilos aislados. Toda la vista usa los layout globales. */
-</style>
+</script>

@@ -80,7 +80,7 @@ export default {
 
 <style scoped>
 .summary-panel {
-    background: white;
+    background: var(--bg);
     border-radius: 14px;
     padding: 20px;
     box-shadow: var(--shadow-sm);
@@ -99,7 +99,7 @@ export default {
 .summary-box {
     padding: 16px;
     border-radius: 12px;
-    background: #f8faf8;
+    background: var(--bg-secondary);
     border: 1px solid var(--border-light);
 }
 
@@ -126,7 +126,7 @@ export default {
 .empty-state {
     padding: 18px;
     border-radius: 10px;
-    background: #f8faf8;
+    background: var(--bg-secondary);
     border: 1px dashed var(--border);
 }
 

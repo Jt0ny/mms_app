@@ -91,17 +91,17 @@ export default {
 
       // Cargar mermas
       const responseMermas = await MermaClient.obtenerMermas()
-      if (responseMermas && responseMermas.success === false) {
+      if (responseMermas?.success === false) {
         this.mermas = []
         this.mostrarMensaje('error', '❌ Error al cargar el historial de mermas')
       } else {
-        this.mermas = responseMermas?.success ? responseMermas.data : (responseMermas ?? [])
+        this.mermas = responseMermas?.data ?? []
       }
       this.cargandoMermas = false
 
       // Cargar operadores
       const opRes = await this.catalogos.obtenerOperadores()
-      this.operadores = opRes?.success ? opRes.data : (opRes ?? [])
+      this.operadores = opRes?.data ?? []
 
       // Cargar catálogos
       const [materialesRes, recetasRes] = await Promise.all([
@@ -109,18 +109,18 @@ export default {
         this.catalogos.obtenerRecetas()
       ])
       
-      const matsData = materialesRes?.success ? materialesRes.data : (materialesRes ?? [])
+      const matsData = materialesRes?.data ?? []
       this.materiales = matsData
       this.materialesFiltrados = this.materiales
 
-      const recsData = recetasRes?.success ? recetasRes.data : (recetasRes ?? [])
+      const recsData = recetasRes?.data ?? []
       this.recetas = recsData
       this.recetasCompletas = recsData
       this.recetasFiltradas = this.recetas
 
       // Cargar materia prima (desde Supabase directamente)
       const mpRes = await this.catalogos.obtenerMateriaPrima()
-      const mpData = mpRes?.success ? mpRes.data : (mpRes ?? [])
+      const mpData = mpRes?.data ?? []
       
       this.materiaPrima = mpData
       this.materiaPrimaFiltrada = this.materiaPrima

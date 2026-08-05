@@ -118,11 +118,11 @@ export default {
             this.cargandoPedidos = true
             const response = await PedidoClient.obtenerPedidos()
             
-            if (response && response.success === false) {
+            if (response?.success === false) {
                 this.pedidosActual = []
                 this.mostrarMensaje('error', '❌ Error al cargar pedidos', 0)
             } else {
-                this.pedidosActual = response?.success ? response.data : (response ?? [])
+                this.pedidosActual = response?.data ?? []
             }
             this.cargandoPedidos = false
         },
@@ -133,7 +133,7 @@ export default {
             
             const response = await PedidoClient.sincronizarConSupabase()
             
-            if (response && response.success === false) {
+            if (response?.success === false) {
                 this.mostrarMensaje('error', '❌ Error al sincronizar con la API externa')
                 this.cargandoPedidos = false
                 return

@@ -3,13 +3,10 @@
 
         <div class="page-content-wrap">
 
-            <!-- TÍTULO -->
             <h1 class="page-title">Carga de Materia Prima</h1>
 
-            <!-- ALERTAS -->
             <Alertas :mensaje="mensaje" />
 
-            <!-- LAYOUT -->
             <div class="main-layout-split" :class="{ 'with-preview': datosProcesados.length > 0 }">
 
                 <!-- PANEL IZQUIERDO -->
@@ -111,7 +108,7 @@ export default {
     },
 
     methods: {
-        /* ================= EXCEL ================= */
+        // ── Excel ──
 
         async procesarArchivo(file) {
             try {
@@ -131,7 +128,7 @@ export default {
             }
         },
 
-        /* ================= PROCESAMIENTO ================= */
+        // ── Procesamiento ──
         procesarDatos(data) {
             const resumen = {}
             data.forEach((fila) => {
@@ -156,7 +153,7 @@ export default {
             return Object.values(resumen)
         },
 
-        /* ================= LIMPIAR ================= */
+        // ── Limpiar ──
         limpiarDatos() {
             this.datosProcesados = []
             this.mensaje = {
@@ -164,7 +161,7 @@ export default {
             }
         },
 
-        /* ================= GUARDAR ================= */
+        // ── Guardar ──
         async confirmarYSubir() {
             this.cargando = true
             

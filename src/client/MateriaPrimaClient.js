@@ -139,11 +139,7 @@ export default {
     }
   },
 
-  /**
-   * Actualiza el stock de materia prima.
-   * @param {string} id — UUID de la materia prima
-   * @param {number} nuevaCantidad — nueva cantidad total
-   */
+  // Actualiza el stock de materia prima.
   async actualizarStockMateriaPrima(id, nuevaCantidad) {
     try {
       const { error } = await supabase

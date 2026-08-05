@@ -21,7 +21,6 @@ export function useFiltroRecursos(catalogos) {
         }
 
         cargandoRecursos.value = true
-        cargandoRecursos.value = true
         
         const response = await PlanificacionClient.obtenerPlanificacionesPorOperador(operadorId)
         if (response && response.success === false) {

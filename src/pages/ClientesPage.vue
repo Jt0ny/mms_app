@@ -94,11 +94,11 @@ export default {
       this.cargando = true
       const response = await this.catalogos.obtenerClientes(forceRefresh)
       
-      if (response && response.success === false) {
+      if (response?.success === false) {
         this.clientes = []
         this.mostrarMensaje('error', '❌ Error al cargar los clientes')
       } else {
-        this.clientes = response?.success ? response.data : (response ?? [])
+        this.clientes = response?.data ?? []
       }
 
       // Mantener la fila seleccionada sincronizada si cambió de nombre

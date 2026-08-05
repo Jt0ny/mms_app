@@ -87,16 +87,16 @@ export default {
             this.cargando = true
             this.alertasStock = []
 
-            const today = obtenerFechaHoy()
+            const hoy = obtenerFechaHoy()
             
             // 1. Ejecutar las reglas de negocio de auto-completar primero (Side-effects)
-            const autoRes = await DashboardClient.autoCompletarPedidos(today)
+            const autoRes = await DashboardClient.autoCompletarPedidos(hoy)
             if (autoRes && !autoRes.success) {
                 console.error("Error al auto-completar pedidos:", autoRes.error)
             }
             
             // 2. Traer la información puramente para lectura (Read-only)
-            const response = await DashboardClient.obtenerDatosDashboard(today)
+            const response = await DashboardClient.obtenerDatosDashboard(hoy)
 
             if (response.success) {
                 const datos = response.data

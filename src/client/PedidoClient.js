@@ -15,10 +15,13 @@ export default {
 
   async _obtenerCatalogos() {
     const catalogos = useCatalogos();
-    let [clientes, recetas] = await Promise.all([
+    const [clientesRes, recetasRes] = await Promise.all([
       catalogos.obtenerClientes(),
       catalogos.obtenerRecetas()
     ]);
+
+    const clientes = clientesRes?.data ?? [];
+    const recetas = recetasRes?.data ?? [];
 
     const mapClientes = new Map(clientes.map(c => [c.nombre.toLowerCase().trim(), c.id]));
     const mapRecetas = new Map();
@@ -303,22 +306,4 @@ export default {
     }
   },
 
-  // ─── RESERVADO PARA FUTURO CRUD ─────────────────────────────────────
-  /*
-  async actualizarOperadorPedido(pedidoId, operadorId) {
-    try {
-      const { data, error } = await supabase
-        .from('pedidos')
-        .update({ operador_id: operadorId || null })
-        .eq('id', pedidoId)
-        .select();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error(`Error al actualizar operador:`, error);
-      throw error;
-    }
-  }
-  */
 }

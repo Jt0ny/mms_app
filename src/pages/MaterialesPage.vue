@@ -3,13 +3,10 @@
 
         <div class="page-content-wrap">
 
-            <!-- TÍTULO -->
             <h1 class="page-title">Carga de Materiales</h1>
 
-            <!-- ALERTAS -->
             <Alertas :mensaje="mensaje" />
 
-            <!-- LAYOUT -->
             <div class="main-layout-split" :class="{ 'with-preview': datosProcesados.length > 0 }">
 
                 <!-- PANEL IZQUIERDO -->
@@ -125,7 +122,7 @@ export default {
     },
 
     methods: {
-        /* ================= EXCEL ================= */
+        // ── Excel ──
         async procesarArchivo(file) {
             try {
                 if (!file) return
@@ -144,7 +141,7 @@ export default {
             }
         },
 
-        /* ================= PROCESAMIENTO EXCEL ================= */
+        // ── Procesamiento excel ──
         procesarDatos(data) {
             return data
                 .map(fila => {
@@ -161,13 +158,13 @@ export default {
                 .filter(Boolean)
         },
 
-        /* ================= LIMPIAR ================= */
+        // ── Limpiar ──
         limpiarDatos() {
             this.datosProcesados = []
             this.mensaje = { tipo: null, texto: '' }
         },
 
-        /* ================= CONFIRMAR EXCEL ================= */
+        // ── Confirmar excel ──
         async confirmarYSubir() {
             this.cargando = true
             const response = await MaterialClient.cargarMateriales(this.datosProcesados)
@@ -182,7 +179,7 @@ export default {
             }
         },
 
-        /* ================= GUARDAR MANUAL ================= */
+        // ── Guardar manual ──
         async guardarMaterial(material) {
             this.cargando = true
             const response = await MaterialClient.agregarMaterial(material)
@@ -197,7 +194,7 @@ export default {
             }
         },
 
-        /* ================= ELIMINAR ================= */
+        // ── Eliminar ──
         async eliminarMaterial(id) {
             const response = await MaterialClient.eliminarMaterial(id)
             if (response.success) {
@@ -208,7 +205,7 @@ export default {
             }
         },
 
-        /* ================= RESET ================= */
+        // ── Reset ──
         resetForm() {
             this.nuevoMaterial = {
                 nombre: '',

@@ -1,12 +1,6 @@
 import { supabase } from './supabase'
 
 export default {
-    // ─── RESERVADO PARA FUTURO CRUD ─────────────────────────────────────
-    /*
-    async obtenerPlanificaciones() {
-      // ...
-    }
-    */
 
     async _queryPlanificaciones(filtroColumna, filtroValor) {
         try {
@@ -134,23 +128,5 @@ export default {
             return { success: false, error };
         }
     },
-
-    // ─── RESERVADO PARA FUTURO CRUD ─────────────────────────────────────
-    /*
-    async eliminarPlanificacion(id) {
-        try {
-            const { error } = await supabase
-                .from('planificaciones')
-                .delete()
-                .eq('id', id);
-
-            if (error) throw error;
-            return true;
-        } catch (error) {
-            console.error('Error al eliminar planificación en Supabase:', error);
-            throw error;
-        }
-    },
-    */
 
 }

@@ -593,3 +593,98 @@ p {
   color: var(--text-light);
   margin: 0;
 }
+
+
+/* =========================================
+   DATA CARDS (Tablas e inventarios)
+   ========================================= */
+.data-card {
+  background: var(--bg);
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.data-card-header {
+  padding: 16px 20px;
+  background: linear-gradient(to right, var(--primary), var(--primary-dark));
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.data-card-header h2,
+.data-card-header h3,
+.data-card-header p {
+  margin: 0;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.data-card-content {
+  padding: 20px;
+  overflow-y: auto;
+  overflow-x: auto;
+  max-height: 450px;
+}
+
+.data-card-info {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-card-info p {
+  margin: 0;
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+.data-card-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.data-card-table thead {
+  background: var(--primary);
+  color: white;
+}
+
+.data-card-table th {
+  padding: 14px 16px;
+  text-align: left;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+
+.data-card-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.data-card-table tbody tr:hover {
+  background: var(--bg-secondary);
+}
+
+@media (max-width: 768px) {
+  .data-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .data-card-table {
+    font-size: 12px;
+  }
+  .data-card-table th,
+  .data-card-table td {
+    padding: 10px 8px;
+  }
+}
