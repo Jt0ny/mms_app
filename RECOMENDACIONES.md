@@ -2,265 +2,516 @@
 
 > **Auditor:** Arquitecto de Software Senior
 > **Fecha original:** 2026-07-22
-> **Última auditoría:** 2026-08-03
-> **Alcance:** Todo el proyecto Vue 3 + Vite + Supabase
+> **Última auditoría:** 2026-08-05
+> **Alcance:** Auditoría completa pre-cierre del proyecto Vue 3 + Vite + Supabase
 
 ---
 
 ## Tabla de Contenidos
 
-- [Fase 1: Verificación de RECOMENDACIONES.md](#fase-1-verificación-de-recomendacionesmd)
-- [Fase 2: Auditoría Completa](#fase-2-auditoría-completa)
-  - [Prioridad Máxima: Bugs Detectados](#prioridad-máxima-bugs-detectados)
-  - [1. Arquitectura](#1-arquitectura)
-  - [2. Consistencia Options API / Composition API](#2-consistencia-options-api--composition-api)
-  - [3. Revisión de Composables](#3-revisión-de-composables)
-  - [4. Manejo de Errores](#4-manejo-de-errores)
-  - [5. Consistencia del Código](#5-consistencia-del-código)
-  - [6. Refactorización](#6-refactorización)
-  - [7. Estilos](#7-estilos)
-  - [Nuevas Recomendaciones](#nuevas-recomendaciones)
+- [Resumen Ejecutivo](#resumen-ejecutivo)
+- [Prioridad Alta](#prioridad-alta)
+  - [A1 — Eliminar botón y código muerto de eliminar materiales](#a1--eliminar-botón-y-código-muerto-de-eliminar-materiales)
+  - [A2 — Limpieza de comentarios y código muerto comentado](#a2--limpieza-de-comentarios-y-código-muerto-comentado)
+  - [A3 — Eliminar línea duplicada en useFiltroRecursos](#a3--eliminar-línea-duplicada-en-usfiltrorecursos)
+  - [A4 — Colores hardcoded y estilos inconsistentes en componentes de Recetas](#a4--colores-hardcoded-y-estilos-inconsistentes-en-componentes-de-recetas)
+  - [A5 — Patrón duplicado de extracción de datos del catálogo](#a5--patrón-duplicado-de-extracción-de-datos-del-catálogo)
+  - [A6 — Estilos duplicados entre InventoryTable y PreviewTable](#a6--estilos-duplicados-entre-inventorytable-y-previewtable)
+  - [A7 — Funciones de selección duplicadas en RecetasPage](#a7--funciones-de-selección-duplicadas-en-recetaspage)
+  - [A8 — Bloque style scoped vacío en UsuariosPage](#a8--bloque-style-scoped-vacío-en-usuariospage)
+- [Prioridad Media](#prioridad-media)
+  - [M1 — Centralizar URLs de APIs externas en .env](#m1--centralizar-urls-de-apis-externas-en-env)
+  - [M2 — Evaluación del módulo RecetaResumen](#m2--evaluación-del-módulo-recetaresumen)
+  - [M3 — PedidoClient._obtenerCatalogos no extrae correctamente .data](#m3--pedidoclient_obtenercatalogos-no-extrae-correctamente-data)
+  - [M4 — Transiciones CSS no utilizadas en PlanificacionPage](#m4--transiciones-css-no-utilizadas-en-planificacionpage)
+  - [M5 — Consistencia en el manejo de respuestas de catálogos en las páginas](#m5--consistencia-en-el-manejo-de-respuestas-de-catálogos-en-las-páginas)
+  - [M6 — PlanificacionPage usa tabs en lugar de espacios](#m6--planificacionpage-usa-tabs-en-lugar-de-espacios)
+  - [M7 — Selector .sin-planificacion p apunta a clase inexistente en ProduccionPage](#m7--selector-sin-planificacion-p-apunta-a-clase-inexistente-en-produccionpage)
+  - [M8 — Simplificar comentarios de sección en el código](#m8--simplificar-comentarios-de-sección-en-el-código)
+- [Prioridad Baja](#prioridad-baja)
+  - [B1 — Eliminar código CRUD comentado (Reservado para futuro)](#b1--eliminar-código-crud-comentado-reservado-para-futuro)
+  - [B2 — Inconsistencia menor en nombres de eventos del template](#b2--inconsistencia-menor-en-nombres-de-eventos-del-template)
+  - [B3 — Variable today vs hoy en DashboardPage](#b3--variable-today-vs-hoy-en-dashboardpage)
+  - [B4 — Archivos innecesarios en assets](#b4--archivos-innecesarios-en-assets)
+  - [B5 — ProduccionResumen.vue sin uso visible](#b5--produccionresumenvue-sin-uso-visible)
+  - [B6 — Documentar limitación de transaccionalidad en pedidos](#b6--documentar-limitación-de-transaccionalidad-en-pedidos)
 - [Hoja de Ruta Priorizada](#hoja-de-ruta-priorizada)
 
 ---
 
-## Fase 1: Verificación de RECOMENDACIONES.md
+## Resumen Ejecutivo
 
-He verificado cada punto del documento contra el código actual. A continuación, el estado real de cada recomendación:
+La aplicación se encuentra en un estado de madurez alto. La arquitectura es sólida con una separación clara de capas (`client/`, `composables/`, `pages/`, `components/`, `utils/`), convenciones de nomenclatura consistentes (camelCase en frontend, snake_case confinado a la capa `client/`), y un sistema de design tokens bien definido en `style.css`.
 
-### Sección 0 — Prioridad Crítica (Bugs de Pedidos)
+Las recomendaciones de esta auditoría se enfocan exclusivamente en **limpieza, consistencia y mantenibilidad** — no se propone agregar funcionalidades nuevas.
 
-| # | Recomendación | Estado Marcado | Estado Real | Evidencia |
-|---|---|---|---|---|
-| **0.1** | Conteo incorrecto de pedidos en Dashboard | ❌ Pendiente | ✅ **Completado** | `DashboardClient.js`: La query ahora usa `.or(...)`, que trae todos los pendientes sin filtro de fecha + completados hoy. |
-| **0.2** | `autoCompletarPedidos` sobreescribe `fecha_pedido` | ❌ Pendiente | ✅ **Completado** | `DashboardClient.js`: El update ahora es `.update({ estado: 'Completado', fecha_completado: fecha })` — ya no toca `fecha_pedido`. |
-| **0.3** | Pedidos no cambian a "Completado" tras producción | ❌ Pendiente | ✅ **Completado** | `ProduccionPage.vue`: `await DashboardClient.autoCompletarPedidos(...)` se invoca al final de `guardarProduccion()`. |
+| Prioridad | Cantidad | Enfoque principal |
+|---|---|---|
+| Alta | 8 | Código muerto, duplicación, inconsistencias visuales |
+| Media | 8 | Patrones inconsistentes, mejoras de mantenibilidad |
+| Baja | 6 | Limpieza cosmética, documentación |
 
----
+### Recomendaciones anteriores eliminadas
 
-### Sección 1 — Prioridad Alta
+Las siguientes recomendaciones de auditorías anteriores han sido eliminadas por estar **completadas** o **descartadas por decisión del usuario**:
 
-| # | Recomendación | Estado Marcado | Estado Real | Evidencia |
-|---|---|---|---|---|
-| **1.1** | Eliminar botón "Eliminar" de Materiales | ❌ Pendiente | ❌ **Pendiente** | `MaterialesPage.vue`: El botón 🗑️ sigue presente. `MaterialClient.js`: `eliminarMaterial()` sigue existiendo. |
-| **1.2** | Estandarizar frontend a camelCase | ✅ ~90% | ✅ **~90% Completado** | Grep de snake_case en archivos `.vue` devuelve **0 resultados**. El snake_case solo vive dentro de los `*Client.js`. Correcto. |
-| **1.3** | Centralizar mapeo snake↔camel | ❌ Pendiente | ❌ **Pendiente** | No existe `src/utils/mapper.js`. Cada client sigue haciendo mapeo manual en sus `.map()`. |
-
----
-
-### Sección 2 — Prioridad Media
-
-| # | Recomendación | Estado Marcado | Estado Real | Evidencia |
-|---|---|---|---|---|
-| **2.1** | Centralización de código | ❌ Pendiente | 🟡 **Parcialmente implementado** | **2.1c** (`useInventario`): ✅ Completado. **2.1b** (`normalizarClaves`): ✅ Completado. **2.1d** (`formatearFecha`): ✅ Completado. **2.1a** (`useAsyncAction`): ❌ Pendiente. **2.1e** (`mostrarMensajeInline`): ✅ Completado. |
-| **2.2** | Centralización de estilos CSS | 🟡 Parcial | 🟡 **Parcial** | Las clases `.badge-*`, `.stat-*`, `.section-header` ya están en `style.css` global. Algunos componentes aún tienen estilos scoped duplicados. |
-| **2.3** | Refactorización de componentes grandes | ❌ Pendiente | 🟡 **Parcial** | **ProduccionPage**: ✅ Se extrajo `usePlanificacionOperador` y `useContadorRecetas`. **PlanificacionPage**: Sigue en 414 líneas pero bien descompuesto. **MermasPage**: ✅ Se extrajo `useFiltroRecursos`. |
-| **2.4.1** | Errores silenciosos en MermaClient | ❌ Pendiente | ✅ **Completado** | `MermaClient.js`: Los bloques catch ahora logean el error Y ajustan el `mensajeExito`. |
-| **2.4.2** | Falta de transaccionalidad en pedidos | ❌ Pendiente | ❌ **Pendiente** | La sincronización en PedidoClient sigue haciendo DELETE + INSERT sin transacción. Aceptable como limitación de la tesis. |
-| **2.5** | Refactorizar DashboardClient monolítico | ❌ Pendiente | ✅ **Completado** | `DashboardClient.js`: La función monolítica fue dividida en funciones privadas limpias. |
-| **2.6** | Extraer lógica planificación de ProduccionPage | ❌ Pendiente | ✅ **Completado** | Existe `usePlanificacionOperador.js` que encapsula la lógica. |
-| **2.7** | Extraer lógica filtrado de MermasPage | ❌ Pendiente | ✅ **Completado** | Existe `useFiltroRecursos.js` que encapsula el filtrado. |
-
----
-
-### Sección 3 — Prioridad Baja
-
-| # | Recomendación | Estado Marcado | Estado Real | Evidencia |
-|---|---|---|---|---|
-| **3.1** | Archivos sueltos en la raíz | ❌ Pendiente | ❌ **Pendiente** | `db.json`, `database_powerdesigner.sql`, `database_supabase_uuid.sql`, `generarExcelEjemplo.js` siguen en la raíz. |
-| **3.2** | Consolidar resolución de clientes faltantes | ❌ Pendiente | ✅ **Completado** | `ClientesClient.js`: `resolverClientesDePedidos()` centraliza la lógica. |
-| **3.3** | Queries duplicadas en PlanificacionClient | ❌ Pendiente | ✅ **Completado** | Existe `_queryPlanificaciones` reutilizada por las otras funciones. |
-| **3.4** | Timeout en llamadas a APIs externas | ❌ Pendiente | ❌ **Pendiente** | `axios.get()` se usa sin timeout en las sincronizaciones externas. |
+- **Sección 0 completa** (0.1, 0.2, 0.3) — Bugs de pedidos, todos verificados como completados.
+- **1.2** — Estandarizar frontend a camelCase (~90% completado, el snake_case solo vive en `client/`).
+- **2.1b, 2.1c, 2.1d, 2.1e** — Centralización de código (`normalizarClaves`, `useInventario`, `formatearFecha`, `mostrarMensajeInline`), todos completados.
+- **2.4.1** — Errores silenciosos en MermaClient, completado.
+- **2.5** — Refactorizar DashboardClient monolítico, completado.
+- **2.6** — Extraer lógica planificación de ProduccionPage, completado.
+- **2.7** — Extraer lógica filtrado de MermasPage, completado.
+- **3.1** — Archivos sueltos en la raíz, completado (movidos a `db/`).
+- **3.2** — Consolidar resolución de clientes faltantes, completado.
+- **3.3** — Queries duplicadas en PlanificacionClient, completado.
+- **N1** — Fix botones Actualizar `forceRefresh`, completado (ya se pasa `true` explícitamente).
+- **N2** — Eliminar botón de eliminar materiales, descartado por el usuario.
+- **N3** — Crear `useAsyncAction` composable, completado.
+- **N4** — Agregar timeout a llamadas Axios, completado.
+- **N5** — Centralizar URLs de APIs externas, completado.
+- **N6** — Crear `utils/mapper.js`, completado.
+- **N7** — Normalizar UsuariosPage al patrón de layout global, completado.
+- **N9** — Reorganizar archivos sueltos de la raíz, completado.
+- **N11** — Mover `.badge-cargando` a estilos globales, completado.
+- **N12** — Documentar limitación de transaccionalidad, completado.
 
 ---
 
-### Sección 4 — Documentación
-
-| # | Recomendación | Estado Marcado | Estado Real |
-|---|---|---|---|
-| **4.1** | Contraseñas SHA-256 sin salt | 🟢 doc | 🟢 **Mantener como documentación** |
-| **4.2** | Options API vs Composition API | 🟢 doc | 🟢 **Documentado en** ARCHITECTURE.md |
+## Prioridad Alta
 
 ---
 
-### Resumen de Verificación
+### A1 — Eliminar botón y código muerto de eliminar materiales
 
-| Estado | Cantidad |
-|---|---|
-| ✅ Completado (código verificado) | **12** (0.1, 0.2, 0.3, 2.1bde, 2.4.1, 2.5, 2.6, 2.7, 3.2, 3.3) |
-| 🟡 Parcialmente implementado | **3** (1.2, 2.1, 2.2, 2.3) |
-| ❌ Pendiente | **5** (1.1, 1.3, 2.4.2, 3.1, 3.4) |
-| 🚫 Ya no aplica | Los 4 del historial siguen correctos |
-
----
-
-## Fase 2: Auditoría Completa
-
----
-
-## Prioridad Máxima: Bugs Detectados
-
-### 🔴 Problema 1 — Botones "Actualizar" de MaterialesPage y MateriaPrimaPage no refrescan datos
-
-El flujo del botón "↻ Actualizar" emite el evento `'actualizar'` sin argumentos. En `MaterialesPage.vue` y `MateriaPrimaPage.vue`, el binding es `@actualizar="cargarInventario"`. 
-
-Al hacer clic en "Actualizar", se llama `cargarInventario()` **sin argumentos**. Vue pasa el evento nativo (un `MouseEvent`) como primer argumento. El `obtenerDatos` recibe `forceRefresh` (el MouseEvent que es truthy) y lo pasa a `catalogos.obtenerMateriales(force)`. Esto técnicamente funciona, pero de forma accidental y muy frágil. 
-
-**Solución:** Cambiar el binding a `@actualizar="cargarInventario(true)"` para pasar explícitamente `forceRefresh = true` y no depender de la coincidencia del `MouseEvent`.
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/pages/MaterialesPage.vue` (L36-39, L200-209)
+  - `src/client/MaterialClient.js` (L172-189)
+- **Descripción:** El botón de eliminar materiales sigue presente en el inventario, junto con el método `eliminarMaterial()` en la página y la función `eliminarMaterial()` en `MaterialClient.js`. Eliminar un material que sea insumo de una receta puede dejar referencias huérfanas.
+- **Motivo:** Riesgo de integridad referencial. Código muerto que confunde y agrega mantenimiento innecesario.
+- **Propuesta:**
+  1. Eliminar el botón `🗑️` y la columna "Acciones" del template de `MaterialesPage.vue`.
+  2. Eliminar el método `eliminarMaterial()` de `MaterialesPage.vue`.
+  3. Eliminar la función `eliminarMaterial()` de `MaterialClient.js`.
+  4. Eliminar la clase `.actions-column` del `<style scoped>` de `MaterialesPage.vue`.
+- **Impacto:** Elimina ~20 líneas de código muerto y un riesgo de integridad de datos.
 
 ---
 
-### 🔴 Problema 2 — Otros botones/acciones con flujos similares
+### A2 — Limpieza de comentarios y código muerto comentado
 
-Hay **4 lugares** donde el botón "Actualizar" pasa un `MouseEvent` en lugar de `true` como `forceRefresh`. Funciona por coincidencia, pero es un patrón frágil que podría romperse si se añadiera lógica tipo `forceRefresh === true`.
+- **Estado:** Pendiente
+- **Archivos afectados:** Múltiples archivos en `client/` y `composables/`
+- **Descripción:** Detectados tres tipos de comentarios a limpiar:
 
-- `MaterialesPage.vue` L25
-- `MateriaPrimaPage.vue` L25
-- `RecetasPage.vue` L26
-- `RecetasPage.vue` L31
+  **a) Código CRUD comentado ("Reservado para futuro"):** Bloques completos de funciones `actualizarReceta`, `eliminarReceta`, `obtenerUsuario`, `actualizarUsuario`, `actualizarOperadorPedido` comentados en:
+  - `RecetaClient.js` (L139-228)
+  - `UsuarioClient.js` (L58-98)
+  - `PedidoClient.js` (L306-323)
+  - `PlanificacionClient.js` (L4, L138+)
 
----
+  **b) JSDoc que repite lo que la firma ya expresa:** Comentarios como `@param {string} fecha` o `@returns {string}` en funciones donde la firma es autoexplicativa. Archivos:
+  - `date.js` (L7-11) — `formatearFecha(fecha)` es autoexplicativo.
+  - `MateriaPrimaClient.js` (L142-146) — `actualizarStockMateriaPrima(id, nuevaCantidad)` es autoexplicativo.
 
-## 1. Arquitectura
+  **c) JSDoc útil que debe conservarse:**
+  - `useAuth.js` (L1-7) — Explica cuándo usar el composable vs los helpers.
+  - `useInventario.js` (L4-9) — Documenta la interfaz del objeto de opciones.
+  - `useExcel.js` (L8-12, L31-35) — Documenta parámetros no evidentes.
+  - `PlanificacionAlgoritmo.js` — Documenta las estructuras de datos complejas.
+  - `DashboardClient.js` (L330-334) — Explica side-effects vs lectura pura.
 
-### Evaluación General: 🟢 Buena
-
-**Puntos positivos:**
-- ✅ **Separación clara de capas**: `client/`, `composables/`, `pages/`, `components/`, `utils/`
-- ✅ **Los componentes `.vue` nunca hacen queries directas a Supabase**
-- ✅ **Composables actúan como store ligero** con estado compartido declarado fuera de la función
-- ✅ **Organización de componentes por feature**
-- ✅ **Lazy loading** de todas las páginas en el router
-- ✅ **Guard de rutas** con roles bien implementado
-
-**Puntos a mejorar:**
-- Lógica de algoritmos complejos en `client/` puede afectar la legibilidad (`PlanificacionAlgoritmo.js`).
-- `utils/` muy escasa.
-- URLs de APIs externas (`localhost:8060`, `8070`, `8090`) están hardcoded en cada client.
-
----
-
-## 2. Consistencia Options API / Composition API
-
-### Evaluación: ✅ Consistente
-
-El proyecto sigue un patrón **híbrido deliberado y bien documentado**:
-- **Componentes `.vue`** → Options API con bloque `setup()` para inyectar composables
-- **Composables** → Composition API pura
-
-**Recomendación:** No migrar a `<script setup>`. El patrón actual es consistente, funcional y el esfuerzo de migración no aporta valor real para el alcance de una tesis.
+- **Motivo:** El código comentado "para futuro" nunca se implementará en el alcance de la tesis. Los JSDoc redundantes añaden ruido visual sin aportar información nueva.
+- **Propuesta:**
+  1. Eliminar todos los bloques de código CRUD comentado.
+  2. Eliminar JSDoc que solo repite la firma de la función.
+  3. Conservar JSDoc que documenta estructuras complejas, patrones de uso o contratos de interfaz.
+- **Impacto:** Elimina ~130 líneas de código muerto. Mejora la legibilidad sin perder documentación útil.
 
 ---
 
-## 3. Revisión de Composables
+### A3 — Eliminar línea duplicada en useFiltroRecursos
 
-### Evaluación General: 🟢 Buenos
-
-- **No hay lógica duplicada entre composables** — cada uno tiene una responsabilidad clara.
-- **`useProduccionForm`** tiene una responsabilidad múltiple pero está fuertemente acoplada al flujo del formulario. Dividirlo introduciría complejidad sin beneficio real.
-- **`useMensajes` es un singleton global**. Esto significa que si dos páginas muestran mensajes simultáneamente, se pisan. Para el uso actual (una sola vista activa) no es problema.
-
----
-
-## 4. Manejo de Errores
-
-### Evaluación: 🟡 Funcional pero con exceso de try/catch
-
-- **try/catch necesarios:** Todos los de `client/*.js` (frontera con Supabase/Axios).
-- **try/catch redundantes:** Todas las páginas repiten el patrón idéntico de `this.cargando = true`, `try { await Client.hacerAlgo() }`, `catch (e) { mostrarMensaje('error') }`, `finally`. Se repite ~15 veces.
-
-**Propuesta:** Crear un composable `useAsyncAction()` para envolver el patrón y unificar el manejo de errores. Eliminaría ~100 líneas de código repetido.
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/composables/useFiltroRecursos.js` (L23-24)
+- **Descripción:** La línea `cargandoRecursos.value = true` está duplicada en las líneas 23 y 24. Es un copy-paste evidente.
+- **Motivo:** Código duplicado trivial. No causa bugs pero es ruido.
+- **Propuesta:** Eliminar la línea 24 (duplicada).
+- **Impacto:** Limpieza menor, 1 línea.
 
 ---
 
-## 5. Consistencia del Código
+### A4 — Colores hardcoded y estilos inconsistentes en componentes de Recetas
 
-### Evaluación: 🟢 Buena con detalles menores
-
-**Convenciones consistentes (100%):** camelCase para variables, funciones, props, etc. PascalCase para componentes. kebab-case para eventos y CSS.
-
-**Inconsistencias menores detectadas:**
-- `UsuariosPage.vue` no usa clase `.page-container` ni `.page-content-wrap`. Color hardcoded `#64748b`.
-- Import de `MateriaPrimaClient` en minúscula en `MateriaPrimaPage.vue`.
-
----
-
-## 6. Refactorización
-
-### Oportunidades identificadas (priorizadas):
-
-1. **R1:** Patrón CRUD try/catch repetido (→ `useAsyncAction`).
-2. **R2:** Eliminar botón 🗑️ y código muerto de eliminar materiales (§1.1).
-3. **R3:** URLs de API externas hardcoded → `.env` o `config.js`.
-4. **R4:** Import inconsistente de `materiaPrimaClient`.
-5. **R5:** `UsuariosPage` no sigue el patrón de layout global.
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/components/recetas/RecetaResumen.vue` (L83, L102, L129)
+  - `src/components/recetas/RecetaForm.vue` (L117, L129)
+  - `src/components/recetas/RecetaCategoria.vue` (L80)
+- **Descripción:**
+  - `RecetaResumen.vue` usa `background: white` (L83) y `background: #f8faf8` (L102, L129) en lugar de las variables CSS del sistema de diseño (`var(--bg)` y `var(--bg-secondary)`).
+  - `RecetaForm.vue` usa `background: white` (L117) en `.form-panel input`.
+  - `RecetaCategoria.vue` usa `background: linear-gradient(180deg, #ffffff 0%, #f8faf8 100%)` con colores literales.
+  - Estos colores no se adaptan al modo oscuro.
+- **Motivo:** Inconsistencia con el sistema de design tokens. En dark mode estos elementos se verán como cajas blancas sobre fondo oscuro.
+- **Propuesta:**
+  1. Reemplazar `white` por `var(--bg)`.
+  2. Reemplazar `#f8faf8` por `var(--bg-secondary)`.
+  3. Actualizar el gradiente en `RecetaCategoria.vue` para usar variables CSS.
+- **Impacto:** Consistencia visual y soporte correcto de dark mode en 3 componentes.
 
 ---
 
-## 7. Estilos
+### A5 — Patrón duplicado de extracción de datos del catálogo
 
-### Evaluación: 🟡 Buena base pero con duplicación residual
-
-**Puntos positivos:** Sistema de design tokens bien definido, soporte dark mode, clases globales organizadas, responsive con breakpoints consistentes.
-
-**Duplicación residual detectada:**
-- `.badge-cargando` scoped en ProduccionPage.
-- Estilos vacíos `<style scoped></style>` en MermasPage.
-- Color hardcoded en UsuariosPage.
-
-**Recomendación firme: Mantener Vanilla CSS.** El proyecto ya tiene un sistema de design tokens maduro (`style.css`, 584 líneas), soporte dark mode, responsive, y clases reutilizables. Migrar a Tailwind CSS o Bootstrap requeriría reescribir todos los templates para un beneficio marginal. Para el alcance de una tesis, el costo no se justifica.
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/pages/RecetasPage.vue` (L110, L114, L124, L128, L140-141)
+  - `src/pages/PlanificacionPage.vue` (L130, L134, L148, L208)
+  - `src/pages/MermasPage.vue` (L94, L98, L104, L112, L116, L123)
+  - `src/pages/PedidoPage.vue` (L121, L125)
+  - `src/pages/ClientesPage.vue` (L97, L101)
+- **Descripción:** El patrón para extraer datos del catálogo se repite en ~15 lugares con variantes:
+  ```js
+  // Variante más común:
+  const response = await this.catalogos.obtenerX()
+  if (response && response.success === false) { ... }
+  else { this.datos = response?.success ? response.data : (response ?? []) }
+  ```
+  La expresión `response?.success ? response.data : (response ?? [])` es un "safety net" innecesario porque `useCatalogos` **siempre** retorna `{ success: true, data: [...] }` o propaga el error `{ success: false }`. La rama `(response ?? [])` nunca se ejecuta.
+- **Motivo:** Código defensivo redundante que añade ruido y complejidad. La inconsistencia entre variantes dificulta la lectura.
+- **Propuesta:** Crear un helper en `utils/` que estandarice la extracción:
+  ```js
+  // utils/response.js
+  export function extraerDatos(response, fallback = []) {
+    if (response?.success === false) return fallback
+    return response?.data ?? fallback
+  }
+  ```
+  Luego reemplazar todas las variantes por:
+  ```js
+  const response = await this.catalogos.obtenerX()
+  if (response?.success === false) {
+    this.mostrarMensaje('error', '...')
+    this.datos = []
+  } else {
+    this.datos = extraerDatos(response)
+  }
+  ```
+- **Impacto:** Elimina ~30 líneas de código redundante. Estandariza un patrón que se repite en 5+ páginas.
 
 ---
 
-## Nuevas Recomendaciones
+### A6 — Estilos duplicados entre InventoryTable y PreviewTable
 
-### 🔴 Alta prioridad
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/components/shared/InventoryTable.vue` (L58-192)
+  - `src/components/shared/PreviewTable.vue` (L60-210)
+- **Descripción:** Ambos componentes comparten ~80% de sus estilos scoped: `.inventory-card` / `.preview-card` son idénticos, `.inventory-header` / `.preview-header` son idénticos, `.inventory-table` / `.preview-table` son idénticos, `.content-table` / `.preview-content` son casi idénticos. Las reglas de `thead`, `th`, `td`, `tbody tr:hover`, y los breakpoints responsive son copia exacta.
+- **Motivo:** Duplicación masiva de CSS (~120 líneas repetidas). Cualquier cambio visual requiere editar ambos archivos.
+- **Propuesta:** Extraer las clases compartidas a `style.css` global bajo un namespace `.data-card`:
+  - `.data-card` (wrapper)
+  - `.data-card-header` (header con gradiente verde)
+  - `.data-card-content` (padding + overflow)
+  - `.data-card-table` (tabla base + thead/th/td/hover)
+  - Breakpoints responsive asociados
 
-| # | Recomendación | Estado | Justificación |
-|---|---|---|---|
-| **N1** | **Fix: Pasar `forceRefresh=true` explícitamente en botones Actualizar** | ❌ Pendiente | 4 handlers pasan `MouseEvent` por coincidencia en vez de `true`. Frágil y confuso. |
-| **N2** | **Eliminar botón 🗑️ y método `eliminarMaterial` (§1.1)** | ✅ Completado | Riesgo de borrar materiales con referencias colgantes. |
+  Mantener en cada componente solo los estilos específicos: `.preview-actions` en PreviewTable, `.btn-refresh` y `.btn-sync` en InventoryTable.
+- **Impacto:** Elimina ~120 líneas de CSS duplicado. Un solo punto de mantenimiento para el estilo de tablas de datos.
 
-### 🟡 Media prioridad
+---
 
-| # | Recomendación | Estado | Justificación |
-|---|---|---|---|
-| **N3** | **Crear `useAsyncAction` composable (§2.1a)** | ✅ Completado | Centralizar el patrón try/catch repetido ~15 veces. Mejora DRY y mantenibilidad. |
-| **N4** | **Agregar timeout a llamadas Axios (§3.4)** | ✅ Completado | 3 llamadas a APIs externas sin timeout. Si la API está caída, la UI se bloquea indefinidamente. |
-| **N5** | **Centralizar URLs de APIs externas** | ❌ Pendiente | Mover a `.env` o `config.js`. |
-| **N6** | **Crear `utils/mapper.js` (§1.3)** | ✅ Completado | Centralizar conversión snake_case ↔ camelCase. |
+### A7 — Funciones de selección duplicadas en RecetasPage
 
-### 🟢 Baja prioridad
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/pages/RecetasPage.vue` (L155-185)
+- **Descripción:** Cuatro funciones (`alternarMaterial`, `alternarMateriaPrima`, `actualizarCantidadMaterial`, `actualizarCantidadMateriaPrima`) repiten la misma lógica con la única diferencia del array target (`materialesSeleccionados` vs `materiaPrimaSeleccionada`) y el campo del nombre (`nombre` vs `variedad`).
+- **Motivo:** Duplicación lógica que dificulta el mantenimiento. Si se cambia la lógica de selección, hay que actualizar 4 funciones.
+- **Propuesta:** Refactorizar a dos funciones genéricas:
+  ```js
+  alternarItem(lista, item, seleccionado, campoNombre = 'nombre') {
+    if (seleccionado) {
+      lista.push({ id: item.id, nombre: item[campoNombre], cantidad: 1 })
+      return lista
+    }
+    return lista.filter(x => x.id !== item.id)
+  }
 
-| # | Recomendación | Estado | Justificación |
-|---|---|---|---|
-| **N7** | **Normalizar UsuariosPage al patrón de layout global** | ✅ Completado | Es la única página que no usa `.page-container` y tiene color hardcoded. |
-| **N8** | **Corregir import de `materiaPrimaClient` en MateriaPrimaPage** | ❌ Pendiente | Import en minúscula rompe la convención visual. |
-| **N9** | **Reorganizar archivos sueltos de la raíz (§3.1)** | ✅ Completado | `db.json`, archivos SQL, `generarExcelEjemplo.js`. |
-| **N10** | **Eliminar `<style scoped></style>` vacío en MermasPage** | ❌ Pendiente | Limpieza menor. |
-| **N11** | **Mover `.badge-cargando` a estilos globales** | ✅ Completado | Evitar CSS scoped duplicado. |
-| **N12** | **Documentar limitación de transaccionalidad (§2.4.2)** | ✅ Completado | Mantener como limitación documentada de la tesis. |
+  actualizarCantidadItem(lista, id, valor) {
+    const item = lista.find(x => x.id === id)
+    if (item) item.cantidad = Number(valor) || 1
+  }
+  ```
+  Los handlers del template invocan estas funciones pasando el array correspondiente.
+- **Impacto:** Reduce ~30 líneas de código duplicado a ~10 líneas genéricas.
+
+---
+
+### A8 — Bloque style scoped vacío en UsuariosPage
+
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/pages/UsuariosPage.vue` (L82-84)
+- **Descripción:** El bloque contiene solo un comentario `/* Sin estilos aislados. Toda la vista usa los layout globales. */`. Es un bloque vacío con un comentario que no aporta valor.
+- **Motivo:** Ruido innecesario en el archivo. Si no hay estilos scoped, el bloque no debería existir.
+- **Propuesta:** Eliminar el bloque `<style scoped>` completo.
+- **Impacto:** Limpieza menor, 3 líneas.
+
+---
+
+## Prioridad Media
+
+---
+
+### M1 — Centralizar URLs de APIs externas en .env
+
+- **Estado:** Completado
+- **Evidencia:** Las URLs de APIs externas ya están en `.env` usando `VITE_API_PEDIDOS_URL`, `VITE_API_MATERIA_PRIMA_URL`, `VITE_API_MATERIALES_URL`. Los clients usan `import.meta.env.VITE_API_*`.
+- **Nota:** Se mantiene para referencia. Ya no requiere acción.
+
+---
+
+### M2 — Evaluación del módulo RecetaResumen
+
+- **Estado:** Evaluado — No recomendado
+- **Archivos analizados:**
+  - `src/components/recetas/RecetaResumen.vue`
+  - `src/pages/RecetasPage.vue`
+- **Evaluación completa:**
+
+  El componente `RecetaResumen` muestra los materiales y materia prima **seleccionados durante la creación de una receta**. Su propósito es dar feedback visual al usuario mientras arma una receta nueva.
+
+  | Aspecto | RecetaResumen actual | RecetaDetalle propuesto |
+  |---|---|---|
+  | Propósito | Feedback durante creación | Visualización de receta guardada |
+  | Datos que consume | Arrays reactivos locales (seleccionados) | Receta completa desde BD |
+  | Páginas que lo usarían | Solo RecetasPage | Potencialmente Producción, Planificación |
+  | Reutilización | Baja (solo creación) | Media-Alta |
+
+  **Conclusión:** No se recomienda reemplazar `RecetaResumen` porque cumple una función diferente a un componente de detalle. Un componente `RecetaDetalle` sería complementario (no sustituto), pero dado que el proyecto está en fase de cierre y no se agregan funcionalidades nuevas, **esta tarea no se incluye en el plan de trabajo**.
+
+---
+
+### M3 — PedidoClient._obtenerCatalogos no extrae correctamente .data
+
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/client/PedidoClient.js` (L16-35)
+- **Descripción:** El método privado `_obtenerCatalogos()` hace:
+  ```js
+  let [clientes, recetas] = await Promise.all([
+    catalogos.obtenerClientes(),
+    catalogos.obtenerRecetas()
+  ])
+  const mapClientes = new Map(clientes.map(c => [c.nombre.toLowerCase().trim(), c.id]))
+  ```
+  Pero `catalogos.obtenerClientes()` devuelve `{ success: true, data: [...] }`, no un array directo. El `.map()` en la línea 23 recibiría `{ success, data }` y fallaría al intentar acceder a `c.nombre`. Esto funciona actualmente porque hay un cache previo que en ciertos flujos devuelve el objeto correctamente, pero es un bug potencial.
+- **Motivo:** Bug latente que podría manifestarse en escenarios de primera carga sin cache.
+- **Propuesta:**
+  ```js
+  const [clientesRes, recetasRes] = await Promise.all([
+    catalogos.obtenerClientes(),
+    catalogos.obtenerRecetas()
+  ])
+  const clientes = clientesRes?.data ?? []
+  const recetas = recetasRes?.data ?? []
+  ```
+- **Impacto:** Previene un crash potencial en escenarios de cache vacío.
+
+---
+
+### M4 — Transiciones CSS no utilizadas en PlanificacionPage
+
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/pages/PlanificacionPage.vue` (L399-407)
+- **Descripción:** Las clases `.fade-msg-enter-active`, `.fade-msg-leave-active`, `.fade-msg-enter-from`, `.fade-msg-leave-to` están definidas en el `<style scoped>` pero no se usan en ningún `<transition name="fade-msg">` dentro del template.
+- **Motivo:** CSS muerto que añade bytes innecesarios.
+- **Propuesta:** Eliminar las 8 líneas de transiciones no usadas (L399-407).
+- **Impacto:** Limpieza de ~8 líneas de CSS muerto.
+
+---
+
+### M5 — Consistencia en el manejo de respuestas de catálogos en las páginas
+
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/pages/RecetasPage.vue` (L106-131)
+  - `src/pages/MermasPage.vue` (L88-127)
+- **Descripción:** Algunas páginas envuelven la carga en `try/catch` (e.g., `MaterialesPage`, `MateriaPrimaPage` vía `useInventario`) mientras que otras no lo hacen (e.g., `RecetasPage.cargarMateriales`, `RecetasPage.cargarMateriaPrima`, `MermasPage.cargarDatos`).
+
+  En `RecetasPage`, `cargarMateriales()` y `cargarMateriaPrima()` no usan `try/catch` alrededor del `await`. Si `useCatalogos` lanzara una excepción (en lugar de retornar `{ success: false }`), la promesa rechazada no se capturaría.
+- **Motivo:** Inconsistencia en el manejo defensivo. Todas las funciones de carga deberían seguir el mismo patrón.
+- **Propuesta:** Unificar el patrón de manejo de errores. Dado que los `Client` ya capturan errores internamente y devuelven `{ success: false }`, el `try/catch` adicional no es estrictamente necesario, pero debería ser consistente: o se pone en todas o en ninguna.
+- **Impacto:** Consistencia del patrón entre páginas.
+
+---
+
+### M6 — PlanificacionPage usa tabs en lugar de espacios
+
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/pages/PlanificacionPage.vue` (todo el archivo)
+- **Descripción:** `PlanificacionPage.vue` utiliza tabulaciones como indentación, mientras que el resto de archivos del proyecto usan espacios (2 o 4). Es la única página con esta inconsistencia.
+- **Motivo:** Inconsistencia de formato que dificulta la revisión de diffs en Git.
+- **Propuesta:** Convertir tabs a espacios (4 espacios, consistente con el resto del proyecto).
+- **Impacto:** Consistencia visual del código fuente.
+
+---
+
+### M7 — Selector .sin-planificacion p apunta a clase inexistente en ProduccionPage
+
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/pages/ProduccionPage.vue` (L233-238)
+- **Descripción:** El estilo scoped define `.sin-planificacion p { ... }` pero en el template la clase usada es `empty-state-card` (global), no `.sin-planificacion`. El selector nunca coincide con ningún elemento.
+- **Motivo:** CSS muerto que no aplica a ningún elemento.
+- **Propuesta:** Eliminar el selector `.sin-planificacion p` (L233-238).
+- **Impacto:** Limpieza de ~6 líneas de CSS muerto.
+
+---
+
+### M8 — Simplificar comentarios de sección en el código
+
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/pages/MaterialesPage.vue`, `MateriaPrimaPage.vue`, `RecetasPage.vue`, `PedidoPage.vue`
+- **Descripción:** Los separadores de sección tipo `/* ================= CARGAR ================= */` son más ruidosos de lo necesario. También hay comentarios HTML en templates como `<!-- TITULO -->`, `<!-- ALERTAS -->`, `<!-- LAYOUT -->` que son redundantes cuando la estructura del template es clara.
+- **Motivo:** Los comentarios de sección decorados ocupan espacio visual sin añadir información que el código no exprese por sí solo. Los comentarios HTML como `<!-- TITULO -->` antes de un `<h1>` son redundantes.
+- **Propuesta:**
+  1. Simplificar separadores: `/* ================= CARGAR ================= */` pasa a ser `// -- Cargar --` (patrón ya usado en ProduccionPage).
+  2. Eliminar comentarios HTML redundantes como `<!-- TITULO -->`, `<!-- ALERTAS -->` donde el código es autoexplicativo.
+  3. Conservar comentarios HTML en secciones complejas como `<!-- PANEL IZQUIERDO -->` que ayudan a navegar layouts largos.
+- **Impacto:** Reduce ruido visual sin perder orientación en el código.
+
+---
+
+## Prioridad Baja
+
+---
+
+### B1 — Eliminar código CRUD comentado (Reservado para futuro)
+
+- **Estado:** Pendiente (vinculado con A2)
+- **Archivos afectados:**
+  - `src/client/RecetaClient.js` (L139-228, ~89 líneas)
+  - `src/client/UsuarioClient.js` (L58-98, ~40 líneas)
+  - `src/client/PedidoClient.js` (L306-323, ~17 líneas)
+  - `src/client/PlanificacionClient.js` (L4, L138+)
+- **Descripción:** Funciones CRUD completas comentadas con `/* ... */` marcadas como "Reservado para futuro CRUD". Incluyen `actualizarReceta`, `eliminarReceta`, `obtenerUsuario`, `actualizarUsuario`, `actualizarOperadorPedido`.
+- **Motivo:** El proyecto está en fase de cierre. Este código nunca se implementará y vive en el historial de Git si se necesita en el futuro. Mantenerlo en los archivos añade ~150 líneas muertas.
+- **Propuesta:** Eliminar todos los bloques comentados. Si se necesitaran en el futuro, están en el historial de Git.
+- **Impacto:** Elimina ~150 líneas de código muerto distribuido en 4 archivos.
+
+---
+
+### B2 — Inconsistencia menor en nombres de eventos del template
+
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/components/recetas/RecetaForm.vue` (L86)
+  - `src/pages/RecetasPage.vue` (L19)
+- **Descripción:** El evento `actualizar-receta` en RecetaForm usa kebab-case (correcto para eventos Vue), pero la prop se maneja en el padre con `@actualizar-receta="nuevaReceta = $event"` que es una expresión inline compleja. Esto es consistente pero podría simplificarse.
+- **Motivo:** Observación menor. La convención kebab-case para eventos se mantiene correctamente en todo el proyecto. No requiere acción inmediata.
+- **Propuesta:** No requiere cambio, solo documentar como patrón establecido.
+- **Impacto:** Ninguno. Es una observación para referencia.
+
+---
+
+### B3 — Variable today vs hoy en DashboardPage
+
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/pages/DashboardPage.vue` (L90)
+- **Descripción:** `DashboardPage` usa `const today = obtenerFechaHoy()` con el nombre en inglés, mientras que todo el proyecto usa variables en español (`fecha`, `hoy`, `fechaSeleccionada`).
+- **Motivo:** Inconsistencia de idioma en una sola variable.
+- **Propuesta:** Renombrar `today` a `hoy` para consistencia con el resto del proyecto.
+- **Impacto:** Limpieza cosmética, 2 ocurrencias.
+
+---
+
+### B4 — Archivos innecesarios en assets
+
+- **Estado:** Pendiente
+- **Archivos afectados:**
+  - `src/assets/vite.svg`
+  - `src/assets/vue.svg`
+  - `src/assets/WhatsApp Video 2026-07-22 at 9.16.59 PM.mp4` (1 MB)
+- **Descripción:** Los archivos `vite.svg` y `vue.svg` son los archivos por defecto del template de Vite y no se usan en la aplicación. El video de WhatsApp tampoco pertenece al proyecto.
+- **Motivo:** Archivos que no pertenecen al proyecto incrementan el tamaño del bundle/repo sin beneficio.
+- **Propuesta:** Eliminar `vite.svg`, `vue.svg` y el video de WhatsApp. Verificar antes que no se referencien en ningún import.
+- **Impacto:** Reduce ~1 MB del repositorio.
+
+---
+
+### B5 — ProduccionResumen.vue sin uso visible
+
+- **Estado:** Requiere verificación
+- **Archivos afectados:**
+  - `src/components/produccion/ProduccionResumen.vue` (7 KB)
+- **Descripción:** El componente `ProduccionResumen.vue` no se importa ni referencia desde `ProduccionPage.vue`. Podría ser código muerto de una versión anterior que fue reemplazada por `ProduccionRecetasView.vue`.
+- **Motivo:** Si no se usa, son 7 KB de código muerto que añade confusión.
+- **Propuesta:** Verificar con `grep` si se importa desde algún otro archivo. Si no se usa, eliminarlo.
+- **Impacto:** Potencialmente elimina un componente entero de código muerto.
+
+---
+
+### B6 — Documentar limitación de transaccionalidad en pedidos
+
+- **Estado:** Completado
+- **Evidencia:** Documentado en `ARCHITECTURE.md`. `PedidoClient.sincronizarConSupabase()` hace `DELETE` + `INSERT` sin transacción para los detalles. Aceptado como limitación del alcance de la tesis dado que Supabase client-side no soporta transacciones.
 
 ---
 
 ## Hoja de Ruta Priorizada
 
-### Fase 1 — Fixes inmediatos
-1. **N1** — Fix botones "Actualizar" 
-2. **N2** — Eliminar botón 🗑️ de Materiales 
-3. **N4** — Agregar timeout a Axios 
-4. **N8** — Corregir import de MateriaPrimaClient 
-5. **N10** — Eliminar style vacío 
+### Fase 1 — Fixes inmediatos y código muerto (Alta prioridad)
 
-### Fase 2 — Mejoras de mantenibilidad
-6. **N5** — Centralizar URLs de APIs
-7. **N3** — Crear `useAsyncAction` composable
-8. **N6** — Crear `utils/mapper.js`
+| # | Tarea | Esfuerzo | Líneas |
+|---|---|---|---|
+| A1 | Eliminar botón y `eliminarMaterial` | 5 min | ~20 |
+| A3 | Eliminar línea duplicada en `useFiltroRecursos` | 1 min | 1 |
+| A8 | Eliminar `<style scoped>` vacío en UsuariosPage | 1 min | 3 |
+| M4 | Eliminar transiciones CSS no usadas en PlanificacionPage | 2 min | 8 |
+| M7 | Eliminar selector `.sin-planificacion p` muerto | 1 min | 6 |
 
-### Fase 3 — Limpieza y consistencia
-9. **N7** — Normalizar UsuariosPage
-10. **N9** — Reorganizar archivos raíz
-11. **N11** — Mover `.badge-cargando` a global
+### Fase 2 — Limpieza de comentarios y código muerto (Alta prioridad)
 
-### Fase 4 — Documentación
-12. **N12** — Documentar limitación de transaccionalidad
+| # | Tarea | Esfuerzo | Líneas |
+|---|---|---|---|
+| A2 | Limpiar JSDoc redundante y código CRUD comentado | 15 min | ~150 |
+| B1 | Eliminar bloques CRUD "Reservado para futuro" | (incluido en A2) | — |
+| M8 | Simplificar comentarios de sección | 10 min | ~40 |
+
+### Fase 3 — Consistencia visual y CSS (Alta prioridad)
+
+| # | Tarea | Esfuerzo | Líneas |
+|---|---|---|---|
+| A4 | Reemplazar colores hardcoded por variables CSS | 10 min | ~8 |
+| A6 | Extraer estilos compartidos de tablas a `style.css` | 20 min | ~120 eliminadas |
+
+### Fase 4 — Refactorización de patrones (Alta/Media prioridad)
+
+| # | Tarea | Esfuerzo | Líneas |
+|---|---|---|---|
+| A5 | Crear helper `extraerDatos()` y unificar patrón | 15 min | ~30 |
+| A7 | Refactorizar funciones de selección duplicadas en RecetasPage | 10 min | ~20 |
+| M3 | Fix `_obtenerCatalogos` en PedidoClient | 5 min | ~4 |
+
+### Fase 5 — Limpieza final y consistencia (Media/Baja prioridad)
+
+| # | Tarea | Esfuerzo | Líneas |
+|---|---|---|---|
+| M5 | Unificar patrón try/catch en páginas | 10 min | — |
+| M6 | Convertir tabs a espacios en PlanificacionPage | 5 min | — |
+| B3 | Renombrar `today` a `hoy` en DashboardPage | 1 min | 2 |
+| B4 | Eliminar archivos innecesarios de `assets/` | 2 min | — |
+| B5 | Verificar y eliminar `ProduccionResumen.vue` si no se usa | 5 min | — |
+
+### Estimación total: ~2 horas de trabajo
+
+**Resultado esperado:** Un código base más limpio, con ~400+ líneas eliminadas de código muerto/duplicado, convenciones consistentes, y un CSS más mantenible.
