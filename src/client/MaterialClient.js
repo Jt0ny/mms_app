@@ -15,8 +15,7 @@ export default {
       const materialesExternos = response.data || [];
 
       if (materialesExternos.length === 0) {
-
-        return;
+        return { success: true };
       }
 
       // 1. Obtener catálogo existente en una sola consulta
@@ -60,10 +59,9 @@ export default {
           .upsert(upsertData);
 
         if (error) throw error;
-
-      } else {
-
       }
+      
+      return { success: true };
     } catch (error) {
       console.error("Error al sincronizar materiales con Supabase:", error);
       return { success: false, error };

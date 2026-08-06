@@ -161,7 +161,8 @@ export default {
         // ── Limpiar ──
         limpiarDatos() {
             this.datosProcesados = []
-            this.mensaje = { tipo: null, texto: '' }
+            this.mensaje.tipo = null
+            this.mensaje.texto = ''
         },
 
         // ── Confirmar excel ──

@@ -228,7 +228,7 @@ export default {
 
 <style scoped>
 .mapeo-panel {
-	background: white;
+	background: var(--bg);
 	border-radius: 20px;
 	box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 	border: 1px solid var(--border-light);
@@ -263,7 +263,7 @@ export default {
 .categoria-card {
 	padding: 20px;
 	border-radius: 16px;
-	background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+	background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
 	border: 1px solid var(--border);
 	display: grid;
 	gap: 16px;
@@ -341,7 +341,7 @@ export default {
 	padding: 10px 14px;
 	border: 1.5px solid var(--border);
 	border-radius: 10px;
-	background: white;
+	background: var(--bg);
 	font-size: 14px;
 	color: var(--text-h);
 	outline: none;
@@ -437,7 +437,7 @@ export default {
 
 .btn-cancelar {
 	border: 1.5px solid var(--border);
-	background: white;
+	background: var(--bg);
 	color: var(--text);
 	font-weight: 700;
 	padding: 11px 20px;

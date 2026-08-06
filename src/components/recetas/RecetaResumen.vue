@@ -40,7 +40,7 @@
                     <li v-for="item in materiaPrima" :key="item.id">
                         <strong> {{ item.nombre }}</strong>
                         -
-                        {{ item.cantidad }}unidad(es)
+                        {{ item.cantidad }} unidad(es)
                     </li>
                 </ul>
 

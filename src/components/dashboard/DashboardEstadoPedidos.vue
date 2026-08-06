@@ -180,7 +180,7 @@ export default {
     border: none;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    background: white;
+    background: var(--bg);
 }
 
 .table-container.with-scroll {

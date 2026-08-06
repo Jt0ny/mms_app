@@ -215,7 +215,7 @@ export default {
     border-radius: 12px;
     padding: 11px 12px;
     font: inherit;
-    background: white;
+    background: var(--bg);
     color: var(--text);
 }
 
@@ -229,7 +229,7 @@ export default {
 .empty-state {
     padding: 22px;
     border-radius: 14px;
-    background: #f8faf8;
+    background: var(--bg-secondary);
     border: 1px dashed var(--border);
     color: var(--text-light);
 }
@@ -278,7 +278,7 @@ export default {
     padding: 14px 16px;
     border: 1px solid var(--border-light);
     border-radius: 14px;
-    background: white;
+    background: var(--bg);
 }
 
 .category-info {

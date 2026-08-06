@@ -279,9 +279,11 @@ export default {
                   notas: null
               }))
           )
-          insertadosFact.forEach(c => {
-              mapaClientes.set(c.nombre.toLowerCase().trim(), c)
-          })
+          if (insertadosFact.success && insertadosFact.data) {
+              insertadosFact.data.forEach(c => {
+                  mapaClientes.set(c.nombre.toLowerCase().trim(), c)
+              })
+          }
       }
 
       // Insertar Envío

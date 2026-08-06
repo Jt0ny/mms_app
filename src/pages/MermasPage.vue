@@ -38,7 +38,7 @@ import MermaList from '../components/mermas/MermaList.vue'
 
 // Clientes API
 import MermaClient from '../client/MermaClient'
-import PlanificacionClient from '../client/PlanificacionClient'
+
 import { useMensajes } from '../composables/useMensajes.js'
 import { useCatalogos } from '../composables/useCatalogos.js'
 import { useFiltroRecursos } from '../composables/useFiltroRecursos.js'
@@ -108,7 +108,7 @@ export default {
         this.catalogos.obtenerMateriales(),
         this.catalogos.obtenerRecetas()
       ])
-      
+
       const matsData = materialesRes?.data ?? []
       this.materiales = matsData
       this.materialesFiltrados = this.materiales
@@ -121,14 +121,14 @@ export default {
       // Cargar materia prima (desde Supabase directamente)
       const mpRes = await this.catalogos.obtenerMateriaPrima()
       const mpData = mpRes?.data ?? []
-      
+
       this.materiaPrima = mpData
       this.materiaPrimaFiltrada = this.materiaPrima
       this.cargandoRecursos = false // Liberar estado de carga inicial de recursos
     },
     async registrarMerma(payload) {
       this.guardando = true
-      
+
       const response = await MermaClient.registrarMermaConDescuento(
         payload,
         {
@@ -163,7 +163,7 @@ export default {
       } else {
         this.mostrarMensaje('error', '❌ No se pudo registrar la merma.')
       }
-      
+
       this.guardando = false
     },
 
@@ -176,9 +176,6 @@ export default {
       })
     },
     async confirmarEliminarMerma(item) {
-      if (!confirm(`¿Estás seguro de eliminar el registro de merma de "${item.nombre}"?`)) {
-        return
-      }
 
       const response = await MermaClient.eliminarMerma(item.id)
       if (response.success) {
@@ -191,4 +188,3 @@ export default {
   }
 }
 </script>
-

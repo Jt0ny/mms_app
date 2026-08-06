@@ -125,7 +125,7 @@ export default {
 }
 
 .summary-card {
-    background: white;
+    background: var(--bg);
     border-radius: 12px;
     padding: 20px 24px;
     display: grid;
@@ -173,7 +173,7 @@ export default {
 }
 
 .content-table {
-    background: white;
+    background: var(--bg);
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--border);
@@ -215,7 +215,7 @@ export default {
 
 .td-operador {
     vertical-align: top !important;
-    background: white;
+    background: var(--bg);
     border-right: 1px solid var(--border);
     color: var(--text-h);
     font-size: 15px;

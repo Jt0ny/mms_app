@@ -3,10 +3,10 @@
 
         <div class="page-content-wrap">
 
-            <!-- TÍTULO -->
+
             <h1 class="page-title">Carga de Pedidos</h1>
 
-            <!-- ALERTAS -->
+
             <Alertas :mensaje="mensaje" />
 
             <!-- LAYOUT -->
@@ -113,7 +113,7 @@ export default {
     },
 
     methods: {
-        /* ================= PEDIDOS ================= */
+        // -- Pedidos --
         async cargarPedidos() {
             this.cargandoPedidos = true
             const response = await PedidoClient.obtenerPedidos()
@@ -143,7 +143,7 @@ export default {
             await this.cargarPedidos()
         },
 
-        /* ================= ARCHIVO ================= */
+        // -- Archivo --
         async procesarArchivo(file) {
             if (!file) return
             try {
@@ -163,13 +163,13 @@ export default {
 
 
 
-        /* ================= LIMPIAR ================= */
+        // -- Limpiar --
         limpiarDatos() {
             this.datosProcesados = []
             this.mostrarMensaje('exito', 'Vista previa limpiada')
         },
 
-        /* ================= GUARDAR ================= */
+        // -- Guardar --
         async confirmarYSubir() {
             if (!this.datosProcesados.length) {
                 return

@@ -4,7 +4,7 @@
             <div>
                 <h2>Materiales disponibles</h2>
 
-                <p>Selecciona los materialespara la receta</p>
+                <p>Selecciona los materiales para la receta</p>
             </div>
             <button type="button" class="btn-refresh" :disabled="cargando" @click="$emit('actualizar')">
                 {{ cargando ? 'Cargando...' : 'Actualizar' }} </button>
@@ -111,7 +111,7 @@ export default {
 
 <style scoped>
 .inventory-panel {
-    background: white;
+    background: var(--bg);
     border-radius: 14px;
     padding: 20px;
     box-shadow: var(--shadow-sm);
@@ -178,7 +178,7 @@ export default {
 .empty-state {
     padding: 18px;
     border-radius: 10px;
-    background: #f8faf8;
+    background: var(--bg-secondary);
     border: 1px dashed var(--border);
     color: var(--text-light);
 }

@@ -3,10 +3,10 @@
 
         <div class="page-content-wrap">
 
-            <!-- TÍTULO -->
+
             <h1 class="page-title">Creación de Recetas</h1>
 
-            <!-- ALERTAS -->
+
             <Alertas :mensaje="mensaje" />
 
             <!-- LAYOUT -->
@@ -102,7 +102,7 @@ export default {
 
     methods: {
 
-        /* ================= CARGAR ================= */
+        // -- Cargar --
         async cargarMateriales(forceRefresh = false) {
             this.cargandoMateriales = true
             const response = await this.catalogos.obtenerMateriales(forceRefresh)
@@ -134,7 +134,7 @@ export default {
         async cargarCategorias() {
             const [resRecetas, resPedidos] = await Promise.all([
                 this.catalogos.obtenerRecetas(),
-                PedidoClient.obtenerPedidos() // PedidoClient aún no retorna objeto de respuesta, pero lo hará pronto. Manejaremos ambos formatos por seguridad.
+                PedidoClient.obtenerPedidos()
             ])
 
             const arrRecetas = resRecetas?.success ? (resRecetas.data ?? []) : (resRecetas ?? [])
@@ -151,7 +151,7 @@ export default {
             this.categorias = [...new Set([...categoriasRecetas, ...categoriasPedidos])]
         },
 
-        /* ================= SELECCIÓN ================= */
+        // -- Selección --
         alternarMaterial(item, seleccionado) {
             if (seleccionado) {
                 this.materialesSeleccionados.push({ id: item.id, nombre: item.nombre, cantidad: 1 })
@@ -184,7 +184,7 @@ export default {
             }
         },
 
-        /* ================= VALIDAR ================= */
+        // -- Validar --
 
         validarFormulario() {
             if (!this.nuevaReceta.nombre || !this.nuevaReceta.categoria || !this.nuevaReceta.instrucciones) {
@@ -199,7 +199,7 @@ export default {
             return true
         },
 
-        /* ================= GUARDAR ================= */
+        // -- Guardar --
         async guardarReceta() {
 
             if (!this.validarFormulario()) {
@@ -222,7 +222,7 @@ export default {
             }
         },
 
-        /* ================= RESET ================= */
+        // -- Reset --
         resetearFormulario() {
 
             this.nuevaReceta = {

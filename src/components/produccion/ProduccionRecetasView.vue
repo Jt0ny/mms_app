@@ -225,7 +225,7 @@ export default {
 }
 
 .receta-card {
-    background: white;
+    background: var(--bg);
     padding: 12px;
     border-radius: 8px;
     box-shadow: var(--shadow-sm);

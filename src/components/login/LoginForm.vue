@@ -90,7 +90,7 @@ export default {
     width: min(420px, 100%);
     margin: auto;
     padding: 36px;
-    background: white;
+    background: var(--bg);
     border-radius: 22px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
@@ -130,7 +130,7 @@ input {
 
 input:focus {
     border-color: var(--primary);
-    background: white;
+    background: var(--bg);
     box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
 }
 
