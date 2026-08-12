@@ -19,9 +19,12 @@
                     <CargaArchivo nombreModulo="Ventas" :cargando="cargando" @archivo-seleccionado="procesarArchivo" />
 
                     <!-- INVENTARIO -->
-                    <InventoryTable title="📦 Pedidos Pendientes" :items="pedidosPendientes" :loading="cargandoPedidos"
-                        item-label="pedidos en curso" empty-text="📭 No hay datos en los pedidos"
+                    <InventoryTable title="Pedidos Pendientes" :items="pedidosPendientes" :loading="cargandoPedidos"
+                        item-label="pedidos en curso" empty-text="No hay datos en los pedidos"
                         @actualizar="cargarPedidos" @sincronizar="sincronizarAPI">
+                        <template #title-icon>
+                            <ArchiveBoxIcon class="icon-lg text-white" />
+                        </template>
                         <template #header>
                             <th>Cliente</th>
                             <th>Categoría</th>
@@ -76,6 +79,7 @@ import Alertas from '../components/Alertas.vue'
 import InventoryTable from '../components/shared/InventoryTable.vue'
 import PreviewTable from '../components/shared/PreviewTable.vue'
 import { useMensajes } from '../composables/useMensajes.js'
+import { ArchiveBoxIcon } from '@heroicons/vue/24/outline'
 
 export default {
 
@@ -83,7 +87,8 @@ export default {
         CargaArchivo,
         Alertas,
         InventoryTable,
-        PreviewTable
+        PreviewTable,
+        ArchiveBoxIcon
     },
 
     setup() {
@@ -117,10 +122,10 @@ export default {
         async cargarPedidos() {
             this.cargandoPedidos = true
             const response = await PedidoClient.obtenerPedidos()
-            
+
             if (response?.success === false) {
                 this.pedidosActual = []
-                this.mostrarMensaje('error', '❌ Error al cargar pedidos', 0)
+                this.mostrarMensaje('error', 'Error al cargar pedidos', 0)
             } else {
                 this.pedidosActual = response?.data ?? []
             }
@@ -129,17 +134,17 @@ export default {
 
         async sincronizarAPI() {
             this.cargandoPedidos = true
-            this.mostrarMensaje('info', '⚡ Sincronizando pedidos con la API externa...', 0)
-            
+            this.mostrarMensaje('info', ' Sincronizando con la API externa...', 0)
+
             const response = await PedidoClient.sincronizarConSupabase()
-            
+
             if (response?.success === false) {
-                this.mostrarMensaje('error', '❌ Error al sincronizar con la API externa')
+                this.mostrarMensaje('error', 'Error al sincronizar con la API externa')
                 this.cargandoPedidos = false
                 return
             }
 
-            this.mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
+            this.mostrarMensaje('exito', 'Sincronización exitosa con la API externa')
             await this.cargarPedidos()
         },
 
@@ -151,13 +156,13 @@ export default {
                 this.datosProcesados = this.procesarDatosVentas(matrizDatos)
 
                 if (!this.datosProcesados || !this.datosProcesados.length) {
-                    this.mostrarMensaje('error', '❌ Datos inválidos o sin registros')
+                    this.mostrarMensaje('error', 'Datos inválidos o sin registros')
                     return
                 }
-                this.mostrarMensaje('exito', `✓ ${this.datosProcesados.length} líneas de pedido cargadas`)
+                this.mostrarMensaje('exito', `${this.datosProcesados.length} líneas de pedido cargadas`)
             } catch (error) {
                 console.error(error)
-                this.mostrarMensaje('error', `❌ ${error.message || 'Error al leer Excel'}`)
+                this.mostrarMensaje('error', `${error.message || 'Error al leer Excel'}`)
             }
         },
 
@@ -185,11 +190,11 @@ export default {
                 // Sincronizar nuevos clientes en la base de datos local
                 await this.sincronizarClientes(this.datosProcesados)
 
-                this.mostrarMensaje('exito', '✓ Pedidos guardados correctamente')
+                this.mostrarMensaje('exito', 'Pedidos guardados correctamente')
                 this.datosProcesados = []
                 await this.cargarPedidos()
             } else {
-                this.mostrarMensaje('error', '❌ Error al guardar pedidos', 0)
+                this.mostrarMensaje('error', 'Error al guardar pedidos', 0)
             }
         }
     }

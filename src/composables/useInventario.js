@@ -1,12 +1,6 @@
 import { ref } from 'vue'
 import { useMensajes } from './useMensajes.js'
 
-/**
- * @param {Object} opciones
- * @param {Function} opciones.obtenerDatos — Función para obtener los datos locales
- * @param {Function} opciones.sincronizar — Función para sincronizar con la API externa
- * @param {string} opciones.nombreModulo — Nombre para los mensajes de error
- */
 export function useInventario({ obtenerDatos, sincronizar, nombreModulo }) {
     const { mostrarMensaje } = useMensajes()
 
@@ -16,10 +10,10 @@ export function useInventario({ obtenerDatos, sincronizar, nombreModulo }) {
     async function cargarInventario(forceRefresh = false) {
         cargandoInventario.value = true
         const response = await obtenerDatos(forceRefresh)
-        
+
         if (response?.success === false) {
             console.error(response.error)
-            mostrarMensaje('error', `❌ Error al cargar ${nombreModulo}`, 3000)
+            mostrarMensaje('error', `Error al cargar ${nombreModulo}`, 3000)
             inventarioActual.value = []
         } else {
             inventarioActual.value = response?.data ?? []
@@ -29,18 +23,18 @@ export function useInventario({ obtenerDatos, sincronizar, nombreModulo }) {
 
     async function sincronizarAPI() {
         cargandoInventario.value = true
-        mostrarMensaje('info', '⚡ Sincronizando con la API externa...', 0)
-        
+        mostrarMensaje('info', ' Sincronizando con la API externa...', 0)
+
         const response = await sincronizar()
-        
+
         if (response?.success === false) {
             console.error(response.error)
-            mostrarMensaje('error', '❌ Error al sincronizar con la API externa')
+            mostrarMensaje('error', 'Error al sincronizar con la API externa')
             cargandoInventario.value = false
             return
         }
 
-        mostrarMensaje('exito', '✓ Sincronización exitosa con la API externa')
+        mostrarMensaje('exito', 'Sincronización exitosa con la API externa')
         await cargarInventario(true)
     }
 

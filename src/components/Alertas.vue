@@ -1,24 +1,30 @@
 <template>
-
     <div v-if="mensaje.texto" class="status" :class="claseAlerta">
-        {{ mensaje.texto }}
+        <CheckCircleIcon v-if="mensaje.tipo === 'exito'" class="icon-md icon-inline" />
+        <XCircleIcon v-else-if="mensaje.tipo === 'error'" class="icon-md icon-inline" />
+        <InformationCircleIcon v-else-if="mensaje.tipo === 'info'" class="icon-md icon-inline" />
+        <span class="status-text">{{ mensaje.texto }}</span>
     </div>
-
 </template>
 
 <script>
+import { CheckCircleIcon, XCircleIcon, InformationCircleIcon } from '@heroicons/vue/24/solid'
+
 export default {
+    components: {
+        CheckCircleIcon,
+        XCircleIcon,
+        InformationCircleIcon
+    },
     props: {
         mensaje: {
             type: Object,
-
             default: () => ({
                 tipo: null,
                 texto: ''
             })
         }
     },
-
     computed: {
         claseAlerta() {
             return {
@@ -38,6 +44,13 @@ export default {
     font-size: 14px;
     font-weight: 600;
     line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-text {
+    flex: 1;
 }
 
 .status-success {

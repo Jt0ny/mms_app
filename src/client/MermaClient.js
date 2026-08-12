@@ -2,9 +2,6 @@ import { supabase } from './supabase'
 import MaterialClient from './MaterialClient'
 import MateriaPrimaClient from './MateriaPrimaClient'
 
-/**
- * Función auxiliar para verificar si un ID de operador es un UUID válido de Supabase
- */
 const isValidUUID = (str) => {
     if (!str) return false;
     const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -12,9 +9,6 @@ const isValidUUID = (str) => {
 };
 
 export default {
-    /**
-     * Obtiene la lista completa de mermas desde Supabase resolviendo los nombres mediante joins
-     */
     async obtenerMermas() {
         try {
             const { data, error } = await supabase
@@ -64,7 +58,6 @@ export default {
                         nombre: nombre,
                         cantidad: item.cantidad,
                         motivo: item.motivo,
-                        // Mapeo snake_case a camelCase
                         creadoEn: item.creado_en,
                         operadorId: item.operador_id,
                         operadorNombre: item.usuarios?.nombre || 'sistema'
@@ -77,9 +70,6 @@ export default {
         }
     },
 
-    /**
-     * Registra una nueva merma en la tabla relacional de Supabase
-     */
     async agregarMerma(data) {
     try {
         // Validar que el operadorId tenga estructura de UUID, sino usar null (por ejemplo, si es "sistema")
@@ -145,7 +135,6 @@ export default {
                 nombre: nombre,
                 cantidad: resData.cantidad,
                 motivo: resData.motivo,
-                // Mapeo snake_case a camelCase
                 creadoEn: resData.creado_en,
                 operadorId: resData.operador_id,
                 operadorNombre: resData.usuarios?.nombre || 'sistema'
@@ -157,9 +146,6 @@ export default {
     }
 },
 
-    /**
-     * Elimina un registro de merma por ID
-     */
     async eliminarMerma(id) {
     try {
         const { error } = await supabase
@@ -189,7 +175,7 @@ export default {
         const nuevaMermaObj = responseMerma.data;
 
         const stocksActualizados = { materiales: [], materiaPrima: [] };
-        let mensajeExito = '✓ Merma registrada con éxito.';
+        let mensajeExito = 'Merma registrada con éxito.';
 
         // 2. Descontar del inventario según el tipo
         if (payload.tipo === 'material') {
@@ -200,10 +186,10 @@ export default {
                 try {
                     await MaterialClient.actualizarStockMaterial(material.id, nuevaCantidad);
                     stocksActualizados.materiales.push({ id: material.id, cantidad: nuevaCantidad });
-                    mensajeExito = `✓ Merma registrada e inventario de "${material.nombre}" actualizado.`;
+                    mensajeExito = `Merma registrada e inventario de "${material.nombre}" actualizado.`;
                 } catch (e) {
                     console.error('Error al descontar material en merma:', e);
-                    mensajeExito = '⚠️ Merma registrada pero hubo un error al descontar inventario de material. Verifica el stock manualmente.';
+                    mensajeExito = '️ Merma registrada pero hubo un error al descontar inventario de material. Verifica el stock manualmente.';
                 }
             }
         } else if (payload.tipo === 'materia_prima') {
@@ -213,10 +199,10 @@ export default {
                 try {
                     await MateriaPrimaClient.actualizarStockMateriaPrima(mp.id, nuevaCantidad);
                     stocksActualizados.materiaPrima.push({ id: mp.id, cantidadTotal: nuevaCantidad });
-                    mensajeExito = `✓ Merma registrada e inventario de "${mp.variedad}" actualizado.`;
+                    mensajeExito = `Merma registrada e inventario de "${mp.variedad}" actualizado.`;
                 } catch (e) {
                     console.error('Error al descontar materia prima en merma:', e);
-                    mensajeExito = '⚠️ Merma registrada pero hubo un error al descontar inventario de materia prima. Verifica el stock manualmente.';
+                    mensajeExito = '️ Merma registrada pero hubo un error al descontar inventario de materia prima. Verifica el stock manualmente.';
                 }
             }
         } else if (payload.tipo === 'producto_terminado') {
@@ -256,9 +242,9 @@ export default {
                 }
 
                 if (huboErrorDescuento) {
-                    mensajeExito = '⚠️ Merma de producto registrada, pero hubo un error descontando algunos componentes del inventario. Verifica el stock manualmente.';
+                    mensajeExito = '️ Merma de producto registrada, pero hubo un error descontando algunos componentes del inventario. Verifica el stock manualmente.';
                 } else {
-                    mensajeExito = `✓ Merma de producto terminado registrada e inventario ajustado según la receta "${receta.nombre}".`;
+                    mensajeExito = `Merma de producto terminado registrada e inventario ajustado según la receta "${receta.nombre}".`;
                 }
             }
         }

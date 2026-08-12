@@ -29,7 +29,7 @@
 
                 <!-- Panel de recetas: muestra solo las asignadas o mensaje vacío -->
                 <div v-if="sinPlanificacion && !cargandoPlanificacion" class="empty-state-card">
-                    <span class="sin-plan-icon">📋</span>
+                    <span class="sin-plan-icon flex-center"><ClipboardDocumentListIcon class="icon-xl text-light" /></span>
                     <p>No tienes recetas asignadas para hoy.</p>
                     <p class="sin-plan-sub">El supervisor debe asignarte una planificación desde la sección
                         Planificación.</p>
@@ -49,6 +49,7 @@ import ProduccionForm from '../components/produccion/ProduccionForm.vue'
 import ProduccionClient from '../client/ProduccionClient'
 import DashboardClient from '../client/DashboardClient.js'
 import ProduccionRecetasView from '../components/produccion/ProduccionRecetasView.vue'
+import { ClipboardDocumentListIcon } from '@heroicons/vue/24/outline'
 import { useCatalogos } from '../composables/useCatalogos.js'
 import { useMensajes } from '../composables/useMensajes.js'
 import { useAuth } from '../composables/useAuth.js'
@@ -60,7 +61,8 @@ export default {
     components: {
         ProduccionForm,
         Alertas,
-        ProduccionRecetasView
+        ProduccionRecetasView,
+        ClipboardDocumentListIcon
     },
 
     setup() {
@@ -129,7 +131,8 @@ export default {
             const planificacion = await this.cargarPlanificacionBase(this.operadorId)
             
             // Cargar datos para inicializar los contadores
-            const todasLasRecetas = await this.catalogos.obtenerRecetas()
+            const responseRecetas = await this.catalogos.obtenerRecetas()
+            const todasLasRecetas = responseRecetas?.success !== undefined ? (responseRecetas.data || []) : (responseRecetas || [])
             const hoy = obtenerFechaHoy()
             const produccionesHoy = this.producciones.filter(p => p.fecha === hoy)
 
@@ -156,7 +159,7 @@ export default {
             }
 
             if (response.success) {
-                this.mostrarMensaje('exito', payload.id ? '✓ Producción actualizada correctamente' : '✓ Producción registrada correctamente')
+                this.mostrarMensaje('exito', payload.id ? 'Producción actualizada correctamente' : 'Producción registrada correctamente')
                 
                 this.ultimaGuardada = new Date().toISOString()
                 this.editingProduccion = null
@@ -169,7 +172,7 @@ export default {
                     console.error('Error al evaluar pedidos:', e)
                 }
             } else {
-                this.mostrarMensaje('error', '❌ No se pudo guardar la producción', 0)
+                this.mostrarMensaje('error', 'No se pudo guardar la producción', 0)
             }
             
             this.guardando = false
@@ -182,7 +185,7 @@ export default {
                 this.producciones = response.data ?? []
             } else {
                 this.producciones = []
-                this.mostrarMensaje('error', '❌ Error al cargar la producción', 0)
+                this.mostrarMensaje('error', 'Error al cargar la producción', 0)
             }
             this.cargandoProducciones = false
         },

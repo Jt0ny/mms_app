@@ -9,7 +9,7 @@ export function usePedidoExcel() {
         let filaCategorias = -1
         let filaColumnas = -1
 
-        /* ================= BUSCAR HEADERS ================= */
+        // BUSCAR HEADERS 
         for (let i = 0; i < matriz.length; i++) {
             const fila = matriz[i]
             if (!Array.isArray(fila)) continue
@@ -27,7 +27,7 @@ export function usePedidoExcel() {
             throw new Error('Formato de archivo inválido. No se encontraron los encabezados "BILL CUSTOMER" y "SHIP CUSTOMER". Asegúrate de usar el formato Excel de ventas estándar.')
         }
 
-        /* ================= MAPEAR COLUMNAS STEMS Y SALES ================= */
+        // MAPEAR COLUMNAS STEMS Y SALES 
         const rowCategorias = matriz[filaCategorias]
         const rowSubColumnas = matriz[filaColumnas]
         const columnasCategoria = []
@@ -58,7 +58,7 @@ export function usePedidoExcel() {
             }
         }
 
-        /* ================= LEER DATOS ================= */
+        // LEER DATOS 
         for (let i = filaColumnas + 1; i < matriz.length; i++) {
             const fila = matriz[i]
             const billCustomer = String(fila[0] || '').trim()

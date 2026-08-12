@@ -16,8 +16,9 @@
 		</div>
 
 		<!-- Botón guardar todo -->
-		<button class="btn-asignar" :disabled="guardando" @click="$emit('guardar')">
-			{{ guardando ? 'Guardando...' : '💾 Guardar todas las planificaciones' }}
+		<button class="btn-asignar inline-flex-center gap-6" :disabled="guardando" @click="$emit('guardar')">
+			<DocumentCheckIcon class="icon-sm" v-if="!guardando" />
+			{{ guardando ? 'Guardando...' : 'Guardar todas las planificaciones' }}
 		</button>
 
 		<!-- Indicador visual de balance -->
@@ -30,9 +31,11 @@
 						:style="{ width: op.porcentaje + '%' }">
 					</div>
 				</div>
-				<span class="balance-info">
+				<span class="balance-info flex-align-center gap-4">
 					{{ op.stems }} stems ({{ op.porcentaje }}%)
-					{{ op.estado === 'balanceado' ? '✅' : op.estado === 'aceptable' ? '⚠️' : '❌' }}
+					<CheckCircleIcon v-if="op.estado === 'balanceado'" class="icon-sm text-success" />
+					<ExclamationTriangleIcon v-else-if="op.estado === 'aceptable'" class="icon-sm text-warning" />
+					<XCircleIcon v-else class="icon-sm text-error" />
 				</span>
 			</div>
 		</div>
@@ -44,11 +47,13 @@
 
 <script>
 import Alertas from '../Alertas.vue'
+import { DocumentCheckIcon, CheckCircleIcon, ExclamationTriangleIcon, XCircleIcon } from '@heroicons/vue/24/outline'
 
 export default {
 	name: 'PlanificacionResumen',
 	components: {
-		Alertas
+		Alertas,
+		DocumentCheckIcon, CheckCircleIcon, ExclamationTriangleIcon, XCircleIcon
 	},
 	props: {
 		fechaSeleccionada: {
@@ -118,7 +123,7 @@ export default {
 	gap: 20px 24px;
 	padding: 24px;
 	border-radius: 20px;
-	background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+	background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
 	box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
 	align-items: start;
 }

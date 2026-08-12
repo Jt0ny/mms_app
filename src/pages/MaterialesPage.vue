@@ -17,9 +17,10 @@
                         @archivo-seleccionado="procesarArchivo" />
 
                     <!-- INVENTARIO -->
-                    <InventoryTable title="📦 Inventario Actual" :items="inventarioActual" :loading="cargandoInventario"
-                        item-label="materiales registrados" empty-text="📭 No hay materiales registrados"
+                    <InventoryTable title="Inventario Actual" :items="inventarioActual" :loading="cargandoInventario"
+                        item-label="materiales registrados" empty-text="No hay materiales registrados"
                         @actualizar="cargarInventario(true)" @sincronizar="sincronizarAPI">
+                        <template #title-icon><ArchiveBoxIcon class="icon-lg text-white" /></template>
                         <template #header>
                             <th>Nombre</th>
                             <th>Cantidad</th>
@@ -31,8 +32,9 @@
                             <td class="text-quantity">{{ item.cantidad }}</td>
                             <td>{{ item.descripcion || '-' }}</td>
                             <td class="actions-column">
-                                <button class="btn-action btn-action-delete"
-                                    @click="eliminarMaterial(item.id)">🗑️</button>
+                                <button class="btn-action-ghost delete" @click="eliminarMaterial(item.id)">
+                                    <TrashIcon class="icon-action text-error" />
+                                </button>
                             </td>
                         </template>
                     </InventoryTable>
@@ -77,6 +79,7 @@ import MaterialForm from '../components/materiales/MaterialForm.vue'
 import InventoryTable from '../components/shared/InventoryTable.vue'
 import PreviewTable from '../components/shared/PreviewTable.vue'
 import { useMensajes } from '../composables/useMensajes.js'
+import { TrashIcon, ArchiveBoxIcon } from '@heroicons/vue/24/outline'
 
 export default {
 
@@ -85,7 +88,9 @@ export default {
         CargaArchivo,
         Alertas,
         InventoryTable,
-        PreviewTable
+        PreviewTable,
+        TrashIcon,
+        ArchiveBoxIcon
     },
 
     setup() {
@@ -130,14 +135,14 @@ export default {
                 this.datosProcesados = this.procesarDatos(jsonData)
 
                 if (!this.datosProcesados.length) {
-                    this.mostrarMensaje('error', '❌ No se encontraron datos válidos')
+                    this.mostrarMensaje('error', 'No se encontraron datos válidos')
                     return
                 }
 
-                this.mostrarMensaje('exito', `✓ ${this.datosProcesados.length} materiales cargados`)
+                this.mostrarMensaje('exito', `${this.datosProcesados.length} materiales cargados`)
             } catch (error) {
                 console.error(error)
-                this.mostrarMensaje('error', `❌ ${error.message || 'Error al leer archivo Excel'}`)
+                this.mostrarMensaje('error', `${error.message || 'Error al leer archivo Excel'}`)
             }
         },
 
@@ -172,11 +177,11 @@ export default {
             this.cargando = false
 
             if (response.success) {
-                this.mostrarMensaje('exito', `✓ ${this.datosProcesados.length} materiales guardados`)
+                this.mostrarMensaje('exito', `${this.datosProcesados.length} materiales guardados`)
                 this.datosProcesados = []
                 await this.cargarInventario(true)
             } else {
-                this.mostrarMensaje('error', '❌ Error al guardar materiales', 0)
+                this.mostrarMensaje('error', 'Error al guardar materiales', 0)
             }
         },
 
@@ -187,11 +192,11 @@ export default {
             this.cargando = false
 
             if (response.success) {
-                this.mostrarMensaje('exito', '✓ Material agregado')
+                this.mostrarMensaje('exito', 'Material agregado')
                 this.resetForm()
                 await this.cargarInventario(true)
             } else {
-                this.mostrarMensaje('error', '❌ Error al guardar material')
+                this.mostrarMensaje('error', 'Error al guardar material')
             }
         },
 
@@ -199,10 +204,10 @@ export default {
         async eliminarMaterial(id) {
             const response = await MaterialClient.eliminarMaterial(id)
             if (response.success) {
-                this.mostrarMensaje('exito', '✓ Material eliminado')
+                this.mostrarMensaje('exito', 'Material eliminado')
                 await this.cargarInventario(true)
             } else {
-                this.mostrarMensaje('error', '❌ Error al eliminar')
+                this.mostrarMensaje('error', 'Error al eliminar')
             }
         },
 

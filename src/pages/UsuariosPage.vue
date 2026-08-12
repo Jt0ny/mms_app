@@ -58,7 +58,7 @@ export default {
             
             if (response && response.success === false) {
                 this.usuarios = []
-                this.mostrarMensaje('error', '❌ Error al cargar los usuarios')
+                this.mostrarMensaje('error', 'Error al cargar los usuarios')
             } else {
                 this.usuarios = response?.success ? response.data : (response ?? [])
             }

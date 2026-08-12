@@ -1,10 +1,15 @@
 <!-- ClienteList.vue -->
 <template>
-  <div class="clientes-list-card">
-    <div class="list-header">
+  <div class="data-card h-full">
+    <div class="data-card-header">
       <div class="title-section">
-        <h3>{{ titulo }}</h3>
-        <p class="subtitle">{{ totalClientes }} registros en total</p>
+        <div class="flex-align-center gap-8">
+          <DocumentTextIcon v-if="mostrarSoloTipo === 'Facturación'" class="icon-lg text-primary" />
+          <TruckIcon v-else-if="mostrarSoloTipo === 'Envío'" class="icon-lg text-warning" />
+          <UserGroupIcon v-else class="icon-lg text-primary" />
+          <h2>{{ titulo }}</h2>
+        </div>
+        <p class="data-card-subtitle">{{ totalClientes }} registros en total</p>
       </div>
 
       <!-- Filtros -->
@@ -16,9 +21,9 @@
         <div v-if="mostrarDetallesContacto" class="select-wrapper">
           <select v-model="filtros.tipo" class="filter-select">
             <option value="">Todos los tipos</option>
-            <option value="Facturación">📄 Facturación</option>
-            <option value="Envío">🚚 Envío</option>
-            <option value="Ambos">🔄 Ambos</option>
+            <option value="Facturación">Facturación</option>
+            <option value="Envío">Envío</option>
+            <option value="Ambos">Ambos</option>
           </select>
         </div>
       </div>
@@ -31,13 +36,13 @@
     </div>
 
     <!-- Lista Vacía -->
-    <div v-else-if="clientesFiltrados.length === 0" class="empty-state">
-      <p>📭 No se encontraron registros</p>
+    <div v-else-if="clientesFiltrados.length === 0" class="empty-state-card m-5">
+      <p><InboxIcon class="icon-lg icon-inline text-light" /> No se encontraron registros</p>
     </div>
 
     <!-- Tabla de Clientes -->
-    <div v-else class="table-container">
-      <table class="clientes-table">
+    <div v-else class="data-card-content no-pad">
+      <table class="data-card-table">
         <thead>
           <tr>
             <th>Nombre</th>
@@ -56,7 +61,7 @@
               <div class="client-name">{{ cliente.nombre }}</div>
               <div v-if="mostrarDetallesContacto && cliente.tipo === 'Envío' && cliente.clienteFacturacionAsociado"
                 class="associated-badge">
-                🔗 Factura a: {{ cliente.clienteFacturacionAsociado }}
+                <LinkIcon class="icon-sm icon-inline" /> Factura a: {{ cliente.clienteFacturacionAsociado }}
               </div>
             </td>
             <td v-if="mostrarDetallesContacto">
@@ -66,28 +71,28 @@
             </td>
             <td v-if="mostrarDetallesContacto">
               <a v-if="cliente.email" :href="`mailto:${cliente.email}`" class="link-contact" @click.stop>
-                ✉️ {{ cliente.email }}
+                <EnvelopeIcon class="icon-sm icon-inline" /> {{ cliente.email }}
               </a>
               <span v-else class="no-data">—</span>
             </td>
             <td v-if="mostrarDetallesContacto">
               <a v-if="cliente.telefono" :href="`tel:${cliente.telefono}`" class="link-contact" @click.stop>
-                📞 {{ cliente.telefono }}
+                <PhoneIcon class="icon-sm icon-inline" /> {{ cliente.telefono }}
               </a>
               <span v-else class="no-data">—</span>
             </td>
             <td v-if="mostrarDetallesContacto">
               <span v-if="cliente.direccion" class="address-text" :title="cliente.direccion">
-                📍 {{ cliente.direccion }}
+                <MapPinIcon class="icon-sm icon-inline" /> {{ cliente.direccion }}
               </span>
               <span v-else class="no-data">—</span>
             </td>
             <td class="actions-col" @click.stop>
-              <button class="btn-action edit" @click.stop="$emit('editar', cliente)" title="Editar Cliente">
-                ✏️
+              <button class="btn-action-ghost edit" @click.stop="$emit('editar', cliente)" title="Editar Cliente">
+                <PencilIcon class="icon-action text-info" />
               </button>
-              <button class="btn-action delete" @click.stop="$emit('eliminar', cliente)" title="Eliminar Cliente">
-                🗑️
+              <button class="btn-action-ghost delete" @click.stop="$emit('eliminar', cliente)" title="Eliminar Cliente">
+                <TrashIcon class="icon-action text-error" />
               </button>
             </td>
           </tr>
@@ -98,8 +103,19 @@
 </template>
 
 <script>
+import { 
+  DocumentTextIcon, TruckIcon, UserGroupIcon, InboxIcon, 
+  LinkIcon, EnvelopeIcon, PhoneIcon, MapPinIcon, 
+  PencilIcon, TrashIcon 
+} from '@heroicons/vue/24/outline'
+
 export default {
   name: 'ClienteList',
+  components: {
+    DocumentTextIcon, TruckIcon, UserGroupIcon, InboxIcon, 
+    LinkIcon, EnvelopeIcon, PhoneIcon, MapPinIcon, 
+    PencilIcon, TrashIcon
+  },
   props: {
     clientes: {
       type: Array,
@@ -207,37 +223,8 @@ export default {
 </script>
 
 <style scoped>
-.clientes-list-card {
-  background: var(--bg);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.list-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-light);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.title-section h3 {
-  margin: 0 0 2px 0;
-  font-size: 15px;
-  color: var(--text-h);
-}
-
-.subtitle {
-  margin: 0;
-  font-size: 11px;
-  color: var(--text-light);
+.title-section {
+  flex-grow: 1;
 }
 
 .filters {
@@ -251,6 +238,8 @@ export default {
   min-width: 180px;
   padding: 6px 10px;
   font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
 }
 
 .select-wrapper {
@@ -260,39 +249,8 @@ export default {
 .filter-select {
   padding: 6px 30px 6px 10px;
   font-size: 12px;
-}
-
-/* Tabla */
-.table-container {
-  overflow-y: auto;
-  flex-grow: 1;
-  max-height: 600px;
-}
-
-.clientes-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.clientes-table th,
-.clientes-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-light);
-  font-size: 13px;
-}
-
-.clientes-table th {
-  background: var(--primary);
-  font-weight: 700;
-  color: white;
-  text-transform: uppercase;
-  font-size: 11px;
-  letter-spacing: 0.5px;
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  border: none;
+  border-radius: 6px;
+  border: 1px solid var(--border);
 }
 
 .client-row {
@@ -308,7 +266,7 @@ export default {
 }
 
 .active-row {
-  background: rgba(22, 163, 74, 0.08) !important;
+  background: var(--primary-bg) !important;
   border-left: 4px solid var(--primary);
 }
 
@@ -356,23 +314,31 @@ export default {
   display: inline-block;
 }
 
-/* Badges */
-.badge {
-  display: inline-block;
-  padding: 2px 6px;
-  border-radius: 12px;
-  font-size: 10px;
-  font-weight: 600;
+/* Sobreescritura local para que solo este componente tenga el fondo blanco en su header */
+.data-card-header {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text);
 }
 
+.data-card-header h2 {
+  color: var(--text-h);
+}
+
+.data-card-header p.data-card-subtitle {
+  color: var(--text-light);
+  opacity: 1;
+}
+
+/* Badges */
 .badge-billing {
-  background: rgba(14, 165, 233, 0.1);
-  color: #0ea5e9;
+  background: var(--alert-info-bg);
+  color: var(--alert-info-text);
 }
 
 .badge-shipping {
-  background: rgba(249, 115, 22, 0.1);
-  color: #f97316;
+  background: var(--alert-warning-bg);
+  color: var(--alert-warning-text);
 }
 
 .badge-both {
@@ -386,51 +352,7 @@ export default {
   width: 90px;
 }
 
-.btn-action {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 4px;
-  font-size: 13px;
-  transition: background 0.2s ease;
-  margin-left: 2px;
-}
-
-.btn-action:hover {
-  background: var(--border-light);
-}
-
-/* Estado de carga */
-.loading-state,
-.empty-state {
-  padding: 40px;
-  text-align: center;
-  color: var(--text-light);
-}
-
-.spinner {
-  border: 3px solid var(--border);
-  border-top: 3px solid var(--primary);
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 12px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 @media (max-width: 768px) {
-  .list-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
   .filters {
     width: 100%;
     flex-direction: column;

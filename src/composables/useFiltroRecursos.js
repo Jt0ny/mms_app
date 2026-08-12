@@ -30,7 +30,7 @@ export function useFiltroRecursos(catalogos) {
             recetasFiltradas.value = recetas
             filtroActivoInfo.value = {
                 tipo: 'error',
-                texto: '❌ Error al cargar la planificación del operador. Mostrando catálogo completo.'
+                texto: 'Error al cargar la planificación del operador. Mostrando catálogo completo.'
             }
             cargandoRecursos.value = false
             return
@@ -47,7 +47,7 @@ export function useFiltroRecursos(catalogos) {
             const op = operadores.find(o => o.id === operadorId)
             filtroActivoInfo.value = {
                 tipo: 'info',
-                texto: `⚠️ El operador "${op ? op.nombre : ''}" no tiene planificación asignada para el ${fecha}. Mostrando catálogo completo.`
+                texto: `️ El operador "${op ? op.nombre : ''}" no tiene planificación asignada para el ${fecha}. Mostrando catálogo completo.`
             }
             cargandoRecursos.value = false
             return
@@ -82,7 +82,7 @@ export function useFiltroRecursos(catalogos) {
         const op = operadores.find(o => o.id === operadorId)
         filtroActivoInfo.value = {
             tipo: 'exito',
-            texto: `✓ Filtro activo: mostrando recetas e insumos planificados para ${op ? op.nombre : ''} el ${fecha}.`
+            texto: `Filtro activo: mostrando recetas e insumos planificados para ${op ? op.nombre : ''} el ${fecha}.`
         }
 
         cargandoRecursos.value = false

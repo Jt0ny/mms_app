@@ -1,25 +1,30 @@
 <template>
-    <div class="mermas-analysis-card">
-        <div class="card-header">
-            <h3>🌸 Análisis de Mermas de Hoy</h3>
-        </div>
+  <div class="data-card h-full">
+      <div class="data-card-header">
+          <div class="flex-align-center gap-8">
+              <SunIcon class="icon-lg text-primary" />
+              <h2 style="margin: 0;">Análisis de Mermas de Hoy</h2>
+          </div>
+      </div>
 
-        <div v-if="cargando" class="loading-state">
-            <p>Cargando análisis de mermas...</p>
-        </div>
+      <div class="data-card-content p-6">
+          <div v-if="cargando" class="loading-state">
+              <div class="spinner"></div>
+              <p>Cargando análisis de mermas...</p>
+          </div>
 
-        <div v-else-if="mermasMotivos.length === 0 && topMermasInsumos.length === 0" class="empty-state">
-            <p>📭 No se han registrado mermas el día de hoy.</p>
-        </div>
+          <div v-else-if="mermasMotivos.length === 0 && topMermasInsumos.length === 0" class="empty-state-card m-5">
+              <p>No se han registrado mermas el día de hoy.</p>
+          </div>
 
-        <div v-else class="analysis-layout">
+          <div v-else class="grid-halves">
             <!-- Mermas por motivo -->
             <div class="analysis-section" v-if="mermasMotivos.length > 0">
                 <h4>Porcentaje por Motivo</h4>
                 <div class="motivos-list">
                     <div v-for="item in mermasMotivos" :key="item.motivo" class="motivo-item">
                         <div class="motivo-info">
-                            <span class="motivo-name">📍 {{ item.motivo }}</span>
+                            <span class="motivo-name">{{ item.motivo }}</span>
                             <span class="motivo-pct">{{ item.porcentaje }}%</span>
                         </div>
                         <div class="motivo-bar-wrap">
@@ -42,13 +47,17 @@
                     </li>
                 </ul>
             </div>
-        </div>
-    </div>
+          </div>
+      </div>
+  </div>
 </template>
 
 <script>
+import { SunIcon } from '@heroicons/vue/24/outline'
+
 export default {
     name: 'DashboardDistribucionMermas',
+    components: { SunIcon },
     props: {
         mermasMotivos: {
             type: Array,
@@ -67,41 +76,7 @@ export default {
 </script>
 
 <style scoped>
-.mermas-analysis-card {
-    background: var(--bg);
-    border: 1px solid var(--border-light);
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: var(--shadow);
-}
 
-.card-header h3 {
-    margin: 0 0 20px;
-    font-size: 18px;
-    color: var(--text-h);
-    font-weight: 700;
-}
-
-.loading-state,
-.empty-state {
-    text-align: center;
-    padding: 30px;
-    color: var(--text-light);
-    font-size: 14px;
-}
-
-.analysis-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-}
-
-@media (max-width: 768px) {
-    .analysis-layout {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-}
 
 .analysis-section h4 {
     margin: 0 0 14px;

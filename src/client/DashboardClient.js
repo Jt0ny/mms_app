@@ -229,7 +229,7 @@ function _generarAlertasStock(planificaciones, recetasCompletas, mapMPStock, map
         if (stockActual < demand) {
             alertasStock.push({
                 tipo: 'error',
-                texto: `⚠️ Inventario Insuficiente: Se requieren ${demand} tallos de flor "${itemStock?.variedad || 'Desconocida'}" para cubrir la planificación de hoy, pero solo cuentas con ${stockActual} tallos en stock (Déficit: ${demand - stockActual} tallos).`
+                texto: `️ Inventario Insuficiente: Se requieren ${demand} tallos de flor "${itemStock?.variedad || 'Desconocida'}" para cubrir la planificación de hoy, pero solo cuentas con ${stockActual} tallos en stock (Déficit: ${demand - stockActual} tallos).`
             })
         }
     })
@@ -240,7 +240,7 @@ function _generarAlertasStock(planificaciones, recetasCompletas, mapMPStock, map
         if (stockActual < demand) {
             alertasStock.push({
                 tipo: 'error',
-                texto: `⚠️ Inventario Insuficiente: Se requieren ${demand} unidades de "${itemStock?.nombre || 'Desconocido'}" para la producción de hoy, pero solo tienes ${stockActual} en inventario (Déficit: ${demand - stockActual} unidades).`
+                texto: `️ Inventario Insuficiente: Se requieren ${demand} unidades de "${itemStock?.nombre || 'Desconocido'}" para la producción de hoy, pero solo tienes ${stockActual} en inventario (Déficit: ${demand - stockActual} unidades).`
             })
         }
     })
@@ -251,7 +251,7 @@ function _generarAlertasStock(planificaciones, recetasCompletas, mapMPStock, map
         if (stock < 200 && !yaAlertado) {
             alertasStock.push({
                 tipo: 'info',
-                texto: `💡 Alerta de Reabastecimiento: La variedad de rosa "${mp.variedad}" cuenta con stock mínimo de ${stock} tallos.`
+                texto: ` Alerta de Reabastecimiento: La variedad de rosa "${mp.variedad}" cuenta con stock mínimo de ${stock} tallos.`
             })
         }
     })
@@ -262,7 +262,7 @@ function _generarAlertasStock(planificaciones, recetasCompletas, mapMPStock, map
         if (stock < 200 && !yaAlertado) {
             alertasStock.push({
                 tipo: 'info',
-                texto: `💡 Alerta de Reabastecimiento: El material "${mat.nombre}" cuenta con stock bajo de ${stock} unidades.`
+                texto: ` Alerta de Reabastecimiento: El material "${mat.nombre}" cuenta con stock bajo de ${stock} unidades.`
             })
         }
     })
@@ -271,9 +271,7 @@ function _generarAlertasStock(planificaciones, recetasCompletas, mapMPStock, map
 }
 
 export default {
-    /**
-     * Obtiene los datos completos del dashboard para una fecha dada.
-     */
+    // Obtiene los datos completos del dashboard para una fecha dada.
     async obtenerDatosDashboard(fecha) {
         try {
             // Ejecutar consultas principales en paralelo (optimización)
@@ -327,11 +325,8 @@ export default {
         }
     },
 
-    /**
-     * Evalúa la producción del día y completa automáticamente los pedidos pendientes que puedan ser cubiertos.
-     * Este método solo ejecuta side-effects (escrituras) en la base de datos.
-     * @param {string} fecha — formato 'YYYY-MM-DD'
-     */
+    // Evalúa la producción del día y completa automáticamente los pedidos pendientes que puedan ser cubiertos.
+    // Este método solo ejecuta side-effects (escrituras) en la base de datos.
     async autoCompletarPedidos(fecha) {
         try {
             // Reutilizar queries compartidas

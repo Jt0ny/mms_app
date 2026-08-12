@@ -2,9 +2,6 @@ import { supabase } from './supabase'
 import PlanificacionClient from './PlanificacionClient'
 
 export default {
-    /**
-     * Helper: Obtiene los pedidos pendientes de la base de datos
-     */
     async _obtenerPedidosPendientes(fecha) {
         const { data, error } = await supabase
             .from('pedidos')
@@ -30,77 +27,10 @@ export default {
         return data || [];
     },
 
-    // ─── RESERVADO PARA USO EXTERNO (Actualmente no usado desde UI) ──────
-    /*
-    async obtenerPedidosPendientesPorFecha(fecha) {
-        try {
-            const data = await this._obtenerPedidosPendientes(fecha);
-
-            // Agrupar por receta_id sumando stems
-            const mapaRecetas = new Map();
-
-            for (const pedido of (data || [])) {
-                for (const detalle of (pedido.pedido_detalles || [])) {
-                    const receta = detalle.recetas;
-                    if (!receta) continue;
-
-                    const stems = parseInt(detalle.stems) || 0;
-                    const clienteNombre = pedido.cliente_facturacion?.nombre || 'Cliente Desconocido';
-
-                    if (mapaRecetas.has(receta.id)) {
-                        const entry = mapaRecetas.get(receta.id);
-                        entry.totalStems += stems;
-
-                        // Agregar el pedido de forma única si no está ya
-                        const pedExistente = entry.pedidos.find(p => p.pedidoId === pedido.id);
-                        if (pedExistente) {
-                            pedExistente.stems += stems;
-                        } else {
-                            entry.pedidos.push({
-                                pedidoId: pedido.id,
-                                cliente: clienteNombre,
-                                categoria: receta.categoria || '',
-                                stems: stems
-                            });
-                        }
-                    } else {
-                        mapaRecetas.set(receta.id, {
-                            recetaId: receta.id,
-                            nombre: receta.nombre || 'Receta Desconocida',
-                            categoria: receta.categoria || '',
-                            totalStems: stems,
-                            pedidos: [{
-                                pedidoId: pedido.id,
-                                cliente: clienteNombre,
-                                categoria: receta.categoria || '',
-                                stems: stems
-                            }]
-                        });
-                    }
-                }
-            }
-
-            // Ordenar de mayor a menor stems para que el algoritmo sea más eficiente
-            return Array.from(mapaRecetas.values())
-                .sort((a, b) => b.totalStems - a.totalStems);
-
-        } catch (error) {
-            console.error('Error al obtener pedidos pendientes por fecha:', error);
-            throw error;
-        }
-    },
-    */
-
-    /**
-     * Algoritmo de distribución equitativa mejorado.
-     * Divide los stems de cada receta proporcionalmente entre los operadores,
-     * de modo que cada operador reciba una cantidad similar de stems totales.
-     * Las recetas que excedan la carga promedio por operador se dividen entre varios.
-     *
-     * @param {Array<{ id: string, nombre: string }>} operadores
-     * @param {Array<{ recetaId: string, nombre: string, categoria: string, totalStems: number }>} gruposReceta
-     * @returns {Array<{ operador: object, recetas: Array, stemsTotal: number }>}
-     */
+    // Algoritmo de distribución equitativa mejorado.
+    // Divide los stems de cada receta proporcionalmente entre los operadores,
+    // de modo que cada operador reciba una cantidad similar de stems totales.
+    // Las recetas que excedan la carga promedio por operador se dividen entre varios.
     distribuirEquitativamente(operadores, gruposReceta) {
         if (!operadores.length || !gruposReceta.length) return [];
 
@@ -159,15 +89,8 @@ export default {
         return carga.filter(c => c.recetas.length > 0);
     },
 
-    /**
-     * Reconstruye los grupos de receta, asigna pedidos por FIFO, distribuye a operadores
-     * y arma la estructura de asignaciones inicial.
-     * @param {Array} categoriasRequeridas 
-     * @param {Object} mapeo 
-     * @param {Array} todasLasRecetas 
-     * @param {Array} operadoresActivos 
-     * @returns {{ asignaciones: Array, gruposRecetaBackup: Array }}
-     */
+    // Reconstruye los grupos de receta, asigna pedidos por FIFO, distribuye a operadores
+    // y arma la estructura de asignaciones inicial.
     asignarYDistribuir(categoriasRequeridas, mapeo, todasLasRecetas, operadoresActivos) {
         const gruposReceta = []
         for (const cat of categoriasRequeridas) {
@@ -273,12 +196,7 @@ export default {
         return { asignaciones, gruposRecetaBackup: gruposReceta }
     },
 
-    /**
-     * Redistribuye la carga (usado cuando se excluye un operador)
-     * @param {Array} operadoresActivos 
-     * @param {Array} gruposRecetaBackup 
-     * @returns {Array} asignaciones
-     */
+    // Redistribuye la carga (usado cuando se excluye un operador)
     redistribuirCarga(operadoresActivos, gruposRecetaBackup) {
         const dist = this.distribuirEquitativamente(operadoresActivos, gruposRecetaBackup)
 
@@ -324,16 +242,9 @@ export default {
         return asignaciones
     },
 
-    /**
-     * Guarda en batch las planificaciones calculadas automáticamente.
-     * Si se pasa mapeoCategorias, actualiza primero los pedido_detalles de Supabase
-     * para mapear la categoría a la receta seleccionada.
-     *
-     * @param {Array<{ operador, recetas, stemsTotal }>} distribuciones
-     * @param {string} fecha
-     * @param {Object} mapeoCategorias — { [categoria]: recetaId }
-     * @returns {{ exitosos: number, fallidos: Array<{ nombre: string, motivo: string }> }}
-     */
+    // Guarda en batch las planificaciones calculadas automáticamente.
+    // Si se pasa mapeoCategorias, actualiza primero los pedido_detalles de Supabase
+    // para mapear la categoría a la receta seleccionada.
     async crearPlanificacionesMasivas(distribuciones, fecha, mapeoCategorias = null) {
         // 1. Si se pasó un mapeo de categorías, actualizar primero los detalles de los pedidos
         if (mapeoCategorias && Object.keys(mapeoCategorias).length > 0) {
@@ -549,10 +460,7 @@ export default {
         return { exitosos, fallidos };
     },
 
-    /**
-     * Obtiene los pedidos pendientes agrupados puramente por nombre de categoría
-     * @param {string} fecha
-     */
+    // Obtiene los pedidos pendientes agrupados puramente por nombre de categoría
     async obtenerPedidosAgrupadosPorCategoria(fecha) {
         try {
             const data = await this._obtenerPedidosPendientes(fecha);

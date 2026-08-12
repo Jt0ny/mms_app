@@ -18,14 +18,14 @@
             <!-- Estado inicial / vacío -->
             <div v-else-if="!cargandoAuto && asignaciones.length === 0 && !mostrarMapeoWizard" class="empty-state-card">
                 <p class="vacio-texto">
-                    Selecciona una fecha y presiona <strong>⚡ Distribuir automáticamente</strong> para generar la
+                    Selecciona una fecha y presiona <strong><BoltIcon class="icon-sm icon-inline text-primary" /> Distribuir automáticamente</strong> para generar la
                     planificación según los pedidos pendientes del día.
                 </p>
             </div>
 
             <!-- Estado: distribuyendo -->
             <div v-else-if="cargandoAuto && !mostrarMapeoWizard" class="empty-state-card">
-                <p class="vacio-texto">⟳ Analizando pedidos y distribuyendo carga entre operadores...</p>
+                <p class="vacio-texto">Analizando pedidos y distribuyendo carga entre operadores...</p>
             </div>
 
             <!-- Asistente de Mapeo de Recetas (Inline) -->
@@ -54,6 +54,7 @@
 </template>
 
 <script>
+import { BoltIcon } from '@heroicons/vue/24/outline'
 import PlanificacionClient from '../client/PlanificacionClient.js'
 
 import PlanificacionAlgoritmo from '../client/PlanificacionAlgoritmo.js'
@@ -72,6 +73,7 @@ export default {
     name: 'PlanificacionPage',
 
     components: {
+        BoltIcon,
         PlanificacionAsignacion,
         PlanificacionResumen,
         PlanificacionOperadorCard,
@@ -161,7 +163,7 @@ export default {
                 this.planificacionesGuardadas = []
                 this.asignaciones = [] // Limpiamos para volver al estado inicial
             } else {
-                this.mostrarMensaje('error', '❌ Error al eliminar las planificaciones')
+                this.mostrarMensaje('error', 'Error al eliminar las planificaciones')
             }
             
             this.eliminandoPlanificaciones = false
@@ -182,7 +184,7 @@ export default {
                 )
 
                 if (!categorias.length) {
-                    this.mostrarMensaje('error', `📭 No hay pedidos pendientes para el ${this.fechaSeleccionada}.`)
+                    this.mostrarMensaje('error', `No hay pedidos pendientes para el ${this.fechaSeleccionada}.`)
                     this.cargandoAuto = false
                     return
                 }
@@ -193,7 +195,7 @@ export default {
 
             } catch (err) {
                 console.error('Error al iniciar distribución:', err)
-                this.mostrarMensaje('error', '❌ Error al obtener pedidos. Intenta de nuevo.')
+                this.mostrarMensaje('error', 'Error al obtener pedidos. Intenta de nuevo.')
                 this.cargandoAuto = false
             }
         },
@@ -208,7 +210,7 @@ export default {
                 const operadores = responseOp?.data ?? []
 
                 if (!operadores || !operadores.length) {
-                    this.mostrarMensaje('error', '👥 No hay operadores disponibles.')
+                    this.mostrarMensaje('error', 'No hay operadores disponibles.')
                     this.cargandoAuto = false
                     return
                 }
@@ -226,13 +228,13 @@ export default {
 
                 this.mostrarMensaje(
                     'exito',
-                    `✓ ${gruposRecetaBackup.length} recetas de producción distribuidas entre ${this.asignaciones.length} operadores según la carga de stems.`,
+                    `${gruposRecetaBackup.length} recetas de producción distribuidas entre ${this.asignaciones.length} operadores según la carga de stems.`,
                     7000
                 )
 
             } catch (err) {
                 console.error('Error al distribuir:', err)
-                this.mostrarMensaje('error', '❌ Error al distribuir carga entre operadores.')
+                this.mostrarMensaje('error', 'Error al distribuir carga entre operadores.')
             } finally {
                 this.cargandoAuto = false
             }
@@ -247,7 +249,7 @@ export default {
             this.operadoresActivos = this.operadoresActivos.filter(op => op.id !== asig.operador.id)
 
             if (this.operadoresActivos.length === 0) {
-                this.mostrarMensaje('error', '❌ No puedes excluir a todos los operadores. Al menos uno debe quedar.')
+                this.mostrarMensaje('error', 'No puedes excluir a todos los operadores. Al menos uno debe quedar.')
                 // Revertir
                 this.operadoresActivos.push(asig.operador)
                 return
@@ -255,10 +257,10 @@ export default {
 
             try {
                 this.asignaciones = PlanificacionAlgoritmo.redistribuirCarga(this.operadoresActivos, this.gruposRecetaBackup)
-                this.mostrarMensaje('exito', `✓ Operador ${asig.operador.nombre} excluido. Carga redistribuida equitativamente.`)
+                this.mostrarMensaje('exito', `Operador ${asig.operador.nombre} excluido. Carga redistribuida equitativamente.`)
             } catch (error) {
                 console.error('Error al redistribuir', error)
-                this.mostrarMensaje('error', '❌ Error al redistribuir la carga.')
+                this.mostrarMensaje('error', 'Error al redistribuir la carga.')
             }
         },
 
@@ -358,7 +360,7 @@ export default {
                 )
 
                 if (resultado.fallidos.length === 0) {
-                    this.mostrarMensaje('exito', '✅ Todas las planificaciones se han guardado correctamente', 3000)
+                    this.mostrarMensaje('exito', 'Todas las planificaciones se han guardado correctamente', 3000)
                     this.asignaciones = []
                     this.gruposRecetaBackup = []
                     this.categoriasRequeridas = []
@@ -369,14 +371,14 @@ export default {
                     const nombres = resultado.fallidos.map(f => `${f.nombre}: ${f.motivo}`).join(' · ')
                     this.mostrarMensajeInline(
                         'error',
-                        `✓ ${resultado.exitosos} guardadas. ⚠️ No guardadas: ${nombres}`,
+                        `${resultado.exitosos} guardadas. ⚠️ No guardadas: ${nombres}`,
                         0
                     )
                 }
 
             } catch (err) {
                 console.error('Error al guardar planificaciones:', err)
-                this.mostrarMensajeInline('error', '❌ Error al guardar. Intenta de nuevo.')
+                this.mostrarMensajeInline('error', 'Error al guardar. Intenta de nuevo.')
             } finally {
                 this.guardando = false
             }

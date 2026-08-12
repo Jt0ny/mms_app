@@ -11,7 +11,7 @@
 
         <div class="header-actions">
           <button class="btn btn-primary" @click="abrirNuevoFormulario">
-            ➕ Nuevo Cliente
+            <PlusIcon class="icon-md icon-inline" /> Nuevo Cliente
           </button>
         </div>
       </div>
@@ -22,7 +22,7 @@
       <div class="main-layout" :class="{ 'with-form': mostrarFormulario }">
         <!-- Columna Izquierda: Maestro (Facturación) -->
         <div class="column-left">
-          <ClienteList :clientes="clientes" :cargando="cargando" titulo="📄 1. Clientes de Facturación "
+          <ClienteList :clientes="clientes" :cargando="cargando" titulo="1. Clientes de Facturación "
             mostrarSoloTipo="Facturación" :mostrarDetallesContacto="false"
             :clienteSeleccionadoId="clienteFacturacionSeleccionado?.id" @seleccionar="seleccionarFacturacion"
             @editar="seleccionarCliente" @eliminar="confirmarEliminar" />
@@ -31,8 +31,8 @@
         <!-- Columna Derecha: Detalle (Envío) -->
         <div class="column-right">
           <ClienteList :clientes="clientes" :cargando="cargando" :titulo="clienteFacturacionSeleccionado
-            ? `🚚 2. Destinos de Envío asociados (${clienteFacturacionSeleccionado.nombre})`
-            : '🚚 2. Todos los Destinos de Envío'" mostrarSoloTipo="Envío"
+            ? `2. Destinos de Envío asociados (${clienteFacturacionSeleccionado.nombre})`
+            : '2. Todos los Destinos de Envío'" mostrarSoloTipo="Envío"
             :clienteFacturacionFiltro="clienteFacturacionSeleccionado?.nombre" :mostrarDetallesContacto="true"
             @editar="seleccionarCliente" @eliminar="confirmarEliminar" />
         </div>
@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import { PlusIcon } from '@heroicons/vue/24/outline'
 import ClientesClient from '../client/ClientesClient'
 import ClienteList from '../components/clientes/ClienteList.vue'
 import ClienteForm from '../components/clientes/ClienteForm.vue'
@@ -59,6 +60,7 @@ import { useCatalogos } from '../composables/useCatalogos.js'
 export default {
   name: 'ClientesPage',
   components: {
+    PlusIcon,
     ClienteList,
     ClienteForm,
     Alertas
@@ -96,7 +98,7 @@ export default {
       
       if (response?.success === false) {
         this.clientes = []
-        this.mostrarMensaje('error', '❌ Error al cargar los clientes')
+        this.mostrarMensaje('error', 'Error al cargar los clientes')
       } else {
         this.clientes = response?.data ?? []
       }
@@ -145,11 +147,11 @@ export default {
       this.guardando = false
 
       if (response.success) {
-        this.mostrarMensaje('exito', payload.id ? '✓ Cliente actualizado correctamente' : '✓ Cliente registrado correctamente')
+        this.mostrarMensaje('exito', payload.id ? 'Cliente actualizado correctamente' : 'Cliente registrado correctamente')
         this.cerrarFormulario()
         await this.cargarClientes(true)
       } else {
-        this.mostrarMensaje('error', '❌ Error al guardar el cliente')
+        this.mostrarMensaje('error', 'Error al guardar el cliente')
       }
     },
     async confirmarEliminar(cliente) {
@@ -157,7 +159,7 @@ export default {
       const response = await ClientesClient.eliminarCliente(cliente.id)
 
       if (response.success) {
-        this.mostrarMensaje('exito', `✓ Cliente "${cliente.nombre}" eliminado correctamente`)
+        this.mostrarMensaje('exito', `Cliente "${cliente.nombre}" eliminado correctamente`)
         if (this.clienteParaEditar && this.clienteParaEditar.id === cliente.id) {
           this.cerrarFormulario()
         }
@@ -166,7 +168,7 @@ export default {
         }
         await this.cargarClientes(true)
       } else {
-        this.mostrarMensaje('error', '❌ Error al eliminar el cliente')
+        this.mostrarMensaje('error', 'Error al eliminar el cliente')
       }
 
     }

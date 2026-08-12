@@ -4,10 +4,6 @@ import { supabase } from "./supabase";
 const API_URL = import.meta.env.VITE_API_MATERIALES_URL;
 
 export default {
-  /**
-   * Sincroniza los materiales desde la API externa (puerto 8090) hacia Supabase.
-   * Usa upsert para no duplicar registros existentes.
-   */
   async sincronizarConSupabase() {
     try {
 
@@ -68,9 +64,6 @@ export default {
     }
   },
 
-  /**
-   * Obtiene la lista de todos los materiales desde Supabase ordenados por nombre
-   */
   async obtenerMateriales() {
     try {
       const { data, error } = await supabase
@@ -86,10 +79,6 @@ export default {
     }
   },
 
-  /**
-   * Carga múltiples materiales (bulk import) directamente en Supabase.
-   * Si el nombre ya existe, actualiza la cantidad.
-   */
   async cargarMateriales(data) {
     try {
       // Obtener existentes para resolver IDs por nombre
@@ -127,9 +116,6 @@ export default {
     }
   },
 
-  /**
-   * Agrega un nuevo material directamente en Supabase.
-   */
   async agregarMaterial(data) {
     try {
       const { error } = await supabase
@@ -149,9 +135,6 @@ export default {
     }
   },
 
-  /**
-   * Actualiza el stock de un material directamente en Supabase.
-   */
   async actualizarStockMaterial(id, nuevaCantidad) {
     try {
       const { error } = await supabase
@@ -167,9 +150,6 @@ export default {
     }
   },
 
-  /**
-   * Elimina un material directamente en Supabase.
-   */
   async eliminarMaterial(id) {
     try {
       const { error } = await supabase

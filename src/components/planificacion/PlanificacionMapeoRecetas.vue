@@ -207,7 +207,7 @@ export default {
 		estadoAsignacion(cat) {
 			const totalAsignado = this.obtenerTotalAsignado(cat.categoria)
 			if (totalAsignado === cat.totalStems) {
-				return { clase: 'status-perfect', texto: '✓ Asignación Correcta' }
+				return { clase: 'status-perfect', texto: 'Asignación Correcta' }
 			}
 			if (totalAsignado < cat.totalStems) {
 				const faltante = cat.totalStems - totalAsignado
@@ -307,8 +307,8 @@ export default {
 }
 
 .status-incomplete {
-	background: #fef3c7;
-	color: #b45309;
+	background: var(--alert-warning-bg);
+	color: var(--alert-warning-text);
 }
 
 .status-overflow {
@@ -418,7 +418,7 @@ export default {
 }
 
 .btn-add-receta:hover:not(:disabled) {
-	background: #f0fdf4;
+	background: var(--primary-bg);
 	border-color: var(--primary);
 }
 

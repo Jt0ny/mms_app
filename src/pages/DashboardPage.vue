@@ -8,8 +8,9 @@
                     <p class="page-subtitle">Monitoreo de producción, inventarios y mermas en tiempo real</p>
                 </div>
                 <div class="header-actions">
-                    <button @click="cargarDatosDashboard" :disabled="cargando" class="btn btn-primary">
-                        {{ cargando ? '⟳ Cargando...' : '↻ Actualizar Panel' }}
+                    <button @click="cargarDatosDashboard" :disabled="cargando" class="btn btn-primary inline-flex-center gap-6">
+                        <ArrowPathIcon class="icon-sm" :class="{ 'spin': cargando }" />
+                        {{ cargando ? 'Cargando...' : 'Actualizar Panel' }}
                     </button>
                 </div>
             </header>
@@ -27,7 +28,7 @@
                 :totalMermasStems="kpis.totalMermasStems" :totalAlertasStock="alertasStock.length" />
 
             <!-- Layout de Gráficos e Indicadores -->
-            <div class="dashboard-layout">
+            <div class="grid-halves">
                 <!-- Avance de Operadores -->
                 <DashboardAvanceOperador :operadoresAvance="avanceOperadores" :cargando="cargando" />
 
@@ -51,6 +52,7 @@ import DashboardDistribucionMermas from '../components/dashboard/DashboardDistri
 import DashboardEstadoPedidos from '../components/dashboard/DashboardEstadoPedidos.vue'
 import { obtenerFechaHoy } from '../utils/date.js'
 import { useMensajes } from '../composables/useMensajes.js'
+import { ArrowPathIcon } from '@heroicons/vue/24/outline'
 
 export default {
     name: 'DashboardPage',
@@ -59,7 +61,8 @@ export default {
         DashboardKPIs,
         DashboardAvanceOperador,
         DashboardDistribucionMermas,
-        DashboardEstadoPedidos
+        DashboardEstadoPedidos,
+        ArrowPathIcon
     },
     setup() {
         const { mensaje, mostrarMensaje } = useMensajes()
@@ -107,7 +110,7 @@ export default {
                 this.alertasStock = datos.alertasStock
                 this.estadoPedidos = datos.estadoPedidos
             } else {
-                this.mostrarMensaje('error', '❌ Error al cargar los datos del panel de control.')
+                this.mostrarMensaje('error', 'Error al cargar los datos del panel de control.')
             }
 
             this.cargando = false
@@ -130,20 +133,14 @@ export default {
 }
 
 /* Layout */
-.dashboard-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    align-items: start;
-}
-
 .pedidos-widget {
     grid-column: 1 / -1;
 }
 
-@media (max-width: 1024px) {
-    .dashboard-layout {
-        grid-template-columns: 1fr;
-    }
+.spin {
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    100% { transform: rotate(360deg); }
 }
 </style>

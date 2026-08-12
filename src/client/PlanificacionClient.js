@@ -28,7 +28,6 @@ export default {
 
             return { success: true, data: (data || []).map(item => ({
                 id: item.id,
-                // Mapeo snake_case a camelCase
                 operadorId: item.operador_id,
                 operadorNombre: item.usuarios?.nombre || 'Operador Desconocido',
                 fecha: item.fecha,
@@ -46,16 +45,10 @@ export default {
         }
     },
 
-    /**
-     * Obtiene las planificaciones de una fecha específica
-     */
     async obtenerPlanificacionesPorFecha(fecha) {
         return await this._queryPlanificaciones('fecha', fecha);
     },
 
-    /**
-     * Elimina TODAS las planificaciones de una fecha específica
-     */
     async eliminarPlanificacionesPorFecha(fecha) {
         try {
             const { error } = await supabase
@@ -71,9 +64,6 @@ export default {
         }
     },
 
-    /**
-     * Obtiene las planificaciones de un operador específico
-     */
     async obtenerPlanificacionesPorOperador(operadorId) {
         return await this._queryPlanificaciones('operador_id', operadorId);
     },
@@ -82,7 +72,6 @@ export default {
      * Crea una nueva planificación y sus relaciones en Supabase.
      * Con la Migración B activa, lanzará un error si el operador ya tiene
      * planificación para esa fecha (UNIQUE constraint).
-     * @param {{ operadorId: string, operadorNombre: string, fecha: string, recetas: Array<{ recetaId: string, nombre: string, cantidad: number }> }} data
      */
     async crearPlanificacion(data) {
         try {
@@ -116,7 +105,6 @@ export default {
 
             return { success: true, data: {
                 id: planId,
-                // Mapeo snake_case a camelCase
                 operadorId: planData.operador_id,
                 operadorNombre: data.operadorNombre,
                 fecha: planData.fecha,

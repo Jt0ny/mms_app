@@ -17,9 +17,10 @@
                         @archivo-seleccionado="procesarArchivo" />
 
                     <!-- INVENTARIO -->
-                    <InventoryTable title="📦 Inventario Actual" :items="inventarioActual" :loading="cargandoInventario"
-                        item-label="variedades en inventario" empty-text="📭 No hay datos en el inventario"
+                    <InventoryTable title="Inventario Actual" :items="inventarioActual" :loading="cargandoInventario"
+                        item-label="variedades en inventario" empty-text="No hay datos en el inventario"
                         @actualizar="cargarInventario(true)" @sincronizar="sincronizarAPI">
+                        <template #title-icon><SunIcon class="icon-lg text-white" /></template>
                         <template #header>
                             <th>Variedad</th>
                             <th>Cantidad (Tallos)</th>
@@ -69,6 +70,7 @@ import InventoryTable from '../components/shared/InventoryTable.vue'
 import PreviewTable from '../components/shared/PreviewTable.vue'
 import { useMensajes } from '../composables/useMensajes.js'
 import { obtenerFechaHoy, formatearFecha } from '../utils/date.js'
+import { SunIcon } from '@heroicons/vue/24/outline'
 
 export default {
 
@@ -76,7 +78,8 @@ export default {
         CargaArchivo,
         Alertas,
         InventoryTable,
-        PreviewTable
+        PreviewTable,
+        SunIcon
     },
 
     setup() {
@@ -117,14 +120,14 @@ export default {
                 this.datosProcesados = this.procesarDatos(jsonData)
 
                 if (!this.datosProcesados.length) {
-                    this.mostrarMensaje('error', '❌ No se encontraron datos válidos')
+                    this.mostrarMensaje('error', 'No se encontraron datos válidos')
                     return
                 }
 
-                this.mostrarMensaje('exito', `✓ ${this.datosProcesados.length} variedades cargadas`)
+                this.mostrarMensaje('exito', `${this.datosProcesados.length} variedades cargadas`)
             } catch (error) {
                 console.error(error)
-                this.mostrarMensaje('error', `❌ ${error.message || 'Error al leer archivo Excel'}`)
+                this.mostrarMensaje('error', `${error.message || 'Error al leer archivo Excel'}`)
             }
         },
 
@@ -168,11 +171,11 @@ export default {
             this.cargando = false
 
             if (response.success) {
-                this.mostrarMensaje('exito', `✓ ${this.datosProcesados.length} registros guardados`)
+                this.mostrarMensaje('exito', `${this.datosProcesados.length} registros guardados`)
                 this.datosProcesados = []
                 await this.cargarInventario(true)
             } else {
-                this.mostrarMensaje('error', '❌ Error al guardar registros', 0)
+                this.mostrarMensaje('error', 'Error al guardar registros', 0)
             }
         }
     }

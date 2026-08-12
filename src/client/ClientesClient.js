@@ -30,7 +30,6 @@ export default {
         id: item.id,
         nombre: item.nombre,
         tipo: item.tipo,
-        // Mapeo snake_case a camelCase
         clienteFacturacionId: item.cliente_facturacion_id,
         // Asignamos el nombre del broker para que las vistas de Vue lo muestren sin cambios
         clienteFacturacionAsociado: item.parent ? item.parent.nombre : '',

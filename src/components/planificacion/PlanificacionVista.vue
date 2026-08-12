@@ -16,14 +16,14 @@
                 </strong>
             </div>
 
-            <button class="btn-eliminar" :disabled="eliminando" @click="$emit('eliminar')">
-                {{ eliminando ? 'Eliminando...' : '🗑️ Eliminar y volver a planificar' }}
+            <button class="btn btn-danger" :disabled="eliminando" @click="$emit('eliminar')">
+                {{ eliminando ? 'Eliminando...' : ' Eliminar y volver a planificar' }}
             </button>
         </div>
 
         <!-- Tabla de Planificación -->
-        <div class="content-table">
-            <table class="inventory-table">
+        <div class="data-card">
+            <table class="data-card-table">
                 <thead>
                     <tr>
                         <th>Operador</th>
@@ -151,67 +151,7 @@ export default {
     color: var(--text-h);
 }
 
-.btn-eliminar {
-    padding: 10px 16px;
-    background: var(--alert-error-bg);
-    color: var(--alert-error-text);
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
 
-.btn-eliminar:hover:not(:disabled) {
-    background: var(--alert-error-border);
-    color: var(--alert-error-text);
-}
-
-.btn-eliminar:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-.content-table {
-    background: var(--bg);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--border);
-    padding: 10px;
-    overflow-x: auto;
-}
-
-.inventory-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-
-.inventory-table thead {
-    background: var(--primary);
-    color: white;
-}
-
-.inventory-table th {
-    padding: 14px 16px;
-    text-align: left;
-    text-transform: uppercase;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
-    border: none;
-}
-
-.inventory-table td {
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--border);
-    color: var(--text-p);
-    vertical-align: middle;
-}
-
-.inventory-table tbody tr:hover td:not(.td-operador) {
-    background: var(--bg-secondary, #f8fafc);
-}
 
 .td-operador {
     vertical-align: top !important;
@@ -222,8 +162,8 @@ export default {
 }
 
 .badge-cat {
-    background: #e2e8f0;
-    color: #475569;
+    background: var(--bg-secondary);
+    color: var(--text);
     padding: 4px 8px;
     border-radius: 6px;
     font-size: 12px;

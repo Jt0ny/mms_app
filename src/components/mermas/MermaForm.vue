@@ -1,11 +1,11 @@
 <template>
-  <div class="merma-form-card">
-    <div class="header">
-      <h2>Registrar Merma</h2>
+  <div class="data-card p-6">
+    <div class="mb-6">
+      <h2 class="form-title-lg">Registrar Merma</h2>
     </div>
 
     <!-- Alerta informativa del estado de filtrado por planificacion -->
-    <Alertas v-if="filtroInfo" :mensaje="filtroInfo" style="margin-bottom: 16px;" />
+    <Alertas v-if="filtroInfo" :mensaje="filtroInfo" class="mb-4" />
 
     <form @submit.prevent="enviarFormulario" class="merma-form">
       <!-- Operador Responsable -->
@@ -48,8 +48,8 @@
       <!-- Motivo -->
       <MermaMotivoSelector v-model:motivo="form.motivo" v-model:otroMotivo="form.otroMotivo" />
 
-      <div class="actions">
-        <button type="submit" class="btn btn-primary" :disabled="guardando || cargandoRecursos">
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-block" :disabled="guardando || cargandoRecursos">
           {{ guardando ? 'Registrando...' : 'Registrar Merma' }}
         </button>
       </div>
@@ -208,37 +208,5 @@ export default {
 </script>
 
 <style scoped>
-.merma-form-card {
-  background: var(--bg);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: var(--shadow);
-}
 
-.header {
-  margin-bottom: 24px;
-}
-
-.header h2 {
-  margin: 0 0 6px;
-  font-size: clamp(18px, 2vw, 22px);
-  color: var(--text-h);
-}
-
-.merma-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
-}
-
-.actions .btn {
-  width: 100%;
-}
 </style>

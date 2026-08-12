@@ -1,26 +1,29 @@
 <template>
-    <section class="dashboard-section">
-        <header class="section-header">
-            <h2 class="section-title">Pedidos de Hoy</h2>
-            <p class="section-subtitle">Estado en tiempo real de los despachos</p>
+    <section class="data-card h-full">
+        <header class="data-card-header">
+            <div>
+                <h2>Pedidos de Hoy</h2>
+                <p class="data-card-subtitle">Estado en tiempo real de los despachos</p>
+            </div>
         </header>
 
-        <div class="estado-pedidos-card">
+        <div class="data-card-content flex-col">
             <div v-if="cargando" class="loading-state">
-                Cargando estado de pedidos...
+                <div class="spinner"></div>
+                <p>Cargando estado de pedidos...</p>
             </div>
-            <div v-else-if="pedidos.length === 0" class="empty-state">
+            <div v-else-if="pedidos.length === 0" class="empty-state-card m-5">
                 <p>No hay pedidos registrados el día de hoy.</p>
             </div>
-            <div v-else class="tables-wrapper">
+            <div v-else class="grid-halves">
                 <!-- Pedidos Pendientes -->
                 <div class="table-column">
                     <h3 class="column-title">Pendientes <span class="badge badge-warning count-badge">{{ pedidosPendientes.length }}</span></h3>
-                    <div v-if="pedidosPendientes.length === 0" class="empty-state small">
+                    <div v-if="pedidosPendientes.length === 0" class="empty-state-card p-5">
                         <p>No hay pedidos pendientes.</p>
                     </div>
                     <div v-else class="table-container with-scroll">
-                        <table class="mms-table">
+                        <table class="data-card-table">
                             <thead>
                                 <tr>
                                     <th>Cliente</th>
@@ -46,11 +49,11 @@
                 <!-- Pedidos Completados -->
                 <div class="table-column">
                     <h3 class="column-title">Completados <span class="badge badge-success count-badge">{{ pedidosCompletados.length }}</span></h3>
-                    <div v-if="pedidosCompletados.length === 0" class="empty-state small">
+                    <div v-if="pedidosCompletados.length === 0" class="empty-state-card p-5">
                         <p>No hay pedidos completados.</p>
                     </div>
                     <div v-else class="table-container with-scroll">
-                        <table class="mms-table">
+                        <table class="data-card-table">
                             <thead>
                                 <tr>
                                     <th>Cliente</th>
@@ -102,51 +105,6 @@ export default {
 </script>
 
 <style scoped>
-.dashboard-section {
-    background: var(--bg);
-    border: 1px solid var(--border-light);
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: var(--shadow);
-    height: 100%;
-}
-
-
-
-.estado-pedidos-card {
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-}
-
-.loading-state,
-.empty-state {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-light);
-    font-size: 0.9rem;
-    text-align: center;
-    padding: 32px;
-    background: var(--bg-alt);
-    border-radius: 8px;
-    border: 1px dashed var(--border);
-}
-
-.tables-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    width: 100%;
-}
-
-@media (max-width: 1024px) {
-    .tables-wrapper {
-        grid-template-columns: 1fr;
-    }
-}
-
 .table-column {
     display: flex;
     flex-direction: column;
@@ -168,11 +126,6 @@ export default {
 .count-badge {
     font-size: 0.7rem;
     padding: 2px 8px;
-}
-
-.empty-state.small {
-    padding: 20px;
-    min-height: 100px;
 }
 
 .table-container {
@@ -201,39 +154,6 @@ export default {
 }
 .table-container.with-scroll::-webkit-scrollbar-thumb:hover {
     background: var(--border);
-}
-
-.mms-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-    text-align: left;
-}
-
-.mms-table th {
-    background: #1eab55;
-    color: #ffffff;
-    font-weight: 700;
-    padding: 14px 16px;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    border-bottom: none;
-    white-space: nowrap;
-}
-
-.mms-table td {
-    padding: 14px 16px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-    color: var(--text-main);
-}
-
-.mms-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-.mms-table tbody tr:hover {
-    background: var(--bg-hover);
 }
 
 .font-medium {

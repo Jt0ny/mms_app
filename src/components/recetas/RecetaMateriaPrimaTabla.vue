@@ -1,12 +1,13 @@
 <template>
-    <div class="panel inventory-panel">
-        <div class="panel-header">
+    <div class="panel selection-panel">
+        <div class="selection-panel-header">
             <div>
                 <h2>Materia prima disponible</h2>
                 <p>Selecciona la materia prima para la receta</p>
             </div>
 
-            <button type="button" class="btn-refresh" :disabled="cargando" @click="$emit('actualizar')">
+            <button type="button" class="btn-refresh inline-flex-center gap-6" :disabled="cargando" @click="$emit('actualizar')">
+                <ArrowPathIcon class="icon-sm" :class="{ 'spin': cargando }" />
                 {{ cargando ? 'Cargando...' : 'Actualizar' }}
             </button>
         </div>
@@ -17,7 +18,7 @@
         </div>
 
         <!-- TABLA -->
-        <div v-else-if="materiaPrima.length" class="table-wrap">
+        <div v-else-if="materiaPrima.length" class="selection-table-wrap">
 
             <table class="selection-table">
                 <thead>
@@ -45,7 +46,7 @@
                             </strong>
 
                             <div class="row-subtitle">
-                                Fecha:{{ item.fechaIngreso || '-' }}
+                                Fecha: {{ item.fechaIngreso || '-' }}
                             </div>
 
                         </td>
@@ -75,7 +76,10 @@
 </template>
 
 <script>
+import { ArrowPathIcon } from '@heroicons/vue/24/outline'
+
 export default {
+    components: { ArrowPathIcon },
 
     props: {
 
@@ -114,78 +118,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.inventory-panel {
-    background: var(--bg);
-    border-radius: 14px;
-    padding: 20px;
-    box-shadow: var(--shadow-sm);
-}
-
-.panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.panel-header p {
-    margin-top: 4px;
-    color: var(--text-light);
-}
-
-.btn-refresh {
-    border: none;
-    border-radius: 10px;
-    padding: 10px 14px;
-    cursor: pointer;
-    font-weight: 600;
-    background: var(--primary-bg);
-    color: var(--primary-dark);
-}
-
-.table-wrap {
-    max-height: 420px;
-    overflow: auto;
-}
-
-.selection-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.selection-table th,
-.selection-table td {
-    padding: 12px 10px;
-    border-bottom: 1px solid var(--border-light);
-    text-align: left;
-}
-
-.selection-table th {
-    font-size: 14px;
-    color: var(--text-light);
-}
-
-.row-subtitle {
-    margin-top: 4px;
-    font-size: 13px;
-    color: var(--text-light);
-}
-
-.qty-input {
-    width: 100px;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-}
-
-.empty-state {
-    padding: 18px;
-    border-radius: 10px;
-    background: var(--bg-secondary);
-    border: 1px dashed var(--border);
-    color: var(--text-light);
-}
-</style>

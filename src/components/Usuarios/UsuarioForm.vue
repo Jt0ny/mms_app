@@ -2,7 +2,7 @@
     <form class="usuarios-form" @submit.prevent="guardar">
 
         <div class="form-header">
-            <span class="form-icon">👤</span>
+            <span class="form-icon flex-align-center"><UserIcon class="icon-lg text-white" /></span>
             <div>
                 <h2>Agregar Usuario</h2>
                 <p>Completa los campos para registrar un nuevo acceso</p>
@@ -23,7 +23,7 @@
             <Alertas :mensaje="mensaje" />
 
             <button type="submit" :disabled="guardando">
-                {{ guardando ? 'Guardando...' : '✓ Guardar usuario' }}
+                {{ guardando ? 'Guardando...' : 'Guardar usuario' }}
             </button>
         </div>
     </form>
@@ -34,11 +34,13 @@ import Alertas from '../Alertas.vue'
 import UsuarioRol from './UsuarioRol.vue'
 import UsuarioClient from '../../client/UsuarioClient.js'
 import { generarSHA256 } from '../../utils/crypto.js'
+import { UserIcon } from '@heroicons/vue/24/outline'
 
 export default {
     components: {
         Alertas,
-        UsuarioRol
+        UsuarioRol,
+        UserIcon
     },
 
     data() {

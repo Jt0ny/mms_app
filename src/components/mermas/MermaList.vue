@@ -1,9 +1,12 @@
 <template>
-  <div class="merma-list-card">
-    <div class="list-header">
+  <div class="data-card h-full">
+    <div class="data-card-header">
       <div class="title-section">
-        <h3>📋 Historial de Mermas</h3>
-        <p v-if="mermas.length > 0">
+        <div class="flex-align-center gap-8">
+          <ClipboardDocumentListIcon class="icon-lg text-primary" />
+          <h2>Historial de Mermas</h2>
+        </div>
+        <p class="data-card-subtitle" v-if="mermas.length > 0">
           <strong>{{ mermas.length }}</strong> registros encontrados
         </p>
       </div>
@@ -15,9 +18,9 @@
         <div class="select-wrapper">
           <select v-model="filtros.tipo" class="filter-select">
             <option value="">Todos los tipos</option>
-            <option value="materia_prima">🌸 Materia Prima</option>
-            <option value="material">📦 Material</option>
-            <option value="producto_terminado">✨ Prod. Terminado</option>
+            <option value="materia_prima">Materia Prima</option>
+            <option value="material">Material</option>
+            <option value="producto_terminado">Prod. Terminado</option>
           </select>
         </div>
 
@@ -32,13 +35,13 @@
     </div>
 
     <!-- Lista Vacía -->
-    <div v-else-if="mermasFiltradas.length === 0" class="empty-state">
-      <p>📭 No se encontraron registros de mermas</p>
+    <div v-else-if="mermasFiltradas.length === 0" class="empty-state-card m-5">
+      <p><InboxIcon class="icon-lg icon-inline text-light" /> No se encontraron registros de mermas</p>
     </div>
 
     <!-- Tabla -->
-    <div v-else class="table-container">
-      <table class="mermas-table">
+    <div v-else class="data-card-content no-pad">
+      <table class="data-card-table">
         <thead>
           <tr>
             <th>Fecha</th>
@@ -63,7 +66,7 @@
             <td class="actions-col">
               <button class="btn-action-ghost delete" @click="$emit('eliminar', item)" title="Eliminar registro"
                 aria-label="Eliminar">
-                🗑️
+                <TrashIcon class="icon-action text-error" />
               </button>
             </td>
           </tr>
@@ -74,8 +77,13 @@
 </template>
 
 <script>
+import { ClipboardDocumentListIcon, InboxIcon, TrashIcon } from '@heroicons/vue/24/outline'
+
 export default {
   name: 'MermaList',
+  components: {
+    ClipboardDocumentListIcon, InboxIcon, TrashIcon
+  },
   props: {
     mermas: {
       type: Array,
@@ -131,36 +139,6 @@ export default {
 </script>
 
 <style scoped>
-.merma-list-card {
-  background: var(--bg);
-  border-radius: 12px;
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-
-.list-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border-light);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.title-section h3 {
-  margin: 0 0 4px;
-  font-size: 16px;
-  color: var(--text-h);
-}
-
-.title-section p {
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-light);
-}
-
 /* Filtros */
 .filters {
   display: flex;
@@ -193,44 +171,6 @@ export default {
 
 .filter-date {
   max-width: 140px;
-}
-
-/* Tabla */
-.table-container {
-  overflow-x: auto;
-  padding: 0 20px 20px;
-}
-
-.mermas-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.mermas-table thead {
-  background: var(--primary);
-  color: white;
-}
-
-.mermas-table th {
-  padding: 14px 20px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  border: none;
-  letter-spacing: 0.5px;
-}
-
-.mermas-table td {
-  padding: 14px 20px;
-  font-size: 14px;
-  border-bottom: 1px solid var(--border-light);
-  color: var(--text);
-  vertical-align: middle;
-}
-
-.mermas-table tbody tr:hover {
-  background: var(--bg-secondary);
 }
 
 .date-col {
@@ -268,6 +208,20 @@ export default {
   white-space: nowrap;
 }
 
+/* Sobreescritura local para que solo este componente tenga el fondo blanco en su header */
+.data-card-header {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text);
+}
+.data-card-header h2 {
+  color: var(--text-h);
+}
+.data-card-header p.data-card-subtitle {
+  color: var(--text-light);
+  opacity: 1;
+}
+
 .badge-materia_prima {
   background: rgba(219, 39, 119, 0.1);
   color: #db2777;
@@ -292,38 +246,7 @@ export default {
   text-align: right;
 }
 
-
-
-/* Loading & Empty States */
-.loading-state,
-.empty-state {
-  padding: 48px;
-  text-align: center;
-  color: var(--text-light);
-}
-
-.spinner {
-  width: 24px;
-  height: 24px;
-  border: 3px solid var(--border);
-  border-top-color: var(--error);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto 12px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 @media (max-width: 768px) {
-  .list-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
   .filters {
     width: 100%;
     flex-direction: column;
@@ -335,10 +258,6 @@ export default {
   .filter-date {
     width: 100%;
     max-width: none;
-  }
-
-  .table-container {
-    padding: 0 10px 10px;
   }
 }
 </style>

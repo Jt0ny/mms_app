@@ -16,10 +16,10 @@
                 <RecetaForm :receta="nuevaReceta" :categorias="categorias" :totalSeleccionados="totalSeleccionados"
                     :totalMateriales="materialesSeleccionados.length"
                     :totalMateriaPrima="materiaPrimaSeleccionada.length" :guardando="guardandoReceta"
-                    @actualizar-receta="nuevaReceta = $event" @guardar="guardarReceta" />
+                    @actualizar-receta="nuevaReceta = $event" @guardar="guardarReceta" @cancelar="resetearFormulario" />
 
                 <!-- TABLAS -->
-                <div class="tables-grid">
+                <div class="grid-halves">
 
                     <!-- MATERIALES -->
                     <RecetaMaterialesTabla :materiales="materiales" :seleccionados="materialesSeleccionados"
@@ -33,8 +33,9 @@
 
                 </div>
 
-                <!-- RESUMEN -->
-                <RecetaResumen :materiales="materialesSeleccionados" :materiaPrima="materiaPrimaSeleccionada" />
+                <!-- LISTA DE RECETAS -->
+                <RecetaList :recetas="todasLasRecetas" :cargando="cargandoRecetas"
+                    @actualizar="cargarTodasLasRecetas(true)" @editar="editarReceta" @eliminar="borrarReceta" />
 
             </div>
         </div>
@@ -49,7 +50,7 @@ import { useCatalogos } from '../composables/useCatalogos.js'
 import RecetaForm from '../components/recetas/RecetaForm.vue'
 import RecetaMaterialesTabla from '../components/recetas/RecetaMaterialesTabla.vue'
 import RecetaMateriaPrimaTabla from '../components/recetas/RecetaMateriaPrimaTabla.vue'
-import RecetaResumen from '../components/recetas/RecetaResumen.vue'
+import RecetaList from '../components/recetas/RecetaList.vue'
 import Alertas from '../components/Alertas.vue'
 import { useMensajes } from '../composables/useMensajes.js'
 
@@ -59,7 +60,7 @@ export default {
         RecetaForm,
         RecetaMaterialesTabla,
         RecetaMateriaPrimaTabla,
-        RecetaResumen,
+        RecetaList,
         Alertas
     },
 
@@ -79,6 +80,8 @@ export default {
             cargandoMateriaPrima: false,
             guardandoReceta: false,
             categorias: [],
+            todasLasRecetas: [],
+            cargandoRecetas: false,
             nuevaReceta: {
                 nombre: '',
                 categoria: '',
@@ -98,36 +101,72 @@ export default {
         this.cargarMateriales()
         this.cargarMateriaPrima()
         this.cargarCategorias()
+        this.cargarTodasLasRecetas()
     },
 
     methods: {
+
+
+        async cargarTodasLasRecetas(forceRefresh = false) {
+            this.cargandoRecetas = true
+            const response = await this.catalogos.obtenerRecetas(forceRefresh)
+            this.todasLasRecetas = response?.success !== false ? (response?.data || []) : []
+            this.cargandoRecetas = false
+        },
+
+        editarReceta(receta) {
+            this.nuevaReceta = {
+                id: receta.id,
+                nombre: receta.nombre || '',
+                categoria: receta.categoria || '',
+                instrucciones: receta.instrucciones || ''
+            }
+            this.materialesSeleccionados = [...(receta.materiales || [])]
+            this.materiaPrimaSeleccionada = [...(receta.materiaPrima || [])]
+
+            // Scroll al inicio del formulario
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+        },
+
+        async borrarReceta(receta) {
+
+            const res = await RecetaClient.eliminarReceta(receta.id)
+            if (res.success) {
+                await this.catalogos.obtenerRecetas(true) // Force refresh the cache
+                this.cargarTodasLasRecetas(true)
+                this.mostrarMensaje('exito', 'Receta eliminada correctamente')
+                if (this.nuevaReceta.id === receta.id) this.resetearFormulario()
+            } else {
+                this.mostrarMensaje('error', 'Error al eliminar la receta')
+            }
+        },
 
         // -- Cargar --
         async cargarMateriales(forceRefresh = false) {
             this.cargandoMateriales = true
             const response = await this.catalogos.obtenerMateriales(forceRefresh)
-            
+
             if (response?.success === false) {
                 this.materiales = []
-                this.mostrarMensaje('error', '❌ Error al cargar materiales')
+                this.mostrarMensaje('error', 'Error al cargar materiales')
             } else {
                 this.materiales = response?.data ?? []
             }
-            
+
             this.cargandoMateriales = false
         },
 
         async cargarMateriaPrima(forceRefresh = false) {
             this.cargandoMateriaPrima = true
             const response = await this.catalogos.obtenerMateriaPrima(forceRefresh)
-            
+
             if (response?.success === false) {
                 this.materiaPrima = []
-                this.mostrarMensaje('error', '❌ Error al cargar materia prima')
+                this.mostrarMensaje('error', 'Error al cargar materia prima')
             } else {
                 this.materiaPrima = response?.data ?? []
             }
-            
+
             this.cargandoMateriaPrima = false
         },
 
@@ -209,16 +248,22 @@ export default {
             this.guardandoReceta = true
 
             const payload = { ...this.nuevaReceta, materiales: this.materialesSeleccionados, materiaPrima: this.materiaPrimaSeleccionada, fechaCreacion: new Date().toISOString() }
-            const response = await RecetaClient.agregarReceta(payload)
-            
+            let response;
+            if (this.nuevaReceta.id) {
+                response = await RecetaClient.editarReceta(this.nuevaReceta.id, payload)
+            } else {
+                response = await RecetaClient.agregarReceta(payload)
+            }
+
             this.guardandoReceta = false
 
             if (response.success) {
                 await this.catalogos.obtenerRecetas(true) // Force refresh the cache
-                this.mostrarMensaje('exito', '✓ Receta guardada correctamente')
+                await this.cargarTodasLasRecetas(true)
+                this.mostrarMensaje('exito', this.nuevaReceta.id ? 'Receta actualizada correctamente' : 'Receta guardada correctamente')
                 this.resetearFormulario()
             } else {
-                this.mostrarMensaje('error', '❌ Error al guardar receta')
+                this.mostrarMensaje('error', 'Error al guardar receta')
             }
         },
 
@@ -226,6 +271,7 @@ export default {
         resetearFormulario() {
 
             this.nuevaReceta = {
+                id: undefined,
                 nombre: '',
                 categoria: '',
                 instrucciones: ''
@@ -237,18 +283,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.tables-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-}
-
-@media (max-width: 1024px) {
-
-    .tables-grid {
-        grid-template-columns: 1fr;
-    }
-}
-</style>

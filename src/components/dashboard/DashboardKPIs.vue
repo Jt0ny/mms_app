@@ -1,7 +1,7 @@
 <template>
     <div class="stats-grid">
         <article class="stat-card">
-            <div class="stat-icon blue">📋</div>
+            <div class="stat-icon blue"><ClipboardDocumentListIcon class="icon-md" /></div>
             <div class="stat-info">
                 <span>Pedidos de Hoy</span>
                 <strong>{{ totalPedidosStems }} <small>tallos</small></strong>
@@ -9,7 +9,7 @@
         </article>
 
         <article class="stat-card">
-            <div class="stat-icon pink">🌸</div>
+            <div class="stat-icon pink"><SunIcon class="icon-md" /></div>
             <div class="stat-info">
                 <span>Merma de Hoy</span>
                 <strong>{{ totalMermasStems }} <small>tallos</small></strong>
@@ -17,7 +17,7 @@
         </article>
 
         <article class="stat-card">
-            <div class="stat-icon orange">⚠️</div>
+            <div class="stat-icon orange"><ExclamationTriangleIcon class="icon-md" /></div>
             <div class="stat-info">
                 <span>Alertas de Stock</span>
                 <strong>{{ totalAlertasStock }} <small>insumos</small></strong>
@@ -27,8 +27,15 @@
 </template>
 
 <script>
+import { ClipboardDocumentListIcon, SunIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
+
 export default {
     name: 'DashboardKPIs',
+    components: {
+        ClipboardDocumentListIcon,
+        SunIcon,
+        ExclamationTriangleIcon
+    },
     props: {
         totalPedidosStems: {
             type: Number,

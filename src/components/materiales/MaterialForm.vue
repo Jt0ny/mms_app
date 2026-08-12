@@ -1,6 +1,5 @@
 <template>
-    <div class="material-form-card">
-
+  <div class="data-card p-6">
         <form @submit.prevent="enviarFormulario">
 
             <!-- NOMBRE -->
@@ -25,8 +24,8 @@
             </div>
 
             <!-- BOTONES -->
-            <div class="actions">
-                <button type="submit" class="btn btn-primary" :disabled="cargando">
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-block" :disabled="cargando">
                     {{ cargando ? 'Guardando...' : 'Agregar Material' }}
                 </button>
 
@@ -84,20 +83,5 @@ export default {
 }
 </script>
 <style scoped>
-.material-form-card {
-    background: var(--bg);
-    border-radius: 12px;
-    padding: 24px;
-    border: 1px solid var(--border-light);
-    box-shadow: var(--shadow);
-}
-
-.actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 24px;
-}
-
 
 </style>

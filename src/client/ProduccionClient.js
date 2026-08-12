@@ -1,9 +1,6 @@
 import { supabase } from './supabase'
 
 export default {
-    /**
-     * Obtiene la lista de producciones registradas en Supabase
-     */
     async obtenerProducciones() {
         try {
             const { data, error } = await supabase
@@ -28,7 +25,6 @@ export default {
                 id: p.id,
                 fecha: p.fecha,
                 total: p.total,
-                // Mapeo snake_case a camelCase
                 operadorId: p.operador_id,
                 operadorNombre: p.usuarios?.nombre || '',
                 creadoEn: p.creado_en,
@@ -40,10 +36,8 @@ export default {
         }
     },
 
-    /**
-     * Registra una nueva producción, descuenta materias primas y materiales,
-     * y genera el registro en la tabla de consumos históricos de Supabase.
-     */
+    // Registra una nueva producción, descuenta materias primas y materiales,
+    // y genera el registro en la tabla de consumos históricos de Supabase.
     async agregarProduccion(payload) {
         try {
             // 1. Insertar cabecera de producción
@@ -232,7 +226,7 @@ export default {
                 await Promise.all(updatePromises);
             }
 
-            // 4. Registrar todos los consumos en la tabla histórica
+            // 5. Registrar todos los consumos en la tabla histórica
             if (consumosInsertar.length > 0) {
                 const { error: consError } = await supabase
                     .from('produccion_consumos')
@@ -248,12 +242,9 @@ export default {
         }
     },
 
-    /**
-     * Edita cabecera y detalles de una producción registrada
-     */
     async editarProduccion(id, payload) {
         try {
-            // Actualizar la cabecera
+            // 1. Actualizar la cabecera
             const { error: prodError } = await supabase
                 .from('producciones')
                 .update({
@@ -264,7 +255,7 @@ export default {
 
             if (prodError) throw prodError;
 
-            // Borrar detalles viejos
+            // 2. Borrar detalles viejos
             const { error: delError } = await supabase
                 .from('produccion_detalle')
                 .delete()
@@ -272,7 +263,7 @@ export default {
 
             if (delError) throw delError;
 
-            // Insertar detalles nuevos
+            // 3. Insertar detalles nuevos
             const detallesPayload = payload.detalle.map(d => ({
                 produccion_id: id,
                 categoria: d.categoria,
@@ -292,9 +283,6 @@ export default {
         }
     },
 
-    /**
-     * Elimina un registro de producción por ID
-     */
     async eliminarProduccion(id) {
         try {
             const { error } = await supabase

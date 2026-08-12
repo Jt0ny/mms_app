@@ -3,8 +3,9 @@
         <label>Operador Responsable</label>
 
         <div class="selector-container">
-            <div class="actual-seleccion" :class="{ vacio: !operadorSeleccionado }">
-                👤 {{ operadorSeleccionado ? `Operador: ${operadorSeleccionado.nombre}` : 'Selecciona un operador' }}
+            <div class="actual-seleccion flex-align-center gap-8" :class="{ vacio: !operadorSeleccionado }">
+                <UserIcon class="icon-md text-primary" /> 
+                {{ operadorSeleccionado ? `Operador: ${operadorSeleccionado.nombre}` : 'Selecciona un operador' }}
             </div>
 
             <div class="opciones-chips">
@@ -20,8 +21,11 @@
 </template>
 
 <script>
+import { UserIcon } from '@heroicons/vue/24/outline'
+
 export default {
     name: 'MermaOperadorSelector',
+    components: { UserIcon },
     props: {
         modelValue: {
             type: String,

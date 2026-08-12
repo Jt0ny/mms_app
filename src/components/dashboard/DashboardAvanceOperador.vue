@@ -1,43 +1,49 @@
 <template>
-    <div class="avance-card">
-        <div class="section-header">
-            <h3 class="section-title">Avance de Operadores</h3>
-        </div>
+  <div class="data-card h-full">
+      <div class="data-card-header">
+          <h2>Avance de Operadores</h2>
+      </div>
 
-        <div v-if="cargando" class="loading-state">
-            <p>Cargando avance de operadores...</p>
-        </div>
+      <div class="data-card-content p-6">
+          <div v-if="cargando" class="loading-state">
+              <div class="spinner"></div>
+              <p>Cargando avance de operadores...</p>
+          </div>
 
-        <div v-else-if="operadoresAvance.length === 0" class="empty-state">
-            <p>📭 No hay planificación o avance de producción registrado hoy.</p>
-        </div>
+          <div v-else-if="operadoresAvance.length === 0" class="empty-state-card m-5">
+              <p>No hay planificación o avance de producción registrado hoy.</p>
+          </div>
 
-        <div v-else class="operadores-list">
-            <div v-for="op in operadoresAvance" :key="op.operadorId" class="operador-item">
-                <div class="op-info">
-                    <span class="op-nombre">👤 {{ op.nombre }}</span>
-                    <span class="op-stems">
-                        <strong>{{ op.producido }}</strong> / {{ op.planificado }} <small>tallos</small>
-                    </span>
-                </div>
+          <div v-else class="operadores-list">
+              <div v-for="op in operadoresAvance" :key="op.operadorId" class="operador-item">
+                  <div class="op-info">
+                      <span class="op-nombre flex-align-center gap-6"><UserIcon class="icon-sm" /> {{ op.nombre }}</span>
+                      <span class="op-stems">
+                          <strong>{{ op.producido }}</strong> / {{ op.planificado }} <small>tallos</small>
+                      </span>
+                  </div>
 
-                <div class="progress-bar-wrap">
-                    <div class="progress-bar-fill" :style="{ width: `${op.porcentaje}%`, background: getProgressColor(op.porcentaje) }"></div>
-                </div>
+                  <div class="progress-bar-wrap">
+                      <div class="progress-bar-fill" :style="{ width: `${op.porcentaje}%`, background: getProgressColor(op.porcentaje) }"></div>
+                  </div>
 
-                <div class="op-status">
-                    <span :style="{ color: getProgressColor(op.porcentaje) }">
-                        {{ op.porcentaje }}% completado
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
+                  <div class="op-status">
+                      <span :style="{ color: getProgressColor(op.porcentaje) }">
+                          {{ op.porcentaje }}% completado
+                      </span>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
 </template>
 
 <script>
+import { UserIcon } from '@heroicons/vue/24/outline'
+
 export default {
     name: 'DashboardAvanceOperador',
+    components: { UserIcon },
     props: {
         operadoresAvance: {
             type: Array,
@@ -60,21 +66,7 @@ export default {
 </script>
 
 <style scoped>
-.avance-card {
-    background: var(--bg);
-    border: 1px solid var(--border-light);
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: var(--shadow);
-}
 
-
-.loading-state, .empty-state {
-    text-align: center;
-    padding: 30px;
-    color: var(--text-light);
-    font-size: 14px;
-}
 
 .operadores-list {
     display: flex;

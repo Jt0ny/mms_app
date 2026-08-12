@@ -136,4 +136,77 @@ export default {
     }
   },
 
+  async editarReceta(id, payload) {
+    try {
+      const { data: recetaData, error: recetaError } = await supabase
+        .from('recetas')
+        .update({
+          nombre: payload.nombre,
+          categoria: payload.categoria,
+          instrucciones: payload.instrucciones,
+          total_items: (payload.materiales?.length || 0) + (payload.materiaPrima?.length || 0)
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (recetaError) throw recetaError;
+
+      // Borrar materiales existentes y re-insertar
+      await supabase.from('receta_materiales').delete().eq('receta_id', id);
+      if (payload.materiales && payload.materiales.length > 0) {
+        const recetaMaterialesInsert = payload.materiales.map(mat => ({
+          receta_id: id,
+          material_id: mat.id,
+          cantidad: mat.cantidad
+        }));
+        const { error: matError } = await supabase.from('receta_materiales').insert(recetaMaterialesInsert);
+        if (matError) throw matError;
+      }
+
+      // Borrar materia prima existente y re-insertar
+      await supabase.from('receta_materia_prima').delete().eq('receta_id', id);
+      if (payload.materiaPrima && payload.materiaPrima.length > 0) {
+        const recetaMateriaPrimaInsert = payload.materiaPrima.map(mp => ({
+          receta_id: id,
+          materia_prima_id: mp.id,
+          cantidad: mp.cantidad
+        }));
+        const { error: mpError } = await supabase.from('receta_materia_prima').insert(recetaMateriaPrimaInsert);
+        if (mpError) throw mpError;
+      }
+
+      return { success: true, data: {
+        id,
+        nombre: recetaData.nombre,
+        categoria: recetaData.categoria,
+        instrucciones: recetaData.instrucciones,
+        totalItems: recetaData.total_items,
+        fechaCreacion: recetaData.fecha_creacion,
+        materiales: payload.materiales || [],
+        materiaPrima: payload.materiaPrima || []
+      }};
+    } catch (error) {
+      console.error("Error al editar receta en Supabase:", error);
+      return { success: false, error };
+    }
+  },
+
+  async eliminarReceta(id) {
+    try {
+      // Por cascade delete (si está configurado) se borran los detalles.
+      // Pero para asegurar, borramos manualmente
+      await supabase.from('receta_materiales').delete().eq('receta_id', id);
+      await supabase.from('receta_materia_prima').delete().eq('receta_id', id);
+      
+      const { error } = await supabase.from('recetas').delete().eq('id', id);
+      if (error) throw error;
+      
+      return { success: true };
+    } catch (error) {
+      console.error("Error al eliminar receta en Supabase:", error);
+      return { success: false, error };
+    }
+  }
+
 }

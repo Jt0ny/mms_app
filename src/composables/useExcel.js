@@ -5,12 +5,7 @@ export function useExcel() {
 
     const cargandoExcel = ref(false)
 
-    /**
-     * Lee un archivo Excel y devuelve un arreglo de datos JSON.
-     * @param {File} file - El archivo a procesar
-     * @param {Object} options - Opciones pasadas a sheet_to_json (ej. { header: 1 })
-     * @returns {Promise<Array>} Matriz de datos
-     */
+    //Lee un archivo Excel y devuelve un arreglo de datos JSON.
     async function leerExcel(file, options = { defval: '' }) {
         cargandoExcel.value = true
         try {
@@ -28,11 +23,8 @@ export function useExcel() {
         }
     }
 
-    /**
-     * Normaliza las claves de un objeto Excel (minúsculas, sin espacios).
-     * @param {Object} fila - objeto con claves originales del Excel
-     * @returns {Object} - objeto con claves normalizadas
-     */
+    //Normaliza las claves de una fila de datos Excel.
+    //Convierte las claves a minúsculas y elimina los espacios en blanco.
     function normalizarClaves(fila) {
         const norm = {}
         Object.keys(fila).forEach(key => {

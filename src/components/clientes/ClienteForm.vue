@@ -1,11 +1,13 @@
 <!-- ClienteForm.vue -->
 <template>
-  <div class="cliente-form-card">
-    <div class="header">
-      <h2>{{ modoEdicion ? 'Editar Cliente' : 'Agregar Nuevo Cliente' }}</h2>
+  <div class="data-card p-6">
+    <div class="mb-5">
+      <h2 class="form-title">
+        {{ modoEdicion ? 'Editar Cliente' : 'Agregar Nuevo Cliente' }}
+      </h2>
     </div>
 
-    <form @submit.prevent="enviarFormulario" class="cliente-form">
+    <form @submit.prevent="enviarFormulario">
       <!-- Nombre -->
       <div class="form-group">
         <label class="form-label" for="cliente-nombre">Nombre del Cliente *</label>
@@ -18,9 +20,9 @@
         <div class="select-wrapper">
           <select id="cliente-tipo" v-model="form.tipo" class="form-select" required>
             <option value="" disabled>-- Seleccionar tipo --</option>
-            <option value="Facturación">📄 Facturación</option>
-            <option value="Envío">🚚 Envío</option>
-            <option value="Ambos">🔄 Ambos</option>
+            <option value="Facturación">Facturación</option>
+            <option value="Envío">Envío</option>
+            <option value="Ambos">Ambos</option>
           </select>
         </div>
       </div>
@@ -61,7 +63,7 @@
       </div>
 
       <!-- Acciones -->
-      <div class="actions">
+      <div class="form-actions">
         <button type="button" class="btn btn-secondary" @click="$emit('cancelar')">
           Cancelar
         </button>
@@ -166,30 +168,6 @@ export default {
 </script>
 
 <style scoped>
-.cliente-form-card {
-  background: var(--bg);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: var(--shadow);
-}
-
-.header {
-  margin-bottom: 20px;
-}
-
-.header h2 {
-  margin: 0;
-  font-size: clamp(16px, 2vw, 18px);
-  color: var(--text-h);
-}
-
-.cliente-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 .select-wrapper {
   position: relative;
 }
@@ -199,13 +177,4 @@ export default {
   color: var(--text-light);
   margin-top: 4px;
 }
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-
 </style>

@@ -2,22 +2,25 @@
     <div class="tipo-selector">
         <button type="button" :class="['tipo-btn', { active: modelValue === 'materia_prima' }]"
             @click="$emit('update:modelValue', 'materia_prima')">
-            🌸 Materia Prima
+            <SunIcon class="icon-sm icon-inline" /> Materia Prima
         </button>
         <button type="button" :class="['tipo-btn', { active: modelValue === 'material' }]"
             @click="$emit('update:modelValue', 'material')">
-            📦 Material
+            <CubeIcon class="icon-sm icon-inline" /> Material
         </button>
         <button type="button" :class="['tipo-btn', { active: modelValue === 'producto_terminado' }]"
             @click="$emit('update:modelValue', 'producto_terminado')">
-            ✨ Prod. Terminado
+            <SparklesIcon class="icon-sm icon-inline" /> Prod. Terminado
         </button>
     </div>
 </template>
 
 <script>
+import { SunIcon, CubeIcon, SparklesIcon } from '@heroicons/vue/24/outline'
+
 export default {
     name: 'TipoMermaSelector',
+    components: { SunIcon, CubeIcon, SparklesIcon },
     props: {
         modelValue: {
             type: String,

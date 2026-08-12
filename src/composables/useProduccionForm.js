@@ -58,7 +58,7 @@ export function useProduccionForm(props, emit) {
                         nuevaCantidad = limite
                         notificar('info', `El total planificado para la categoría ${categoria} es ${limite} y ya ha sido completado.`, 3000)
                     } else if (nuevaCantidad === limite) {
-                        notificar('exito', `✓ ¡Has completado la cantidad requerida para ${categoria}!`, 3000)
+                        notificar('exito', `¡Has completado la cantidad requerida para ${categoria}!`, 3000)
                     }
                 }
                 
@@ -89,7 +89,7 @@ export function useProduccionForm(props, emit) {
         
         const response = await PedidoClient.obtenerPedidos()
         if (response && response.success === false) {
-            notificar('error', '❌ No se pudieron cargar las categorías de pedidos', 0)
+            notificar('error', 'No se pudieron cargar las categorías de pedidos', 0)
             cargandoCategorias.value = false
             return
         }
@@ -150,7 +150,7 @@ export function useProduccionForm(props, emit) {
                 cantidad = limite
                 notificar('info', `El total planificado para la categoría ${categoria} es ${limite} y ya ha sido completado.`, 3000)
             } else if (cantidad === limite) {
-                notificar('exito', `✓ ¡Has completado la cantidad requerida para ${categoria}!`, 3000)
+                notificar('exito', `¡Has completado la cantidad requerida para ${categoria}!`, 3000)
             }
         }
 

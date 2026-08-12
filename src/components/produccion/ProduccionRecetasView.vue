@@ -24,7 +24,7 @@
                     <p class="receta-instrucciones" v-if="receta.instrucciones">{{ receta.instrucciones }}</p>
 
                     <!-- Detalle de materiales: nombre y cantidad -->
-                    <div v-if="(receta.materiales || []).length" class="materiales-list">
+                    <div v-if="(receta.materiales || []).length" class="ingrediente-list">
                         <h4>Materiales</h4>
                         <ul>
                             <li v-for="m in receta.materiales" :key="m.id || m.nombre">
@@ -34,7 +34,7 @@
                         </ul>
                     </div>
                     <!-- Detalle de materia prima: nombre y cantidad -->
-                    <div v-if="(receta.materiaPrima || []).length" class="materia-list">
+                    <div v-if="(receta.materiaPrima || []).length" class="ingrediente-list">
                         <h4>Materia prima</h4>
                         <ul>
                             <li v-for="mp in receta.materiaPrima" :key="mp.id || mp.nombre">
@@ -172,7 +172,7 @@ export default {
             this.mensaje = { tipo: 'info', texto: 'Cargando recetas...' }
             try {
                 const data = await this.catalogos.obtenerRecetas()
-                this.recetas = data ?? []
+                this.recetas = data?.success !== undefined ? (data.data || []) : (data || [])
                 this.$emit('recetas-cargadas', this.recetas)
             } catch (err) {
                 console.error('Error fetching recetas:', err)
@@ -250,12 +250,12 @@ export default {
 }
 
 .receta-accion--seleccionada {
-    background: #16a34a;
+    background: var(--primary);
     color: white;
 }
 
 .receta-accion--completada {
-    background: #16a34a;
+    background: var(--primary);
     color: white;
     pointer-events: none;
     opacity: 0.85;
@@ -296,7 +296,7 @@ export default {
 }
 
 .receta-categoria {
-    background: #f1f1f1;
+    background: var(--bg-secondary);
     padding: 4px 8px;
     border-radius: 6px;
     font-size: 12px
@@ -316,32 +316,17 @@ export default {
     word-break: break-word;
 }
 
-.materia-list h4 {
+.ingrediente-list h4 {
     margin: 10px 0 6px;
     font-size: 14px;
 }
 
-.materia-list ul {
+.ingrediente-list ul {
     margin: 0;
     padding-left: 18px;
 }
 
-.materia-list li {
-    margin-bottom: 6px;
-    color: var(--text);
-}
-
-.materiales-list h4 {
-    margin: 10px 0 6px;
-    font-size: 14px;
-}
-
-.materiales-list ul {
-    margin: 0;
-    padding-left: 18px;
-}
-
-.materiales-list li {
+.ingrediente-list li {
     margin-bottom: 6px;
     color: var(--text);
 }

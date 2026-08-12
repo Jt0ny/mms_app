@@ -9,7 +9,7 @@
 			<div class="header-actions">
 				<span class="operador-rol">Operador</span>
 				<button class="btn-excluir" title="Excluir operador de la distribución" type="button" @click="$emit('excluir-operador')">
-					✕
+					<XMarkIcon class="icon-sm" />
 				</button>
 			</div>
 		</header>
@@ -40,7 +40,7 @@
 							</td>
 							<td>
 								<button class="btn-quitar" type="button" title="Quitar"
-									@click="$emit('quitar-receta', { idx, ri })">✕</button>
+									@click="$emit('quitar-receta', { idx, ri })"><XMarkIcon class="icon-sm" /></button>
 							</td>
 						</tr>
 					</tbody>
@@ -80,6 +80,7 @@
 </template>
 
 <script>
+import { XMarkIcon } from '@heroicons/vue/24/outline'
 export default {
 	name: 'PlanificacionOperadorCard',
 	props: {
@@ -115,7 +116,7 @@ export default {
 	display: flex;
 	flex-direction: column;
 	border-radius: 20px;
-	background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+	background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
 	box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
 	overflow: hidden;
 }

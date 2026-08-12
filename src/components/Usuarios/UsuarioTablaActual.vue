@@ -4,8 +4,9 @@
 
             <h2>Usuarios actuales</h2>
             <p>Usuarios registrados en el sistema</p>
-            <button type="button" class="btn-refresh" :disabled="cargando" @click="$emit('actualizar')">
-                {{ cargando ? '⟳ Cargando...' : '↻ Actualizar' }}
+            <button type="button" class="btn-refresh inline-flex-center gap-6" :disabled="cargando" @click="$emit('actualizar')">
+                <ArrowPathIcon class="icon-sm" :class="{ 'spin': cargando }" />
+                {{ cargando ? 'Cargando...' : 'Actualizar' }}
             </button>
         </div>
 
@@ -35,8 +36,9 @@
                             </span>
                         </td>
                         <td class="actions-column">
-                            <button type="button" class="btn-action-ghost delete" @click="$emit('eliminar', usuario.id)">
-                                🗑️ Eliminar
+                            <button type="button" class="btn-action-ghost delete"
+                                @click="$emit('eliminar', usuario.id)">
+                                <TrashIcon class="icon-action text-error" />
                             </button>
                         </td>
                     </tr>
@@ -50,8 +52,11 @@
     </div>
 </template>
 <script>
+import { TrashIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
+
 export default {
     name: 'UsuarioTablaActual',
+    components: { TrashIcon, ArrowPathIcon },
     props: {
         usuarios: {
             type: Array,
@@ -227,5 +232,12 @@ export default {
     .usuario-table td {
         padding: 10px 8px;
     }
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    100% { transform: rotate(360deg); }
 }
 </style>

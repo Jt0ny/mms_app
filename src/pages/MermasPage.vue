@@ -93,7 +93,7 @@ export default {
       const responseMermas = await MermaClient.obtenerMermas()
       if (responseMermas?.success === false) {
         this.mermas = []
-        this.mostrarMensaje('error', '❌ Error al cargar el historial de mermas')
+        this.mostrarMensaje('error', 'Error al cargar el historial de mermas')
       } else {
         this.mermas = responseMermas?.data ?? []
       }
@@ -161,7 +161,7 @@ export default {
 
         this.mostrarMensaje('exito', mensajeExito)
       } else {
-        this.mostrarMensaje('error', '❌ No se pudo registrar la merma.')
+        this.mostrarMensaje('error', 'No se pudo registrar la merma.')
       }
 
       this.guardando = false
@@ -180,9 +180,9 @@ export default {
       const response = await MermaClient.eliminarMerma(item.id)
       if (response.success) {
         this.mermas = this.mermas.filter(m => m.id !== item.id)
-        this.mostrarMensaje('exito', '✓ Registro de merma eliminado.')
+        this.mostrarMensaje('exito', 'Registro de merma eliminado.')
       } else {
-        this.mostrarMensaje('error', '❌ No se pudo eliminar el registro.')
+        this.mostrarMensaje('error', 'No se pudo eliminar el registro.')
       }
     }
   }

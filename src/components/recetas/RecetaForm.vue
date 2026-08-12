@@ -29,9 +29,14 @@
             </div>
 
             <!-- BOTÓN -->
-            <button type="submit" class="btn-submit" :disabled="guardando">
-                {{ guardando ? 'Guardando...' : 'Guardar receta' }}
-            </button>
+            <div class="actions">
+                <button type="submit" class="btn-submit" :disabled="guardando">
+                    {{ guardando ? 'Guardando...' : (receta.id ? 'Actualizar receta' : 'Guardar receta') }}
+                </button>
+                <button v-if="receta.id" type="button" class="btn-cancel" @click="$emit('cancelar')" :disabled="guardando">
+                    Cancelar Edición
+                </button>
+            </div>
 
         </form>
     </div>
@@ -84,7 +89,8 @@ export default {
 
     emits: [
         'actualizar-receta',
-        'guardar'
+        'guardar',
+        'cancelar'
     ],
 
     methods: {
@@ -134,26 +140,54 @@ export default {
 }
 
 .btn-submit {
-    margin-top: 8px;
+    width: 100%;
     padding: 12px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 600;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: white;
-    background: linear-gradient(135deg,
-            var(--primary) 0%,
-            var(--primary-dark) 100%);
-    transition: 0.2s ease;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.btn-submit:hover {
+.btn-submit:hover:not(:disabled) {
     transform: translateY(-1px);
+    opacity: 0.9;
 }
 
 .btn-submit:disabled {
-    opacity: 0.7;
+    opacity: 0.6;
     cursor: not-allowed;
-    transform: none;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.btn-cancel {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    color: var(--text-dark, #4b5563);
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel:hover:not(:disabled) {
+    background: #f3f4f6;
+}
+
+.btn-cancel:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 </style>

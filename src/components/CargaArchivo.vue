@@ -1,7 +1,7 @@
 <template>
     <div class="upload-card">
         <label class="upload-zone" :class="{ disabled: cargando }">
-            <span class="upload-icon">📁</span>
+            <span class="upload-icon"><ArrowUpTrayIcon class="icon-lg text-primary" /></span>
             <span class="upload-label">Importar Reporte de {{ nombreModulo }}</span>
             <span class="upload-hint">.xls / .xlsx</span>
             <input type="file" accept=".xls,.xlsx" class="file-input" :disabled="cargando" @change="handleFileUpload" />
@@ -11,8 +11,10 @@
 </template>
 
 <script>
-export default {
+import { ArrowUpTrayIcon } from '@heroicons/vue/24/outline'
 
+export default {
+    components: { ArrowUpTrayIcon },
     props: {
 
         cargando: {

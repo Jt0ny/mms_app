@@ -2,57 +2,57 @@
   <aside :class="['sidebar', { collapsed: isCollapsed }]">
     <div class="top">
       <h2 v-if="!isCollapsed">MMS</h2>
-      <button class="toggle" @click="toggleSidebar">☰</button>
+      <button class="toggle" @click="toggleSidebar"><Bars3Icon class="icon-lg text-white" /></button>
     </div>
 
     <nav class="menu">
       <router-link v-if="esSupervisor" to="/app/dashboard" class="menu-item" active-class="active">
-        <span>📊</span>
+        <ChartBarIcon class="icon-md" />
         <span v-if="!isCollapsed">Dashboard</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/pedidos" class="menu-item" active-class="active">
-        <span>📦</span>
+        <ClipboardDocumentCheckIcon class="icon-md" />
         <span v-if="!isCollapsed">Pedidos</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/clientes" class="menu-item" active-class="active">
-        <span>👥</span>
+        <BuildingOfficeIcon class="icon-md" />
         <span v-if="!isCollapsed">Clientes</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/materia-prima" class="menu-item" active-class="active">
-        <span>👤</span>
+        <InboxStackIcon class="icon-md" />
         <span v-if="!isCollapsed">Inventario MP</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/materiales" class="menu-item" active-class="active">
-        <span>📊</span>
+        <CubeIcon class="icon-md" />
         <span v-if="!isCollapsed">Inventario M</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/recetas" class="menu-item" active-class="active">
-        <span>⚙️</span>
+        <ClipboardDocumentListIcon class="icon-md" />
         <span v-if="!isCollapsed">Crear Receta</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/planificacion" class="menu-item" active-class="active">
-        <span>🗂️</span>
+        <CalendarDaysIcon class="icon-md" />
         <span v-if="!isCollapsed">Planificación</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/usuarios" class="menu-item" active-class="active">
-        <span>⚙️</span>
+        <UsersIcon class="icon-md" />
         <span v-if="!isCollapsed">Usuarios</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/mermas" class="menu-item" active-class="active">
-        <span>⚠️</span>
+        <ExclamationTriangleIcon class="icon-md" />
         <span v-if="!isCollapsed">Mermas</span>
       </router-link>
 
       <router-link v-if="esOperador" to="/app/produccion" class="menu-item" active-class="active">
-        <span>📝</span>
+        <DocumentTextIcon class="icon-md" />
         <span v-if="!isCollapsed">Producción diaria</span>
       </router-link>
     </nav>
@@ -61,10 +61,21 @@
 
 <script>
 import { useAuth } from '../../composables/useAuth.js'
+import {
+  ChartBarIcon, ClipboardDocumentCheckIcon, BuildingOfficeIcon,
+  InboxStackIcon, CubeIcon, ClipboardDocumentListIcon,
+  CalendarDaysIcon, UsersIcon, ExclamationTriangleIcon,
+  DocumentTextIcon, Bars3Icon
+} from '@heroicons/vue/24/outline'
 
 export default {
   name: "SidebarLayout",
-
+  components: {
+    ChartBarIcon, ClipboardDocumentCheckIcon, BuildingOfficeIcon,
+    InboxStackIcon, CubeIcon, ClipboardDocumentListIcon,
+    CalendarDaysIcon, UsersIcon, ExclamationTriangleIcon,
+    DocumentTextIcon, Bars3Icon
+  },
   setup() {
     const { rol } = useAuth()
     return { rol }

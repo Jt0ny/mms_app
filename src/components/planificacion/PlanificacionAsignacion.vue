@@ -17,9 +17,11 @@
 					@input="$emit('update:fechaSeleccionada', $event.target.value)" />
 			</div>
 
-			<button type="button" class="btn-distribuir" :disabled="cargandoAuto || guardando"
+			<button type="button" class="btn-distribuir" :style="{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }" :disabled="cargandoAuto || guardando"
 				@click="$emit('distribuir')">
-				{{ cargandoAuto ? '⟳ Distribuyendo...' : '⚡ Distribuir automáticamente' }}
+				<ArrowPathIcon v-if="cargandoAuto" class="icon-sm spin text-white" />
+				<BoltIcon v-else class="icon-sm text-white" />
+				{{ cargandoAuto ? 'Distribuyendo...' : 'Distribuir automáticamente' }}
 			</button>
 
 			<button v-if="mostrarLimpiar" type="button" class="btn-limpiar" :disabled="guardando"
@@ -31,8 +33,11 @@
 </template>
 
 <script>
+import { BoltIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
+
 export default {
 	name: 'PlanificacionAsignacion',
+	components: { BoltIcon, ArrowPathIcon },
 	props: {
 		fechaSeleccionada: {
 			type: String,
@@ -56,6 +61,12 @@ export default {
 </script>
 
 <style scoped>
+.spin {
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
 
 
 .fecha-group {

@@ -26,7 +26,7 @@
   --sidebar-min: 70px;
   --sidebar-max: 250px;
   --primary-border: rgba(22, 163, 74, 0.3);
-  --primary-bg:     rgba(22, 163, 74, 0.08);
+  --primary-bg: rgba(22, 163, 74, 0.08);
 
   /* Alertas */
   --alert-success-bg: #dcfce7;
@@ -38,6 +38,9 @@
   --alert-info-bg: #eff6ff;
   --alert-info-text: #2563eb;
   --alert-info-border: #bfdbfe;
+  --alert-warning-bg: #fef3c7;
+  --alert-warning-text: #92400e;
+  --alert-warning-border: #fde68a;
 
   font: clamp(15px, 1vw + 0.7rem, 16px)/1.5 var(--sans);
   letter-spacing: 0.2px;
@@ -352,11 +355,11 @@ p {
 }
 
 .btn-action-edit {
-  background: #dbeafe;
+  background: var(--alert-info-bg);
 }
 
 .btn-action-delete {
-  background: #fee2e2;
+  background: var(--alert-error-bg);
 }
 
 /* =========================================
@@ -390,8 +393,10 @@ p {
    ========================================= */
 @media (max-width: 1024px) {
   .main-layout-split.with-preview {
-    grid-template-columns: 1fr; /* Stack columns on tablets */
+    grid-template-columns: 1fr;
+    /* Stack columns on tablets */
   }
+
   .page-grid {
     grid-template-columns: 1fr;
   }
@@ -418,34 +423,7 @@ p {
   }
 }
 
-/* =========================================
-   NUEVAS CLASES GLOBALES (Refactor Phase)
-   ========================================= */
-
-/* Botones de acción ligeros */
-.btn-action-ghost {
-  border: none;
-  border-radius: 6px;
-  padding: 8px 10px;
-  cursor: pointer;
-  transition: 0.3s ease;
-  background: transparent;
-}
-.btn-action-ghost:hover {
-  transform: scale(1.05);
-}
-.btn-action-ghost.edit {
-  background: var(--alert-info-bg);
-  color: var(--alert-info-text);
-}
-.btn-action-ghost.delete {
-  background: var(--alert-error-bg);
-  color: var(--alert-error-text);
-}
-
-/* Estado vacío / Empty States */
 .empty-state-card {
-  text-align: center;
   padding: 40px;
   background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
   border-radius: 12px;
@@ -454,7 +432,7 @@ p {
   box-shadow: var(--shadow-sm);
 }
 
-/* Badges (píldoras de estado) */
+/* Badges (pÃ­ldoras de estado) */
 .badge,
 .badge-ok,
 .badge-error,
@@ -547,27 +525,44 @@ p {
   font-size: 24px;
 }
 
-.stat-icon.blue { background: rgba(37, 99, 235, 0.1); }
-.stat-icon.green { background: rgba(22, 163, 74, 0.1); }
-.stat-icon.pink { background: rgba(219, 39, 119, 0.1); }
-.stat-icon.orange { background: rgba(245, 158, 11, 0.1); }
-.stat-icon.purple { background: rgba(124, 58, 237, 0.1); }
+.stat-icon.blue {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+.stat-icon.green {
+  background: rgba(22, 163, 74, 0.1);
+}
+
+.stat-icon.pink {
+  background: rgba(219, 39, 119, 0.1);
+}
+
+.stat-icon.orange {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.stat-icon.purple {
+  background: rgba(124, 58, 237, 0.1);
+}
 
 .stat-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
+
 .stat-info span {
   font-size: 13px;
   color: var(--text-light);
   font-weight: 500;
 }
+
 .stat-info strong {
   font-size: 22px;
   color: var(--text-h);
   font-weight: 700;
 }
+
 .stat-info strong small {
   font-size: 12px;
   color: var(--text-light);
@@ -626,11 +621,29 @@ p {
   font-size: 1.1rem;
 }
 
+.data-card-header p.data-card-subtitle,
+.data-card-subtitle {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.8;
+  color: white;
+}
+
 .data-card-content {
   padding: 20px;
   overflow-y: auto;
   overflow-x: auto;
   max-height: 450px;
+}
+
+.data-card-content.no-pad {
+  padding: 0;
+}
+
+.data-card-content.flex-col {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
 }
 
 .data-card-info {
@@ -680,11 +693,301 @@ p {
     flex-direction: column;
     align-items: flex-start;
   }
+
   .data-card-table {
     font-size: 12px;
   }
+
   .data-card-table th,
   .data-card-table td {
     padding: 10px 8px;
   }
 }
+
+/* =========================================
+   SELECTION PANEL (For Recetas)
+   ========================================= */
+.selection-panel {
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.selection-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.selection-panel-header p {
+  margin-top: 4px;
+  color: var(--text-light);
+}
+
+.btn-refresh {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  background: var(--primary-bg);
+  color: var(--primary-dark);
+}
+
+.selection-table-wrap {
+  max-height: 420px;
+  overflow: auto;
+}
+
+.selection-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.selection-table th,
+.selection-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border-light);
+  text-align: left;
+}
+
+.selection-table th {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.row-subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+.qty-input {
+  width: 100px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.empty-state {
+  padding: 18px;
+  border-radius: 10px;
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border);
+  color: var(--text-light);
+}
+
+/* =========================================
+   UTILITY CLASSES (Fase 1 CSS Refactor)
+   ========================================= */
+
+/* Layout Utils */
+.grid-halves {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .grid-halves {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* Transiciones Globales (Vue) */
+.fade-enter-active,
+.fade-leave-active,
+.fade-msg-enter-active,
+.fade-msg-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to,
+.fade-msg-enter-from,
+.fade-msg-leave-to {
+  opacity: 0;
+}
+
+/* Animaciones y Carga */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--text-light);
+  gap: 16px;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================
+   NUEVAS CLASES GLOBALES (Refactor Phase)
+   ========================================= */
+
+/* Botones de acción ligeros */
+.btn-action-ghost {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-action-ghost:hover {
+  transform: scale(1.1);
+}
+
+.btn-action-ghost.edit {
+  color: var(--primary);
+}
+
+.btn-action-ghost.delete {
+  color: var(--alert-error-text);
+}
+
+.btn-action-ghost.edit:hover {
+  background: var(--alert-info-bg);
+}
+
+.btn-action-ghost.delete:hover {
+  background: var(--alert-error-bg);
+}
+
+/* Estado vacío / Empty States */
+.empty-state-card {
+  text-align: center;
+  padding: 40px;
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  color: var(--text-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Títulos de formularios */
+.form-title {
+  margin: 0;
+  font-size: clamp(16px, 2vw, 18px);
+  color: var(--text-h);
+}
+
+.form-title-lg {
+  margin: 0 0 6px;
+  font-size: clamp(18px, 2vw, 22px);
+  color: var(--text-h);
+}
+
+/* Espaciados y Utilidades de Layout */
+.h-full {
+  height: 100%;
+}
+
+.mb-4 {
+  margin-bottom: 16px;
+}
+
+.mb-5 {
+  margin-bottom: 20px;
+}
+
+.mb-6 {
+  margin-bottom: 24px;
+}
+
+.p-4 {
+  padding: 16px;
+}
+
+.p-5 {
+  padding: 20px;
+}
+
+.p-6 {
+  padding: 24px;
+}
+
+.m-5 {
+  margin: 20px;
+}
+
+/* Iconos (Heroicons) */
+.icon-sm { width: 16px; height: 16px; }
+.icon-md { width: 20px; height: 20px; }
+.icon-lg { width: 24px; height: 24px; }
+.icon-inline { 
+  display: inline-block; 
+  vertical-align: text-bottom;
+  margin-right: 4px;
+}
+.icon-action {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Colores de Iconos y Textos utilitarios */
+.text-primary { color: var(--primary); }
+.text-warning { color: var(--warning); }
+.text-error { color: var(--error); }
+.text-info { color: #3b82f6; }
+.text-light { color: var(--text-light); }
+
+/* Utilidades de Flexbox */
+.flex-align-center {
+  display: flex;
+  align-items: center;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inline-flex-center {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Espaciados (Gaps) */
+.gap-4 { gap: 4px; }
+.gap-6 { gap: 6px; }
+.gap-8 { gap: 8px; }
+
+/* Tamaños adicionales de icono */
+.icon-xl { width: 48px; height: 48px; }

@@ -122,7 +122,7 @@ input {
     padding: 14px 18px;
     border: 1px solid var(--border);
     border-radius: 999px;
-    background: #f3f4f6;
+    background: var(--bg-secondary);
     outline: none;
     font: inherit;
     transition: 0.2s ease;
