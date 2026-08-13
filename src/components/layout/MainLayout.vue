@@ -40,8 +40,8 @@ export default {
     },
 
     methods: {
-        salirSistema() {
-            this.logout()
+        async salirSistema() {
+            await this.logout()
             this.$router.push('/')
         }
     }

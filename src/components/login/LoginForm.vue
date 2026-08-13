@@ -1,7 +1,7 @@
 <template>
     <div class="login-card">
         <h1>Gestión de Manufactura</h1>
-        <p type="Nombre:"><input type="text" v-model="nombre" autocomplete="username" /></p>
+        <p type="Email:"><input type="email" v-model="email" autocomplete="email" /></p>
         <p type="Contraseña:"><input type="password" v-model="contrasena" autocomplete="current-password"
                 @keyup.enter="ingresar" /></p>
         <Alertas :mensaje="mensaje" />
@@ -14,7 +14,6 @@
 <script>
 import Alertas from '../Alertas.vue'
 import UsuarioClient from '../../client/UsuarioClient.js'
-import { generarSHA256 } from '../../utils/crypto.js'
 
 export default {
 
@@ -28,7 +27,7 @@ export default {
 
         return {
 
-            nombre: '',
+            email: '',
             contrasena: '',
             cargando: false,
             mensaje: {
@@ -51,18 +50,17 @@ export default {
 
         async ingresar() {
 
-            const nombreIngresado = this.nombre.trim().toLowerCase()
+            const emailIngresado = this.email.trim().toLowerCase()
             const contrasenaIngresada = this.contrasena
 
-            if (!nombreIngresado || !contrasenaIngresada) {
-                this.mostrarMensaje('error', 'Ingresa usuario y contraseña.')
+            if (!emailIngresado || !contrasenaIngresada) {
+                this.mostrarMensaje('error', 'Ingresa email y contraseña.')
                 return
             }
 
             this.cargando = true
 
-            const contrasenaEncriptada = await generarSHA256(contrasenaIngresada)
-            const response = await UsuarioClient.login(nombreIngresado, contrasenaEncriptada)
+            const response = await UsuarioClient.login(emailIngresado, contrasenaIngresada)
 
             this.cargando = false
 
@@ -71,7 +69,7 @@ export default {
                     this.mensaje = { tipo: null, texto: '' }
                     this.$emit('ingresar', response.data)
                 } else {
-                    this.mostrarMensaje('error', 'Usuario o contraseña incorrectos.')
+                    this.mostrarMensaje('error', 'Email o contraseña incorrectos.')
                 }
             } else {
                 this.mostrarMensaje('error', 'No se pudo validar el usuario. Revisa la conexion con la API.')

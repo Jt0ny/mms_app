@@ -1,69 +1,79 @@
 /**
  * Composable para centralizar la lógica de autenticación y sesión.
- * Reemplaza los usos dispersos de localStorage.getItem('rol'), etc.
+ * Usa Supabase Auth y variables reactivas, reemplazando sessionStorage.
  *
  * En componentes Vue: usar en setup() para acceso reactivo
- * En router/scripts: usar las funciones helper exportadas (getRol, getIsLogged)
+ * En router/scripts: usar las funciones helper exportadas
  */
 
 import { reactive, computed } from 'vue'
+import UsuarioClient from '../client/UsuarioClient'
 import { useCatalogos } from './useCatalogos'
 
-// Estado global compartido entre todas las instancias
 const state = reactive({
-    rol: sessionStorage.getItem('rol') || null,
-    usuarioId: sessionStorage.getItem('usuarioId') || null,
-    usuarioNombre: sessionStorage.getItem('usuarioNombre') || null
+  rol: null,
+  usuarioId: null,
+  usuarioNombre: null,
+  inicializado: false  // Flag para saber si ya se verificó la sesión
 })
 
-/**
- * Composable para componentes Vue (usar dentro de setup())
- */
 export function useAuth() {
-    const isLogged = computed(() => !!state.rol)
+  const isLogged = computed(() => !!state.rol)
 
-    function login(usuario) {
-        const rol = (usuario.rol || '').toLowerCase()
-        state.rol = rol
-        state.usuarioId = usuario.id ?? ''
-        state.usuarioNombre = usuario.nombre ?? ''
+  // Inicializar: recuperar sesión existente al cargar la app
+  async function inicializar() {
+    if (state.inicializado) return
 
-        sessionStorage.setItem('rol', rol)
-        sessionStorage.setItem('usuarioId', state.usuarioId)
-        sessionStorage.setItem('usuarioNombre', state.usuarioNombre)
+    const usuario = await UsuarioClient.getSession()
+    if (usuario) {
+      state.rol = (usuario.rol || '').toLowerCase()
+      state.usuarioId = usuario.id
+      state.usuarioNombre = usuario.nombre
     }
+    state.inicializado = true
+  }
 
-    function logout() {
-        state.rol = null
-        state.usuarioId = null
-        state.usuarioNombre = null
+  // Login: recibe el objeto usuario retornado por UsuarioClient.login()
+  function setUsuario(usuario) {
+    const rol = (usuario.rol || '').toLowerCase()
+    state.rol = rol
+    state.usuarioId = usuario.id ?? ''
+    state.usuarioNombre = usuario.nombre ?? ''
+  }
 
-        sessionStorage.removeItem('rol')
-        sessionStorage.removeItem('usuarioId')
-        sessionStorage.removeItem('usuarioNombre')
+  // Logout: cierra sesión en Supabase y limpia estado local
+  async function logout() {
+    await UsuarioClient.logout()
 
-        // Invalidar el estado global de catálogos para evitar fuga de datos entre sesiones
-        const { invalidar } = useCatalogos()
-        invalidar()
-    }
+    state.rol = null
+    state.usuarioId = null
+    state.usuarioNombre = null
 
-    return {
-        rol: computed(() => state.rol),
-        usuarioId: computed(() => state.usuarioId),
-        usuarioNombre: computed(() => state.usuarioNombre),
-        isLogged,
-        login,
-        logout
-    }
+    const { invalidar } = useCatalogos()
+    invalidar()
+  }
+
+  return {
+    rol: computed(() => state.rol),
+    usuarioId: computed(() => state.usuarioId),
+    usuarioNombre: computed(() => state.usuarioNombre),
+    isLogged,
+    inicializado: computed(() => state.inicializado),
+    inicializar,
+    login: setUsuario,   // Mantener nombre 'login' para compatibilidad
+    logout
+  }
 }
 
-/**
- * Funciones helper para uso fuera de componentes Vue (router, scripts)
- */
+// Helpers para router
 export function getRol() {
-    return state.rol || sessionStorage.getItem('rol')
+  return state.rol
 }
 
 export function getIsLogged() {
-    return !!getRol()
+  return !!state.rol
+}
+
+export function getInicializado() {
+  return state.inicializado
 }

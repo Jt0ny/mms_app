@@ -47,8 +47,8 @@ export default {
       this.$router.push(rutaInicial)
     },
 
-    salirSistema() {
-      this.logout()
+    async salirSistema() {
+      await this.logout()
       this.mostrarLogin = false
     }
   }

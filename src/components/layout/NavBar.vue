@@ -33,8 +33,8 @@ export default {
   emits: ['ingresar', 'logout'],
 
   setup() {
-    const { rol, isLogged, logout } = useAuth()
-    return { rol, isLogged, logout }
+    const { rol, isLogged } = useAuth()
+    return { rol, isLogged }
   },
 
   computed: {
@@ -46,7 +46,6 @@ export default {
   methods: {
     onAction() {
       if (this.isLogged) {
-        this.logout()
         this.$emit('logout')
       } else {
         this.$emit('ingresar')

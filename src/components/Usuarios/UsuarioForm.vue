@@ -14,6 +14,10 @@
                     placeholder="Nombre de usuario" />
             </label>
 
+            <label>Email<input v-model.trim="email" type="email" autocomplete="email"
+                    placeholder="correo@ejemplo.com" />
+            </label>
+
             <label>Contraseña<input v-model="contrasena" type="password" autocomplete="new-password"
                     placeholder="Contraseña segura" />
             </label>
@@ -33,7 +37,6 @@
 import Alertas from '../Alertas.vue'
 import UsuarioRol from './UsuarioRol.vue'
 import UsuarioClient from '../../client/UsuarioClient.js'
-import { generarSHA256 } from '../../utils/crypto.js'
 import { UserIcon } from '@heroicons/vue/24/outline'
 
 export default {
@@ -46,6 +49,7 @@ export default {
     data() {
         return {
             nombre: '',
+            email: '',
             contrasena: '',
             rol: '',
             guardando: false,
@@ -59,7 +63,7 @@ export default {
 
     methods: {
         async guardar() {
-            if (this.nombre.trim() === '' || this.contrasena.trim() === '') {
+            if (!this.nombre.trim() || !this.email.trim() || !this.contrasena.trim()) {
                 this.mensaje = { tipo: 'error', texto: 'Por favor, complete todos los campos.' }
                 return
             }
@@ -71,10 +75,10 @@ export default {
 
             this.guardando = true
 
-            const contrasenaEncriptada = await generarSHA256(this.contrasena)
             const response = await UsuarioClient.agregarUsuario({
                 nombre: this.nombre.trim(),
-                contrasena: contrasenaEncriptada,
+                email: this.email.trim().toLowerCase(),
+                password: this.contrasena,
                 rol: this.rol.toLowerCase()
             })
 
@@ -84,6 +88,7 @@ export default {
                 this.mensaje = { tipo: 'exito', texto: 'Usuario guardado exitosamente.' }
                 this.$emit('guardado')
                 this.nombre = ''
+                this.email = ''
                 this.contrasena = ''
                 this.rol = ''
             } else {

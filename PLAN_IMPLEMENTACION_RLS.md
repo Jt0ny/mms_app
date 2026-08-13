@@ -1,7 +1,8 @@
 # 🔐 Plan de Implementación RLS — Auditoría Completa de Seguridad
 
 > **Proyecto:** mms_app (Gestión de Manufactura)  
-> **Fecha de auditoría:** 2026-08-11  
+> **Fecha de auditoría inicial:** 2026-08-11  
+> **Última actualización:** 2026-08-12  
 > **Alcance:** Row Level Security (RLS) en todas las tablas del schema `public`  
 > **Excluido:** Funciones RPC (se auditarán por separado)
 
@@ -17,7 +18,7 @@
 6. [Auditoría por Tabla](#6-auditoría-por-tabla)
 7. [Seguridad de Relaciones](#7-seguridad-de-relaciones)
 8. [Riesgos Encontrados](#8-riesgos-encontrados)
-9. [Decisión Arquitectónica Crítica](#9-decisión-arquitectónica-crítica)
+9. [Decisión Arquitectónica — RESUELTA](#9-decisión-arquitectónica--resuelta)
 10. [Políticas RLS Propuestas](#10-políticas-rls-propuestas)
 11. [SQL de Implementación](#11-sql-de-implementación)
 12. [Plan de Implementación](#12-plan-de-implementación)
@@ -32,21 +33,36 @@
 
 > **⛔ CRÍTICO: Las 15 tablas del schema `public` tienen RLS DESHABILITADO y no existe ninguna política de seguridad.** Cualquier persona con la `anon key` de Supabase (visible en el frontend) puede leer, insertar, modificar y eliminar TODOS los registros de TODAS las tablas directamente, sin necesidad de autenticarse.
 
-### Hallazgo Crítico de Autenticación
+### Progreso de la Migración de Autenticación
 
-> **⚠️ ADVERTENCIA: La aplicación NO utiliza Supabase Auth.** La tabla `auth.users` está vacía. La autenticación se implementa mediante una tabla propia `public.usuarios` con contraseñas hasheadas (SHA-256) y validación en el frontend usando `sessionStorage`. Esto significa que **`auth.uid()` no está disponible** para construir políticas RLS convencionales.
+> **✅ COMPLETADO: La aplicación fue migrada a Supabase Auth.** La autenticación ahora usa `supabase.auth.signInWithPassword()`, los usuarios están registrados en `auth.users`, y las funciones helper (`get_user_rol()`, `get_usuario_id()`) están desplegadas. **Los prerequisitos para habilitar RLS están listos.** Solo falta habilitar RLS en las tablas y crear las políticas.
 
-### Estadísticas
+### Estadísticas Actualizadas
 
-| Métrica | Valor |
-|---|---|
-| Tablas en `public` | 15 |
-| Tablas con RLS habilitado | **0** |
-| Políticas RLS existentes | **0** |
-| Usuarios en `auth.users` | **0** |
-| Usuarios en `public.usuarios` | 2 |
-| Funciones RPC | 0 (excluidas del alcance) |
-| Roles de aplicación | `supervisor`, `operador` |
+| Métrica | Antes (2026-08-11) | Ahora (2026-08-12) |
+|---|---|---|
+| Tablas en `public` | 15 | 15 |
+| Tablas con RLS habilitado | **0** | **0** ⚠️ |
+| Políticas RLS existentes | **0** | **0** ⚠️ |
+| Usuarios en `auth.users` | **0** | **3** ✅ |
+| Usuarios en `public.usuarios` | 2 | 4 |
+| Usuarios vinculados (`auth_user_id`) | 0 | **3 de 4** ✅ |
+| Funciones helper RLS | 0 | **2** ✅ (`get_user_rol`, `get_usuario_id`) |
+| Edge Functions | 0 | **1** ✅ (`create-user` optimizada) |
+| Usa Supabase Auth | ❌ | ✅ |
+| Usa `sessionStorage` | ✅ | ❌ (migrado a estado reactivo) |
+| Roles de aplicación | `supervisor`, `operador` | `supervisor`, `operador` |
+
+### Usuarios Registrados
+
+| Nombre | Rol | Email | Vinculado a Auth | Contraseña Legacy |
+|---|---|---|---|---|
+| anthony | supervisor | dinaxa9309@primetor.com | ✅ | Sí (backup) |
+| pedro | supervisor | growing.parrot.jobe@hidepost.net | ✅ | No |
+| juan | operador | helpful.manatee.rbrp@hidepost.net | ✅ | No |
+| ana | operador | — | ❌ **Sin vincular** | Sí (legacy) |
+
+> **⚠️ NOTA:** La usuaria "ana" es un registro legacy sin vinculación a `auth.users`. No puede autenticarse con el sistema actual. Se recomienda eliminarla o migrarla manualmente.
 
 ---
 
@@ -54,10 +70,10 @@
 
 | # | Tabla | RLS Habilitado | Políticas | Filas | Estado |
 |---|---|---|---|---|---|
-| 1 | `usuarios` | ❌ NO | 0 | 2 | 🔴 Crítico |
+| 1 | `usuarios` | ❌ NO | 0 | 4 | 🔴 Crítico |
 | 2 | `clientes` | ❌ NO | 0 | 207 | 🔴 Crítico |
 | 3 | `materia_prima` | ❌ NO | 0 | 95 | 🔴 Crítico |
-| 4 | `materiales` | ❌ NO | 0 | 13 | 🔴 Crítico |
+| 4 | `materiales` | ❌ NO | 0 | 12 | 🔴 Crítico |
 | 5 | `recetas` | ❌ NO | 0 | 10 | 🔴 Crítico |
 | 6 | `receta_materiales` | ❌ NO | 0 | 4 | 🔴 Crítico |
 | 7 | `receta_materia_prima` | ❌ NO | 0 | 4 | 🔴 Crítico |
@@ -74,28 +90,51 @@
 
 ## 3. Arquitectura de Autenticación
 
-### Flujo Actual
+### ~~Flujo Anterior (Obsoleto)~~ → Flujo Actual ✅
 
 ```
 LoginForm.vue
-  → Toma nombre + contraseña del formulario
-  → Genera SHA-256 de la contraseña (crypto.js)
-  → Llama UsuarioClient.login(nombre, sha256)
-  → Supabase query: SELECT id, nombre, rol FROM usuarios WHERE nombre ILIKE $1 AND contrasena = $2
-  → Si encuentra match → almacena en sessionStorage: { rol, usuarioId, usuarioNombre }
-  → El router usa getRol() de sessionStorage para controlar acceso a rutas
+  → Toma email + contraseña del formulario
+  → Llama UsuarioClient.login(email, password)
+  → Supabase Auth: supabase.auth.signInWithPassword({ email, password })
+  → Si autentica → SELECT id, nombre, rol FROM usuarios WHERE auth_user_id = authData.user.id
+  → Almacena en estado reactivo (useAuth.js): { rol, usuarioId, usuarioNombre }
+  → El router usa getRol() del estado reactivo para controlar acceso a rutas
+  → Al refrescar la página: useAuth.inicializar() recupera sesión JWT persistente
 ```
 
-### Problemas de Seguridad del Flujo Actual
+### Flujo de Creación de Usuarios ✅
 
-| Problema | Severidad | Detalle |
+```
+UsuarioForm.vue
+  → Supervisor llena: nombre, email, contraseña, rol
+  → UsuarioClient.agregarUsuario() → supabase.functions.invoke('create-user')
+  → Edge Function verifica que el caller sea supervisor
+  → Crea usuario en auth.users via supabaseAdmin.auth.admin.createUser()
+  → Inserta registro en public.usuarios con auth_user_id vinculado
+  → Si falla public.usuarios → rollback: elimina de auth.users
+```
+
+### Flujo de Eliminación de Usuarios ✅
+
+```
+UsuariosPage.vue
+  → Supervisor hace clic en eliminar
+  → UsuarioClient.eliminarUsuario(id) → supabase.from('usuarios').delete() (Trigger limpia auth.users)
+  → Edge Function verifica que el caller sea supervisor
+  → Elimina de auth.users y public.usuarios
+```
+
+### ~~Problemas de Seguridad del Flujo Anterior~~ → Estado Actual
+
+| Problema Original | Severidad Original | Estado Actual |
 |---|---|---|
-| No usa Supabase Auth | 🔴 Crítico | `auth.uid()` no está disponible para RLS |
-| Contraseña expuesta en query | 🔴 Crítico | El hash SHA-256 viaja como parámetro de una query SELECT — visible en logs |
-| `anon key` sin restricciones | 🔴 Crítico | Cualquiera puede hacer queries directas a Supabase con la `anon key` del frontend |
-| Autorización solo en frontend | 🔴 Crítico | El control de roles (`supervisor`/`operador`) es puramente en Vue Router — sin protección server-side |
-| sessionStorage manipulable | 🟠 Alto | Un usuario puede cambiar su rol en DevTools |
-| No hay tokens JWT con claims | 🔴 Crítico | No existe un JWT con rol del usuario para que RLS lo valide |
+| No usa Supabase Auth | 🔴 Crítico | ✅ **RESUELTO** — Usa `signInWithPassword()` |
+| Contraseña expuesta en query | 🔴 Crítico | ✅ **RESUELTO** — Hash se maneja en auth.users |
+| `anon key` sin restricciones | 🔴 Crítico | ⚠️ **PARCIALMENTE** — Auth protege pero RLS NO habilitado |
+| Autorización solo en frontend | 🔴 Crítico | ⚠️ **PARCIALMENTE** — Router protege + Edge Functions validan roles, pero sin RLS en tablas |
+| sessionStorage manipulable | 🟠 Alto | ✅ **RESUELTO** — Usa estado reactivo + JWT persistente |
+| No hay tokens JWT con claims | 🔴 Crítico | ✅ **RESUELTO** — Supabase Auth emite JWT con `auth.uid()` |
 
 ### Roles Descubiertos
 
@@ -104,14 +143,16 @@ LoginForm.vue
 | `supervisor` | Todas las páginas excepto Producción | Dashboard, Pedidos, Materia Prima, Materiales, Recetas, Planificación, Usuarios, Mermas, Clientes |
 | `operador` | Solo Producción | ProduccionPage |
 
-### Tabla `usuarios` — Estructura
+### Tabla `usuarios` — Estructura Actualizada
 
-| Columna | Tipo | Nullable | Default |
-|---|---|---|---|
-| `id` | `uuid` | NO | `gen_random_uuid()` |
-| `nombre` | `varchar` | NO | — |
-| `contrasena` | `varchar` | NO | — |
-| `rol` | `varchar` | NO | — |
+| Columna | Tipo | Nullable | Default | Estado |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | `gen_random_uuid()` | Original |
+| `nombre` | `varchar` | NO | — | Original |
+| `contrasena` | `varchar` | **SÍ** ✅ | — | **Modificado**: `DROP NOT NULL` (ya no obligatorio) |
+| `rol` | `varchar` | NO | — | Original |
+| `auth_user_id` | `uuid` (UNIQUE, FK → auth.users) | SÍ | — | **NUEVO** ✅ |
+| `email` | `varchar` (UNIQUE) | SÍ | — | **NUEVO** ✅ |
 
 ---
 
@@ -156,6 +197,7 @@ planificaciones ── planificacion_recetas.planificacion_id
 | Tabla Hijo | Columna FK | Tabla Padre | Columna Referenciada |
 |---|---|---|---|
 | `clientes` | `cliente_facturacion_id` | `clientes` | `id` (auto-referencia) |
+| `usuarios` | `auth_user_id` | `auth.users` | `id` (**NUEVO** ✅) |
 | `mermas` | `operador_id` | `usuarios` | `id` |
 | `mermas` | `material_id` | `materiales` | `id` |
 | `mermas` | `materia_prima_id` | `materia_prima` | `id` |
@@ -182,20 +224,20 @@ planificaciones ── planificacion_recetas.planificacion_id
 
 ## 5. Auditoría por Módulo
 
-### 5.1 Módulo: Login / Autenticación
+### 5.1 Módulo: Login / Autenticación ✅ MIGRADO
 
 **Archivo:** `LoginForm.vue` → `UsuarioClient.js` → `useAuth.js`
 
 | Aspecto | Detalle |
 |---|---|
-| **Tablas** | `usuarios` |
-| **Operaciones** | `SELECT` (login), `SELECT` (obtenerUsuarios), `INSERT` (agregarUsuario), `DELETE` (eliminarUsuario) |
-| **Quién consulta** | Cualquiera (pre-autenticación) |
-| **Quién inserta** | Supervisor (desde UsuariosPage) |
+| **Tablas** | `usuarios`, `auth.users` (vía Supabase Auth) |
+| **Operaciones** | `signInWithPassword` (login), `signOut` (logout), `getSession` (restaurar), `SELECT` (obtener datos app) |
+| **Quién consulta** | Usuario que se autentica |
+| **Quién inserta** | Supervisor (vía Edge Function `create-user`) |
 | **Quién actualiza** | Nadie (no hay endpoint) |
-| **Quién elimina** | Supervisor (desde UsuariosPage) |
-| **Bloquear** | Usuarios anónimos no deberían ver la lista completa ni las contraseñas |
-| **Riesgos** | 🔴 La query de login expone el hash de contraseña como filtro. Un atacante puede enumerar usuarios. Un anónimo puede hacer `SELECT * FROM usuarios` y ver todos los hashes. |
+| **Quién elimina** | Supervisor (vía RLS .delete() directo + Trigger PostgreSQL) |
+| **Bloquear** | ⚠️ Con RLS: `SELECT` solo para autenticados; `INSERT`/`DELETE` bloqueados (se manejan vía Edge Functions con `service_role`) |
+| **Estado** | ✅ Auth migrado, Edge Functions desplegadas. Pendiente: habilitar RLS en tabla `usuarios`. |
 
 ---
 
@@ -352,38 +394,42 @@ planificaciones ── planificacion_recetas.planificacion_id
 
 ---
 
-### 5.11 Módulo: Usuarios
+### 5.11 Módulo: Usuarios ✅ MIGRADO
 
-**Archivo:** `UsuariosPage.vue` → `UsuarioClient.js`
+**Archivo:** `UsuariosPage.vue` → `UsuarioClient.js` → DB API + Edge Function (`create-user`)
 
 | Aspecto | Detalle |
 |---|---|
-| **Tablas** | `usuarios` |
-| **Operaciones** | `SELECT` (lista), `INSERT` (crear), `DELETE` (eliminar) |
+| **Tablas** | `usuarios`, `auth.users` (vía Edge Functions) |
+| **Operaciones** | `SELECT` (lista sin contraseña), `INSERT` (vía Edge Function), `DELETE` (vía Edge Function) |
 | **Quién consulta** | Supervisor |
-| **Quién inserta** | Supervisor |
-| **Quién elimina** | Supervisor |
+| **Quién inserta** | Supervisor (Edge Function valida rol server-side) ✅ |
+| **Quién elimina** | Supervisor (Edge Function valida rol server-side) ✅ |
 | **Bloquear** | Anónimos; operadores no deberían gestionar usuarios |
-| **Riesgos** | 🔴 Un anónimo puede crear usuarios con rol supervisor, o eliminar todos los usuarios |
+| **Riesgos** | 🟠 La tabla `usuarios` aún no tiene RLS. Un anónimo con la `anon key` podría hacer SELECT directamente (pero ya no ve contraseñas en el query normal). INSERT/DELETE se manejan vía Edge Functions con `service_role`. |
 
 ---
 
 ## 6. Auditoría por Tabla
 
-### 6.1 `usuarios`
+### 6.1 `usuarios` — ✅ Estructura Actualizada
 
-| Columna | Tipo | Operaciones Detectadas |
-|---|---|---|
-| `id` | uuid (PK) | SELECT, filtro en DELETE |
-| `nombre` | varchar | SELECT (filtro ilike en login), INSERT |
-| `contrasena` | varchar | SELECT (filtro eq en login), INSERT |
-| `rol` | varchar | SELECT, INSERT |
+| Columna | Tipo | Operaciones Detectadas | Estado |
+|---|---|---|---|
+| `id` | uuid (PK) | SELECT, filtro en DELETE (vía Edge Function) | Original |
+| `nombre` | varchar | SELECT, INSERT (vía Edge Function) | Original |
+| `contrasena` | varchar (NULLABLE) | — (ya no se usa en login) | **Modificado** ✅ |
+| `rol` | varchar | SELECT, INSERT (vía Edge Function) | Original |
+| `auth_user_id` | uuid (UNIQUE, FK → auth.users) | SELECT (filtro eq en login) | **NUEVO** ✅ |
+| `email` | varchar (UNIQUE) | SELECT, INSERT (vía Edge Function) | **NUEVO** ✅ |
 
-**Operaciones por Cliente:**
-- `UsuarioClient.login()` → SELECT con filtro nombre + contrasena
-- `UsuarioClient.obtenerUsuarios()` → SELECT id, nombre, rol
-- `UsuarioClient.agregarUsuario()` → INSERT {nombre, contrasena, rol}
-- `UsuarioClient.eliminarUsuario()` → DELETE by id
+**Operaciones por Cliente (Actualizadas):**
+- `UsuarioClient.login()` → `supabase.auth.signInWithPassword()` + SELECT por `auth_user_id` ✅
+- `UsuarioClient.logout()` → `supabase.auth.signOut()` ✅
+- `UsuarioClient.getSession()` → `supabase.auth.getSession()` + SELECT por `auth_user_id` ✅
+- `UsuarioClient.obtenerUsuarios()` → SELECT id, nombre, rol, email ✅
+- `UsuarioClient.agregarUsuario()` → `supabase.functions.invoke('create-user')` ✅
+- `UsuarioClient.eliminarUsuario()` → `supabase.from('usuarios').delete()` ✅ (Trigger borra en Auth)
 
 ---
 
@@ -609,24 +655,25 @@ planificaciones ── planificacion_recetas.planificacion_id
 
 ### 🔴 Críticos — Pueden permitir acceso o modificación no autorizada
 
-| # | Riesgo | Tabla(s) | Impacto |
-|---|---|---|---|
-| C1 | **Todas las tablas sin RLS** | Todas (15) | Cualquier persona con la `anon key` puede hacer CRUD completo en todas las tablas |
-| C2 | **Tabla `usuarios` expone contraseñas** | `usuarios` | `SELECT * FROM usuarios` devuelve los hashes SHA-256 de todas las contraseñas |
-| C3 | **No se usa Supabase Auth** | — | `auth.uid()` no existe; no hay JWT con claims de rol; RLS convencional no aplica |
-| C4 | **Anónimo puede crear usuarios con rol supervisor** | `usuarios` | Un atacante puede crear su propio usuario administrador |
-| C5 | **Anónimo puede modificar inventario** | `materia_prima`, `materiales` | Un atacante puede poner cantidades en 0 o valores arbitrarios |
-| C6 | **Anónimo puede completar/cancelar pedidos** | `pedidos` | Un atacante puede cambiar el estado de todos los pedidos |
-| C7 | **Anónimo puede eliminar datos** | Todas | Sin restricciones de DELETE en ninguna tabla |
+| # | Riesgo | Tabla(s) | Impacto | Estado |
+|---|---|---|---|---|
+| C1 | **Todas las tablas sin RLS** | Todas (15) | Cualquier persona con la `anon key` puede hacer CRUD completo en todas las tablas | ⚠️ **PENDIENTE** |
+| C2 | ~~**Tabla `usuarios` expone contraseñas**~~ | `usuarios` | ~~`SELECT * FROM usuarios` devuelve los hashes SHA-256~~ | ✅ **MITIGADO** — Login ya no usa contraseña local; `obtenerUsuarios` ya no selecciona `contrasena`. Aún se podría hacer un SELECT directo sin RLS. |
+| C3 | ~~**No se usa Supabase Auth**~~ | — | ~~`auth.uid()` no existe~~ | ✅ **RESUELTO** — Supabase Auth activo con `auth.uid()` disponible |
+| C4 | ~~**Anónimo puede crear usuarios con rol supervisor**~~ | `usuarios` | ~~Atacante puede crear su propio admin~~ | ✅ **RESUELTO** — Creación vía Edge Function que valida rol server-side |
+| C5 | **Anónimo puede modificar inventario** | `materia_prima`, `materiales` | Un atacante puede poner cantidades en 0 o valores arbitrarios | ⚠️ **PENDIENTE** — Requiere RLS |
+| C6 | **Anónimo puede completar/cancelar pedidos** | `pedidos` | Un atacante puede cambiar el estado de todos los pedidos | ⚠️ **PENDIENTE** — Requiere RLS |
+| C7 | **Anónimo puede eliminar datos** | Todas | Sin restricciones de DELETE en ninguna tabla | ⚠️ **PENDIENTE** — Requiere RLS |
 
 ### 🟠 Altos — Deben corregirse antes de producción
 
-| # | Riesgo | Tabla(s) | Impacto |
-|---|---|---|---|
-| A1 | **Operador puede acceder a módulos de supervisor** | Todas | El control de acceso es solo frontend (router); un operador puede hacer queries directas |
-| A2 | **Operador puede modificar datos de otro operador** | `producciones`, `mermas` | No hay validación server-side de `operador_id` |
-| A3 | **Exposición indirecta por joins** | Todas las relacionadas | Datos accesibles a través de relaciones no protegidas |
-| A4 | **sessionStorage manipulable** | — | Un usuario puede cambiar rol/id en DevTools |
+| # | Riesgo | Tabla(s) | Impacto | Estado |
+|---|---|---|---|---|
+| A1 | **Operador puede acceder a módulos de supervisor vía query directa** | Todas | El control de acceso tiene protección frontend (router) pero sin RLS no hay protección server-side para SELECT | ⚠️ **PENDIENTE** — Requiere RLS |
+| A2 | **Operador puede modificar datos de otro operador** | `producciones`, `mermas` | No hay validación server-side de `operador_id` | ⚠️ **PENDIENTE** — Requiere RLS |
+| A3 | **Exposición indirecta por joins** | Todas las relacionadas | Datos accesibles a través de relaciones no protegidas | ⚠️ **PENDIENTE** |
+| A4 | ~~**sessionStorage manipulable**~~ | — | ~~Cambiar rol en DevTools~~ | ✅ **RESUELTO** — Sesión basada en JWT de Supabase Auth |
+| A5 | **Usuario legacy "ana" sin vincular** | `usuarios` | Registro huérfano sin `auth_user_id` ni `email` | ⚠️ **NUEVO** — Limpiar o migrar |
 
 ### 🟡 Medios — Mejora importante de seguridad
 
@@ -634,6 +681,7 @@ planificaciones ── planificacion_recetas.planificacion_id
 |---|---|---|---|
 | M1 | **No hay auditoría de quién modificó qué** | Todas | Sin `updated_by` ni `created_by` en la mayoría de tablas |
 | M2 | **Columna `disponible_snapshot` no usada** | `receta_materiales`, `receta_materia_prima` | Columnas sin uso que podrían confundir |
+| M3 | **Columna `contrasena` legacy en `usuarios`** | `usuarios` | Ya no se usa pero sigue existiendo con datos legacy |
 
 ### 🟢 Bajos — Mejora recomendada
 
@@ -644,27 +692,34 @@ planificaciones ── planificacion_recetas.planificacion_id
 
 ---
 
-## 9. Decisión Arquitectónica Crítica
+## 9. Decisión Arquitectónica — RESUELTA
 
-> **⚠️ IMPORTANTE: Antes de implementar RLS, se debe resolver el problema fundamental de autenticación.** La aplicación no usa Supabase Auth, por lo que `auth.uid()` no está disponible. Hay tres caminos posibles:
+> **✅ DECIDIDO: Se adoptó la Opción A — Migrar a Supabase Auth.** La migración fue completada el 2026-08-12.
 
-### Opción A: Migrar a Supabase Auth (RECOMENDADA)
+### Opción A: Migrar a Supabase Auth ✅ IMPLEMENTADA
 
-**Descripción:** Crear usuarios en `auth.users` usando `supabase.auth.signUp()`, almacenar el rol en `user_metadata` o en la tabla `usuarios` vinculada al `auth.users.id`, y usar `auth.uid()` + JWT claims en las políticas RLS.
+**Descripción:** Crear usuarios en `auth.users` usando Edge Functions con `supabase.auth.admin.createUser()`, almacenar el rol en la tabla `usuarios` vinculada al `auth.users.id` vía `auth_user_id`, y usar `auth.uid()` + funciones helper en las políticas RLS.
 
-**Ventajas:**
-- RLS funciona nativamente con `auth.uid()`
-- JWT seguro emitido por Supabase
-- Tokens con expiración automática
-- Soporte para refresh tokens
-- Sigue las mejores prácticas de Supabase
+**Lo que se implementó:**
 
-**Desventajas:**
-- Requiere migración del flujo de login
-- Los 2 usuarios existentes deben recrearse en `auth.users`
-- Cambios en `UsuarioClient.js`, `LoginForm.vue`, `useAuth.js`
+| Componente | Estado | Detalle |
+|---|---|---|
+| Columna `auth_user_id` en `usuarios` | ✅ | FK → `auth.users(id)`, UNIQUE |
+| Columna `email` en `usuarios` | ✅ | VARCHAR, UNIQUE |
+| `contrasena` ya no obligatorio | ✅ | `DROP NOT NULL` |
+| Función `get_user_rol()` | ✅ | Desplegada en BD |
+| Función `get_usuario_id()` | ✅ | Desplegada en BD |
+| Edge Function `create-user` | ✅ | v2, ACTIVE, valida rol supervisor |
+| Trigger `on_user_deleted` | ✅ | Limpia auth.users tras borrado de public.usuarios |
+| `LoginForm.vue` usa email | ✅ | `signInWithPassword()` |
+| `useAuth.js` sin sessionStorage | ✅ | Estado reactivo + `inicializar()` con `getSession()` |
+| `UsuarioClient.js` refactorizado | ✅ | Todos los métodos usan Supabase Auth / Edge Functions |
+| `UsuarioForm.vue` con email | ✅ | Campos: nombre, email, contraseña, rol |
+| Router con guard asíncrono | ✅ | `await inicializar()` antes de verificar roles |
+| Supervisor vinculado a auth | ✅ | `anthony` → `dinaxa9309@primetor.com` |
+| Usuarios nuevos creados vía Edge Function | ✅ | `juan` (operador), `pedro` (supervisor) |
 
-**Ejemplo de política RLS con Supabase Auth:**
+**Ejemplo de política RLS con Supabase Auth (ahora funcional):**
 
 ```sql
 -- Solo usuarios autenticados pueden leer clientes
@@ -675,57 +730,19 @@ CREATE POLICY "authenticated_select_clientes" ON clientes
 -- Solo supervisores pueden modificar clientes
 CREATE POLICY "supervisor_insert_clientes" ON clientes
   FOR INSERT TO authenticated
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM usuarios
-      WHERE usuarios.auth_user_id = auth.uid()
-      AND usuarios.rol = 'supervisor'
-    )
-  );
-```
-
----
-
-### Opción B: RLS con Custom Claims via JWT (ALTERNATIVA)
-
-**Descripción:** Mantener el login actual pero inyectar el `usuarios.id` y `rol` como custom claims en el JWT de Supabase usando una función RPC de login personalizada que llame a `auth.sign_in_with_password()` internamente, o usar una Edge Function para generar un JWT custom.
-
-**Ventajas:**
-- Menor cambio en el flujo existente
-- Permite RLS con claims personalizados
-
-**Desventajas:**
-- Más complejo de implementar
-- Requiere Edge Function o función servidor
-- Menor soporte de la comunidad
-
----
-
-### Opción C: RLS Básico — Solo Autenticado vs Anónimo (MÍNIMA VIABLE)
-
-**Descripción:** Sin migrar la autenticación, habilitar RLS y permitir acceso solo al rol `authenticated` de Supabase. Esto requiere que al menos los usuarios tengan una sesión de Supabase Auth, aunque sea genérica.
-
-> **⚠️ ADVERTENCIA:** Esta opción NO distingue entre supervisor y operador a nivel de base de datos. Solo protege contra acceso anónimo. El control de roles seguiría siendo solo en el frontend.
-
-**Ejemplo:**
-
-```sql
-CREATE POLICY "authenticated_only" ON clientes
-  FOR ALL TO authenticated
-  USING (true)
-  WITH CHECK (true);
+  WITH CHECK (public.get_user_rol() = 'supervisor');
 ```
 
 ---
 
 ## 10. Políticas RLS Propuestas
 
-> **⚠️ IMPORTANTE:** Las políticas completas a continuación asumen que se elige la **Opción A** (migrar a Supabase Auth) con una columna `auth_user_id` en la tabla `usuarios` que vincula cada usuario de la app con su `auth.users.id`. Si se elige otra opción, las políticas deberán adaptarse.
+> **✅ Las políticas pueden implementarse ahora.** Los prerequisitos están listos: `auth.uid()` funciona, las funciones helper están desplegadas, y los usuarios están vinculados.
 
-### Función Helper Propuesta
+### Función Helper — ✅ YA DESPLEGADA
 
 ```sql
--- Función que retorna el rol del usuario autenticado
+-- ✅ Ya existe en la BD
 CREATE OR REPLACE FUNCTION public.get_user_rol()
 RETURNS text
 LANGUAGE sql
@@ -734,13 +751,23 @@ SECURITY DEFINER
 AS $$
   SELECT rol FROM public.usuarios WHERE auth_user_id = auth.uid();
 $$;
+
+-- ✅ Ya existe en la BD
+CREATE OR REPLACE FUNCTION public.get_usuario_id()
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+AS $$
+  SELECT id FROM public.usuarios WHERE auth_user_id = auth.uid();
+$$;
 ```
 
 ### Resumen de Políticas por Tabla
 
 | Tabla | SELECT | INSERT | UPDATE | DELETE |
 |---|---|---|---|---|
-| `usuarios` | authenticated (sin contraseña) | supervisor | — (no hay endpoint) | supervisor |
+| `usuarios` | authenticated (sin contraseña) | — (vía Edge Function) | — (no hay endpoint) | — (vía Edge Function) |
 | `clientes` | authenticated | supervisor | supervisor | supervisor |
 | `materia_prima` | authenticated | authenticated | authenticated | DENY ALL |
 | `materiales` | authenticated | authenticated | authenticated | supervisor |
@@ -756,47 +783,36 @@ $$;
 | `planificaciones` | authenticated | supervisor | — | supervisor |
 | `planificacion_recetas` | authenticated | supervisor | — | supervisor (via CASCADE) |
 
+> **Nota sobre `usuarios`:** Las operaciones de INSERT y DELETE se manejan exclusivamente vía Edge Functions que usan `service_role` (bypass RLS). Por eso no se necesitan políticas de INSERT/DELETE para el rol `authenticated`. Solo se necesita SELECT para que los usuarios autenticados puedan ver la lista.
+
 > **Nota sobre `materia_prima` y `materiales` INSERT/UPDATE:** Aunque la UI restringe estas operaciones al supervisor, el sistema (ProduccionClient) también actualiza stocks durante el registro de producción. Si el operador que registra producción necesita que el UPDATE funcione, la política debe permitir `authenticated` para UPDATE.
 
 ---
 
 ## 11. SQL de Implementación
 
-> **⛔ NO ejecutar este SQL hasta completar la migración de autenticación.** Habilitar RLS sin tener usuarios en `auth.users` bloqueará TODO el acceso a la aplicación.
+> **✅ Este SQL puede ejecutarse ahora.** Los prerequisitos de autenticación están completos.
 
-### Paso 0: Prerequisito — Agregar columna de vínculo con Supabase Auth
+### ~~Paso 0: Prerequisito — Agregar columna de vínculo con Supabase Auth~~ ✅ YA COMPLETADO
 
 ```sql
--- Agregar columna para vincular usuarios de la app con auth.users
+-- ✅ YA EJECUTADO — No repetir
 ALTER TABLE public.usuarios
   ADD COLUMN IF NOT EXISTS auth_user_id uuid UNIQUE REFERENCES auth.users(id);
+ALTER TABLE public.usuarios
+  ADD COLUMN IF NOT EXISTS email varchar UNIQUE;
+ALTER TABLE public.usuarios ALTER COLUMN contrasena DROP NOT NULL;
 ```
 
-### Paso 1: Función Helper
+### ~~Paso 1: Función Helper~~ ✅ YA COMPLETADO
 
 ```sql
--- Función para obtener el rol del usuario autenticado
-CREATE OR REPLACE FUNCTION public.get_user_rol()
-RETURNS text
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-AS $$
-  SELECT rol FROM public.usuarios WHERE auth_user_id = auth.uid();
-$$;
-
--- Función para obtener el id de usuario de la app
-CREATE OR REPLACE FUNCTION public.get_usuario_id()
-RETURNS uuid
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-AS $$
-  SELECT id FROM public.usuarios WHERE auth_user_id = auth.uid();
-$$;
+-- ✅ YA EJECUTADO — No repetir
+CREATE OR REPLACE FUNCTION public.get_user_rol() ...
+CREATE OR REPLACE FUNCTION public.get_usuario_id() ...
 ```
 
-### Paso 2: Habilitar RLS en todas las tablas
+### Paso 2: Habilitar RLS en todas las tablas ⚠️ PENDIENTE
 
 ```sql
 ALTER TABLE public.usuarios ENABLE ROW LEVEL SECURITY;
@@ -816,30 +832,21 @@ ALTER TABLE public.planificaciones ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.planificacion_recetas ENABLE ROW LEVEL SECURITY;
 ```
 
-### Paso 3: Políticas por Tabla
+### Paso 3: Políticas por Tabla ⚠️ PENDIENTE
 
 #### 3.1 `usuarios`
 
 ```sql
 -- SELECT: cualquier usuario autenticado puede ver la lista (sin contraseña)
--- Nota: la columna 'contrasena' debería excluirse a nivel de VIEW.
--- Se recomienda crear un VIEW sin contrasena.
+-- Nota: la columna 'contrasena' no se selecciona en UsuarioClient.obtenerUsuarios()
+-- pero un SELECT directo sí la mostraría. Evaluar crear VIEW.
 CREATE POLICY "usuarios_select_authenticated"
   ON public.usuarios FOR SELECT
   TO authenticated
   USING (true);
 
--- INSERT: solo supervisores pueden crear usuarios
-CREATE POLICY "usuarios_insert_supervisor"
-  ON public.usuarios FOR INSERT
-  TO authenticated
-  WITH CHECK (public.get_user_rol() = 'supervisor');
-
--- DELETE: solo supervisores pueden eliminar usuarios
-CREATE POLICY "usuarios_delete_supervisor"
-  ON public.usuarios FOR DELETE
-  TO authenticated
-  USING (public.get_user_rol() = 'supervisor');
+-- INSERT/DELETE: NO se crean políticas.
+-- Estas operaciones se manejan vía Edge Functions con service_role (bypass RLS).
 ```
 
 #### 3.2 `clientes`
@@ -1188,28 +1195,31 @@ CREATE POLICY "planificacion_recetas_delete_supervisor"
 
 ## 12. Plan de Implementación
 
-### Fase 0: Decisión Arquitectónica (OBLIGATORIA)
+### Fase 0: Decisión Arquitectónica ✅ COMPLETADA
 
-> **⚠️ IMPORTANTE:** Antes de cualquier implementación, el usuario debe decidir la estrategia de autenticación (Opción A, B o C de la Sección 9).
-
-| # | Tarea | Prioridad |
+| # | Tarea | Estado |
 |---|---|---|
-| 0.1 | Decidir estrategia de autenticación | 🔴 Bloqueante |
-| 0.2 | Si Opción A: migrar usuarios a `auth.users` | 🔴 Bloqueante |
-| 0.3 | Agregar columna `auth_user_id` a `public.usuarios` | 🔴 Bloqueante |
-| 0.4 | Modificar `LoginForm.vue` y `useAuth.js` para usar `supabase.auth.signInWithPassword()` | 🔴 Bloqueante |
-| 0.5 | Modificar `UsuarioClient.js` para crear usuarios con `supabase.auth.admin.createUser()` o `signUp()` | 🔴 Bloqueante |
+| 0.1 | Decidir estrategia de autenticación | ✅ Opción A seleccionada |
+| 0.2 | Migrar supervisor existente a `auth.users` | ✅ `anthony` vinculado |
+| 0.3 | Agregar columnas `auth_user_id` y `email` a `public.usuarios` | ✅ Ejecutado |
+| 0.4 | Modificar `LoginForm.vue` y `useAuth.js` para usar `supabase.auth.signInWithPassword()` | ✅ Implementado |
+| 0.5 | Implementar Edge Function create-user y Trigger para eliminar | ✅ `create-user` (optimizada) y Trigger DB implementados |
+| 0.6 | Refactorizar `UsuarioClient.js` para usar Edge Functions | ✅ Implementado |
+| 0.7 | Eliminar dependencia de `sessionStorage` | ✅ Estado reactivo en `useAuth.js` |
+| 0.8 | Agregar guard asíncrono al router | ✅ `await inicializar()` |
+| 0.9 | Resolver doble logout (NavBar.vue) | ✅ Corregido |
 
-### Fase 1: Preparación de Base de Datos
+### Fase 1: Preparación de Base de Datos — ✅ PARCIALMENTE COMPLETADA
 
-| # | Tarea | Prioridad |
+| # | Tarea | Estado |
 |---|---|---|
-| 1.1 | Crear función `get_user_rol()` | 🔴 |
-| 1.2 | Crear función `get_usuario_id()` | 🔴 |
-| 1.3 | Crear VIEW `public.usuarios_safe` sin columna `contrasena` | 🟠 |
-| 1.4 | Verificar que todos los FK y constraints están correctos | 🟡 |
+| 1.1 | Crear función `get_user_rol()` | ✅ Desplegada |
+| 1.2 | Crear función `get_usuario_id()` | ✅ Desplegada |
+| 1.3 | Crear VIEW `public.usuarios_safe` sin columna `contrasena` | ⚠️ **PENDIENTE** (recomendado) |
+| 1.4 | Verificar que todos los FK y constraints están correctos | ⚠️ **PENDIENTE** |
+| 1.5 | Limpiar usuario legacy "ana" (sin vincular a auth) | ⚠️ **PENDIENTE** |
 
-### Fase 2: Habilitar RLS (Tablas de Catálogo)
+### Fase 2: Habilitar RLS (Tablas de Catálogo) ⚠️ PENDIENTE
 
 Empezar por las tablas más simples y menos riesgosas:
 
@@ -1220,7 +1230,7 @@ Empezar por las tablas más simples y menos riesgosas:
 | 2.3 | Habilitar RLS + políticas en recetas y detalles | `recetas`, `receta_materiales`, `receta_materia_prima` |
 | 2.4 | Probar CRUD completo de recetas | — |
 
-### Fase 3: Habilitar RLS (Tablas de Negocio)
+### Fase 3: Habilitar RLS (Tablas de Negocio) ⚠️ PENDIENTE
 
 | # | Tarea | Tablas |
 |---|---|---|
@@ -1230,7 +1240,7 @@ Empezar por las tablas más simples y menos riesgosas:
 | 3.4 | Habilitar RLS + políticas en producción | `producciones`, `produccion_detalle`, `produccion_consumos` |
 | 3.5 | Probar flujo completo de producción con operador | — |
 
-### Fase 4: Habilitar RLS (Tablas Restantes)
+### Fase 4: Habilitar RLS (Tablas Restantes) ⚠️ PENDIENTE
 
 | # | Tarea | Tablas |
 |---|---|---|
@@ -1238,7 +1248,7 @@ Empezar por las tablas más simples y menos riesgosas:
 | 4.2 | Habilitar RLS + políticas en mermas | `mermas` |
 | 4.3 | Habilitar RLS + políticas en usuarios | `usuarios` |
 
-### Fase 5: Verificación y Endurecimiento
+### Fase 5: Verificación y Endurecimiento ⚠️ PENDIENTE
 
 | # | Tarea |
 |---|---|
@@ -1266,7 +1276,7 @@ Empezar por las tablas más simples y menos riesgosas:
 
 | # | Prueba | Resultado Esperado |
 |---|---|---|
-| T6 | Login como supervisor | ✅ Sesión iniciada |
+| T6 | Login como supervisor (`dinaxa9309@primetor.com`) | ✅ Sesión iniciada via `signInWithPassword` |
 | T7 | `SELECT` en todas las tablas | ✅ Retorna datos |
 | T8 | `INSERT` en `clientes` | ✅ Éxito |
 | T9 | `UPDATE` en `clientes` | ✅ Éxito |
@@ -1274,15 +1284,15 @@ Empezar por las tablas más simples y menos riesgosas:
 | T11 | `INSERT` en `recetas` + `receta_materiales` | ✅ Éxito |
 | T12 | `INSERT` en `planificaciones` + `planificacion_recetas` | ✅ Éxito |
 | T13 | `DELETE` en `planificaciones` | ✅ Éxito |
-| T14 | `INSERT` en `usuarios` | ✅ Éxito |
-| T15 | `DELETE` en `usuarios` | ✅ Éxito |
+| T14 | Crear usuario via Edge Function `create-user` | ✅ Éxito |
+| T15 | Eliminar usuario via Trigger (RLS de Supervisor) | ✅ Éxito (<< 200ms) |
 | T16 | Auto-completar pedidos desde Dashboard | ✅ Éxito |
 
 ### 13.3 Pruebas de Usuario Autenticado — Operador
 
 | # | Prueba | Resultado Esperado |
 |---|---|---|
-| T17 | Login como operador | ✅ Sesión iniciada |
+| T17 | Login como operador (`helpful.manatee.rbrp@hidepost.net`) | ✅ Sesión iniciada via `signInWithPassword` |
 | T18 | `SELECT` en `recetas`, `planificaciones`, `materia_prima`, `materiales` | ✅ Retorna datos (lectura permitida) |
 | T19 | `INSERT` en `producciones` | ✅ Éxito |
 | T20 | `INSERT` en `produccion_detalle` | ✅ Éxito |
@@ -1292,8 +1302,8 @@ Empezar por las tablas más simples y menos riesgosas:
 | T24 | `INSERT` en `recetas` | ❌ Error (solo supervisor) |
 | T25 | `INSERT` en `planificaciones` | ❌ Error (solo supervisor) |
 | T26 | `DELETE` en `planificaciones` | ❌ Error (solo supervisor) |
-| T27 | `INSERT` en `usuarios` | ❌ Error (solo supervisor) |
-| T28 | `DELETE` en `usuarios` | ❌ Error (solo supervisor) |
+| T27 | Crear usuario via Edge Function `create-user` | ❌ Error (Edge Function valida rol) |
+| T28 | Eliminar usuario via Trigger | ❌ Error (RLS valida rol) |
 | T29 | `DELETE` en `producciones` (ajena) | ❌ Error (solo supervisor) |
 | T30 | `DELETE` en `mermas` | ❌ Error (solo supervisor) |
 
@@ -1327,21 +1337,22 @@ Empezar por las tablas más simples y menos riesgosas:
 
 ## 14. Información Pendiente
 
-> **⚠️ IMPORTANTE:** Los siguientes puntos requieren decisión o información adicional del propietario de la aplicación antes de implementar las políticas.
+> **⚠️ IMPORTANTE:** Los siguientes puntos requieren decisión o información adicional antes de implementar las políticas RLS.
 
-| # | Información Requerida | Motivo | Impacto |
-|---|---|---|---|
-| P1 | **¿Se adoptará Supabase Auth?** | Determina si `auth.uid()` está disponible para RLS. Sin esto, no se pueden crear políticas funcionales. | 🔴 Bloqueante |
-| P2 | **¿El operador puede editar/eliminar sus propias producciones?** | Si sí, la política de UPDATE/DELETE en `producciones` debe usar `operador_id = get_usuario_id()`. Si solo el supervisor puede, se restringe más. | 🟠 Afecta política |
-| P3 | **¿El operador puede registrar mermas?** | En el código actual, `MermaClient.agregarMerma` acepta un `operador_id` pero MermasPage solo es accesible por supervisor en el router. ¿Debería un operador poder registrar mermas desde otro módulo? | 🟠 Afecta política |
-| P4 | **¿Se debe restringir que un operador inserte producción con el `operador_id` de otro operador?** | Actualmente el frontend pasa el `operadorId` desde sessionStorage, pero un atacante podría usar otro ID. ¿Se debe forzar `operador_id = get_usuario_id()`? | 🟠 Afecta WITH CHECK |
-| P5 | **¿La columna `contrasena` en `usuarios` debe seguir existiendo si se migra a Supabase Auth?** | Con Supabase Auth, las contraseñas se manejan en `auth.users`. La columna podría eliminarse o mantenerse como respaldo. | 🟡 Limpieza |
-| P6 | **¿Hay otros roles planificados además de `supervisor` y `operador`?** | Si hay planes de agregar `admin`, `gerente`, etc., las políticas deben diseñarse para escalar. | 🟡 Diseño futuro |
-| P7 | **¿La sincronización con API externa (pedidos, materia prima, materiales) se ejecuta como supervisor?** | Si se ejecuta como operador, las políticas de INSERT en `pedidos` y `recetas` bloquearían la sincronización. | 🟠 Afecta flujo |
-| P8 | **¿Se necesita proteger `produccion_consumos` contra DELETE?** | Actualmente no hay endpoint de DELETE, pero si son registros históricos inmutables, no se debe crear política de DELETE. | 🟡 Buena práctica |
+| # | Información Requerida | Motivo | Impacto | Estado |
+|---|---|---|---|---|
+| P1 | ~~**¿Se adoptará Supabase Auth?**~~ | ~~Determina si `auth.uid()` está disponible~~ | ~~🔴 Bloqueante~~ | ✅ **RESUELTO** |
+| P2 | **¿El operador puede editar/eliminar sus propias producciones?** | Si sí, la política de UPDATE/DELETE en `producciones` debe usar `operador_id = get_usuario_id()`. Si solo el supervisor puede, se restringe más. | 🟠 Afecta política | ⚠️ Pendiente |
+| P3 | **¿El operador puede registrar mermas?** | En el código actual, `MermaClient.agregarMerma` acepta un `operador_id` pero MermasPage solo es accesible por supervisor en el router. ¿Debería un operador poder registrar mermas desde otro módulo? | 🟠 Afecta política | ⚠️ Pendiente |
+| P4 | **¿Se debe restringir que un operador inserte producción con el `operador_id` de otro operador?** | Actualmente el frontend pasa el `operadorId` desde el estado de `useAuth`. Un atacante autenticado podría usar otro ID en una query directa. ¿Se debe forzar `operador_id = get_usuario_id()`? | 🟠 Afecta WITH CHECK | ⚠️ Pendiente |
+| P5 | ~~**¿La columna `contrasena` debe seguir existiendo?**~~ | Con Supabase Auth, las contraseñas se manejan en `auth.users`. La columna es legacy. | 🟡 Limpieza | ⚠️ Pendiente (recomendado limpiar) |
+| P6 | **¿Hay otros roles planificados además de `supervisor` y `operador`?** | Si hay planes de agregar `admin`, `gerente`, etc., las políticas deben diseñarse para escalar. | 🟡 Diseño futuro | ⚠️ Pendiente |
+| P7 | **¿La sincronización con API externa (pedidos, materia prima, materiales) se ejecuta siempre como supervisor?** | Si se ejecuta como operador, las políticas de INSERT en `pedidos` y `recetas` bloquearían la sincronización. | 🟠 Afecta flujo | ⚠️ Pendiente |
+| P8 | **¿Se necesita proteger `produccion_consumos` contra DELETE?** | Actualmente no hay endpoint de DELETE, pero si son registros históricos inmutables, no se debe crear política de DELETE. | 🟡 Buena práctica | ⚠️ Pendiente |
+| P9 | **¿Qué hacer con la usuaria "ana" (legacy, sin vincular)?** | Tiene `auth_user_id = null` y no puede autenticarse. ¿Eliminar, migrar, o dejar como histórica? | 🟡 Limpieza | ⚠️ **NUEVO** |
 
 ---
 
-> **Próximo paso:** Una vez aprobado este plan y tomadas las decisiones de la Sección 14, proceder con la implementación de Supabase Auth y luego aplicar las políticas RLS tabla por tabla según la Fase 2-4.
+> **Próximo paso:** Los prerequisitos de autenticación (Fase 0) están **completados**. Se puede proceder directamente con la **Fase 1.3–1.5** (limpieza) y luego **Fase 2** (habilitar RLS en tablas de catálogo) una vez que se resuelvan las preguntas pendientes P2–P4.
 >
 > **Fuera de alcance:** Funciones RPC (se auditarán por separado en una fase posterior).

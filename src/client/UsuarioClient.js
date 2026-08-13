@@ -1,30 +1,58 @@
 import { supabase } from './supabase'
 
 export default {
-  // Obtiene un usuario por nombre y contraseña encriptada (Alternativa 2)
-  async login(nombre, contrasenaEncriptada) {
+  // LOGIN — Usa Supabase Auth nativo
+  async login(email, password) {
     try {
-      const { data, error } = await supabase
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+
+      if (authError) throw authError
+
+      // Obtener datos del usuario de la app (rol, nombre, id)
+      const { data: usuario, error: userError } = await supabase
         .from('usuarios')
         .select('id, nombre, rol')
-        .ilike('nombre', nombre)
-        .eq('contrasena', contrasenaEncriptada)
-        .maybeSingle()
+        .eq('auth_user_id', authData.user.id)
+        .single()
 
-      if (error) throw error
-      return { success: true, data } // Retorna el usuario si coincide, o null si no existe
+      if (userError) throw userError
+
+      return { success: true, data: usuario }
     } catch (error) {
-      console.error("Error al autenticar usuario:", error)
+      console.error("Error al autenticar:", error)
       return { success: false, error }
     }
   },
 
-  // Obtiene todos los usuarios ordenados por nombre
+  // LOGOUT — Cierra sesión de Supabase Auth
+  async logout() {
+    const { error } = await supabase.auth.signOut()
+    if (error) console.error("Error al cerrar sesión:", error)
+  },
+
+  // SESSION — Verifica si hay sesión activa
+  async getSession() {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return null
+
+    const { data: usuario } = await supabase
+      .from('usuarios')
+      .select('id, nombre, rol')
+      .eq('auth_user_id', session.user.id)
+      .single()
+
+    return usuario
+  },
+
+  // Obtener lista de usuarios (sin contraseña)
   async obtenerUsuarios() {
     try {
       const { data, error } = await supabase
         .from('usuarios')
-        .select('id, nombre, rol')
+        .select('id, nombre, rol, email')
         .order('nombre', { ascending: true })
 
       if (error) throw error
@@ -35,27 +63,28 @@ export default {
     }
   },
 
-  // Agrega un nuevo usuario (Supabase genera el id automáticamente como UUID)
+  // Crear usuario — Llama a Edge Function (seguro, sin exponer service_role_key)
   async agregarUsuario(usuario) {
     try {
-      const { data, error } = await supabase
-        .from('usuarios')
-        .insert([{
+      const { data, error } = await supabase.functions.invoke('create-user', {
+        body: {
+          email: usuario.email,
+          password: usuario.password,
           nombre: usuario.nombre,
-          contrasena: usuario.contrasena,
           rol: usuario.rol
-        }])
-        .select()
+        }
+      })
 
       if (error) throw error
-      return { success: true, data: data[0] }
+      if (data?.error) throw new Error(data.error)
+      return { success: true, data }
     } catch (error) {
       console.error("Error al agregar usuario:", error)
       return { success: false, error }
     }
   },
 
-  // Elimina un usuario por su UUID
+  // Eliminar usuario — Directamente en la base de datos (Trigger SQL limpia auth.users)
   async eliminarUsuario(id) {
     try {
       const { error } = await supabase
