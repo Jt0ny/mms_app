@@ -25,22 +25,29 @@ export default {
 
       if (queryErr) throw queryErr;
 
-      const mapExistentes = new Map(
+      const mapExistentesPorId = new Map(
         (existentes || []).map(e => [String(e.id), e])
+      );
+      const mapExistentesPorVariedad = new Map(
+        (existentes || []).map(e => [String(e.variedad).toLowerCase().trim(), e])
       );
 
       // 2. Preparar los datos (insertar nuevos o actualizar solo cantidad)
       const upsertData = [];
       for (const mp of materiasPrimasExternas) {
         const idStr = String(mp.id);
+        const variedadNormalizada = String(mp.variedad || '').toLowerCase().trim();
         const externaCantidad = mp.cantidadTotal ?? mp.cantidad ?? 0;
 
-        if (mapExistentes.has(idStr)) {
-          // Si existe, preservamos sus datos actuales y solo actualizamos la cantidad
-          const actual = mapExistentes.get(idStr);
+        // Buscar si existe por ID o por Variedad
+        const actual = mapExistentesPorId.get(idStr) || mapExistentesPorVariedad.get(variedadNormalizada);
+
+        if (actual) {
+          // Si existe (por ID o por variedad), conservamos su ID de la BD para no romper relaciones
           upsertData.push({
             ...actual,
-            cantidad_total: externaCantidad
+            cantidad_total: externaCantidad,
+            variedad: mp.variedad // Actualizamos por si cambió la capitalización
           });
         } else {
           // Si es nuevo, insertamos todos sus datos

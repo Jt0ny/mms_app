@@ -2,8 +2,8 @@
 
 > **Auditor:** Arquitecto de Software Senior
 > **Fecha original:** 2026-07-22
-> **Última auditoría:** 2026-08-06
-> **Alcance:** Auditoría completa pre-cierre — código, estilos, JSDoc, Supabase, RLS, seguridad
+> **Última auditoría:** 2026-08-13
+> **Alcance:** Auditoría completa — código, estilos, comentarios, nomenclatura, mensajes, sincronización, Supabase, RLS
 
 ---
 
@@ -11,29 +11,27 @@
 
 - [Resumen Ejecutivo](#resumen-ejecutivo)
 - [Prioridad Crítica](#prioridad-crítica)
-  - [C1 — RLS deshabilitado en las 15 tablas de Supabase](#c1--rls-deshabilitado-en-las-15-tablas-de-supabase)
+  - [C1 — RLS en Supabase (Implementado)](#c1--rls-en-supabase-implementado)
   - [C2 — Operaciones multi-tabla sin transaccionalidad](#c2--operaciones-multi-tabla-sin-transaccionalidad)
 - [Prioridad Alta](#prioridad-alta)
-  - [A1 — Gradientes con colores hardcoded en componentes scoped](#a1--gradientes-con-colores-hardcoded-en-componentes-scoped)
-  - [A2 — Colores hardcoded dispersos en estilos scoped](#a2--colores-hardcoded-dispersos-en-estilos-scoped)
-  - [A3 — Estilos CSS duplicados entre RecetaMaterialesTabla y RecetaMateriaPrimaTabla](#a3--estilos-css-duplicados-entre-recetamaterialestabla-y-recetamateriaprimatabla)
+  - [A1 — Mensaje de éxito al guardar usuarios no desaparece](#a1--mensaje-de-éxito-al-guardar-usuarios-no-desaparece)
+  - [A2 — Inconsistencias de nomenclatura en el frontend](#a2--inconsistencias-de-nomenclatura-en-el-frontend)
+  - [A3 — Sincronización de pedidos sin límite diario](#a3--sincronización-de-pedidos-sin-límite-diario)
+  - [A4 — Colores hardcoded dispersos en estilos scoped](#a4--colores-hardcoded-dispersos-en-estilos-scoped)
 - [Prioridad Media](#prioridad-media)
-  - [M1 — JSDoc redundante en clients](#m1--jsdoc-redundante-en-clients)
-  - [M2 — Comentarios `// Mapeo snake_case a camelCase` repetidos](#m2--comentarios--mapeo-snake_case-a-camelcase-repetidos)
-  - [M3 — `DashboardEstadoPedidos` replica `.data-card-table` global](#m3--dashboardestadopedidos-replica-data-card-table-global)
+  - [M1 — Animación `.spin` duplicada en 5 componentes](#m1--animación-spin-duplicada-en-5-componentes)
+  - [M2 — Comentarios `// Mapeo snake_case a camelCase` residuales](#m2--comentarios--mapeo-snake_case-a-camelcase-residuales)
+  - [M3 — JSDoc redundante en clients](#m3--jsdoc-redundante-en-clients)
   - [M4 — `.badge-warning/success/danger` con colores hardcoded en style.css](#m4--badge-warningsuccessdanger-con-colores-hardcoded-en-stylecss)
-  - [M5 — Duplicación interna en ProduccionRecetasView](#m5--duplicación-interna-en-produccionrecetasview)
+  - [M5 — Race condition en sistema de caché](#m5--race-condition-en-sistema-de-caché)
+  - [M6 — Colores hardcoded en UsuarioRol y UsuarioTablaActual](#m6--colores-hardcoded-en-usuariorol-y-usuariotablaactual)
+  - [M7 — DashboardEstadoPedidos eliminar `.mms-table` local (resuelto)](#m7--dashboardestadopedidos-tabla-refactorizada)
 - [Prioridad Baja](#prioridad-baja)
-  - [B1 — Espacio faltante en `RecetaMateriaPrimaTabla`](#b1--espacio-faltante-en-recetamateriaprimatabla)
-  - [B2 — Gradiente minor en ProduccionForm `.stat-card`](#b2--gradiente-minor-en-produccionform-stat-card)
-  - [B3 — Comentario HTML `<!-- LAYOUT -->` residual en RecetasPage](#b3--comentario-html----layout----residual-en-recetaspage)
-  - [B4 — RecetaResumen — evaluado, no requiere cambio](#b4--recetaresumen--evaluado-no-requiere-cambio)
+  - [B1 — Comentarios HTML `<!-- LAYOUT -->` residuales](#b1--comentarios-html----layout----residuales)
+  - [B2 — Archivo muerto: `crypto.js`](#b2--archivo-muerto-cryptojs)
+  - [B3 — Gradiente minor en ProduccionForm `.stat-card`](#b3--gradiente-minor-en-produccionform-stat-card)
+  - [B4 — LoginForm define su propio `mostrarMensaje` local](#b4--loginform-define-su-propio-mostrarmensaje-local)
 - [Supabase — Estructura y Seguridad](#supabase--estructura-y-seguridad)
-  - [Esquema de base de datos](#esquema-de-base-de-datos)
-  - [Accesos desde frontend](#accesos-desde-frontend)
-  - [Propuesta RLS por tabla](#propuesta-rls-por-tabla)
-  - [Operaciones candidatas a RPC](#operaciones-candidatas-a-rpc)
-- [Impacto en Frontend](#impacto-en-frontend)
 - [Recomendaciones Anteriores](#recomendaciones-anteriores)
 - [Hoja de Ruta Priorizada](#hoja-de-ruta-priorizada)
 
@@ -41,28 +39,35 @@
 
 ## Resumen Ejecutivo
 
-La aplicación se encuentra en un estado de madurez alto. La arquitectura es sólida con una separación clara de capas (`client/`, `composables/`, `pages/`, `components/`, `utils/`), convenciones de nomenclatura consistentes (camelCase en frontend, snake_case confinado a la capa `client/`), y un sistema de design tokens bien definido en `style.css`.
+La aplicación se encuentra en un estado de madurez alto. La arquitectura es sólida con una separación clara de capas (`client/`, `composables/`, `pages/`, `components/`, `utils/`), convenciones de nomenclatura mayoritariamente consistentes (camelCase en frontend, snake_case confinado a la capa `client/`), y un sistema de design tokens bien definido en `style.css`.
 
-La auditoría de 2026-08-06 verificó las 12 recomendaciones anteriores contra el código real: **10 completamente implementadas**, 1 parcial (comentarios decorativos), 1 verificada como correcta (M4 — ambas páginas ya usan mutación directa).
+La auditoría de 2026-08-13 verificó las recomendaciones del documento anterior contra el código real, incorporó análisis de nomenclatura, comentarios, estilos, el bug de mensajes de usuario, la evaluación de sincronización diaria, y hallazgos nuevos.
 
-Esta actualización incorpora hallazgos nuevos en **seguridad (RLS/RPC)**, **estilos CSS**, **JSDoc** y **Supabase**.
+**Cambios clave desde la última auditoría:**
+- Se implementó **Supabase Auth** (reemplazando auth propia con hashing SHA256).
+- Se creó una **Edge Function** (`create-user`) para creación segura de usuarios.
+- Se creó un **trigger SQL** para limpiar `auth.users` al eliminar de `public.usuarios`.
+- Se creó una función RPC `get_user_rol` para validación de permisos.
+- La tabla `usuarios` ahora tiene columna `auth_user_id` y `email`.
+- Se está implementando RLS (plan en `PLAN_IMPLEMENTACION_RLS.md`).
+- `DashboardEstadoPedidos` fue refactorizado para usar clases globales `data-card-table`.
+- Las variables CSS de warning (`--alert-warning-*`) fueron creadas en `style.css`.
+- Los estilos duplicados de `RecetaMaterialesTabla`/`RecetaMateriaPrimaTabla` fueron extraídos a clases globales en `style.css`.
+- `ProduccionRecetasView` unificó `.materiales-list`/`.materia-list` a `.ingrediente-list`.
 
 | Prioridad | Cantidad | Enfoque principal |
 |---|---|---|
-| Crítica | 2 | RLS deshabilitado, operaciones sin transaccionalidad |
-| Alta | 3 | Gradientes hardcoded, colores dispersos, CSS duplicado |
-| Media | 5 | JSDoc redundante, comentarios repetidos, badges hardcoded |
-| Baja | 4 | Espacio tipográfico, gradiente minor, comentario HTML, RecetaResumen |
+| Crítica | 2 | Operaciones sin transaccionalidad (RLS ya fue implementado) |
+| Alta | 4 | Bug de mensajes, nomenclatura, sincronización diaria, colores hardcoded |
+| Media | 7 | Spin duplicado, comentarios, JSDoc, badges, caché, colores en UsuarioRol |
+| Baja | 4 | Comentarios HTML, archivo muerto, gradiente minor, LoginForm local |
 
 ### Estado general del código
 
-- **Manejo de errores:** Consistente. Todos los `Client` siguen el patrón `try/catch` → `{ success: false, error }`. Las páginas verifican `response?.success === false` antes de procesar datos.
-- **`console.error/warn`:** Se usan correctamente en ~50 lugares. Todos están en contextos de captura de errores reales (`catch` blocks, verificaciones de `success === false`). No hay `console.log` de depuración sueltos. Se recomienda mantener todos — son útiles para diagnóstico en producción.
-- **`throw new Error`:** Solo 2 ocurrencias, ambas justificadas: `useExcel.js` (archivo vacío) y `usePedidoExcel.js` (formato inválido). Ambas se capturan correctamente en los llamadores.
-- **JSDoc:** ~28 anotaciones. 5 bloques documentan estructuras complejas y deben conservarse. ~18 son redundantes y se recomienda eliminar (ver M1).
-- **Código CRUD comentado:** Eliminado completamente en auditorías anteriores.
-- **Archivos muertos:** Solo queda `hero.png` en `assets/` que es un asset legítimo.
-- **Supabase:** 15 tablas, 22 foreign keys, 0 políticas RLS, 0 funciones RPC, 0 triggers, 0 vistas. Auth propia (no Supabase Auth).
+- **Manejo de errores:** Consistente. Todos los `Client` siguen el patrón `try/catch` → `{ success: false, error }`.
+- **`console.error/warn`:** Se usan correctamente. No hay `console.log` de depuración sueltos.
+- **Auth:** Migrada a Supabase Auth con Edge Function para creación de usuarios.
+- **RLS:** Completado y habilitado en las 15 tablas.
 
 ---
 
@@ -70,36 +75,29 @@ Esta actualización incorpora hallazgos nuevos en **seguridad (RLS/RPC)**, **est
 
 ---
 
-### C1 — RLS deshabilitado en las 15 tablas de Supabase
+### C1 — RLS en Supabase (Implementado)
 
-- **Estado:** 🔴 Pendiente
-- **Tablas afectadas:** Todas — `usuarios`, `clientes`, `materia_prima`, `materiales`, `recetas`, `receta_materiales`, `receta_materia_prima`, `pedidos`, `pedido_detalles`, `mermas`, `producciones`, `produccion_detalle`, `planificaciones`, `planificacion_recetas`, `produccion_consumos`
-- **Descripción:** La aplicación se conecta a Supabase usando la `anon key` (visible en el frontend) sin ninguna política RLS. Esto significa que cualquier persona con la `anon key` puede leer, escribir, actualizar y eliminar todos los datos de todas las tablas. La tabla `usuarios` expone nombres y hashes de contraseña.
-- **Estado actual:** 0 políticas RLS definidas, 0 funciones RPC, 0 triggers, 0 vistas.
-- **Motivo:** Riesgo crítico de seguridad. Los datos de producción, inventarios, clientes y credenciales de usuario están completamente expuestos.
-- **Propuesta:** Habilitar RLS en las 15 tablas + crear políticas permisivas para `authenticated`. Ver [Propuesta RLS por tabla](#propuesta-rls-por-tabla) para el detalle.
-- **Prerequisito:** Definir estrategia de auth (mantener auth propia vs migrar a Supabase Auth).
-- **Impacto:** Todas las tablas. Si se implementa incorrectamente puede bloquear el acceso a la app.
+- **Estado:** ✅ Completado
+- **Documentación:** `PLAN_IMPLEMENTACION_RLS.md`
+- **Descripción:** RLS ya ha sido implementado y habilitado en las 15 tablas. La base de datos ahora está asegurada basándose en el rol del usuario (`supervisor` u `operador`). La migración a Supabase Auth ya se había completado exitosamente.
 
 ---
 
 ### C2 — Operaciones multi-tabla sin transaccionalidad
 
-- **Estado:** 🔴 Pendiente (documentado en `ARCHITECTURE.md`, no resuelto)
+- **Estado:** 🔴 Pendiente
 - **Operaciones afectadas:**
 
   | Operación | Client | Tablas | Queries |
   |---|---|---|---|
-  | `agregarProduccion` | `ProduccionClient` | `producciones`, `produccion_detalle`, `recetas`, `planificaciones`, `planificacion_recetas`, `materia_prima`, `materiales`, `produccion_consumos` | ~10 |
-  | `registrarMermaConDescuento` | `MermaClient` | `mermas`, `materiales` o `materia_prima` (1-N updates) | 2-4 |
-  | `resolverClientesDePedidos` | `ClientesClient` | `clientes` (múltiples inserts + upserts) | 3-5 |
-  | `cargarMateriales` (upsert) | `MaterialClient` | `materiales` (select + upsert) | 2 |
-  | `sincronizarConSupabase` | `MaterialClient` | `materiales` (select all + upsert) | 2-3 |
+  | `agregarProduccion` | `ProduccionClient` | 7+ tablas | ~10 |
+  | `registrarMermaConDescuento` | `MermaClient` | 2-4 tablas | 2-4 |
+  | `resolverClientesDePedidos` | `ClientesClient` | `clientes` | 3-5 |
+  | `sincronizarConSupabase` (pedidos) | `PedidoClient` | 3 tablas | ~5 |
 
-- **Descripción:** `agregarProduccion` es el caso más grave: toca 7 tablas en ~10 queries secuenciales desde el frontend. Si falla a mitad de ejecución, el stock queda descontado sin registro de producción (o viceversa), dejando datos inconsistentes.
-- **Motivo:** Supabase no soporta transacciones desde el cliente JS. Las operaciones multi-tabla deben ejecutarse server-side.
-- **Propuesta:** Crear funciones RPC (`SECURITY DEFINER`) en Supabase para las operaciones críticas. Ver [Operaciones candidatas a RPC](#operaciones-candidatas-a-rpc).
-- **Impacto:** Requiere refactorizar `ProduccionClient.js`, `MermaClient.js`, `ClientesClient.js`. Los consumers (pages/composables) no se afectan si los clients mantienen la interfaz `{ success, data }`.
+- **Descripción:** `agregarProduccion` sigue siendo el caso más grave: toca 7+ tablas en ~10 queries secuenciales desde el frontend. Si falla a mitad de ejecución, los stocks quedan inconsistentes.
+- **Propuesta:** Crear funciones RPC (`SECURITY DEFINER`) para las operaciones críticas.
+- **Impacto:** Requiere refactorizar `ProduccionClient.js`, `MermaClient.js`, `ClientesClient.js`.
 
 ---
 
@@ -107,62 +105,222 @@ Esta actualización incorpora hallazgos nuevos en **seguridad (RLS/RPC)**, **est
 
 ---
 
-### A1 — Gradientes con colores hardcoded en componentes scoped
+### A1 — Mensaje de éxito al guardar usuarios no desaparece
 
-- **Estado:** ⏳ Pendiente
+- **Estado:** 🔴 Pendiente
+- **Prioridad:** 🔴 Alta
 - **Archivos afectados:**
+  - `src/components/usuarios/UsuarioForm.vue` (L57-60, L67, L87-96)
+  - `src/pages/UsuariosPage.vue` (L11, L38)
+  - `src/composables/useMensajes.js`
+  - `src/components/Alertas.vue`
 
-  | Archivo | Línea | Color hardcoded | Propuesta |
-  |---|---|---|---|
-  | `PlanificacionOperadorCard.vue` | L118 | `linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)` | → `linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%)` |
-  | `PlanificacionResumen.vue` | L121 | `linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)` | → `linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%)` |
+#### Problema encontrado
 
-- **Descripción:** Dos componentes de planificación usan `#ffffff` y `#f8fafc` directamente en gradientes CSS. En dark mode estos elementos aparecerán como cajas blancas brillantes sobre fondo oscuro.
-- **Motivo:** Inconsistencia con el sistema de design tokens. Rompe dark mode.
-- **Impacto:** Cambio puramente CSS en 2 archivos, sin riesgo funcional.
+`UsuarioForm.vue` define su propio estado de mensaje **local** (`data() → mensaje: { tipo, texto }`) y lo asigna directamente con `this.mensaje = { tipo, texto }` (L67, L88, L95). Esto reemplaza el objeto reactivo completo por un objeto nuevo **sin temporizador de auto-limpieza**.
+
+Al mismo tiempo, `UsuariosPage.vue` usa el composable `useMensajes()` que sí tiene `setTimeout` para auto-limpiar. Pero el componente `Alertas` que está dentro de `UsuarioForm` recibe el `mensaje` local del componente, no el del composable.
+
+**Flujo del bug:**
+1. Usuario llena el formulario y presiona "Guardar"
+2. `UsuarioForm.guardar()` se ejecuta → llama a `UsuarioClient.agregarUsuario()`
+3. Si `response.success` → `this.mensaje = { tipo: 'exito', texto: '...' }` (L88)
+4. El `<Alertas :mensaje="mensaje" />` interno (L27) muestra el mensaje de éxito
+5. **No hay `setTimeout`** que limpie `this.mensaje`, por lo que permanece visible indefinidamente
+6. El mensaje solo desaparece si el usuario realiza otra acción que modifique `this.mensaje`
+
+**Causa raíz:** `UsuarioForm` no usa `useMensajes()` sino un estado local reactivo sin temporizador. A diferencia de las demás páginas que usan `mostrarMensaje()` del composable (que sí incluye `setTimeout`).
+
+#### Solución recomendada
+
+**Opción A (Recomendada) — Agregar temporizador al estado local de UsuarioForm:**
+
+Mantener el estado local en `UsuarioForm` (porque los mensajes son internos del formulario) pero agregar la lógica de auto-limpieza:
+
+```javascript
+// En UsuarioForm.vue methods:
+mostrarMensaje(tipo, texto, duracion = 4000) {
+    this.mensaje = { tipo, texto }
+    if (duracion > 0) {
+        clearTimeout(this._mensajeTimer)
+        this._mensajeTimer = setTimeout(() => {
+            this.mensaje = { tipo: null, texto: '' }
+        }, duracion)
+    }
+}
+```
+
+Y reemplazar las asignaciones directas `this.mensaje = {...}` por llamadas a `this.mostrarMensaje(tipo, texto)`.
+
+**Opción B — Migrar a `useMensajes()`:**
+
+Eliminar el estado local y usar el composable global. Esto es más limpio pero tiene el efecto secundario de que los mensajes del formulario y los mensajes de la página se solaparían (porque ambos comparten el mismo estado singleton).
+
+**Recomendación:** Opción A, porque `UsuarioForm` tiene su propio `<Alertas>` interno y sus mensajes son contextuales al formulario (validación de campos, éxito de guardado).
+
+**Nota adicional:** `LoginForm.vue` tiene el mismo patrón (define `mostrarMensaje` local con `setTimeout`) y funciona correctamente. `UsuarioForm` es el único componente que asigna directamente sin temporizador.
+
+#### ¿Es reutilizable para toda la app?
+
+El composable `useMensajes()` ya es reutilizable y funciona correctamente en todas las páginas que lo usan. El problema es exclusivo de `UsuarioForm.vue` que no lo usa. No se necesita un sistema nuevo; solo alinear `UsuarioForm` al patrón existente.
 
 ---
 
-### A2 — Colores hardcoded dispersos en estilos scoped
+### A2 — Inconsistencias de nomenclatura en el frontend
 
-- **Estado:** ⏳ Pendiente
-- **Archivos afectados:**
+- **Estado:** 🔴 Pendiente
+- **Prioridad:** 🔴 Alta
 
-  | Archivo | Línea | Color | Propuesta |
-  |---|---|---|---|
-  | `ProduccionRecetasView.vue` | L253, L258 | `#16a34a` | → `var(--primary)` |
-  | `ProduccionRecetasView.vue` | L299 | `#f1f1f1` | → `var(--bg-secondary)` |
-  | `PlanificacionVista.vue` | L225-226 | `#e2e8f0`, `#475569` | → `var(--bg-secondary)`, `var(--text)` |
-  | `PlanificacionMapeoRecetas.vue` | L310-311 | `#fef3c7`, `#b45309` | Hardcoded amber (status-incomplete) |
-  | `PlanificacionMapeoRecetas.vue` | L421 | `#f0fdf4` | → `var(--primary-bg)` |
-  | `LoginForm.vue` | L125 | `#f3f4f6` | → `var(--code-bg)` o `var(--bg-secondary)` |
-  | `DashboardEstadoPedidos.vue` | L214 | `#1eab55` | → `var(--primary)` |
-  | `ClienteList.vue` | L311 | `rgba(22, 163, 74, 0.08)` | `.active-row` — → `var(--primary-bg)` |
-  | `ClienteList.vue` | L369-370 | `rgba(14, 165, 233, 0.1)`, `#0ea5e9` | `.badge-billing` — crear variable o usar `var(--alert-info-bg/text)` |
-  | `ClienteList.vue` | L373-375 | `rgba(249, 115, 22, 0.1)`, `#f97316` | `.badge-shipping` — crear variable o usar `var(--alert-warning-bg/text)` |
-  | `style.css` | L355, L359 | `#dbeafe`, `#fee2e2` | → `var(--alert-info-bg)`, `var(--alert-error-bg)` |
+#### Hallazgos por categoría
 
-- **Descripción:** ~18 instancias de colores hex dispersas en estilos scoped que deberían usar variables del sistema de design tokens.
-- **Motivo:** Inconsistencia visual y problemas en dark mode.
-- **Impacto:** Cambio puramente CSS, ~18 líneas. Sin riesgo funcional.
+**1. Mezcla inglés/español en nombres de métodos**
+
+| Nombre actual | Ubicación | Nombre recomendado | Razón |
+|---|---|---|---|
+| `getCantidad()` | `RecetaMaterialesTabla.vue` L117, `RecetaMateriaPrimaTabla.vue` L114 | `obtenerCantidad()` | El resto de la app usa español: `obtenerMateriales`, `obtenerRecetas`, `obtenerPedidos`. `get` rompe la convención. |
+| `getSession()` | `UsuarioClient.js` L37 | `obtenerSesion()` | Mismo caso, el resto usa español. |
+| `getIsLogged()` | `useAuth.js` L73 | `estaAutenticado()` | Helper para router, pero inconsistente con convención española. |
+| `getRol()` | `useAuth.js` L69 | `obtenerRol()` | Mismo caso. |
+| `getInicializado()` | `useAuth.js` L77 | `estaInicializado()` | Mismo caso. |
+| `handleCancelar` | `useProduccionForm.js` L191 | `cancelar` o `manejarCancelacion` | Mezcla `handle` (inglés) con `Cancelar` (español). |
+| `applyEdicion` | `useProduccionForm.js` L117 | `aplicarEdicion` | `apply` es inglés. |
+| `resetForm()` | `MaterialesPage.vue` L215 | `resetearFormulario()` | `RecetasPage.vue` ya usa `resetearFormulario()`. |
+
+**2. Props con nombres inconsistentes**
+
+| Prop actual | Componente | Inconsistencia |
+|---|---|---|
+| `loading` | `InventoryTable.vue`, `PreviewTable.vue` | Inglés. El resto de componentes usan `cargando` |
+| `item-label` | `InventoryTable.vue`, `PreviewTable.vue` | Inglés. El resto usa español |
+| `empty-text` | `InventoryTable.vue` | Inglés. Inconsistente con el resto |
+| `confirm-text`, `loading-text` | `PreviewTable.vue` | Inglés. Inconsistente |
+| `title` | `InventoryTable.vue` | Inglés. Aunque se podría argumentar que los componentes `shared/` usen inglés, no hay convención explícita |
+
+**Nota:** Los componentes `shared/` (`InventoryTable`, `PreviewTable`) usan inglés en sus props, mientras que todo el resto de la app usa español. Si la convención es español, debería unificarse. Si se acepta que `shared/` use inglés como excepción de reutilización, debería documentarse.
+
+**3. Inconsistencia en emits**
+
+| Emit | Componente | Observación |
+|---|---|---|
+| `'guardado'` | `UsuarioForm.vue` | Correcto, español |
+| `'guardar'` | `MermaForm.vue`, `RecetaForm.vue`, `MaterialForm.vue`, `ProduccionForm.vue` | Correcto |
+| `'actualizar'` | `UsuarioTablaActual.vue`, Receta tablas | Correcto |
+| `'alternar'` | `RecetaMaterialesTabla`, `RecetaMateriaPrimaTabla` | Correcto |
+| `'cantidad'` | `RecetaMaterialesTabla`, `RecetaMateriaPrimaTabla` | Nombre ambiguo. `'cambiar-cantidad'` sería más expresivo |
+| `'archivo-seleccionado'` | `CargaArchivo.vue` | Correcto, kebab-case |
+
+**4. Variables locales con diferente nombre para el mismo concepto**
+
+| Concepto | Nombre en A | Nombre en B | Recomendación |
+|---|---|---|---|
+| Estado de guardado | `guardando` (MermasPage) | `guardandoReceta` (RecetasPage) | Usar `guardando` consistentemente |
+| Lista de producción | `editingProduccion` (ProduccionPage L106) | N/A | `produccionEnEdicion` para mantener español |
+| Datos de API | `huboCambiosCli` (PedidoClient L92) | `huboCambios` (usePedidoExcel L108) | Unificar a `huboCambios` |
+
+**Impacto:** Refactoring de ~30 líneas dispersas. Sin riesgo funcional si se hacen rename consistentes.
 
 ---
 
-### A3 — Estilos CSS duplicados entre RecetaMaterialesTabla y RecetaMateriaPrimaTabla
+### A3 — Sincronización de pedidos sin límite diario
 
-- **Estado:** ⏳ Pendiente
-- **Archivos afectados:**
-  - `src/components/recetas/RecetaMaterialesTabla.vue` (L112-185, 73 líneas CSS)
-  - `src/components/recetas/RecetaMateriaPrimaTabla.vue` (L118-191, 73 líneas CSS)
-- **Descripción:** Ambos componentes tienen CSS scoped **100% idéntico** en las siguientes clases: `.inventory-panel`, `.panel-header`, `.panel-header p`, `.btn-refresh`, `.table-wrap`, `.selection-table`, `.selection-table th/td`, `.selection-table th`, `.row-subtitle`, `.qty-input`, `.empty-state`.
-- **Motivo:** Si se modifica el estilo de una tabla de selección, hay que actualizar ambos archivos.
-- **Propuesta:** Extraer a clases globales en `style.css`:
-  1. `.selection-panel` — reemplaza `.inventory-panel`
-  2. `.selection-panel-header` — reemplaza `.panel-header`
-  3. `.selection-table` (ya existe la clase, solo mover los estilos)
-  4. `.btn-refresh` — botón de actualización
-  5. `.qty-input` — input numérico de cantidad
-- **Impacto:** Reduce ~73 líneas duplicadas a ~0. Ambos componentes quedan sin bloque `<style>` o con estilos mínimos.
+- **Estado:** 🔴 Pendiente (análisis)
+- **Prioridad:** 🔴 Alta
+
+#### Análisis del flujo actual
+
+**¿Dónde se ejecuta?**
+1. `PedidoPage.vue` → botón "Sincronizar" → `sincronizarAPI()` (L135-149)
+2. `sincronizarAPI()` → `PedidoClient.sincronizarConSupabase()` (L139)
+3. `MaterialesPage.vue` → botón "Sincronizar" → `useInventario.sincronizarAPI()` → `MaterialClient.sincronizarConSupabase()`
+4. `MateriaPrimaPage.vue` → mismo flujo → `MateriaPrimaClient.sincronizarConSupabase()`
+
+**¿Qué hace la sincronización de pedidos?**
+1. Llama a `axios.get(VITE_API_PEDIDOS_URL)` — API externa en puerto 8060
+2. Resuelve clientes nuevos via `ClientesClient.resolverClientesDePedidos()`
+3. Resuelve recetas faltantes (crea recetas genéricas si la categoría no existe)
+4. Hace `upsert` de pedidos y `delete + upsert` de detalles
+
+**¿Cómo se determina la fecha?** La fecha viene de los datos del pedido externo. No hay registro de "última sincronización".
+
+**¿Puede ejecutarse múltiples veces al día?** Sí, sin restricción. El `upsert` por ID hace que no se dupliquen pedidos, pero cada ejecución:
+- Realiza consultas innecesarias a la API externa
+- Ejecuta resolución de clientes y recetas (aunque no haya cambios)
+- Borra y re-inserta detalles de pedidos existentes
+
+**¿Existe un registro de última sincronización?** No. No hay campo, tabla ni localStorage que registre cuándo fue la última sincronización.
+
+#### Alternativas evaluadas
+
+| Alternativa | Pros | Contras | Viabilidad |
+|---|---|---|---|
+| **A. Frontend (localStorage)** | Implementación rápida, sin cambios en BD | Evitable limpiando localStorage, no comparte entre dispositivos | ⚠️ No confiable |
+| **B. Supabase — tabla `sync_log`** | Registro permanente, compartido entre usuarios, auditable | Requiere tabla nueva y consulta adicional | ✅ Recomendada |
+| **C. Supabase — campo en tabla existente** | Sin tabla nueva | No hay tabla lógica donde agregar el campo | ❌ Forzado |
+| **D. Backend/Edge Function** | Control total server-side | Over-engineering para este caso | ⚠️ Solo si se necesitan más controles |
+
+#### Solución recomendada: Opción B — Tabla `sync_log` en Supabase
+
+**1. Crear tabla:**
+```sql
+CREATE TABLE sync_log (
+    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+    tipo TEXT NOT NULL,        -- 'pedidos', 'materiales', 'materia_prima'
+    fecha_sync DATE NOT NULL,
+    ejecutado_por uuid REFERENCES usuarios(id),
+    creado_en TIMESTAMPTZ DEFAULT now(),
+    UNIQUE(tipo, fecha_sync)   -- Solo una sync por tipo por día
+);
+```
+
+**2. Flujo propuesto:**
+1. Antes de sincronizar, consultar: `SELECT * FROM sync_log WHERE tipo = 'pedidos' AND fecha_sync = HOY`
+2. Si existe un registro → mostrar mensaje: "La sincronización de pedidos ya se realizó hoy a las HH:MM. ¿Deseas sincronizar nuevamente?"
+3. Si no existe → ejecutar la sincronización normalmente
+4. Al completar exitosamente → insertar registro en `sync_log`
+
+**3. Comportamiento si el usuario intenta sincronizar de nuevo:**
+- Mostrar un diálogo de confirmación con la hora de la última sincronización
+- Permitir forzar la re-sincronización si el usuario confirma (para casos excepcionales)
+- Registrar cada sincronización para trazabilidad
+
+**4. Archivos a modificar:**
+- Crear `SyncLogClient.js` (nuevo) — CRUD de `sync_log`
+- Modificar `useInventario.js` — verificar antes de sincronizar
+- Modificar `PedidoPage.vue` → `sincronizarAPI()` — verificar antes de sincronizar
+- Crear migración SQL para la tabla `sync_log`
+
+**Impacto:** Moderado. 1 client nuevo, 2-3 archivos modificados, 1 tabla nueva.
+
+---
+
+### A4 — Colores hardcoded dispersos en estilos scoped
+
+- **Estado:** 🟡 Parcialmente completado
+- **Prioridad:** 🔴 Alta
+
+**Recomendaciones anteriores resueltas:**
+- ✅ `DashboardEstadoPedidos` ya usa `data-card-table` global (no `#1eab55`)
+- ✅ Variables `--alert-warning-*` ya existen en `style.css` (L41-43)
+- ✅ `RecetaMaterialesTabla`/`RecetaMateriaPrimaTabla` ya usan clases globales
+- ✅ `PlanificacionOperadorCard.vue` y `PlanificacionResumen.vue` ya usan `var(--bg)`/`var(--bg-secondary)` en gradientes
+- ✅ `ProduccionRecetasView.vue` unificó `.materiales-list`/`.materia-list` a `.ingrediente-list`
+- ✅ `PlanificacionMapeoRecetas` status badges usan `var(--alert-warning-bg/text)` (L309-311)
+- ✅ `ClienteList.vue` badges usan `var(--alert-info-bg)`, `var(--alert-warning-bg)` (L334-347)
+
+**Pendientes:**
+
+| Archivo | Línea | Color hardcoded | Propuesta |
+|---|---|---|---|
+| `UsuarioRol.vue` | L70, L74 | `#dcdcdc`, `#888` | → `var(--border)`, `var(--text-light)` |
+| `UsuarioRol.vue` | L86 | `#dcdcdc` | → `var(--border)` |
+| `UsuarioRol.vue` | L92-94 | `#2c7be5` | → `var(--alert-info-text)` o crear `--primary-alt` |
+| `UsuarioTablaActual.vue` | L139 | `#64748b` | → `var(--text-light)` |
+| `UsuarioTablaActual.vue` | L149-150 | `#1e293b` | → `var(--text-h)` |
+| `LoginForm.vue` | L132 | `rgba(16, 185, 129, 0.12)` | → `var(--primary-bg)` |
+| `style.css` | L473-488 | `.badge-warning/success/danger` hardcoded | → usar `var(--alert-*-bg/text/border)` |
+| `ProduccionRecetasView.vue` | L245 | `var(--primary, #2f6fed)` | Eliminar fallback `#2f6fed` (la variable siempre existe) |
+
+**Impacto:** ~12 líneas CSS. Sin riesgo funcional. Mejora dark mode.
 
 ---
 
@@ -170,85 +328,115 @@ Esta actualización incorpora hallazgos nuevos en **seguridad (RLS/RPC)**, **est
 
 ---
 
-### M1 — JSDoc redundante en clients
+### M1 — Animación `.spin` duplicada en 5 componentes
 
-- **Estado:** ⏳ Pendiente
+- **Estado:** 🔴 Pendiente
 - **Archivos afectados:**
+  - `DashboardPage.vue` (L140-145)
+  - `UsuarioTablaActual.vue` (L237-242)
+  - `InventoryTable.vue` (definición local)
+  - `RecetaMaterialesTabla.vue` (L73-78)
+  - `PlanificacionAsignacion.vue` (definición local)
+- **Descripción:** La clase `.spin` con `@keyframes spin` está definida en `style.css` (L842-846) como animación global. Sin embargo, 5 componentes la redefinen localmente en su `<style scoped>`.
+- **Propuesta:** Eliminar las 5 definiciones locales de `.spin` y `@keyframes spin`. La definición global en `style.css` (L842-846) ya es suficiente.
+- **Impacto:** Reduce ~30 líneas duplicadas. Sin riesgo funcional.
+
+---
+
+### M2 — Comentarios `// Mapeo snake_case a camelCase` residuales
+
+- **Estado:** 🟡 Parcialmente completado
+- **Archivos con comentarios eliminados:** `ClientesClient.js`, `MermaClient.js`, `ProduccionClient.js` ✅
+- **Archivos pendientes:**
+  - `RecetaClient.js` (L45, L127) — 2 instancias restantes
+- **Propuesta:** Eliminar las 2 instancias restantes en `RecetaClient.js`.
+- **Impacto:** 2 líneas.
+
+---
+
+### M3 — JSDoc redundante en clients
+
+- **Estado:** 🟡 Parcialmente completado
+- **JSDoc eliminados previamente:** `MaterialClient.js` (6 bloques) ✅
+- **Pendientes:**
 
   | Archivo | Líneas | JSDoc redundante |
   |---|---|---|
-  | `MaterialClient.js` | L7-10, L71-73, L89-92, L130-132, L152-154, L170-172 | 6 bloques que solo repiten el nombre de la función (`Obtiene la lista de...`, `Agrega un nuevo...`, `Elimina un...`) |
-  | `MermaClient.js` | L5-7, L15-17, L80-82, L160-162 | 4 bloques redundantes |
-  | `ProduccionClient.js` | L4-6, L251-253, L295-297 | 3 bloques redundantes |
-  | `useExcel.js` | L10-12, L33-34 | 2 bloques con tipos evidentes del contexto |
+  | `MateriaPrimaClient.js` | L8-10, L80-82, L108-111 | 3 bloques que repiten el nombre de la función |
+  | `RecetaClient.js` | L4-7, L68-70 | 2 bloques que repiten el nombre |
 
 - **JSDoc a CONSERVAR:**
 
   | Archivo | Líneas | Motivo |
   |---|---|---|
-  | `PlanificacionAlgoritmo.js` | L100-102, L165-169, L278-280, L332-335, L554 | Estructuras complejas con tipos de arrays anidados |
-  | `PlanificacionClient.js` | L85 | Interfaz de API con estructura exacta del payload |
-  | `DashboardClient.js` | L333 | Formato de fecha: `'YYYY-MM-DD'` — restricción no evidente |
-  | `useAuth.js` | L1-7 | Contexto de uso: `setup()` vs funciones helper |
-  | `useInventario.js` | L5-8 | Contrato de interfaz: 3 funciones requeridas en `opciones` |
-  | `MermaClient.js` | L178-181 | `registrarMermaConDescuento` — operación compleja multi-tabla |
-  | `ProduccionClient.js` | L43-46 | `agregarProduccion` — operación multi-tabla |
+  | `PlanificacionAlgoritmo.js` | L100-102, L165-169, L278-280, L332-335, L554 | Estructuras complejas |
+  | `PlanificacionClient.js` | L71-75 | Interfaz de API con constraint UNIQUE |
+  | `MermaClient.js` | L164-167 | `registrarMermaConDescuento` — operación compleja |
+  | `useAuth.js` | L1-7 | Contexto de uso |
+  | `useInventario.js` | L4 (signature) | Contrato de interfaz |
 
-- **Motivo:** Los JSDoc redundantes solo repiten lo que el nombre de la función ya expresa. Los que se conservan documentan estructuras complejas, restricciones o comportamientos no evidentes.
-- **Propuesta:** Eliminar ~18 bloques JSDoc que sean puramente descriptivos. Conservar los 7 que documentan contratos, estructuras o restricciones.
-- **Impacto:** Reduce ruido documental, ~40 líneas.
-
----
-
-### M2 — Comentarios `// Mapeo snake_case a camelCase` repetidos
-
-- **Estado:** ⏳ Pendiente
-- **Archivos afectados:**
-  - `ClientesClient.js` (L33)
-  - `MermaClient.js` (L67, L148)
-  - `ProduccionClient.js` (L31)
-- **Descripción:** El comentario `// Mapeo snake_case a camelCase` aparece en 4 lugares. El patrón es evidente por las asignaciones (`operadorId: item.operador_id`).
-- **Propuesta:** Eliminar las 4 instancias.
-- **Impacto:** 4 líneas.
-
----
-
-### M3 — `DashboardEstadoPedidos` replica `.data-card-table` global
-
-- **Estado:** ⏳ Pendiente (observación)
-- **Archivos afectados:**
-  - `src/components/dashboard/DashboardEstadoPedidos.vue` (L206-237)
-- **Descripción:** El componente define `.mms-table` con estilos que replican la estructura de `.data-card-table` definida en `style.css` (font-size, border-collapse, th/td padding, etc.), pero con diferencias menores (color del thead: `#1eab55` vs `var(--primary)`).
-- **Propuesta:** Evaluar si puede usar `.data-card-table` global en lugar de `.mms-table` local. Si las diferencias justifican la separación, al menos reemplazar `#1eab55` por `var(--primary)`.
-- **Impacto:** Reducción de ~30 líneas CSS si se adopta la clase global.
+- **Impacto:** ~15 líneas.
 
 ---
 
 ### M4 — `.badge-warning/success/danger` con colores hardcoded en style.css
 
-- **Estado:** ⏳ Pendiente
-- **Archivos afectados:**
-  - `src/style.css` (L495-511)
-- **Descripción:** Las clases `.badge-warning`, `.badge-success` y `.badge-danger` usan colores hex hardcoded (`#FEF3C7`, `#92400E`, `#D1FAE5`, `#065F46`, `#FEE2E2`, `#991B1B`) en lugar de variables CSS. Los tokens de alerta ya existen (`--alert-success-bg`, `--alert-error-bg`) pero no se usan aquí.
-- **Propuesta:** Crear variables para warning y unificar:
+- **Estado:** 🟡 Parcialmente completado
+- **Archivo:** `style.css` (L473-489)
+- **Descripción:** Los tokens `--alert-warning-*` ya fueron creados (L41-43) ✅, pero las clases `.badge-warning`, `.badge-success`, `.badge-danger` todavía usan hex hardcoded en lugar de las variables.
+- **Propuesta:**
   ```css
-  --alert-warning-bg: #FEF3C7;
-  --alert-warning-text: #92400E;
-  --alert-warning-border: #FDE68A;
+  .badge-warning {
+      background-color: var(--alert-warning-bg);
+      color: var(--alert-warning-text);
+      border: 1px solid var(--alert-warning-border);
+  }
+  .badge-success {
+      background-color: var(--alert-success-bg);
+      color: var(--alert-success-text);
+      border: 1px solid var(--alert-success-border);
+  }
+  .badge-danger {
+      background-color: var(--alert-error-bg);
+      color: var(--alert-error-text);
+      border: 1px solid var(--alert-error-border);
+  }
   ```
-  Y referenciarlas en `.badge-warning`, `.badge-success`, `.badge-danger`.
-- **Impacto:** Consistencia del sistema de tokens. ~10 líneas.
+- **Impacto:** ~9 líneas. Consistencia del sistema de tokens.
 
 ---
 
-### M5 — Duplicación interna en ProduccionRecetasView
+### M5 — Race condition en sistema de caché
 
 - **Estado:** ⏳ Pendiente
-- **Archivos afectados:**
-  - `src/components/produccion/ProduccionRecetasView.vue` (L319-347)
-- **Descripción:** Las clases `.materiales-list` y `.materia-list` dentro del mismo componente tienen CSS idéntico (h4 margin, ul margin/padding, li margin/color). Solo difiere el nombre de la clase.
-- **Propuesta:** Unificar a una sola clase (por ejemplo `.ingrediente-list`) usada en ambos `<div>`.
-- **Impacto:** Reduce ~15 líneas de CSS duplicado interno.
+- **Archivo:** `src/composables/useCatalogos.js`
+- **Descripción:** El sistema de caché almacena el resultado (`res.data`) en lugar de la Promesa. Si dos componentes llaman a `obtenerRecetas()` simultáneamente, ambas ven el caché vacío y disparan peticiones HTTP duplicadas.
+- **Propuesta:** Almacenar la Promesa (singleton promise pattern).
+- **Impacto:** Optimización de red. Reduce peticiones duplicadas.
+
+---
+
+### M6 — Colores hardcoded en UsuarioRol y UsuarioTablaActual
+
+- **Estado:** 🔴 Pendiente
+- **Archivos:**
+  - `UsuarioRol.vue` (L70, L74, L86, L92-94) — `#dcdcdc`, `#888`, `#2c7be5`
+  - `UsuarioTablaActual.vue` (L139, L149-150) — `#64748b`, `#1e293b`
+- **Descripción:** Estos componentes de la sección de usuarios usan colores hex directos en lugar de variables CSS. En dark mode, estos colores no se adaptan.
+- **Propuesta:** Reemplazar por variables del sistema:
+  - `#dcdcdc` → `var(--border)`
+  - `#888` → `var(--text-light)`
+  - `#2c7be5` → `var(--alert-info-text)` o `var(--primary)`
+  - `#64748b` → `var(--text-light)`
+  - `#1e293b` → `var(--text-h)`
+- **Impacto:** ~7 líneas CSS.
+
+---
+
+### M7 — DashboardEstadoPedidos tabla refactorizada
+
+- **Estado:** ✅ Completado
+- **Verificación:** El componente ahora usa `data-card-table` global (L26, L56). Ya no existe `.mms-table` local ni `#1eab55`. Se eliminó el color hardcoded.
 
 ---
 
@@ -256,221 +444,169 @@ Esta actualización incorpora hallazgos nuevos en **seguridad (RLS/RPC)**, **est
 
 ---
 
-### B1 — Espacio faltante en `RecetaMateriaPrimaTabla`
+### B1 — Comentarios HTML `<!-- LAYOUT -->` residuales
 
 - **Estado:** ⏳ Pendiente
-- **Archivos afectados:**
-  - `src/components/recetas/RecetaMateriaPrimaTabla.vue` (L48)
-- **Descripción:** El texto dice `Fecha:{{ item.fechaIngreso || '-' }}` — falta un espacio después de `Fecha:`.
-- **Propuesta:** Corregir a `Fecha: {{ item.fechaIngreso || '-' }}`.
-- **Impacto:** Fix cosmético, 1 carácter.
+- **Archivos:**
+  - `RecetasPage.vue` (L12)
+  - `PedidoPage.vue` (L12)
+- **Descripción:** El comentario `<!-- LAYOUT -->` aparece en 2 archivos. Otros como `<!-- TÍTULO -->` y `<!-- ALERTAS -->` ya fueron eliminados.
+- **Propuesta:** Eliminar para consistencia total.
+- **Impacto:** 2 líneas.
 
 ---
 
-### B2 — Gradiente minor en ProduccionForm `.stat-card`
+### B2 — Archivo muerto: `crypto.js`
+
+- **Estado:** 🔴 Pendiente
+- **Archivo:** `src/utils/crypto.js`
+- **Descripción:** La función `generarSHA256()` ya no se importa ni usa en ningún archivo del proyecto. Era usada para el hashing de contraseñas en el sistema de auth propio, que fue reemplazado por Supabase Auth.
+- **Propuesta:** Eliminar `crypto.js`.
+- **Impacto:** 1 archivo, 8 líneas.
+
+---
+
+### B3 — Gradiente minor en ProduccionForm `.stat-card`
 
 - **Estado:** ⏳ Pendiente (observación)
-- **Archivos afectados:**
-  - `src/components/produccion/ProduccionForm.vue` (L253)
-- **Descripción:** `.stat-card` usa `linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(243, 250, 244, 0.92))`. En dark mode sería un parche blanco sutil. No es un problema visible severo porque usa alpha alto.
-- **Propuesta:** Considerar reemplazar por gradiente con `var(--bg)`, pero prioridad baja por impacto visual mínimo.
-- **Impacto:** 1 línea CSS.
+- **Archivo:** `ProduccionForm.vue` (~L253)
+- **Descripción:** `.stat-card` usa un gradiente con `rgba(255, 255, 255, ...)`. En dark mode sería un parche blanco sutil.
+- **Impacto:** 1 línea CSS. Baja prioridad por impacto visual mínimo.
 
 ---
 
-### B3 — Comentario HTML `<!-- LAYOUT -->` residual en RecetasPage
+### B4 — LoginForm define su propio `mostrarMensaje` local
 
-- **Estado:** ⏳ Pendiente (observación)
-- **Archivos afectados:**
-  - `src/pages/RecetasPage.vue` (L12)
-- **Descripción:** El comentario `<!-- LAYOUT -->` es el único comentario HTML decorativo restante. Otros como `<!-- TÍTULO -->` y `<!-- ALERTAS -->` ya fueron eliminados. Los separadores `/* === */` ya fueron simplificados al patrón `// -- Sección --`.
-- **Propuesta:** Eliminar si se desea consistencia total, o conservar como marcador de navegación.
-- **Impacto:** 1 línea.
-
----
-
-### B4 — RecetaResumen — evaluado, no requiere cambio
-
-- **Estado:** ✅ Evaluado — No recomendado reemplazar
-- **Archivos analizados:**
-  - `src/components/recetas/RecetaResumen.vue`
-  - `src/pages/RecetasPage.vue`
-- **Evaluación:**
-  El componente muestra los materiales y materia prima **seleccionados durante la creación de una receta**. Su propósito es dar feedback visual al usuario mientras arma una receta nueva. Cumple su función específica correctamente. Props: `materiales: Array`, `materiaPrima: Array`. Sin emits, sin servicios. CSS scoped usa design tokens correctamente. No requiere reemplazo.
+- **Estado:** ⏳ Observación (funciona correctamente)
+- **Archivo:** `src/components/login/LoginForm.vue` (L42-49)
+- **Descripción:** `LoginForm` define su propio `mostrarMensaje` con `setTimeout`. Esto funciona correctamente y es razonable porque el login es una pantalla aislada antes de la autenticación (no tiene acceso al layout principal). No requiere cambio, pero se documenta para referencia.
 
 ---
 
 ## Supabase — Estructura y Seguridad
 
-### Esquema de base de datos
+### Estado actual (post-migración Auth)
 
-15 tablas en schema `public`, 22 foreign keys:
-
-| Tabla | PK type | RLS | Rows | Relaciones clave |
-|---|---|---|---|---|
-| `usuarios` | uuid | ❌ | 2 | → `pedidos`, `mermas`, `producciones`, `planificaciones` |
-| `clientes` | uuid | ❌ | 207 | Self-join (`cliente_facturacion_id`) → `pedidos` |
-| `materia_prima` | varchar | ❌ | 95 | → `receta_materia_prima`, `mermas`, `produccion_consumos` |
-| `materiales` | varchar | ❌ | 13 | → `receta_materiales`, `mermas`, `produccion_consumos` |
-| `recetas` | uuid | ❌ | 11 | → `receta_materiales`, `receta_materia_prima`, `pedido_detalles`, `planificacion_recetas`, `mermas` |
-| `receta_materiales` | composite | ❌ | 4 | FK: `receta_id`, `material_id` |
-| `receta_materia_prima` | composite | ❌ | 4 | FK: `receta_id`, `materia_prima_id` |
-| `pedidos` | varchar | ❌ | 208 | FK: `cliente_facturacion_id`, `cliente_envio_id`, `operador_id` |
-| `pedido_detalles` | composite | ❌ | 209 | FK: `pedido_id`, `receta_id` |
-| `mermas` | uuid | ❌ | 1 | FK: `material_id`, `materia_prima_id`, `receta_id`, `operador_id` |
-| `producciones` | uuid | ❌ | 0 | FK: `operador_id` → `produccion_detalle`, `produccion_consumos` |
-| `produccion_detalle` | composite | ❌ | 0 | FK: `produccion_id` |
-| `produccion_consumos` | uuid | ❌ | 0 | FK: `produccion_id`, `materia_prima_id`, `material_id` |
-| `planificaciones` | uuid | ❌ | 1 | FK: `operador_id` → `planificacion_recetas` |
-| `planificacion_recetas` | composite | ❌ | 9 | FK: `planificacion_id`, `receta_id` |
-
-**Elementos no encontrados:** 0 funciones RPC, 0 triggers, 0 vistas, 0 políticas RLS.
-
-### Accesos desde frontend
-
-| Client | Tablas | Operaciones |
-|---|---|---|
-| `UsuarioClient` | `usuarios` | SELECT (login + listar), INSERT, DELETE |
-| `MaterialClient` | `materiales` | SELECT, UPSERT, INSERT, UPDATE, DELETE |
-| `MateriaPrimaClient` | `materia_prima` | SELECT, UPSERT, UPDATE |
-| `RecetaClient` | `recetas`, `receta_materiales`, `receta_materia_prima` | SELECT, INSERT |
-| `PedidoClient` | `pedidos`, `pedido_detalles` | SELECT, INSERT, UPDATE, DELETE |
-| `ClientesClient` | `clientes` | SELECT, INSERT, UPDATE, DELETE, UPSERT |
-| `MermaClient` | `mermas`, `materiales`, `materia_prima` | SELECT, INSERT, DELETE + UPDATE (stock) |
-| `ProduccionClient` | 8 tablas | SELECT, INSERT, UPDATE, DELETE |
-| `PlanificacionClient` | `planificaciones`, `planificacion_recetas` | SELECT, INSERT, DELETE |
-| `DashboardClient` | 9 tablas | SELECT (solo lectura) |
+- **Auth:** Migrada a Supabase Auth. Edge Function `create-user` para creación segura.
+- **RPC:** `get_user_rol` — retorna el rol del usuario autenticado.
+- **Triggers:** Trigger para eliminar `auth.users` al borrar de `public.usuarios`.
+- **RLS:** Implementado y activo.
+- **Tabla `usuarios`:** Ahora incluye `auth_user_id`, `email`. Ya no almacena `contrasena`.
 
 ### Propuesta RLS por tabla
 
-| Tabla | SELECT | INSERT | UPDATE | DELETE | Notas |
-|---|---|---|---|---|---|
-| `usuarios` | `authenticated` — excluir `contrasena` | supervisor | ❌ | supervisor | **Prioridad máxima** — expone contraseñas |
-| `clientes` | `authenticated` | `authenticated` | `authenticated` | `authenticated` | Estándar |
-| `materiales` | `authenticated` | `authenticated` | `authenticated` | `authenticated` | Stock sensible |
-| `materia_prima` | `authenticated` | `authenticated` | `authenticated` | ❌ | Solo upsert, no delete |
-| `recetas` | `authenticated` | supervisor | ❌ | ❌ | Solo supervisor crea |
-| `receta_materiales` | `authenticated` | supervisor | ❌ | ❌ | Junction table |
-| `receta_materia_prima` | `authenticated` | supervisor | ❌ | ❌ | Junction table |
-| `pedidos` | `authenticated` | `authenticated` | `authenticated` | `authenticated` | Todos leen |
-| `pedido_detalles` | `authenticated` | `authenticated` | ❌ | `authenticated` | Junction |
-| `mermas` | `authenticated` | `authenticated` | ❌ | supervisor | Solo supervisor elimina |
-| `producciones` | `authenticated` | `authenticated` | `authenticated` | `authenticated` | Operadores registran |
-| `produccion_detalle` | `authenticated` | `authenticated` | ❌ | `authenticated` | Cascada |
-| `produccion_consumos` | `authenticated` | `authenticated` | ❌ | ❌ | Histórico, no borrar |
-| `planificaciones` | `authenticated` | supervisor | ❌ | supervisor | Solo supervisor |
-| `planificacion_recetas` | `authenticated` | supervisor | ❌ | supervisor | Junction |
-
-**Prerequisito:** Definir cómo diferenciar `supervisor` de `operador` a nivel de base de datos. Opciones: (a) migrar a Supabase Auth con custom claims en JWT, (b) usar funciones RPC que consulten la tabla `usuarios` internamente.
+Se mantiene la propuesta original documentada en `PLAN_IMPLEMENTACION_RLS.md`.
 
 ### Operaciones candidatas a RPC
 
 | Operación | Client actual | Riesgo | Propuesta RPC |
 |---|---|---|---|
-| `agregarProduccion` | `ProduccionClient` | 🔴 7 tablas, ~10 queries. Stock inconsistente si falla | `rpc_registrar_produccion(fecha, total, operador_id, detalle[])` |
-| `registrarMermaConDescuento` | `MermaClient` | 🟠 2-4 queries. Merma sin descuento si falla | `rpc_registrar_merma(tipo, referenciaId, cantidad, ...)` |
-| `resolverClientesDePedidos` | `ClientesClient` | 🟡 3-5 queries. Estado parcial | `rpc_resolver_clientes_pedidos(pedidos[])` |
-| `cargarMateriales` (upsert) | `MaterialClient` | 🟡 Select + upsert | `rpc_upsert_materiales(data[])` |
-| `sincronizarConSupabase` | `MaterialClient` | 🟡 Race condition | `rpc_sincronizar_materiales(externos[])` |
-
----
-
-## Impacto en Frontend
-
-### Mapa de impacto al implementar RLS/RPC
-
-| Capa | Archivos | Tipo de cambio |
-|---|---|---|
-| **Clients** | `ProduccionClient.js`, `MermaClient.js`, `ClientesClient.js` | 🔴 Refactorizar a llamadas RPC |
-| **Clients** | `UsuarioClient.js` | 🟠 Adaptar login si se migra a Supabase Auth |
-| **Clients** | `MaterialClient.js`, `MateriaPrimaClient.js` | 🟡 Posible RPC para sincronización |
-| **Composables** | `useAuth.js` | 🟠 Adaptar si se migra a Supabase Auth |
-| **Composables** | `useProduccionForm.js` | 🟡 Cambios mínimos si el RPC devuelve el mismo formato |
-| **Pages** | Todas | 🟢 Sin cambios si los clients mantienen la interfaz `{ success, data }` |
-| **supabase.js** | Config | 🟡 Posible cambio si se implementa auth con JWT |
-
-**Principio:** Los pages y composables no deberían afectarse si los clients refactorizados mantienen la misma interfaz de retorno `{ success: boolean, data?: any, error?: any }`.
+| `agregarProduccion` | `ProduccionClient` | 🔴 7+ tablas, ~10 queries | `rpc_registrar_produccion(...)` |
+| `registrarMermaConDescuento` | `MermaClient` | 🟠 2-4 queries | `rpc_registrar_merma(...)` |
+| `resolverClientesDePedidos` | `ClientesClient` | 🟡 3-5 queries | `rpc_resolver_clientes_pedidos(...)` |
+| `sincronizarConSupabase` (pedidos) | `PedidoClient` | 🟡 ~5 queries | `rpc_sincronizar_pedidos(...)` |
 
 ---
 
 ## Recomendaciones Anteriores
 
-### Completadas (verificadas contra el código actual — auditoría 2026-08-06)
+### Completadas (verificadas contra el código actual — auditoría 2026-08-13)
 
 | ID | Recomendación | Verificación |
 |---|---|---|
-| A2 (prev) | `background: white`/`#f8faf8` en recetas | ✅ `RecetaResumen`, `RecetaForm`, `RecetaCategoria` usan `var(--bg)`. Ya no existe `background: white` ni `background: #f8faf8` en ningún `.vue` |
-| A3 (prev) | Separadores decorativos `/* === */` | ✅ Eliminados de RecetasPage y PedidoPage. Patrón limpio `// -- Sección --` adoptado. Solo queda `<!-- LAYOUT -->` en RecetasPage (nueva B3) |
-| M1 (prev) | Bloque `else` vacío en MaterialClient | ✅ Eliminado. L63-64 contienen `return { success: true }` |
-| M2 (prev) | `sincronizarConSupabase` sin return en éxito | ✅ L18: `return { success: true }` y L64: `return { success: true }` |
-| M3 (prev) | Import `PlanificacionClient` muerto en MermasPage | ✅ Eliminado. L40 importa solo `MermaClient` |
-| M4 (prev) | `limpiarDatos` asigna reactive con `=` | ✅ Ambas páginas ahora usan `this.mensaje.tipo = null; this.mensaje.texto = ''` (mutación directa) |
-| M5 (prev) | `.forEach` sobre objeto en `resolverClientesDePedidos` | ✅ L282-286 ahora usan `if (insertadosFact.success && insertadosFact.data)` |
-| M7 (prev) | Evaluación de RecetaResumen | ✅ Evaluado — no requiere reemplazo |
-| B1 (prev) | Eventos kebab-case en RecetaForm | ✅ Observación — convención correcta |
-| B2 (prev) | Espacio faltante en RecetaResumen | ✅ L25: `{{ item.cantidad }} unidad(es)` con espacio correcto |
-| B3 (prev) | Espacio faltante en RecetaMaterialesTabla | ✅ L7: texto correcto con espacio |
+| A1 (prev) | Gradientes hardcoded en PlanificacionOperadorCard y PlanificacionResumen | ✅ Ambos usan `var(--bg)` y `var(--bg-secondary)` en gradientes |
+| A2 (prev) | `background: white`/`#f8faf8` en recetas | ✅ Eliminado. Usan `var(--bg)` |
+| A3 (prev) | Estilos CSS duplicados RecetaMaterialesTabla/RecetaMateriaPrimaTabla | ✅ Extraídos a clases globales en `style.css` (`.selection-panel`, `.selection-panel-header`, `.selection-table`, `.btn-refresh`, `.qty-input`) |
+| A3 (prev) | Separadores decorativos `/* === */` | ✅ Eliminados. Patrón `// -- Sección --` adoptado |
+| M1 (prev) | Bloque `else` vacío en MaterialClient | ✅ Eliminado |
+| M2 (prev) | `sincronizarConSupabase` sin return en éxito | ✅ Retorna `{ success: true }` |
+| M3 (prev) | Import `PlanificacionClient` muerto en MermasPage | ✅ Eliminado |
+| M4 (prev) | `limpiarDatos` asigna reactive con `=` | ✅ Usa mutación directa |
+| M5 (prev) | `.forEach` sobre objeto en `resolverClientesDePedidos` | ✅ Corregido |
+| M7 (prev) | Evaluación de RecetaResumen | ✅ Evaluado, no requiere cambio |
+| M3 (actual) | `DashboardEstadoPedidos` replica `.data-card-table` | ✅ Refactorizado para usar clase global |
+| M5 (actual) | Duplicación `.materiales-list`/`.materia-list` en ProduccionRecetasView | ✅ Unificado a `.ingrediente-list` |
+| B1 (prev) | Espacio faltante en RecetaMateriaPrimaTabla `Fecha:{{ }}` | ✅ Verificado: `Fecha: {{ item.fechaIngreso || '-' }}` tiene espacio correcto |
+| B2 (prev) | Espacio faltante en RecetaResumen | ✅ Correcto |
+| B3 (prev) | Espacio faltante en RecetaMaterialesTabla | ✅ Correcto |
 | B4 (prev) | Comentario obsoleto en RecetasPage | ✅ Eliminado |
+| B1-B6 (prev) | Todos completados | ✅ |
+| N1-N12 (prev) | Todos completados | ✅ |
+| B4 (actual) | RecetaResumen — evaluado, no requiere cambio | ✅ |
+
+### Parcialmente completadas
+
+| ID | Recomendación | Estado |
+|---|---|---|
+| A4 (actual) | Colores hardcoded dispersos | 🟡 ~60% completado. Quedan UsuarioRol, UsuarioTablaActual, LoginForm, badges en style.css |
+| M2 (actual) | Comentarios `// Mapeo snake_case a camelCase` | 🟡 2 de 4 eliminados. Quedan 2 en RecetaClient.js |
+| M3 (actual) | JSDoc redundante | 🟡 6 de ~15 eliminados. Quedan ~5 en MateriaPrimaClient y RecetaClient |
+| M4 (actual) | Badge variables en style.css | 🟡 Variables creadas, pero clases aún usan hex |
 
 ### Descartadas (por decisión del usuario)
 
 | ID | Recomendación | Motivo |
 |---|---|---|
-| M6 (prev) | Funciones de selección duplicadas en RecetasPage | Descartado — se mantiene para referencia. 4 funciones (`alternarMaterial`, `alternarMateriaPrima`, `actualizarCantidadMaterial`, `actualizarCantidadMateriaPrima`) con lógica similar pero contextos distintos. |
+| M6 (prev) | Funciones de selección duplicadas en RecetasPage | Descartado — lógica similar pero contextos distintos |
 
-### Historial de auditorías anteriores (completado)
+### Ya no aplican
 
-| Grupo | Estado |
-|---|---|
-| A2-A8 (prev) | ✅ Todos completados |
-| M1-M8 (prev) | ✅ Todos completados |
-| B1-B6 (prev) | ✅ Todos completados |
-| Sección 0 (0.1-0.3) | ✅ Eliminada (bugs de pedidos) |
-| 1.2, 2.1b-e, 2.4.1, 2.5-2.7, 3.1-3.3 | ✅ Todos completados |
-| N1-N12 | ✅ Todos completados |
+| ID | Recomendación | Motivo |
+|---|---|---|
+| N/A | Auth propia con SHA256 | 🚫 Migrado a Supabase Auth. `crypto.js` es ahora código muerto |
+| C1 original | RLS deshabilitado sin auth | 🚫 Replanteado como C1 actual (en implementación con Supabase Auth) |
 
 ---
 
 ## Hoja de Ruta Priorizada
 
-### Fase 1 — Seguridad: RLS y RPC (variable)
+### Fase 1 — Seguridad: RPC (RLS Completado)
 
-| # | Tarea | Esfuerzo | Dependencia |
+| # | Tarea | Esfuerzo | Estado |
 |---|---|---|---|
-| C1 | Habilitar RLS + crear políticas para 15 tablas | ~30 min | Definir estrategia de auth |
-| C2 | Crear RPCs para `agregarProduccion`, `registrarMermaConDescuento` | ~60 min | C1 |
-| C2b | Refactorizar clients para usar RPCs | ~30 min | C2 |
+| C1 | Completar implementación RLS (15 tablas) | N/A | ✅ Completado |
+| C2 | Crear RPCs para operaciones multi-tabla | ~90 min | Pendiente |
+| C2b | Refactorizar clients para usar RPCs | ~30 min | Pendiente |
 
-### Fase 2 — Consistencia visual CSS (~15 min)
+### Fase 2 — Bugs y funcionalidad (Alta prioridad)
 
 | # | Tarea | Esfuerzo | Líneas |
 |---|---|---|---|
-| A1 | Reemplazar gradientes hardcoded en PlanificacionOperadorCard y PlanificacionResumen | 2 min | 2 |
-| A2 | Reemplazar ~15 colores hardcoded por variables CSS | 5 min | ~15 |
-| A3 | Extraer CSS duplicado de RecetaMaterialesTabla/RecetaMateriaPrimaTabla a style.css | 8 min | ~73 (reducción neta) |
+| A1 | Fix mensaje de usuario que no desaparece | 5 min | ~10 |
+| A3 | Implementar límite de sincronización diaria | 30-45 min | ~80 (tabla + client + UI) |
 
-### Fase 3 — Limpieza de código (~10 min)
-
-| # | Tarea | Esfuerzo | Líneas |
-|---|---|---|---|
-| M1 | Eliminar ~18 bloques JSDoc redundantes | 5 min | ~40 |
-| M2 | Eliminar 4 comentarios `// Mapeo snake_case a camelCase` | 1 min | 4 |
-| M4 | Crear variables CSS para badges warning y unificar | 2 min | ~10 |
-| M5 | Unificar `.materiales-list`/`.materia-list` en ProduccionRecetasView | 2 min | ~15 |
-
-### Fase 4 — Fixes menores (~5 min)
+### Fase 3 — Consistencia visual y nomenclatura (~20 min)
 
 | # | Tarea | Esfuerzo | Líneas |
 |---|---|---|---|
-| B1 | Fix espacio `Fecha:` en RecetaMateriaPrimaTabla | 1 min | 1 |
-| B2 | Gradiente minor en ProduccionForm | 1 min | 1 |
-| B3 | Eliminar `<!-- LAYOUT -->` residual | 1 min | 1 |
+| A2 | Unificar nombres inglés/español | 10 min | ~30 |
+| A4 | Reemplazar colores hardcoded restantes | 5 min | ~12 |
+| M4 | Badges hardcoded → variables CSS | 2 min | ~9 |
+| M6 | Colores en UsuarioRol/UsuarioTablaActual | 3 min | ~7 |
+
+### Fase 4 — Limpieza de código (~10 min)
+
+| # | Tarea | Esfuerzo | Líneas |
+|---|---|---|---|
+| M1 | Eliminar `.spin` duplicado en 5 componentes | 3 min | ~30 |
+| M2 | Eliminar 2 comentarios mapeo en RecetaClient | 1 min | 2 |
+| M3 | Eliminar ~5 bloques JSDoc redundantes | 3 min | ~15 |
+| B2 | Eliminar `crypto.js` muerto | 1 min | 8 |
+| B1 | Eliminar `<!-- LAYOUT -->` en 2 páginas | 1 min | 2 |
+
+### Fase 5 — Optimización (cuando convenga)
+
+| # | Tarea | Esfuerzo | Impacto |
+|---|---|---|---|
+| M5 | Singleton promise en useCatalogos | 15 min | Reduce peticiones duplicadas |
+| B3 | Gradiente minor en ProduccionForm | 1 min | Cosmético |
 
 ### Estimación total
 
-- **Fase 1 (Seguridad):** ~2 horas (depende de decisiones de arquitectura)
-- **Fases 2-4 (Limpieza):** ~30 minutos
-- **Total limpieza:** ~30 min, ~160 líneas de mejoras
-- **Total seguridad:** ~2h, refactorización de 3 clients + SQL para 15 tablas
+- **Fase 1 (Seguridad):** ~3 horas (depende de decisiones de arquitectura)
+- **Fase 2 (Bugs):** ~45 minutos
+- **Fases 3-4 (Limpieza):** ~30 minutos
+- **Total limpieza:** ~75 min, ~200 líneas de mejoras
+- **Total seguridad:** ~3h, refactorización de 3+ clients + SQL
 
-**Resultado esperado:** Un código base más limpio con CSS consistente y compatible con dark mode, sin JSDoc redundante, con seguridad RLS en Supabase, y operaciones críticas ejecutadas server-side mediante RPC.
+**Resultado esperado:** Código con nomenclatura unificada, mensajes de éxito funcionales, sincronización controlada, CSS consistente con design tokens, sin código muerto, y seguridad RLS en Supabase.

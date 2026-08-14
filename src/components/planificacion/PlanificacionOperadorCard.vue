@@ -83,6 +83,9 @@
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 export default {
 	name: 'PlanificacionOperadorCard',
+	components: {
+		XMarkIcon
+	},
 	props: {
 		asig: {
 			type: Object,

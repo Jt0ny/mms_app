@@ -188,3 +188,41 @@ Durante la implementación, nos encontramos y resolvimos tres inconvenientes cla
 - **Síntoma:** En la pestaña Network, la acción de cerrar sesión disparaba dos peticiones a `/logout?scope=global`. La primera devolvía `403 Forbidden` y la segunda `204 No Content`.
 - **Causa:** Redundancia en el código de Vue. El componente `NavBar.vue` ejecutaba `this.logout()` y además emitía el evento al padre, quien a su vez volvía a ejecutar `this.logout()`. La segunda llamada intentaba destruir una sesión ya invalidada por la primera, provocando el rechazo del servidor.
 - **Solución:** Se modificó `NavBar.vue` para que actúe como un componente puramente presentacional, limitándose a emitir `this.$emit('logout')` y dejando la lógica asíncrona exclusivamente al componente padre.
+
+---
+
+## 6. Implementación de Row Level Security (RLS)
+
+Tras completar la migración a Supabase Auth, se implementó un estricto modelo de seguridad a nivel de base de datos utilizando **Row Level Security (RLS)** en las 15 tablas del esquema `public`. Esto garantiza que los operadores no puedan alterar el historial ni manipular datos ajenos, protegiendo la aplicación incluso frente a vulnerabilidades en el frontend.
+
+### 6.1. Fases de Ejecución
+
+La implementación se dividió en 5 fases para minimizar riesgos:
+
+1. **Fase 1 (Limpieza Legacy):**
+   - Eliminación del usuario legacy "ana" y purga final de la columna `contrasena` para estandarizar el esquema.
+2. **Fase 2 (Catálogos):**
+   - RLS habilitado en `materia_prima`, `materiales`, `recetas`, `receta_materiales` y `receta_materia_prima`.
+   - **Regla:** Lectura pública (para usuarios autenticados). Creación, edición y eliminación exclusivas para el rol `supervisor`.
+3. **Fase 3 (Negocio):**
+   - RLS habilitado en `clientes`, `pedidos`, `pedido_detalles` y `mermas`.
+   - **Regla (Pedidos/Clientes):** Solo el supervisor puede sincronizar o editar. El operador tiene acceso de solo lectura para visualizar el Dashboard.
+   - **Regla (Mermas):** El registro y eliminación de mermas quedó configurado como un privilegio **exclusivo del supervisor**.
+4. **Fase 4 (Producción y Planificación):**
+   - RLS habilitado en `producciones`, `produccion_detalle`, `produccion_consumos`, `planificaciones` y `usuarios`.
+   - **Regla Central de Producción:** El operador *puede* registrar nuevas producciones, pero se implementó un `WITH CHECK` que obliga a que el `operador_id` coincida con su propio identificador (`auth.uid()`). No pueden modificar ni eliminar el registro histórico una vez creado (solo el supervisor puede hacerlo).
+   - **Regla de Planificación:** Exclusiva del supervisor.
+5. **Fase 5 (Frontend):**
+   - Se verificó que el cliente `ProduccionClient.js` estuviera enviando el `operador_id` correctamente desde la interfaz. No se requirieron modificaciones en Vue.js ya que la arquitectura preexistente del frontend era sólida y ya contemplaba estas variables.
+
+### 6.2. Resolución de Conflictos (Edge Cases)
+
+Durante la implementación surgieron dos puntos clave que requirieron corrección en tiempo real:
+
+1. **Parche en Sincronización de Materiales (`MaterialClient.js`):**
+   - **Problema:** Al sincronizar el catálogo de materiales, el código original comparaba únicamente por `id` (UUID). Si los materiales se subían inicialmente por Excel (generando UUIDs aleatorios locales) y posteriormente se sincronizaban por la API externa (trayendo los UUIDs reales del sistema de ventas), la app intentaba insertar el material como nuevo, provocando conflictos de duplicidad.
+   - **Solución:** Se implementó una doble validación en memoria (`mapExistentesPorId` y `mapExistentesPorNombre`). Ahora el código busca coincidencias tanto por ID como por el `nombre` exacto (normalizado a minúsculas). Esto unifica el registro y evita duplicados en el inventario.
+
+2. **Privilegios de Mermas (Corrección de Alcance):**
+   - Inicialmente se había planteado que los operadores pudieran registrar sus propias mermas durante la producción.
+   - Por regla de negocio estricta, se corrigió sobre la marcha: **solo el supervisor puede declarar y eliminar mermas**. Se actualizó la política SQL de `mermas` (`mermas_insert_supervisor`) para rechazar cualquier intento de inserción proveniente de un operador.

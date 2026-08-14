@@ -20,25 +20,31 @@ export default {
 
       if (queryErr) throw queryErr;
 
-      const mapExistentes = new Map(
+      const mapExistentesPorId = new Map(
         (existentes || []).map(e => [String(e.id), e])
+      );
+      const mapExistentesPorNombre = new Map(
+        (existentes || []).map(e => [String(e.nombre).toLowerCase().trim(), e])
       );
 
       // 2. Preparar los datos (insertar nuevos o actualizar solo cantidad)
       const upsertData = [];
       for (const m of materialesExternos) {
         const idStr = String(m.id);
+        const nombreNormalizado = String(m.nombre || '').toLowerCase().trim();
         const cantidadExterna = m.cantidad ?? m.cantidadTotal ?? m.cantidad_total ?? 0;
 
-        if (mapExistentes.has(idStr)) {
-          // Si existe, preservamos sus datos actuales y solo actualizamos la cantidad
-          const actual = mapExistentes.get(idStr);
+        const actual = mapExistentesPorId.get(idStr) || mapExistentesPorNombre.get(nombreNormalizado);
+
+        if (actual) {
+          // Si existe, preservamos sus datos actuales de la BD (como su ID) y actualizamos cantidad
           upsertData.push({
             ...actual,
-            cantidad: cantidadExterna
+            cantidad: cantidadExterna,
+            nombre: m.nombre // Por si cambió la capitalización
           });
         } else {
-          // Si es nuevo, insertamos todos sus datos
+          // Si es completamente nuevo, insertamos
           upsertData.push({
             id: idStr,
             nombre: m.nombre,
