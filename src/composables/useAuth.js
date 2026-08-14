@@ -24,7 +24,7 @@ export function useAuth() {
   async function inicializar() {
     if (state.inicializado) return
 
-    const usuario = await UsuarioClient.getSession()
+    const usuario = await UsuarioClient.obtenerSesion()
     if (usuario) {
       state.rol = (usuario.rol || '').toLowerCase()
       state.usuarioId = usuario.id
@@ -66,14 +66,14 @@ export function useAuth() {
 }
 
 // Helpers para router
-export function getRol() {
+export function obtenerRol() {
   return state.rol
 }
 
-export function getIsLogged() {
+export function estaAutenticado() {
   return !!state.rol
 }
 
-export function getInicializado() {
+export function estaInicializado() {
   return state.inicializado
 }

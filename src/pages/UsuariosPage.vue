@@ -13,7 +13,7 @@
             <div class="page-grid">
                 <UsuarioForm @guardado="cargarUsuarios(true)" />
 
-                <UsuarioTablaActual :usuarios="usuarios" :cargando="cargandoUsuarios" @actualizar="cargarUsuarios(true)"
+                <UsuarioList :usuarios="usuarios" :cargando="cargandoUsuarios" @actualizar="cargarUsuarios(true)"
                     @eliminar="eliminarUsuario" />
             </div>
         </div>
@@ -23,7 +23,7 @@
 import Alertas from '../components/Alertas.vue'
 import UsuarioClient from '../client/UsuarioClient.js'
 import UsuarioForm from '../components/usuarios/UsuarioForm.vue'
-import UsuarioTablaActual from '../components/usuarios/UsuarioTablaActual.vue'
+import UsuarioList from '../components/usuarios/UsuarioList.vue'
 import { useMensajes } from '../composables/useMensajes.js'
 import { useCatalogos } from '../composables/useCatalogos.js'
 
@@ -31,7 +31,7 @@ export default {
     components: {
         Alertas,
         UsuarioForm,
-        UsuarioTablaActual
+        UsuarioList
     },
 
     setup() {
@@ -77,4 +77,4 @@ export default {
         }
     }
 }
-</script>
+</script>

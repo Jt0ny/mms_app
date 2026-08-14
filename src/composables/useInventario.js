@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { useMensajes } from './useMensajes.js'
+import SyncLogClient from '../client/SyncLogClient'
 
 export function useInventario({ obtenerDatos, sincronizar, nombreModulo }) {
     const { mostrarMensaje } = useMensajes()
@@ -22,6 +23,16 @@ export function useInventario({ obtenerDatos, sincronizar, nombreModulo }) {
     }
 
     async function sincronizarAPI() {
+        const normalized = String(nombreModulo).toLowerCase().trim()
+        let moduloKey = 'desconocido'
+        if (normalized === 'materia prima') moduloKey = 'materia_prima'
+        else if (normalized === 'materiales') moduloKey = 'materiales'
+        const yaSincronizado = await SyncLogClient.yaSincronizadoHoy(moduloKey)
+        if (yaSincronizado) {
+            mostrarMensaje('info', `El inventario de ${nombreModulo} ya fue sincronizado hoy`)
+            return
+        }
+
         cargandoInventario.value = true
         mostrarMensaje('info', ' Sincronizando con la API externa...', 0)
 
@@ -34,6 +45,7 @@ export function useInventario({ obtenerDatos, sincronizar, nombreModulo }) {
             return
         }
 
+        await SyncLogClient.registrarSync(moduloKey)
         mostrarMensaje('exito', 'Sincronización exitosa con la API externa')
         await cargarInventario(true)
     }

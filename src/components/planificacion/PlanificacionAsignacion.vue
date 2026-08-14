@@ -61,14 +61,6 @@ export default {
 </script>
 
 <style scoped>
-.spin {
-    animation: spin 1s linear infinite;
-}
-@keyframes spin {
-    100% { transform: rotate(360deg); }
-}
-
-
 .fecha-group {
 	display: grid;
 	gap: 5px;

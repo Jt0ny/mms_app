@@ -62,14 +62,24 @@ export default {
     },
 
     methods: {
+        mostrarMensaje(tipo, texto, duracion = 4000) {
+            this.mensaje = { tipo, texto }
+            if (duracion > 0) {
+                clearTimeout(this._mensajeTimer)
+                this._mensajeTimer = setTimeout(() => {
+                    this.mensaje = { tipo: null, texto: '' }
+                }, duracion)
+            }
+        },
+
         async guardar() {
             if (!this.nombre.trim() || !this.email.trim() || !this.contrasena.trim()) {
-                this.mensaje = { tipo: 'error', texto: 'Por favor, complete todos los campos.' }
+                this.mostrarMensaje('error', 'Por favor, complete todos los campos.')
                 return
             }
 
             if (!this.rol) {
-                this.mensaje = { tipo: 'error', texto: 'Selecciona un rol para el usuario.' }
+                this.mostrarMensaje('error', 'Selecciona un rol para el usuario.')
                 return
             }
 
@@ -85,14 +95,14 @@ export default {
             this.guardando = false
 
             if (response.success) {
-                this.mensaje = { tipo: 'exito', texto: 'Usuario guardado exitosamente.' }
+                this.mostrarMensaje('exito', 'Usuario guardado exitosamente.')
                 this.$emit('guardado')
                 this.nombre = ''
                 this.email = ''
                 this.contrasena = ''
                 this.rol = ''
             } else {
-                this.mensaje = { tipo: 'error', texto: 'No se pudo guardar el usuario. Intenta nuevamente.' }
+                this.mostrarMensaje('error', 'No se pudo guardar el usuario. Intenta nuevamente.')
             }
         }
     }

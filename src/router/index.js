@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { getRol, getIsLogged, getInicializado, useAuth } from '../composables/useAuth.js'
+import { obtenerRol, estaAutenticado, estaInicializado, useAuth } from '../composables/useAuth.js'
 
 // Layout se carga estáticamente (siempre necesario)
 import MainLayout from '../components/layout/MainLayout.vue'
@@ -36,7 +36,7 @@ const routes = [
       {
         path: '',
         redirect: () => {
-          const rol = getRol()
+          const rol = obtenerRol()
           return rol === 'operador' ? '/app/produccion' : '/app/dashboard'
         }
       },
@@ -113,13 +113,13 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   // Esperar a que se inicialice la sesión al primer acceso
-  if (!getInicializado()) {
+  if (!estaInicializado()) {
     const { inicializar } = useAuth()
     await inicializar()
   }
 
-  const isLogged = getIsLogged()
-  const rol = getRol()
+  const isLogged = estaAutenticado()
+  const rol = obtenerRol()
 
   if (to.path === '/' && isLogged) {
     return rol === 'operador' ? '/app/produccion' : '/app/dashboard'

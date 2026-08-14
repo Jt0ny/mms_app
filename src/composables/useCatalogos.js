@@ -1,84 +1,105 @@
-import { ref } from 'vue'
 import RecetaClient from '../client/RecetaClient'
 import UsuarioClient from '../client/UsuarioClient'
 import MaterialClient from '../client/MaterialClient'
 import MateriaPrimaClient from '../client/MateriaPrimaClient'
-import ClientesClient from '../client/ClientesClient'
+import ClienteClient from '../client/ClienteClient'
 
-// Estado global en caché
-const recetasCache = ref(null)
-const operadoresCache = ref(null) // Solo guardamos los filtrados con rol 'operador'
-const usuariosCache = ref(null)   // Todos los usuarios
-const materialesCache = ref(null)
-const materiaPrimaCache = ref(null)
-const clientesCache = ref(null)
+// Estado global de promesas
+let recetasPromise = null
+let usuariosPromise = null
+let operadoresPromise = null
+let materialesPromise = null
+let materiaPrimaPromise = null
+let clientesPromise = null
 
 export function useCatalogos() {
 
   async function obtenerRecetas(forceRefresh = false) {
-    if (!recetasCache.value || forceRefresh) {
-      const res = await RecetaClient.obtenerRecetas()
-      if (res?.success === false) return res; // Propaga el error a la vista
-      recetasCache.value = res?.success !== undefined ? (res.data || []) : (res || [])
+    if (!recetasPromise || forceRefresh) {
+      recetasPromise = RecetaClient.obtenerRecetas().then(res => {
+        if (res?.success === false) {
+          recetasPromise = null
+          return res
+        }
+        return { success: true, data: res?.success !== undefined ? (res.data || []) : (res || []) }
+      })
     }
-    return { success: true, data: recetasCache.value }
+    return recetasPromise
   }
 
   async function obtenerUsuarios(forceRefresh = false) {
-    if (!usuariosCache.value || forceRefresh) {
-      const res = await UsuarioClient.obtenerUsuarios()
-      if (res?.success === false) return res;
-      usuariosCache.value = res?.success !== undefined ? (res.data || []) : (res || [])
-      // Actualizar también el caché derivado de operadores
-      operadoresCache.value = (usuariosCache.value || []).filter(
-        u => String(u.rol).toLowerCase().trim() === 'operador'
-      )
+    if (!usuariosPromise || forceRefresh) {
+      usuariosPromise = UsuarioClient.obtenerUsuarios().then(res => {
+        if (res?.success === false) {
+          usuariosPromise = null
+          return res
+        }
+        return { success: true, data: res?.success !== undefined ? (res.data || []) : (res || []) }
+      })
     }
-    return { success: true, data: usuariosCache.value }
+    return usuariosPromise
   }
 
   async function obtenerOperadores(forceRefresh = false) {
-    if (!operadoresCache.value || forceRefresh) {
-      const res = await obtenerUsuarios(forceRefresh) // obtenerUsuarios actualiza ambos cachés
-      if (res?.success === false) return res;
+    if (!operadoresPromise || forceRefresh) {
+      operadoresPromise = obtenerUsuarios(forceRefresh).then(res => {
+        if (res?.success === false) {
+          operadoresPromise = null
+          return res
+        }
+        const operadores = (res.data || []).filter(u => String(u.rol).toLowerCase().trim() === 'operador')
+        return { success: true, data: operadores }
+      })
     }
-    return { success: true, data: operadoresCache.value }
+    return operadoresPromise
   }
 
   async function obtenerMateriales(forceRefresh = false) {
-    if (!materialesCache.value || forceRefresh) {
-      const res = await MaterialClient.obtenerMateriales()
-      if (res?.success === false) return res;
-      materialesCache.value = res?.success !== undefined ? (res.data || []) : (res || [])
+    if (!materialesPromise || forceRefresh) {
+      materialesPromise = MaterialClient.obtenerMateriales().then(res => {
+        if (res?.success === false) {
+          materialesPromise = null
+          return res
+        }
+        return { success: true, data: res?.success !== undefined ? (res.data || []) : (res || []) }
+      })
     }
-    return { success: true, data: materialesCache.value }
+    return materialesPromise
   }
 
   async function obtenerMateriaPrima(forceRefresh = false) {
-    if (!materiaPrimaCache.value || forceRefresh) {
-      const res = await MateriaPrimaClient.obtenerMateriaPrima()
-      if (res?.success === false) return res;
-      materiaPrimaCache.value = res?.success !== undefined ? (res.data || []) : (res || [])
+    if (!materiaPrimaPromise || forceRefresh) {
+      materiaPrimaPromise = MateriaPrimaClient.obtenerMateriaPrima().then(res => {
+        if (res?.success === false) {
+          materiaPrimaPromise = null
+          return res
+        }
+        return { success: true, data: res?.success !== undefined ? (res.data || []) : (res || []) }
+      })
     }
-    return { success: true, data: materiaPrimaCache.value }
+    return materiaPrimaPromise
   }
 
   async function obtenerClientes(forceRefresh = false) {
-    if (!clientesCache.value || forceRefresh) {
-      const res = await ClientesClient.obtenerClientes()
-      if (res?.success === false) return res;
-      clientesCache.value = res?.success !== undefined ? (res.data || []) : (res || [])
+    if (!clientesPromise || forceRefresh) {
+      clientesPromise = ClienteClient.obtenerClientes().then(res => {
+        if (res?.success === false) {
+          clientesPromise = null
+          return res
+        }
+        return { success: true, data: res?.success !== undefined ? (res.data || []) : (res || []) }
+      })
     }
-    return { success: true, data: clientesCache.value }
+    return clientesPromise
   }
 
   function invalidar() {
-    recetasCache.value = null
-    operadoresCache.value = null
-    usuariosCache.value = null
-    materialesCache.value = null
-    materiaPrimaCache.value = null
-    clientesCache.value = null
+    recetasPromise = null
+    usuariosPromise = null
+    operadoresPromise = null
+    materialesPromise = null
+    materiaPrimaPromise = null
+    clientesPromise = null
   }
 
   return {

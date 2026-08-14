@@ -42,7 +42,6 @@ export default {
         nombre: item.nombre,
         categoria: item.categoria,
         instrucciones: item.instrucciones || '',
-        // Mapeo snake_case a camelCase
         totalItems: item.total_items,
         fechaCreacion: item.fecha_creacion,
         materiales: (item.receta_materiales || []).map(rm => ({
@@ -65,9 +64,6 @@ export default {
     }
   },
 
-  /**
-   * Crea una nueva receta en Supabase con sus relaciones de materiales y materias primas
-   */
   async agregarReceta(payload) {
     try {
       const totalItems = (payload.materiales?.length || 0) + (payload.materiaPrima?.length || 0);
@@ -124,7 +120,6 @@ export default {
         nombre: recetaData.nombre,
         categoria: recetaData.categoria,
         instrucciones: recetaData.instrucciones,
-        // Mapeo snake_case a camelCase
         totalItems: recetaData.total_items,
         fechaCreacion: recetaData.fecha_creacion,
         materiales: payload.materiales || [],

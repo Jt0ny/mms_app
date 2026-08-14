@@ -1,4 +1,4 @@
-import ClientesClient from '../client/ClientesClient'
+import ClienteClient from '../client/ClienteClient'
 import { obtenerFechaHoy } from '../utils/date.js'
 import { useCatalogos } from './useCatalogos.js'
 
@@ -103,7 +103,7 @@ export function usePedidoExcel() {
     async function sincronizarClientes(datosPedidos) {
         try {
             const catalogos = useCatalogos()
-            const huboCambios = await ClientesClient.resolverClientesDePedidos(datosPedidos)
+            const huboCambios = await ClienteClient.resolverClientesDePedidos(datosPedidos)
 
             if (huboCambios) {
                 catalogos.obtenerClientes(true).catch(console.error)

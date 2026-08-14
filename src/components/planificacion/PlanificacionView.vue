@@ -55,7 +55,7 @@
 
 <script>
 export default {
-    name: 'PlanificacionVista',
+    name: 'PlanificacionView',
     props: {
         planificaciones: {
             type: Array,

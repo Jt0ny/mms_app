@@ -54,7 +54,7 @@
                         <!-- CANTIDAD -->
                         <td>
                             <input type="number" min="1" class="qty-input" :disabled="!esSeleccionado(item.id)"
-                                :value="getCantidad(item.id)" @input=" $emit('cantidad', item.id, $event.target.value)" />
+                                :value="obtenerCantidad(item.id)" @input=" $emit('cantidad', item.id, $event.target.value)" />
                         </td>
                     </tr>
                 </tbody>
@@ -68,15 +68,6 @@
 
     </div>
 </template>
-
-<style>
-.spin {
-    animation: spin 1s linear infinite;
-}
-@keyframes spin {
-    100% { transform: rotate(360deg); }
-}
-</style>
 
 <script>
 import { ArrowPathIcon } from '@heroicons/vue/24/outline'
@@ -114,7 +105,7 @@ export default {
             return this.seleccionados.some(item => item.id === id)
         },
 
-        getCantidad(id) {
+        obtenerCantidad(id) {
 
             const item = this.seleccionados.find(item => item.id === id)
             return item ? item.cantidad : 1

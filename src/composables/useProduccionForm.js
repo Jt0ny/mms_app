@@ -33,11 +33,11 @@ export function useProduccionForm(props, emit) {
     })
 
     watch(() => props.edicion, () => {
-        applyEdicion()
+        aplicarEdicion()
     })
 
     watch(categorias, () => {
-        applyEdicion()
+        aplicarEdicion()
     })
 
     watch(() => props.categoriasPermitidas, () => {
@@ -114,7 +114,7 @@ export function useProduccionForm(props, emit) {
         cargandoCategorias.value = false
     }
 
-    const applyEdicion = () => {
+    const aplicarEdicion = () => {
         const e = props.edicion
         if (!e) return
         
@@ -188,7 +188,7 @@ export function useProduccionForm(props, emit) {
         emit('guardar', payload)
     }
 
-    const handleCancelar = () => {
+    const cancelar = () => {
         const cantidades = {}
         categorias.value.forEach(categoria => {
             cantidades[categoria] = 0
@@ -209,6 +209,6 @@ export function useProduccionForm(props, emit) {
         obtenerCantidad,
         actualizarCantidad,
         enviarFormulario,
-        handleCancelar
+        cancelar
     }
 }

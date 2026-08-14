@@ -19,7 +19,7 @@
 import { SunIcon, CubeIcon, SparklesIcon } from '@heroicons/vue/24/outline'
 
 export default {
-    name: 'TipoMermaSelector',
+    name: 'MermaTipoSelector',
     components: { SunIcon, CubeIcon, SparklesIcon },
     props: {
         modelValue: {

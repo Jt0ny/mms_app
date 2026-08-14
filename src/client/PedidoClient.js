@@ -1,6 +1,6 @@
 import axios from "axios";
 import { supabase } from "./supabase";
-import ClientesClient from "./ClientesClient";
+import ClienteClient from "./ClienteClient";
 import RecetaClient from "./RecetaClient";
 import { obtenerFechaHoy } from "../utils/date.js";
 import { useCatalogos } from "../composables/useCatalogos.js";
@@ -89,7 +89,7 @@ export default {
         return;
       }
 
-      const huboCambiosCli = await ClientesClient.resolverClientesDePedidos(pedidosExternos);
+      const huboCambiosCli = await ClienteClient.resolverClientesDePedidos(pedidosExternos);
       if (huboCambiosCli) {
         const catalogos = useCatalogos();
         await catalogos.obtenerClientes(true);
@@ -147,16 +147,12 @@ export default {
       if (pedidosToUpsert.length === 0) return;
 
 
-      const { error: pedError } = await supabase.from('pedidos').upsert(pedidosToUpsert);
-      if (pedError) throw pedError;
-
-      const pedidoIds = pedidosToUpsert.map(p => p.id);
-      const { error: cleanError } = await supabase.from('pedido_detalles').delete().in('pedido_id', pedidoIds);
-      if (cleanError) throw cleanError;
-
-
-      const { error: detError } = await supabase.from('pedido_detalles').upsert(detallesToUpsert);
-      if (detError) throw detError;
+      const { error: rpcError } = await supabase.rpc('rpc_sincronizar_pedidos', {
+        payload_pedidos: pedidosToUpsert,
+        payload_detalles: detallesToUpsert
+      });
+      
+      if (rpcError) throw rpcError;
 
 
       return { success: true };
@@ -171,7 +167,7 @@ export default {
    */
   async agregarPedido(data) {
     try {
-      const huboCambiosCli = await ClientesClient.resolverClientesDePedidos(data);
+      const huboCambiosCli = await ClienteClient.resolverClientesDePedidos(data);
       if (huboCambiosCli) {
         const catalogos = useCatalogos();
         await catalogos.obtenerClientes(true);
@@ -218,11 +214,12 @@ export default {
 
       if (pedidosToInsert.length === 0) return;
 
-      const { error: pedError } = await supabase.from('pedidos').insert(pedidosToInsert);
-      if (pedError) throw pedError;
-
-      const { error: detError } = await supabase.from('pedido_detalles').insert(detallesToInsert);
-      if (detError) throw detError;
+      const { error: rpcError } = await supabase.rpc('rpc_sincronizar_pedidos', {
+        payload_pedidos: pedidosToInsert,
+        payload_detalles: detallesToInsert
+      });
+      
+      if (rpcError) throw rpcError;
 
 
       return { success: true };

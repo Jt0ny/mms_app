@@ -63,7 +63,7 @@
                 </p>
 
                 <div style="display:flex; gap:8px;">
-                    <button v-if="edicion" type="button" class="submit-btn" @click="handleCancelar"
+                    <button v-if="edicion" type="button" class="submit-btn" @click="cancelar"
                         :disabled="guardando">
                         Cancelar
                     </button>
@@ -141,7 +141,7 @@ export default {
             obtenerCantidad,
             actualizarCantidad,
             enviarFormulario,
-            handleCancelar
+            cancelar
         } = useProduccionForm(props, emit)
 
         return {
@@ -155,7 +155,7 @@ export default {
             obtenerCantidad,
             actualizarCantidad,
             enviarFormulario,
-            handleCancelar
+            cancelar
         }
     }
 }
@@ -250,7 +250,7 @@ export default {
     padding: 16px;
     border-radius: 14px;
     border: 1px solid var(--border-light);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(243, 250, 244, 0.92));
+    background: var(--bg-secondary);
 }
 
 .stat-card span {

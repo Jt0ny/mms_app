@@ -55,7 +55,7 @@
 import { TrashIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
 
 export default {
-    name: 'UsuarioTablaActual',
+    name: 'UsuarioList',
     components: { TrashIcon, ArrowPathIcon },
     props: {
         usuarios: {
@@ -136,7 +136,7 @@ export default {
 .empty-state {
     padding: 32px 24px;
     text-align: center;
-    color: #64748b;
+    color: var(--text-light);
 }
 
 .content-table {
@@ -146,7 +146,7 @@ export default {
 
 .table-info {
     margin-bottom: 14px;
-    color: #1e293b;
+    color: var(--text-h);
     font-weight: 600;
 }
 
@@ -232,12 +232,5 @@ export default {
     .usuario-table td {
         padding: 10px 8px;
     }
-}
-
-.spin {
-    animation: spin 1s linear infinite;
-}
-@keyframes spin {
-    100% { transform: rotate(360deg); }
 }
 </style>

@@ -4,7 +4,7 @@
             <div class="data-card-header">
                 <p>
                     <strong>{{ items.length }}</strong>
-                    {{ itemLabel }}
+                    {{ etiquetaItem }}
                 </p>
             </div>
 
@@ -28,10 +28,10 @@
             </div>
 
             <div class="preview-actions">
-                <ButtonActions
-                    :cargando="loading"
-                    :textoConfirmar="confirmText"
-                    :textoCargando="loadingText"
+                <AccionesButton
+                    :cargando="cargando"
+                    :textoConfirmar="textoConfirmar"
+                    :textoCargando="textoCargando"
                     @cancelar="$emit('cancelar')"
                     @confirmar="$emit('confirmar')"
                 />
@@ -41,17 +41,17 @@
 </template>
 
 <script>
-import ButtonActions from '../ButtonActions.vue'
+import AccionesButton from './AccionesButton.vue'
 
 export default {
-    name: 'PreviewTable',
-    components: { ButtonActions },
+    name: 'VistaPreviaTable',
+    components: { AccionesButton },
     props: {
         items: { type: Array, default: () => [] },
-        loading: { type: Boolean, default: false },
-        itemLabel: { type: String, default: 'encontrados' },
-        confirmText: { type: String, default: 'Confirmar' },
-        loadingText: { type: String, default: 'Procesando...' }
+        cargando: { type: Boolean, default: false },
+        etiquetaItem: { type: String, default: 'encontrados' },
+        textoConfirmar: { type: String, default: 'Confirmar' },
+        textoCargando: { type: String, default: 'Procesando...' }
     },
     emits: ['cancelar', 'confirmar']
 }

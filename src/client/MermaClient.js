@@ -166,93 +166,73 @@ export default {
      * Retorna la nueva merma y un objeto con los stocks actualizados para sincronizar la UI.
      */
     async registrarMermaConDescuento(payload, { materiales, materiaPrima, recetasCompletas }) {
-    try {
-        // 1. Guardar la merma en la base de datos
-        const responseMerma = await this.agregarMerma(payload);
-        if (!responseMerma.success) {
-            return responseMerma; // Propagar error
+        try {
+            const { data, error } = await supabase.rpc('rpc_registrar_merma', { 
+                payload_merma: payload 
+            });
+
+            if (error) throw error;
+
+            // Fetch the newly created merma formatted properly for the UI
+            const { data: mermaData } = await supabase
+                .from('mermas')
+                .select(`
+                    id,
+                    fecha,
+                    tipo,
+                    material_id,
+                    materia_prima_id,
+                    receta_id,
+                    cantidad,
+                    motivo,
+                    operador_id,
+                    creado_en,
+                    usuarios ( nombre ),
+                    materiales ( nombre ),
+                    materia_prima ( variedad ),
+                    recetas ( nombre )
+                `)
+                .eq('id', data.merma_id)
+                .single();
+
+            let nombre = 'Desconocido';
+            let referenciaId = null;
+
+            if (mermaData.tipo === 'material') {
+                nombre = mermaData.materiales?.nombre || '';
+                referenciaId = mermaData.material_id;
+            } else if (mermaData.tipo === 'materia_prima') {
+                nombre = mermaData.materia_prima?.variedad || '';
+                referenciaId = mermaData.materia_prima_id;
+            } else if (mermaData.tipo === 'producto_terminado') {
+                nombre = mermaData.recetas?.nombre || '';
+                referenciaId = mermaData.receta_id;
+            }
+
+            const nuevaMermaObj = {
+                id: mermaData.id,
+                fecha: mermaData.fecha,
+                tipo: mermaData.tipo,
+                referenciaId: referenciaId,
+                nombre: nombre,
+                cantidad: mermaData.cantidad,
+                motivo: mermaData.motivo,
+                creadoEn: mermaData.creado_en,
+                operadorId: mermaData.operador_id,
+                operadorNombre: mermaData.usuarios?.nombre || 'sistema'
+            };
+
+            return { 
+                success: true, 
+                data: { 
+                    nuevaMerma: nuevaMermaObj, 
+                    stocksActualizados: { materiales: [], materiaPrima: [] }, 
+                    mensajeExito: 'Merma registrada e inventario actualizado.' 
+                } 
+            };
+        } catch (error) {
+            console.error('Error en registrarMermaConDescuento con RPC:', error);
+            return { success: false, error };
         }
-        const nuevaMermaObj = responseMerma.data;
-
-        const stocksActualizados = { materiales: [], materiaPrima: [] };
-        let mensajeExito = 'Merma registrada con éxito.';
-
-        // 2. Descontar del inventario según el tipo
-        if (payload.tipo === 'material') {
-            const material = materiales.find(m => m.id === payload.referenciaId);
-            if (material) {
-                const nuevaCantidad = Math.max(0, (Number(material.cantidad) || 0) - Number(payload.cantidad));
-
-                try {
-                    await MaterialClient.actualizarStockMaterial(material.id, nuevaCantidad);
-                    stocksActualizados.materiales.push({ id: material.id, cantidad: nuevaCantidad });
-                    mensajeExito = `Merma registrada e inventario de "${material.nombre}" actualizado.`;
-                } catch (e) {
-                    console.error('Error al descontar material en merma:', e);
-                    mensajeExito = '️ Merma registrada pero hubo un error al descontar inventario de material. Verifica el stock manualmente.';
-                }
-            }
-        } else if (payload.tipo === 'materia_prima') {
-            const mp = materiaPrima.find(m => m.id === payload.referenciaId || m.variedad === payload.referenciaId);
-            if (mp) {
-                const nuevaCantidad = Math.max(0, (Number(mp.cantidadTotal) || 0) - Number(payload.cantidad));
-                try {
-                    await MateriaPrimaClient.actualizarStockMateriaPrima(mp.id, nuevaCantidad);
-                    stocksActualizados.materiaPrima.push({ id: mp.id, cantidadTotal: nuevaCantidad });
-                    mensajeExito = `Merma registrada e inventario de "${mp.variedad}" actualizado.`;
-                } catch (e) {
-                    console.error('Error al descontar materia prima en merma:', e);
-                    mensajeExito = '️ Merma registrada pero hubo un error al descontar inventario de materia prima. Verifica el stock manualmente.';
-                }
-            }
-        } else if (payload.tipo === 'producto_terminado') {
-            const receta = recetasCompletas.find(r => r.id === payload.referenciaId);
-            if (receta) {
-                let huboErrorDescuento = false;
-
-                // Descontar materia prima
-                for (const rmp of (receta.materiaPrima || [])) {
-                    const tallosConsumidos = rmp.cantidad * Number(payload.cantidad);
-                    const mpItem = materiaPrima.find(m => m.id === rmp.materiaPrimaId);
-                    if (mpItem) {
-                        const nuevoStock = Math.max(0, (Number(mpItem.cantidadTotal) || 0) - tallosConsumidos);
-                        try {
-                            await MateriaPrimaClient.actualizarStockMateriaPrima(mpItem.id, nuevoStock);
-                            stocksActualizados.materiaPrima.push({ id: mpItem.id, cantidadTotal: nuevoStock });
-                        } catch (e) {
-                            console.error('Error al descontar materia prima (prod. term.):', e);
-                            huboErrorDescuento = true;
-                        }
-                    }
-                }
-                // Descontar materiales
-                for (const rm of (receta.materiales || [])) {
-                    const insumosConsumidos = rm.cantidad * Number(payload.cantidad);
-                    const matItem = materiales.find(m => m.id === rm.materialId);
-                    if (matItem) {
-                        const nuevoStock = Math.max(0, (Number(matItem.cantidad) || 0) - insumosConsumidos);
-                        try {
-                            await MaterialClient.actualizarStockMaterial(matItem.id, nuevoStock);
-                            stocksActualizados.materiales.push({ id: matItem.id, cantidad: nuevoStock });
-                        } catch (e) {
-                            console.error('Error al descontar material (prod. term.):', e);
-                            huboErrorDescuento = true;
-                        }
-                    }
-                }
-
-                if (huboErrorDescuento) {
-                    mensajeExito = '️ Merma de producto registrada, pero hubo un error descontando algunos componentes del inventario. Verifica el stock manualmente.';
-                } else {
-                    mensajeExito = `Merma de producto terminado registrada e inventario ajustado según la receta "${receta.nombre}".`;
-                }
-            }
-        }
-
-        return { success: true, data: { nuevaMerma: nuevaMermaObj, stocksActualizados, mensajeExito } };
-    } catch (error) {
-        console.error('Error en registrarMermaConDescuento:', error);
-        return { success: false, error };
     }
-}
 }

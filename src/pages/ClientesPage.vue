@@ -50,7 +50,7 @@
 
 <script>
 import { PlusIcon } from '@heroicons/vue/24/outline'
-import ClientesClient from '../client/ClientesClient'
+import ClienteClient from '../client/ClienteClient'
 import ClienteList from '../components/clientes/ClienteList.vue'
 import ClienteForm from '../components/clientes/ClienteForm.vue'
 import Alertas from '../components/Alertas.vue'
@@ -139,9 +139,9 @@ export default {
 
       let response;
       if (payload.id) {
-        response = await ClientesClient.actualizarCliente(payload.id, payload)
+        response = await ClienteClient.actualizarCliente(payload.id, payload)
       } else {
-        response = await ClientesClient.agregarCliente(payload)
+        response = await ClienteClient.agregarCliente(payload)
       }
 
       this.guardando = false
@@ -156,7 +156,7 @@ export default {
     },
     async confirmarEliminar(cliente) {
 
-      const response = await ClientesClient.eliminarCliente(cliente.id)
+      const response = await ClienteClient.eliminarCliente(cliente.id)
 
       if (response.success) {
         this.mostrarMensaje('exito', `Cliente "${cliente.nombre}" eliminado correctamente`)

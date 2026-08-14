@@ -77,9 +77,6 @@ export default {
     }
   },
 
-  /**
-   * Obtiene la lista de todas las materias primas desde Supabase
-   */
   async obtenerMateriaPrima() {
     try {
       const { data, error } = await supabase

@@ -129,7 +129,7 @@ input {
 input:focus {
     border-color: var(--primary);
     background: var(--bg);
-    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+    box-shadow: 0 0 0 4px var(--primary-bg);
 }
 
 button {

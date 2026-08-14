@@ -1,6 +1,6 @@
 <template>
-  <InventoryTable title="Recetas Existentes" :items="recetas" :loading="cargando"
-      item-label="recetas creadas" empty-text="No hay recetas registradas"
+  <InventarioTable titulo="Recetas Existentes" :items="recetas" :cargando="cargando"
+      etiqueta-item="recetas" texto-vacio="No hay recetas registradas"
       @actualizar="$emit('actualizar')" :show-sync="false">
       <template #title-icon><BookOpenIcon class="icon-lg text-primary" /></template>
       <template #header>
@@ -26,17 +26,17 @@
               </button>
           </td>
       </template>
-  </InventoryTable>
+  </InventarioTable>
 </template>
 
 <script>
 import { BookOpenIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline'
-import InventoryTable from '../shared/InventoryTable.vue'
+import InventarioTable from '../shared/InventarioTable.vue'
 
 export default {
   name: 'RecetaList',
   components: {
-      InventoryTable,
+      InventarioTable,
       BookOpenIcon,
       PencilIcon,
       TrashIcon

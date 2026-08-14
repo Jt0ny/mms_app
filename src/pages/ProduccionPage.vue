@@ -21,11 +21,11 @@
             <Alertas :mensaje="mensaje" />
 
             <div class="page-grid page-grid-produccion">
-                <ProduccionForm :guardando="guardando" :ultima-guardada="ultimaGuardada" :edicion="editingProduccion"
+                <ProduccionForm :guardando="guardando" :ultima-guardada="ultimaGuardada" :edicion="produccionEnEdicion"
                     :categorias-permitidas="categoriasRecetasAsignadas" :cantidades-externas="cantidadesExternas"
                     :limites-por-categoria="limitesPorCategoria" @guardar="guardarProduccion"
                     @notificar="mostrarMensaje($event.tipo, $event.texto, $event.duracion)"
-                    @cancelar="editingProduccion = null" @cantidad-cambiada="sincronizarContadorReceta" />
+                    @cancelar="produccionEnEdicion = null" @cantidad-cambiada="sincronizarContadorReceta" />
 
                 <!-- Panel de recetas: muestra solo las asignadas o mensaje vacío -->
                 <div v-if="sinPlanificacion && !cargandoPlanificacion" class="empty-state-card">
@@ -103,7 +103,7 @@ export default {
             ultimaGuardada: null,
             producciones: [],
             cargandoProducciones: false,
-            editingProduccion: null
+            produccionEnEdicion: null
         }
     },
 
@@ -116,7 +116,7 @@ export default {
                 if (!newVal) return
                 // Resetear estado del operador anterior
                 this.resetearContadores()
-                this.editingProduccion = null
+                this.produccionEnEdicion = null
 
                 // Cargar producciones PRIMERO, luego planificación (que depende de producciones)
                 await this.cargarProducciones()
@@ -162,7 +162,7 @@ export default {
                 this.mostrarMensaje('exito', payload.id ? 'Producción actualizada correctamente' : 'Producción registrada correctamente')
                 
                 this.ultimaGuardada = new Date().toISOString()
-                this.editingProduccion = null
+                this.produccionEnEdicion = null
                 await this.cargarProducciones()
 
                 // Evaluar si la producción registrada completa algún pedido pendiente
@@ -191,7 +191,7 @@ export default {
         },
 
         editarProduccion(p) {
-            this.editingProduccion = p
+            this.produccionEnEdicion = p
             this.$nextTick(() => {
                 const el = document.querySelector('.produccion-form-card')
                 if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'start' })

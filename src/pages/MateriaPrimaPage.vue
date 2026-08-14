@@ -17,8 +17,8 @@
                         @archivo-seleccionado="procesarArchivo" />
 
                     <!-- INVENTARIO -->
-                    <InventoryTable title="Inventario Actual" :items="inventarioActual" :loading="cargandoInventario"
-                        item-label="variedades en inventario" empty-text="No hay datos en el inventario"
+                    <InventarioTable titulo="Inventario Actual" :items="inventarioActual" :cargando="cargandoInventario"
+                        etiqueta-item="insumos" texto-vacio="No hay materia prima registrada"
                         @actualizar="cargarInventario(true)" @sincronizar="sincronizarAPI">
                         <template #title-icon><SunIcon class="icon-lg text-white" /></template>
                         <template #header>
@@ -31,13 +31,13 @@
                             <td class="text-quantity">{{ item.cantidadTotal }}</td>
                             <td class="text-date">{{ formatearFecha(item.fechaIngreso) }}</td>
                         </template>
-                    </InventoryTable>
+                    </InventarioTable>
 
                 </div>
 
                 <!-- PANEL DERECHO -->
-                <PreviewTable :items="datosProcesados" :loading="cargando" item-label="variedades encontradas"
-                    confirm-text="Guardar Inventario" loading-text="Guardando..." @cancelar="limpiarDatos"
+                <VistaPreviaTable :items="datosProcesados" :cargando="cargando" etiqueta-item="variedades encontradas"
+                    texto-confirmar="Actualizar Inventario" texto-cargando="Actualizando..." @cancelar="limpiarDatos"
                     @confirmar="confirmarYSubir">
                     <template #header>
                         <th>Variedad</th>
@@ -49,7 +49,7 @@
                         <td class="text-quantity" data-label="Cantidad (Tallos)">{{ item.cantidadTotal }}</td>
                         <td class="text-date" data-label="Fecha Ingreso">{{ item.fechaIngreso }}</td>
                     </template>
-                </PreviewTable>
+                </VistaPreviaTable>
 
             </div>
 
@@ -66,8 +66,8 @@ import { useCatalogos } from '../composables/useCatalogos.js'
 
 import CargaArchivo from '../components/CargaArchivo.vue'
 import Alertas from '../components/Alertas.vue'
-import InventoryTable from '../components/shared/InventoryTable.vue'
-import PreviewTable from '../components/shared/PreviewTable.vue'
+import InventarioTable from '../components/shared/InventarioTable.vue'
+import VistaPreviaTable from '../components/shared/VistaPreviaTable.vue'
 import { useMensajes } from '../composables/useMensajes.js'
 import { obtenerFechaHoy, formatearFecha } from '../utils/date.js'
 import { SunIcon } from '@heroicons/vue/24/outline'
@@ -77,8 +77,8 @@ export default {
     components: {
         CargaArchivo,
         Alertas,
-        InventoryTable,
-        PreviewTable,
+        InventarioTable,
+        VistaPreviaTable,
         SunIcon
     },
 

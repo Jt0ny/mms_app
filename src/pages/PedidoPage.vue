@@ -19,9 +19,9 @@
                     <CargaArchivo nombreModulo="Ventas" :cargando="cargando" @archivo-seleccionado="procesarArchivo" />
 
                     <!-- INVENTARIO -->
-                    <InventoryTable title="Pedidos Pendientes" :items="pedidosPendientes" :loading="cargandoPedidos"
-                        item-label="pedidos en curso" empty-text="No hay datos en los pedidos"
-                        @actualizar="cargarPedidos" @sincronizar="sincronizarAPI">
+                    <InventarioTable titulo="Pedidos Pendientes" :items="pedidosPendientes" :cargando="cargandoPedidos"
+                        etiqueta-item="pedidos pendientes" texto-vacio="No hay pedidos pendientes hoy" @actualizar="cargarPedidos"
+                        @sincronizar="sincronizarAPI">
                         <template #title-icon>
                             <ArchiveBoxIcon class="icon-lg text-white" />
                         </template>
@@ -37,13 +37,13 @@
                             <td class="text-quantity">{{ item.stems }}</td>
 
                         </template>
-                    </InventoryTable>
+                    </InventarioTable>
 
                 </div>
 
                 <!-- PANEL DERECHO -->
-                <PreviewTable :items="datosProcesados" :loading="cargando" item-label="líneas de pedido encontradas"
-                    confirm-text="Guardar Inventario" loading-text="Guardando..." @cancelar="limpiarDatos"
+                <VistaPreviaTable :items="datosProcesados" :cargando="cargando" etiqueta-item="líneas de pedido encontradas"
+                    texto-confirmar="Importar Pedidos" texto-cargando="Importando..." @cancelar="limpiarDatos"
                     @confirmar="confirmarYSubir">
                     <template #header>
                         <th>Cliente (Bill)</th>
@@ -61,7 +61,7 @@
                         <td class="text-quantity" data-label="Tallos">{{ item.stems }}</td>
 
                     </template>
-                </PreviewTable>
+                </VistaPreviaTable>
 
             </div>
 
@@ -71,13 +71,14 @@
 </template>
 <script>
 import PedidoClient from '../client/PedidoClient'
+import SyncLogClient from '../client/SyncLogClient'
 import { useExcel } from '../composables/useExcel.js'
 import { usePedidoExcel } from '../composables/usePedidoExcel.js'
 
 import CargaArchivo from '../components/CargaArchivo.vue'
 import Alertas from '../components/Alertas.vue'
-import InventoryTable from '../components/shared/InventoryTable.vue'
-import PreviewTable from '../components/shared/PreviewTable.vue'
+import InventarioTable from '../components/shared/InventarioTable.vue'
+import VistaPreviaTable from '../components/shared/VistaPreviaTable.vue'
 import { useMensajes } from '../composables/useMensajes.js'
 import { ArchiveBoxIcon } from '@heroicons/vue/24/outline'
 
@@ -86,8 +87,8 @@ export default {
     components: {
         CargaArchivo,
         Alertas,
-        InventoryTable,
-        PreviewTable,
+        InventarioTable,
+        VistaPreviaTable,
         ArchiveBoxIcon
     },
 
@@ -133,6 +134,12 @@ export default {
         },
 
         async sincronizarAPI() {
+            const yaSincronizado = await SyncLogClient.yaSincronizadoHoy('pedidos')
+            if (yaSincronizado) {
+                this.mostrarMensaje('info', 'Los pedidos ya fueron sincronizados hoy')
+                return
+            }
+
             this.cargandoPedidos = true
             this.mostrarMensaje('info', ' Sincronizando con la API externa...', 0)
 
@@ -144,6 +151,7 @@ export default {
                 return
             }
 
+            await SyncLogClient.registrarSync('pedidos')
             this.mostrarMensaje('exito', 'Sincronización exitosa con la API externa')
             await this.cargarPedidos()
         },

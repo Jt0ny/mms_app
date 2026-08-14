@@ -17,8 +17,8 @@
                         @archivo-seleccionado="procesarArchivo" />
 
                     <!-- INVENTARIO -->
-                    <InventoryTable title="Inventario Actual" :items="inventarioActual" :loading="cargandoInventario"
-                        item-label="materiales registrados" empty-text="No hay materiales registrados"
+                    <InventarioTable titulo="Inventario Actual" :items="inventarioActual" :cargando="cargandoInventario"
+                        etiqueta-item="insumos" texto-vacio="No hay materiales registrados"
                         @actualizar="cargarInventario(true)" @sincronizar="sincronizarAPI">
                         <template #title-icon><ArchiveBoxIcon class="icon-lg text-white" /></template>
                         <template #header>
@@ -37,13 +37,13 @@
                                 </button>
                             </td>
                         </template>
-                    </InventoryTable>
+                    </InventarioTable>
 
                 </div>
 
                 <!-- PANEL DERECHO: Preview Excel -->
-                <PreviewTable :items="datosProcesados" :loading="cargando" item-label="materiales encontrados"
-                    confirm-text="Guardar Materiales" loading-text="Guardando..." @cancelar="limpiarDatos"
+                <VistaPreviaTable :items="datosProcesados" :cargando="cargando" etiqueta-item="materiales encontrados"
+                    texto-confirmar="Actualizar Inventario" texto-cargando="Actualizando..." @cancelar="limpiarDatos"
                     @confirmar="confirmarYSubir">
                     <template #header>
                         <th>Nombre</th>
@@ -55,7 +55,7 @@
                         <td class="text-quantity" data-label="Cantidad">{{ item.cantidad }}</td>
                         <td class="text-date" data-label="Descripción">{{ item.descripcion || '-' }}</td>
                     </template>
-                </PreviewTable>
+                </VistaPreviaTable>
 
             </div>
 
@@ -76,8 +76,8 @@ import { useCatalogos } from '../composables/useCatalogos.js'
 import CargaArchivo from '../components/CargaArchivo.vue'
 import Alertas from '../components/Alertas.vue'
 import MaterialForm from '../components/materiales/MaterialForm.vue'
-import InventoryTable from '../components/shared/InventoryTable.vue'
-import PreviewTable from '../components/shared/PreviewTable.vue'
+import InventarioTable from '../components/shared/InventarioTable.vue'
+import VistaPreviaTable from '../components/shared/VistaPreviaTable.vue'
 import { useMensajes } from '../composables/useMensajes.js'
 import { TrashIcon, ArchiveBoxIcon } from '@heroicons/vue/24/outline'
 
@@ -87,8 +87,8 @@ export default {
         MaterialForm,
         CargaArchivo,
         Alertas,
-        InventoryTable,
-        PreviewTable,
+        InventarioTable,
+        VistaPreviaTable,
         TrashIcon,
         ArchiveBoxIcon
     },
@@ -193,7 +193,7 @@ export default {
 
             if (response.success) {
                 this.mostrarMensaje('exito', 'Material agregado')
-                this.resetForm()
+                this.resetearFormulario()
                 await this.cargarInventario(true)
             } else {
                 this.mostrarMensaje('error', 'Error al guardar material')
@@ -212,7 +212,7 @@ export default {
         },
 
         // ── Reset ──
-        resetForm() {
+        resetearFormulario() {
             this.nuevoMaterial = {
                 nombre: '',
                 cantidad: null,

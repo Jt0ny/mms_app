@@ -34,7 +34,7 @@ export default {
   },
 
   // SESSION — Verifica si hay sesión activa
-  async getSession() {
+  async obtenerSesion() {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) return null
 

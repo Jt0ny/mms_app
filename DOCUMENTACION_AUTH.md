@@ -224,5 +224,32 @@ Durante la implementación surgieron dos puntos clave que requirieron correcció
    - **Solución:** Se implementó una doble validación en memoria (`mapExistentesPorId` y `mapExistentesPorNombre`). Ahora el código busca coincidencias tanto por ID como por el `nombre` exacto (normalizado a minúsculas). Esto unifica el registro y evita duplicados en el inventario.
 
 2. **Privilegios de Mermas (Corrección de Alcance):**
-   - Inicialmente se había planteado que los operadores pudieran registrar sus propias mermas durante la producción.
    - Por regla de negocio estricta, se corrigió sobre la marcha: **solo el supervisor puede declarar y eliminar mermas**. Se actualizó la política SQL de `mermas` (`mermas_insert_supervisor`) para rechazar cualquier intento de inserción proveniente de un operador.
+
+---
+
+## 7. Optimización de Rendimiento con RPCs (Remote Procedure Calls)
+
+Hemos migrado con éxito las 4 operaciones más críticas y pesadas de la aplicación desde Javascript en el frontend hacia funciones RPC atómicas en PostgreSQL (Supabase).
+
+### ¿Qué logramos?
+- **Rendimiento Excepcional:** Las operaciones pesadas que requerían descargar miles de filas a la RAM del navegador (especialmente el Dashboard y las Sincronizaciones) ahora se ejecutan en milisegundos directamente en el servidor.
+- **Transaccionalidad (Seguridad):** Las actualizaciones de inventario al registrar Mermas y Producciones ahora son atómicas. Si dos usuarios registran mermas al mismo tiempo, es matemáticamente imposible que el stock se corrompa.
+- **Reducción de Código:** Hemos borrado más de 400 líneas de código complejo (bucles, filtros, validaciones) en el Frontend.
+
+### 7.1 Fase 1: Registro de Producción (`rpc_registrar_produccion`)
+- **Script SQL:** Se creó una función que recibe un JSONB con la cabecera y el detalle de la producción. Inserta en `producciones` y loopea el detalle para insertar en `produccion_detalle`.
+- **Frontend (`ProduccionClient.js`):** Se eliminó el `.insert()` múltiple y ahora envía todo en un solo paquete.
+
+### 7.2 Fase 2: Mermas con Descuento (`rpc_registrar_merma`)
+- **Script SQL:** Inserta la merma y realiza un `UPDATE` matemático directo a las tablas `materia_prima` y `materiales` si se aplica el descuento.
+- **Tipado Fuerte:** Se aseguró que la función soporte IDs tipo `TEXT` (VARCHAR) para la materia prima y materiales.
+- **Frontend (`MermaClient.js`):** Convertido a un único llamado RPC que ejecuta toda la transacción.
+
+### 7.3 Fase 3: Sincronización de Pedidos (`rpc_sincronizar_pedidos`)
+- **Script SQL:** Realiza un Upsert inteligente sobre la tabla `pedidos` y renueva masivamente los `pedido_detalles`.
+- **Frontend (`PedidoClient.js`):** El cliente sigue validando inteligentemente la existencia de flores/clientes en Javascript usando caché, pero la inserción masiva a la base de datos de miles de pedidos ahora se hace con 1 solo "click" de red.
+
+### 7.4 Fase 4: KPIs del Dashboard (`rpc_obtener_kpis_dashboard`)
+- **Script SQL:** Una función gigante en SQL que calcula las Mermas por Motivos, Alertas de Stock insuficientes basado en planificaciones, Producción de Operadores, y Pedidos del día.
+- **Frontend (`DashboardClient.js`):** Se borraron casi 300 líneas de lógica de agregación en arrays (`.reduce`, `.map`, `.filter`). Ahora el Dashboard simplemente recibe el JSON pre-masticado listo para pintar los gráficos.

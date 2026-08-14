@@ -242,7 +242,7 @@ export default {
     padding: 8px 12px;
     border: 0;
     border-radius: 6px;
-    background: var(--primary, #2f6fed);
+    background: var(--primary);
     color: white;
     font-weight: 600;
     cursor: pointer;

@@ -3,25 +3,25 @@
         <div class="data-card-header">
             <h2 class="flex-align-center gap-8">
                 <slot name="title-icon" />
-                {{ title }}
+                {{ titulo }}
             </h2>
             <div class="header-actions">
-                <button v-if="showSync" @click="$emit('sincronizar')" :disabled="loading" class="btn-sync">
+                <button v-if="showSync" @click="$emit('sincronizar')" :disabled="cargando" class="btn-sync">
                     <BoltIcon class="icon-sm icon-inline" /> Sincronizar API
                 </button>
-                <button @click="$emit('actualizar')" :disabled="loading" class="btn-refresh">
-                    <ArrowPathIcon class="icon-sm icon-inline" :class="{ 'spin': loading }" /> {{ loading ? 'Cargando...' : 'Actualizar' }}
+                <button @click="$emit('actualizar')" :disabled="cargando" class="btn-refresh">
+                    <ArrowPathIcon class="icon-sm icon-inline" :class="{ 'spin': cargando }" /> {{ cargando ? 'Cargando...' : 'Actualizar' }}
                 </button>
             </div>
         </div>
 
-        <div v-if="loading" class="loading-state">
+        <div v-if="cargando" class="loading-state">
             <p>Cargando inventario...</p>
         </div>
 
         <div v-else-if="items.length > 0" class="data-card-content">
             <div class="data-card-info">
-                <p><strong>{{ items.length }}</strong> {{ itemLabel }}</p>
+                <p><strong>{{ items.length }}</strong> {{ etiquetaItem }}</p>
             </div>
             <table class="data-card-table">
                 <thead>
@@ -38,7 +38,7 @@
         </div>
 
         <div v-else class="empty-state">
-            <p>{{ emptyText }}</p>
+            <p>{{ textoVacio }}</p>
         </div>
     </div>
 </template>
@@ -47,14 +47,14 @@
 import { BoltIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
 
 export default {
-    name: 'InventoryTable',
+    name: 'InventarioTable',
     components: { BoltIcon, ArrowPathIcon },
     props: {
-        title: { type: String, required: true },
+        titulo: { type: String, required: true },
         items: { type: Array, default: () => [] },
-        loading: { type: Boolean, default: false },
-        itemLabel: { type: String, default: 'registros' },
-        emptyText: { type: String, default: 'No hay datos' },
+        cargando: { type: Boolean, default: false },
+        etiquetaItem: { type: String, default: 'registros' },
+        textoVacio: { type: String, default: 'No hay datos' },
         showSync: { type: Boolean, default: true }
     },
     emits: ['actualizar', 'sincronizar']
@@ -62,13 +62,6 @@ export default {
 </script>
 
 <style scoped>
-.spin {
-    animation: spin 1s linear infinite;
-}
-@keyframes spin {
-    100% { transform: rotate(360deg); }
-}
-
 .btn-refresh {
     background: rgba(255, 255, 255, 0.2);
     color: white;

@@ -67,11 +67,11 @@ export default {
 .rol-actual {
     padding: 11px 14px;
     border-radius: 10px;
-    border: 1px solid #dcdcdc;
+    border: 1px solid var(--border);
 }
 
 .rol-actual.vacio {
-    color: #888;
+    color: var(--text-light);
 }
 
 .rol-opciones {
@@ -83,14 +83,14 @@ export default {
 .rol-opcion {
     padding: 9px 12px;
     border-radius: 999px;
-    border: 1px solid #dcdcdc;
+    border: 1px solid var(--border);
     cursor: pointer;
     user-select: none;
 }
 
 .rol-opcion.activa {
-    background: #2c7be5;
+    background: var(--primary);
     color: white;
-    border-color: #2c7be5;
+    border-color: var(--primary);
 }
 </style>

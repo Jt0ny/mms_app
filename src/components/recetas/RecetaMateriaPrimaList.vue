@@ -59,7 +59,7 @@
                         <!-- CANTIDAD -->
                         <td>
                             <input type="number" min="1" class="qty-input" :disabled="!esSeleccionado(item.id)"
-                                :value="getCantidad(item.id)"
+                                :value="obtenerCantidad(item.id)"
                                 @input="$emit('cantidad', item.id, $event.target.value)" />
                         </td>
                     </tr>
@@ -111,7 +111,7 @@ export default {
             return this.seleccionados.some(item => item.id === id)
         },
 
-        getCantidad(id) {
+        obtenerCantidad(id) {
             const item = this.seleccionados.find(item => item.id === id)
             return item ? item.cantidad : 1
         }

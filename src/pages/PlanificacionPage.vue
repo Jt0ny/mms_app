@@ -11,7 +11,7 @@
             <Alertas :mensaje="mensaje" />
 
             <!-- Vista de planificaciones guardadas (Si ya existe una planificación para este día) -->
-            <PlanificacionVista v-if="planificacionesGuardadas.length > 0" :planificaciones="planificacionesGuardadas"
+            <PlanificacionView v-if="planificacionesGuardadas.length > 0" :planificaciones="planificacionesGuardadas"
                 :fecha-seleccionada="fechaSeleccionada" :eliminando="eliminandoPlanificaciones"
                 @eliminar="eliminarPlanificacionesDelDia" />
 
@@ -64,7 +64,7 @@ import PlanificacionAsignacion from '../components/planificacion/PlanificacionAs
 import PlanificacionResumen from '../components/planificacion/PlanificacionResumen.vue'
 import PlanificacionOperadorCard from '../components/planificacion/PlanificacionOperadorCard.vue'
 import PlanificacionMapeoRecetas from '../components/planificacion/PlanificacionMapeoRecetas.vue'
-import PlanificacionVista from '../components/planificacion/PlanificacionVista.vue'
+import PlanificacionView from '../components/planificacion/PlanificacionView.vue'
 import Alertas from '../components/Alertas.vue'
 import { useMensajes } from '../composables/useMensajes.js'
 import { obtenerFechaHoy } from '../utils/date.js'
@@ -78,7 +78,7 @@ export default {
         PlanificacionResumen,
         PlanificacionOperadorCard,
         PlanificacionMapeoRecetas,
-        PlanificacionVista,
+        PlanificacionView,
         Alertas
     },
 

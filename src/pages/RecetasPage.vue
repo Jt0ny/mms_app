@@ -22,12 +22,12 @@
                 <div class="grid-halves">
 
                     <!-- MATERIALES -->
-                    <RecetaMaterialesTabla :materiales="materiales" :seleccionados="materialesSeleccionados"
+                    <RecetaMaterialesList :materiales="materiales" :seleccionados="materialesSeleccionados"
                         :cargando="cargandoMateriales" @actualizar="cargarMateriales(true)" @alternar="alternarMaterial"
                         @cantidad="actualizarCantidadMaterial" />
 
                     <!-- MATERIA PRIMA -->
-                    <RecetaMateriaPrimaTabla :materiaPrima="materiaPrima" :seleccionados="materiaPrimaSeleccionada"
+                    <RecetaMateriaPrimaList :materiaPrima="materiaPrima" :seleccionados="materiaPrimaSeleccionada"
                         :cargando="cargandoMateriaPrima" @actualizar="cargarMateriaPrima(true)"
                         @alternar="alternarMateriaPrima" @cantidad="actualizarCantidadMateriaPrima" />
 
@@ -48,8 +48,8 @@ import PedidoClient from '../client/PedidoClient'
 import { useCatalogos } from '../composables/useCatalogos.js'
 
 import RecetaForm from '../components/recetas/RecetaForm.vue'
-import RecetaMaterialesTabla from '../components/recetas/RecetaMaterialesTabla.vue'
-import RecetaMateriaPrimaTabla from '../components/recetas/RecetaMateriaPrimaTabla.vue'
+import RecetaMaterialesList from '../components/recetas/RecetaMaterialesList.vue'
+import RecetaMateriaPrimaList from '../components/recetas/RecetaMateriaPrimaList.vue'
 import RecetaList from '../components/recetas/RecetaList.vue'
 import Alertas from '../components/Alertas.vue'
 import { useMensajes } from '../composables/useMensajes.js'
@@ -58,8 +58,8 @@ export default {
 
     components: {
         RecetaForm,
-        RecetaMaterialesTabla,
-        RecetaMateriaPrimaTabla,
+        RecetaMaterialesList,
+        RecetaMateriaPrimaList,
         RecetaList,
         Alertas
     },
