@@ -13,6 +13,33 @@ export function useProduccionForm(props, emit) {
         fecha: obtenerFechaHoy()
     })
 
+    const resetearCantidades = () => {
+        const cantidades = {}
+        categorias.value.forEach(categoria => {
+            cantidades[categoria] = 0
+        })
+        cantidadesPorCategoria.value = cantidades
+    }
+
+    const validarYAsignarCantidad = (categoria, nuevaCantidad) => {
+        const limite = props.limitesPorCategoria?.[categoria]
+        let cantidadFinal = nuevaCantidad
+
+        if (limite !== undefined && cantidadFinal >= limite) {
+            if (cantidadFinal > limite) {
+                cantidadFinal = limite
+                notificar('info', `El total planificado para la categoría ${categoria} es ${limite} y ya ha sido completado.`, 3000)
+            } else if (cantidadFinal === limite) {
+                notificar('exito', `¡Has completado la cantidad requerida para ${categoria}!`, 3000)
+            }
+        }
+
+        cantidadesPorCategoria.value = {
+            ...cantidadesPorCategoria.value,
+            [categoria]: cantidadFinal
+        }
+    }
+
     const totalDelDia = computed(() => {
         return categorias.value.reduce((total, categoria) => {
             return total + obtenerCantidadNumerica(categoria)
@@ -25,11 +52,7 @@ export function useProduccionForm(props, emit) {
 
     watch(() => props.ultimaGuardada, (newVal, oldVal) => {
         if (!newVal || newVal === oldVal) return
-        const cantidades = {}
-        categorias.value.forEach(categoria => {
-            cantidades[categoria] = 0
-        })
-        cantidadesPorCategoria.value = cantidades
+        resetearCantidades()
     })
 
     watch(() => props.edicion, () => {
@@ -50,22 +73,7 @@ export function useProduccionForm(props, emit) {
             const delta = total - anterior
             if (delta > 0) {
                 const actual = Number(cantidadesPorCategoria.value[categoria] || 0)
-                const limite = props.limitesPorCategoria?.[categoria]
-                let nuevaCantidad = actual + delta
-                
-                if (limite !== undefined && nuevaCantidad >= limite) {
-                    if (nuevaCantidad > limite) {
-                        nuevaCantidad = limite
-                        notificar('info', `El total planificado para la categoría ${categoria} es ${limite} y ya ha sido completado.`, 3000)
-                    } else if (nuevaCantidad === limite) {
-                        notificar('exito', `¡Has completado la cantidad requerida para ${categoria}!`, 3000)
-                    }
-                }
-                
-                cantidadesPorCategoria.value = {
-                    ...cantidadesPorCategoria.value,
-                    [categoria]: nuevaCantidad
-                }
+                validarYAsignarCantidad(categoria, actual + delta)
             }
         }
     })
@@ -105,11 +113,7 @@ export function useProduccionForm(props, emit) {
 
         categorias.value = [...new Set(catList)].sort((a, b) => a.localeCompare(b, 'es'))
         
-        const cantidades = {}
-        categorias.value.forEach(categoria => {
-            cantidades[categoria] = 0
-        })
-        cantidadesPorCategoria.value = cantidades
+        resetearCantidades()
         
         cargandoCategorias.value = false
     }
@@ -142,23 +146,9 @@ export function useProduccionForm(props, emit) {
     }
 
     const actualizarCantidad = (categoria, valor) => {
-        let cantidad = Math.max(0, Math.trunc(Number(valor) || 0))
-        const limite = props.limitesPorCategoria?.[categoria]
-
-        if (limite !== undefined && cantidad >= limite) {
-            if (cantidad > limite) {
-                cantidad = limite
-                notificar('info', `El total planificado para la categoría ${categoria} es ${limite} y ya ha sido completado.`, 3000)
-            } else if (cantidad === limite) {
-                notificar('exito', `¡Has completado la cantidad requerida para ${categoria}!`, 3000)
-            }
-        }
-
-        cantidadesPorCategoria.value = {
-            ...cantidadesPorCategoria.value,
-            [categoria]: cantidad
-        }
-        emit('cantidad-cambiada', { categoria, cantidad })
+        const cantidad = Math.max(0, Math.trunc(Number(valor) || 0))
+        validarYAsignarCantidad(categoria, cantidad)
+        emit('cantidad-cambiada', { categoria, cantidad: cantidadesPorCategoria.value[categoria] })
     }
 
     const construirDetalle = () => {
@@ -189,11 +179,7 @@ export function useProduccionForm(props, emit) {
     }
 
     const cancelar = () => {
-        const cantidades = {}
-        categorias.value.forEach(categoria => {
-            cantidades[categoria] = 0
-        })
-        cantidadesPorCategoria.value = cantidades
+        resetearCantidades()
         form.fecha = obtenerFechaHoy()
         emit('cancelar')
     }

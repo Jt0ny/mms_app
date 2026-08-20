@@ -1,6 +1,6 @@
 <template>
   <div class="data-card h-full">
-    <div class="data-card-header">
+    <div class="data-card-header neutral">
       <div class="title-section">
         <div class="flex-align-center gap-8">
           <ClipboardDocumentListIcon class="icon-lg text-primary" />
@@ -12,7 +12,7 @@
       </div>
 
       <!-- Filtros -->
-      <div class="filters">
+      <div class="filter-bar">
         <input v-model="filtros.buscar" placeholder="Buscar por nombre o motivo..."
           class="filter-input filter-search" />
         <div class="select-wrapper">
@@ -139,36 +139,6 @@ export default {
 </script>
 
 <style scoped>
-/* Filtros */
-.filters {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.filter-input,
-.filter-select {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 13px;
-  background: var(--bg);
-  color: var(--text);
-  transition: all 0.3s ease;
-  outline: none;
-}
-
-.filter-input:focus,
-.filter-select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-bg);
-}
-
-.filter-search {
-  min-width: 200px;
-}
-
 .filter-date {
   max-width: 140px;
 }
@@ -208,53 +178,25 @@ export default {
   white-space: nowrap;
 }
 
-/* Sobreescritura local para que solo este componente tenga el fondo blanco en su header */
-.data-card-header {
-  background: var(--bg);
-  border-bottom: 1px solid var(--border-light);
-  color: var(--text);
-}
-.data-card-header h2 {
-  color: var(--text-h);
-}
-.data-card-header p.data-card-subtitle {
-  color: var(--text-light);
-  opacity: 1;
-}
 
 .badge-materia_prima {
-  background: rgba(219, 39, 119, 0.1);
-  color: #db2777;
+  background: var(--color-materia-prima-bg);
+  color: var(--color-materia-prima);
 }
 
 .badge-material {
-  background: rgba(37, 99, 235, 0.1);
-  color: #2563eb;
+  background: var(--color-material-bg);
+  color: var(--color-material);
 }
 
 .badge-producto_terminado {
-  background: rgba(124, 58, 237, 0.1);
-  color: #7c3aed;
+  background: var(--color-producto-terminado-bg);
+  color: var(--color-producto-terminado);
 }
 
-/* Acciones */
-.actions-header {
-  text-align: right;
-}
 
-.actions-col {
-  text-align: right;
-}
 
 @media (max-width: 768px) {
-  .filters {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filter-search,
-  .filter-select,
   .filter-date {
     width: 100%;
     max-width: none;

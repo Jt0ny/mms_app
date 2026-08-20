@@ -1,10 +1,6 @@
 import { supabase } from "./supabase";
 
 export default {
-  /**
-   * Obtiene la lista de todas las recetas de producción desde Supabase,
-   * incluyendo sus materiales y materia prima relacionados.
-   */
   async obtenerRecetas() {
     try {
       const { data, error } = await supabase

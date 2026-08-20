@@ -5,9 +5,6 @@ import { obtenerFechaHoy } from "../utils/date.js";
 const API_URL = import.meta.env.VITE_API_MATERIA_PRIMA_URL;
 
 export default {
-  /**
-   * Sincroniza la materia prima desde la API externa (puerto 8070) hacia Supabase
-   */
   async sincronizarConSupabase() {
     try {
 
@@ -88,7 +85,7 @@ export default {
         throw error;
       }
 
-      // Mapear los nombres de campos para asegurar compatibilidad con camelCase y snake_case en los componentes Vue
+      // Mapear los nombres de campos
       const dataMapped = (data || []).map(item => ({
         id: item.id,
         variedad: item.variedad,

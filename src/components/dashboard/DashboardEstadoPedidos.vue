@@ -114,7 +114,7 @@ export default {
 .column-title {
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--text-main);
+    color: var(--text-h);
     margin: 0;
     padding-bottom: 8px;
     border-bottom: 2px solid var(--border-light);

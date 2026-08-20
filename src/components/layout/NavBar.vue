@@ -16,9 +16,29 @@
         <li class="active">Gestion de manufactura</li>
       </ul>
 
-      <!-- Botón -->
+      <!-- Acciones / Usuario -->
       <div class="acciones">
-        <button class="btn btn-primary" type="button" @click="onAction">{{ buttonLabel }}</button>
+        <!-- Usuario Logueado (Bloque Fijo) -->
+        <div v-if="isLogged" class="user-profile-block">
+          <div class="user-profile-info">
+            <span class="user-profile-name">{{ usuarioNombre }}</span>
+            <span class="user-profile-role">{{ rol }}</span>
+          </div>
+          <button class="logout-icon-btn" @click="onAction" title="Salir del sistema">
+            <ArrowRightOnRectangleIcon class="icon-lg" />
+          </button>
+        </div>
+
+        <!-- Usuario No Logueado -->
+        <div v-else class="user-profile-block">
+          <div class="user-profile-info">
+            <span class="user-profile-name">Identificarse</span>
+            <!--<span class="user-profile-role">Iniciar sesión</span>-->
+          </div>
+          <button class="login-icon-btn" @click="onAction" title="Ingresar">
+            <ArrowLeftOnRectangleIcon class="icon-lg" />
+          </button>
+        </div>
       </div>
 
     </nav>
@@ -27,20 +47,24 @@
 
 <script>
 import { useAuth } from '../../composables/useAuth.js'
+import { ArrowRightOnRectangleIcon, ArrowLeftOnRectangleIcon } from '@heroicons/vue/24/outline'
 
 export default {
   name: "Navbar",
+  components: {
+    ArrowRightOnRectangleIcon,
+    ArrowLeftOnRectangleIcon
+  },
   emits: ['ingresar', 'logout'],
 
   setup() {
-    const { rol, isLogged } = useAuth()
-    return { rol, isLogged }
+    const { rol, isLogged, usuarioNombre } = useAuth()
+    return { rol, isLogged, usuarioNombre }
   },
 
-  computed: {
-    buttonLabel() {
-      return this.isLogged ? 'Salir del sistema' : 'Ingresar'
-    }
+  setup() {
+    const { rol, isLogged, usuarioNombre } = useAuth()
+    return { rol, isLogged, usuarioNombre }
   },
 
   methods: {
@@ -56,6 +80,67 @@ export default {
 </script>
 
 <style scoped>
+/* User Profile Block Styles */
+.user-profile-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.user-profile-name {
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.user-profile-role {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  text-transform: capitalize;
+  line-height: 1.2;
+}
+
+.logout-icon-btn,
+.login-icon-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-left: 4px;
+  border: 1px solid transparent;
+}
+
+.logout-icon-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  /* bg-red-500 tint */
+  color: #fca5a5;
+  /* text-red-300 */
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.login-icon-btn:hover {
+  background: rgba(16, 185, 129, 0.15);
+  /* bg-green-500 tint */
+  color: #6ee7b7;
+  /* text-green-300 */
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
 .container-nav {
   width: 100%;
   background: var(--secondary);

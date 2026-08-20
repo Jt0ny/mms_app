@@ -6,16 +6,16 @@
                 {{ titulo }}
             </h2>
             <div class="header-actions">
-                <button v-if="showSync" @click="$emit('sincronizar')" :disabled="cargando" class="btn-sync">
+                <button v-if="showSync" @click="$emit('sincronizar')" :disabled="cargando" class="btn-header-outline">
                     <BoltIcon class="icon-sm icon-inline" /> Sincronizar API
                 </button>
-                <button @click="$emit('actualizar')" :disabled="cargando" class="btn-refresh">
+                <button @click="$emit('actualizar')" :disabled="cargando" class="btn-header-outline">
                     <ArrowPathIcon class="icon-sm icon-inline" :class="{ 'spin': cargando }" /> {{ cargando ? 'Cargando...' : 'Actualizar' }}
                 </button>
             </div>
         </div>
 
-        <div v-if="cargando" class="loading-state">
+        <div v-if="cargando" class="table-loading-state">
             <p>Cargando inventario...</p>
         </div>
 
@@ -37,7 +37,7 @@
             </table>
         </div>
 
-        <div v-else class="empty-state">
+        <div v-else class="table-empty-state">
             <p>{{ textoVacio }}</p>
         </div>
     </div>
@@ -62,60 +62,13 @@ export default {
 </script>
 
 <style scoped>
-.btn-refresh {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.25s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.btn-refresh:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-.btn-refresh:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.btn-sync {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    color: white;
-    padding: 8px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.25s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.loading-state,
-.empty-state {
-    padding: 40px 20px;
-    text-align: center;
-    color: var(--text-light);
-}
-
-
 @media (max-width: 768px) {
     .data-card-header {
         flex-direction: column;
         align-items: flex-start;
     }
 
-    .btn-refresh, .btn-sync {
+    .btn-header-outline {
         width: 100%;
     }
 }

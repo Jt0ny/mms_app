@@ -56,10 +56,10 @@ export default {
     },
     methods: {
         getProgressColor(percentage) {
-            if (percentage >= 100) return '#16a34a' // Verde
-            if (percentage >= 70) return '#2563eb'  // Azul
-            if (percentage >= 35) return '#d97706'  // Naranja
-            return '#dc2626' // Rojo
+            if (percentage >= 100) return 'var(--primary)' // Verde
+            if (percentage >= 70) return 'var(--info)'  // Azul
+            if (percentage >= 35) return 'var(--warning)'  // Naranja
+            return 'var(--error)' // Rojo
         }
     }
 }

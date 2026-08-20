@@ -224,8 +224,4 @@ export default {
 </script>
 
 <style scoped>
-.actions-column {
-    display: flex;
-    gap: 8px;
-}
 </style>

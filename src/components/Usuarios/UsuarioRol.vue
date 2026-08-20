@@ -7,8 +7,8 @@
                 {{ modelo || 'Selecciona un rol' }}
             </div>
 
-            <div class="rol-opciones">
-                <div v-for="rol in roles" :key="rol" class="rol-opcion" :class="{ activa: rol === modelo }"
+            <div class="chip-options">
+                <div v-for="rol in roles" :key="rol" class="chip-option" :class="{ activa: rol === modelo }"
                     role="button" tabindex="0" @click="seleccionarRol(rol)" @keydown.enter.prevent="seleccionarRol(rol)"
                     @keydown.space.prevent="seleccionarRol(rol)">
                     {{ rol }}
@@ -74,23 +74,4 @@ export default {
     color: var(--text-light);
 }
 
-.rol-opciones {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.rol-opcion {
-    padding: 9px 12px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    user-select: none;
-}
-
-.rol-opcion.activa {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-}
 </style>

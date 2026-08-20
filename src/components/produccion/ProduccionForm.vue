@@ -21,17 +21,17 @@
 
         <form v-else class="produccion-form" @submit.prevent="enviarFormulario">
             <div class="stats-grid">
-                <article class="stat-card">
+                <article class="stat-card simple">
                     <span>Categorías</span>
                     <strong>{{ categorias.length }}</strong>
                 </article>
 
-                <article class="stat-card">
+                <article class="stat-card simple">
                     <span>Producción total</span>
                     <strong>{{ totalDelDia }}</strong>
                 </article>
 
-                <article class="stat-card">
+                <article class="stat-card simple">
                     <span>Categorías con cantidad registrada</span>
                     <strong>{{ categoriasConCantidad }}</strong>
                 </article>
@@ -49,7 +49,7 @@
                             @click="actualizarCantidad(categoria, obtenerCantidad(categoria) - 1)"
                             aria-label="Restar">−</button>
                         <input :value="obtenerCantidad(categoria)" type="number" min="0" step="1" inputmode="numeric"
-                            class="category-input" @input="actualizarCantidad(categoria, $event.target.value)" />
+                            class="form-input category-input" @input="actualizarCantidad(categoria, $event.target.value)" />
                         <button type="button" class="stepper-btn"
                             @click="actualizarCantidad(categoria, obtenerCantidad(categoria) + 1)"
                             aria-label="Sumar">+</button>
@@ -61,14 +61,13 @@
                 <p class="total-text">
                     Total registrado: <strong>{{ totalDelDia }}</strong>
                 </p>
-
-                <div style="display:flex; gap:8px;">
+                <div class="form-actions-inline">
                     <button v-if="edicion" type="button" class="submit-btn" @click="cancelar"
                         :disabled="guardando">
                         Cancelar
                     </button>
 
-                    <button type="submit" class="submit-btn" :disabled="guardando || cargandoCategorias">
+                    <button type="submit" class="btn btn-primary" :disabled="guardando || cargandoCategorias">
                         {{ guardando ? (edicion ? 'Guardando...' : 'Guardando...') : (edicion ? 'Actualizar producción'
                             : 'Registrar producción') }}
                     </button>
@@ -209,30 +208,7 @@ export default {
     font-weight: 600;
 }
 
-.date-field input,
-.category-input {
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 11px 12px;
-    font: inherit;
-    background: var(--bg);
-    color: var(--text);
-}
 
-.date-field input:focus,
-.category-input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
-}
-
-.empty-state {
-    padding: 22px;
-    border-radius: 14px;
-    background: var(--bg-secondary);
-    border: 1px dashed var(--border);
-    color: var(--text-light);
-}
 
 .produccion-form {
     display: flex;
@@ -246,24 +222,6 @@ export default {
     gap: 14px;
 }
 
-.stat-card {
-    padding: 16px;
-    border-radius: 14px;
-    border: 1px solid var(--border-light);
-    background: var(--bg-secondary);
-}
-
-.stat-card span {
-    display: block;
-    font-size: 13px;
-    color: var(--text-light);
-    margin-bottom: 8px;
-}
-
-.stat-card strong {
-    font-size: clamp(20px, 2vw, 28px);
-    color: var(--text-h);
-}
 
 .category-list {
     display: grid;
@@ -315,26 +273,6 @@ export default {
     color: var(--text-h);
 }
 
-.submit-btn {
-    border: none;
-    border-radius: 12px;
-    padding: 12px 18px;
-    font-weight: 700;
-    color: white;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.submit-btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
-}
-
-.submit-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
 
 @media (max-width: 768px) {
 
@@ -405,5 +343,9 @@ export default {
     .stepper-btn {
         display: none;
     }
+}
+.form-actions-inline {
+  display: flex;
+  gap: 8px;
 }
 </style>

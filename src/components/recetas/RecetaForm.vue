@@ -7,7 +7,7 @@
             <!-- NOMBRE -->
             <label>Nombre</label>
 
-            <input :value="receta.nombre" type="text" placeholder="Ej. Ramo Primavera"
+            <input class="form-input" :value="receta.nombre" type="text" placeholder="Ej. Ramo Primavera"
                 @input="actualizar('nombre', $event.target.value)" required />
 
             <!-- CATEGORÍA -->
@@ -18,7 +18,7 @@
             <!-- INSTRUCCIONES -->
             <label>Instrucciones</label>
 
-            <textarea rows="6" placeholder="Describe el armado de la receta" :value="receta.instrucciones"
+            <textarea class="form-input" rows="6" placeholder="Describe el armado de la receta" :value="receta.instrucciones"
                 @input="actualizar('instrucciones', $event.target.value)" required />
 
             <!-- RESUMEN -->
@@ -30,7 +30,7 @@
 
             <!-- BOTÓN -->
             <div class="actions">
-                <button type="submit" class="btn-submit" :disabled="guardando">
+                <button type="submit" class="btn btn-primary btn-block" :disabled="guardando">
                     {{ guardando ? 'Guardando...' : (receta.id ? 'Actualizar receta' : 'Guardar receta') }}
                 </button>
                 <button v-if="receta.id" type="button" class="btn-cancel" @click="$emit('cancelar')" :disabled="guardando">
@@ -113,16 +113,6 @@ export default {
     color: var(--text-h);
 }
 
-.form-panel input,
-.form-panel textarea,
-.select-input {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    font: inherit;
-}
 
 .form-panel textarea {
     resize: vertical;
@@ -139,28 +129,6 @@ export default {
     gap: 6px;
 }
 
-.btn-submit {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-submit:hover:not(:disabled) {
-    transform: translateY(-1px);
-    opacity: 0.9;
-}
-
-.btn-submit:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
 
 .actions {
     display: flex;
@@ -173,8 +141,8 @@ export default {
     width: 100%;
     padding: 12px;
     background: transparent;
-    color: var(--text-dark, #4b5563);
-    border: 1px solid #d1d5db;
+    color: var(--text);
+    border: 1px solid var(--border);
     border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
@@ -183,7 +151,7 @@ export default {
 }
 
 .btn-cancel:hover:not(:disabled) {
-    background: #f3f4f6;
+    background: var(--bg-secondary);
 }
 
 .btn-cancel:disabled {

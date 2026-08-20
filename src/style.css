@@ -42,6 +42,20 @@
   --alert-warning-text: #92400e;
   --alert-warning-border: #fde68a;
 
+  /* Colores de Dominio */
+  --color-materia-prima: #db2777;
+  --color-materia-prima-bg: rgba(219, 39, 119, 0.1);
+  --color-material: #2563eb;
+  --color-material-bg: rgba(37, 99, 235, 0.1);
+  --color-producto-terminado: #7c3aed;
+  --color-producto-terminado-bg: rgba(124, 58, 237, 0.1);
+  --color-flor: #ec4899;
+  --color-flor-bg: rgba(236, 72, 153, 0.15);
+  --color-follaje: #10b981;
+  --color-follaje-bg: rgba(16, 185, 129, 0.15);
+  --color-empaque: #f59e0b;
+  --color-empaque-bg: rgba(245, 158, 11, 0.15);
+
   font: clamp(15px, 1vw + 0.7rem, 16px)/1.5 var(--sans);
   letter-spacing: 0.2px;
   color: var(--text);
@@ -64,6 +78,7 @@
     --border-light: #20222b;
     --code-bg: #1f2028;
     --shadow: rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+    color-scheme: dark;
   }
 }
 
@@ -95,6 +110,7 @@ input,
 select,
 textarea {
   font: inherit;
+  color: inherit;
 }
 
 input,
@@ -255,9 +271,10 @@ p {
 }
 
 .btn-primary {
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
-  box-shadow: var(--shadow-sm);
+  border: none;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.2);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -423,14 +440,6 @@ p {
   }
 }
 
-.empty-state-card {
-  padding: 40px;
-  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
-  border-radius: 12px;
-  border: 1px dashed var(--border);
-  color: var(--text-light);
-  box-shadow: var(--shadow-sm);
-}
 
 /* Badges (pÃ­ldoras de estado) */
 .badge,
@@ -448,7 +457,7 @@ p {
 }
 
 .badge-cargando {
-  background: var(--bg-alt, #f1f5f9);
+  background: var(--bg-alt, var(--bg-secondary));
   color: var(--text-light);
   padding: 8px 14px;
   border-radius: 999px;
@@ -579,7 +588,7 @@ p {
 .section-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--text-h);
   margin: 0 0 4px 0;
 }
 
@@ -791,6 +800,65 @@ p {
   gap: 24px;
 }
 
+/* =========================================
+   NEW UTILITIES (Fase 3 CSS Refactor)
+   ========================================= */
+
+.btn-header-outline {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-header-outline:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-header-outline:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.table-loading-state,
+.table-empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-light);
+}
+
+.stat-card.simple {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--bg-secondary);
+  box-shadow: none;
+}
+
+.stat-card.simple span {
+  display: block;
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 0;
+}
+
+.stat-card.simple strong {
+  font-size: clamp(20px, 2vw, 28px);
+  color: var(--text-h);
+}
+
 @media (max-width: 1024px) {
   .grid-halves {
     grid-template-columns: 1fr;
@@ -948,14 +1016,27 @@ p {
 }
 
 /* Iconos (Heroicons) */
-.icon-sm { width: 16px; height: 16px; }
-.icon-md { width: 20px; height: 20px; }
-.icon-lg { width: 24px; height: 24px; }
-.icon-inline { 
-  display: inline-block; 
+.icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-md {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-lg {
+  width: 24px;
+  height: 24px;
+}
+
+.icon-inline {
+  display: inline-block;
   vertical-align: text-bottom;
   margin-right: 4px;
 }
+
 .icon-action {
   width: 18px;
   height: 18px;
@@ -964,11 +1045,49 @@ p {
 }
 
 /* Colores de Iconos y Textos utilitarios */
-.text-primary { color: var(--primary); }
-.text-warning { color: var(--warning); }
-.text-error { color: var(--error); }
-.text-info { color: #3b82f6; }
-.text-light { color: var(--text-light); }
+.text-primary {
+  color: var(--primary);
+}
+
+.text-warning {
+  color: var(--warning);
+}
+
+.text-error {
+  color: var(--error);
+}
+
+.text-info {
+  color: #3b82f6;
+}
+
+.text-light {
+  color: var(--text-light);
+}
+
+.text-h {
+  color: var(--text-h);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+/* Acciones en Tablas */
+.actions-col,
+.actions-column,
+.actions-header {
+  text-align: right;
+  width: 90px;
+}
 
 /* Utilidades de Flexbox */
 .flex-align-center {
@@ -989,9 +1108,124 @@ p {
 }
 
 /* Espaciados (Gaps) */
-.gap-4 { gap: 4px; }
-.gap-6 { gap: 6px; }
-.gap-8 { gap: 8px; }
+.gap-4 {
+  gap: 4px;
+}
+
+.gap-6 {
+  gap: 6px;
+}
+
+.gap-8 {
+  gap: 8px;
+}
 
 /* Tamaños adicionales de icono */
-.icon-xl { width: 48px; height: 48px; }
+.icon-xl {
+  width: 48px;
+  height: 48px;
+}
+
+/* =========================================
+   UTILITIES (Fase 3 - Centralización)
+   ========================================= */
+
+/* Filtros (M1) */
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-input,
+.filter-select {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-bg);
+}
+
+.filter-search {
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .filter-bar {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-input,
+  .filter-select,
+  .filter-search {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* Data Card Header Neutral (M2) */
+.data-card-header.neutral {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text);
+}
+
+.data-card-header.neutral h2 {
+  color: var(--text-h);
+}
+
+.data-card-header.neutral p.data-card-subtitle {
+  color: var(--text-light);
+  opacity: 1;
+}
+
+/* Selector de Chips (M3) */
+.chip-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.chip-option {
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.chip-option:hover {
+  background: var(--bg-secondary);
+  transform: translateY(-1px);
+}
+
+.chip-option.active,
+.chip-option.activa {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.2);
+}
+
+.chip-option:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

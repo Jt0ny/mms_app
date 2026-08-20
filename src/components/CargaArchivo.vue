@@ -4,7 +4,7 @@
             <span class="upload-icon"><ArrowUpTrayIcon class="icon-lg text-primary" /></span>
             <span class="upload-label">Importar Reporte de {{ nombreModulo }}</span>
             <span class="upload-hint">.xls / .xlsx</span>
-            <input type="file" accept=".xls,.xlsx" class="file-input" :disabled="cargando" @change="handleFileUpload" />
+            <input type="file" accept=".xls,.xlsx" class="file-input" :disabled="cargando" @change="procesarSubidaArchivo" />
         </label>
         <p class="helper-text">Formatos soportados: .xls, .xlsx</p>
     </div>
@@ -31,7 +31,7 @@ export default {
     emits: ['archivo-seleccionado'],
 
     methods: {
-        handleFileUpload(event) {
+        procesarSubidaArchivo(event) {
             const file = event.target.files?.[0];
             if (!file) return;
             this.$emit('archivo-seleccionado', file);

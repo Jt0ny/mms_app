@@ -5,7 +5,7 @@
         <p type="Contraseña:"><input type="password" v-model="contrasena" autocomplete="current-password"
                 @keyup.enter="ingresar" /></p>
         <Alertas :mensaje="mensaje" />
-        <button type="button" @click="ingresar" :disabled="cargando">
+        <button type="button" class="btn btn-primary btn-block login-btn" @click="ingresar" :disabled="cargando">
             {{ cargando ? 'Ingresando...' : 'Ingresar' }}
         </button>
     </div>
@@ -132,33 +132,11 @@ input:focus {
     box-shadow: 0 0 0 4px var(--primary-bg);
 }
 
-button {
-    width: 100%;
+.login-btn {
     margin-top: 8px;
     padding: 14px;
-    border: none;
     border-radius: 999px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: white;
     font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-button:disabled {
-    cursor: progress;
-    opacity: 0.75;
-    transform: none;
-}
-
-button:hover {
-    transform: translateY(-1px);
-    opacity: 0.95;
-}
-
-button:active {
-    transform: scale(0.99);
 }
 
 @media (max-width: 480px),
@@ -177,7 +155,7 @@ button:active {
         padding: 10px 14px;
     }
 
-    button {
+    .login-btn {
         font-size: 15px;
         padding: 12px;
         margin-top: 4px;

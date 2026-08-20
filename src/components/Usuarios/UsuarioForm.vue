@@ -10,15 +10,15 @@
         </div>
 
         <div class="form-body">
-            <label>Nombre<input v-model.trim="nombre" type="text" autocomplete="username"
+            <label>Nombre<input class="form-input" v-model.trim="nombre" type="text" autocomplete="username"
                     placeholder="Nombre de usuario" />
             </label>
 
-            <label>Email<input v-model.trim="email" type="email" autocomplete="email"
+            <label>Email<input class="form-input" v-model.trim="email" type="email" autocomplete="email"
                     placeholder="correo@ejemplo.com" />
             </label>
 
-            <label>Contraseña<input v-model="contrasena" type="password" autocomplete="new-password"
+            <label>Contraseña<input class="form-input" v-model="contrasena" type="password" autocomplete="new-password"
                     placeholder="Contraseña segura" />
             </label>
 
@@ -26,7 +26,7 @@
 
             <Alertas :mensaje="mensaje" />
 
-            <button type="submit" :disabled="guardando">
+            <button type="submit" class="btn btn-primary" :disabled="guardando">
                 {{ guardando ? 'Guardando...' : 'Guardar usuario' }}
             </button>
         </div>
@@ -166,43 +166,6 @@ export default {
     color: var(--text-h);
 }
 
-.form-body input {
-    width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 11px 14px;
-    font: inherit;
-    background: var(--bg);
-    color: var(--text);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
 
-.form-body input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
-}
 
-.form-body button[type="submit"] {
-    justify-self: start;
-    border: none;
-    border-radius: 10px;
-    padding: 12px 20px;
-    background: var(--primary);
-    color: white;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.15s ease, transform 0.15s ease;
-}
-
-.form-body button[type="submit"]:hover:not(:disabled) {
-    background: var(--primary-dark);
-    transform: translateY(-1px);
-}
-
-.form-body button[type="submit"]:disabled {
-    cursor: progress;
-    opacity: 0.75;
-}
 </style>

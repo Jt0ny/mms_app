@@ -1,7 +1,7 @@
 <!-- ClienteList.vue -->
 <template>
   <div class="data-card h-full">
-    <div class="data-card-header">
+    <div class="data-card-header neutral">
       <div class="title-section">
         <div class="flex-align-center gap-8">
           <DocumentTextIcon v-if="mostrarSoloTipo === 'Facturación'" class="icon-lg text-primary" />
@@ -13,7 +13,7 @@
       </div>
 
       <!-- Filtros -->
-      <div class="filters">
+      <div class="filter-bar">
         <input v-model="filtros.buscar"
           :placeholder="mostrarDetallesContacto ? 'Buscar por nombre, correo...' : 'Buscar ...'"
           class="filter-input filter-search" />
@@ -227,31 +227,6 @@ export default {
   flex-grow: 1;
 }
 
-.filters {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.filter-search {
-  min-width: 180px;
-  padding: 6px 10px;
-  font-size: 12px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-}
-
-.select-wrapper {
-  position: relative;
-}
-
-.filter-select {
-  padding: 6px 30px 6px 10px;
-  font-size: 12px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-}
 
 .client-row {
   transition: background 0.2s ease;
@@ -314,21 +289,6 @@ export default {
   display: inline-block;
 }
 
-/* Sobreescritura local para que solo este componente tenga el fondo blanco en su header */
-.data-card-header {
-  background: var(--bg);
-  border-bottom: 1px solid var(--border-light);
-  color: var(--text);
-}
-
-.data-card-header h2 {
-  color: var(--text-h);
-}
-
-.data-card-header p.data-card-subtitle {
-  color: var(--text-light);
-  opacity: 1;
-}
 
 /* Badges */
 .badge-billing {
@@ -346,23 +306,6 @@ export default {
   color: var(--primary);
 }
 
-/* Acciones */
-.actions-col {
-  text-align: right;
-  width: 90px;
-}
 
-@media (max-width: 768px) {
-  .filters {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-  }
 
-  .filter-search,
-  .select-wrapper,
-  .filter-select {
-    width: 100%;
-  }
-}
 </style>

@@ -172,7 +172,7 @@ export default {
 
 .cantidad-val {
     font-weight: 700;
-    color: var(--primary);
+    color: var(--text-h);
     font-size: 15px;
 }
 

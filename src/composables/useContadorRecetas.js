@@ -100,7 +100,7 @@ export function useContadorRecetas() {
         }
     }
 
-    function sincronizarContadorReceta(categoria, cantidad) {
+    function sincronizarContadorReceta({ categoria, cantidad }) {
         // Encuentra la primera receta que pertenece a esa categoría
         const recetaId = Object.keys(recetaCategoriaMap.value).find(
             id => recetaCategoriaMap.value[id] === categoria

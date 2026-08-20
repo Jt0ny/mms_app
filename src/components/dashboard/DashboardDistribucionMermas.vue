@@ -145,7 +145,7 @@ export default {
     align-items: center;
     gap: 12px;
     padding: 10px;
-    background: var(--bg-hover);
+    background: var(--bg-secondary);
     border-radius: 8px;
 }
 
@@ -155,7 +155,7 @@ export default {
     color: var(--primary);
     width: 24px;
     height: 24px;
-    background: rgba(var(--primary-rgb, 219, 39, 119), 0.1);
+    background: var(--primary-bg);
     border-radius: 50%;
     display: flex;
     align-items: center;

@@ -1,59 +1,61 @@
 <template>
   <aside :class="['sidebar', { collapsed: isCollapsed }]">
     <div class="top">
-      <h2 v-if="!isCollapsed">MMS</h2>
-      <button class="toggle" @click="toggleSidebar"><Bars3Icon class="icon-lg text-white" /></button>
+      <h2 :class="{ 'hidden-text': isCollapsed }">MMS</h2>
+      <button class="toggle" @click="toggleSidebar">
+        <Bars3Icon class="icon-lg text-white" />
+      </button>
     </div>
 
     <nav class="menu">
       <router-link v-if="esSupervisor" to="/app/dashboard" class="menu-item" active-class="active">
-        <ChartBarIcon class="icon-md" />
-        <span v-if="!isCollapsed">Dashboard</span>
+        <ChartBarIcon class="sidebar-icon" />
+        <span :class="{ 'hidden-text': isCollapsed }">Dashboard</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/pedidos" class="menu-item" active-class="active">
-        <ClipboardDocumentCheckIcon class="icon-md" />
-        <span v-if="!isCollapsed">Pedidos</span>
+        <ClipboardDocumentCheckIcon class="sidebar-icon" />
+        <span :class="{ 'hidden-text': isCollapsed }">Pedidos</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/clientes" class="menu-item" active-class="active">
-        <BuildingOfficeIcon class="icon-md" />
-        <span v-if="!isCollapsed">Clientes</span>
+        <BuildingOfficeIcon class="sidebar-icon" />
+        <span :class="{ 'hidden-text': isCollapsed }">Clientes</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/materia-prima" class="menu-item" active-class="active">
-        <InboxStackIcon class="icon-md" />
-        <span v-if="!isCollapsed">Inventario MP</span>
+        <InboxStackIcon class="sidebar-icon" />
+        <span :class="{ 'hidden-text': isCollapsed }">Inventario MP</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/materiales" class="menu-item" active-class="active">
-        <CubeIcon class="icon-md" />
-        <span v-if="!isCollapsed">Inventario M</span>
+        <CubeIcon class="sidebar-icon" />
+        <span :class="{ 'hidden-text': isCollapsed }">Inventario M</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/recetas" class="menu-item" active-class="active">
-        <ClipboardDocumentListIcon class="icon-md" />
-        <span v-if="!isCollapsed">Crear Receta</span>
+        <ClipboardDocumentListIcon class="sidebar-icon" />
+        <span :class="{ 'hidden-text': isCollapsed }">Crear Receta</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/planificacion" class="menu-item" active-class="active">
-        <CalendarDaysIcon class="icon-md" />
-        <span v-if="!isCollapsed">Planificación</span>
+        <CalendarDaysIcon class="sidebar-icon" />
+        <span :class="{ 'hidden-text': isCollapsed }">Planificación</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/usuarios" class="menu-item" active-class="active">
-        <UsersIcon class="icon-md" />
-        <span v-if="!isCollapsed">Usuarios</span>
+        <UsersIcon class="sidebar-icon" />
+        <span :class="{ 'hidden-text': isCollapsed }">Usuarios</span>
       </router-link>
 
       <router-link v-if="esSupervisor" to="/app/mermas" class="menu-item" active-class="active">
-        <ExclamationTriangleIcon class="icon-md" />
-        <span v-if="!isCollapsed">Mermas</span>
+        <ExclamationTriangleIcon class="sidebar-icon" />
+        <span :class="{ 'hidden-text': isCollapsed }">Mermas</span>
       </router-link>
 
       <router-link v-if="esOperador" to="/app/produccion" class="menu-item" active-class="active">
-        <DocumentTextIcon class="icon-md" />
-        <span v-if="!isCollapsed">Producción diaria</span>
+        <DocumentTextIcon class="sidebar-icon" />
+        <span :class="{ 'hidden-text': isCollapsed }">Producción diaria</span>
       </router-link>
     </nav>
   </aside>
@@ -112,8 +114,10 @@ export default {
   transition: width 0.3s ease;
   padding: 20px;
   overflow-y: auto;
+  overflow-x: hidden;
   flex-shrink: 0;
   box-shadow: var(--shadow-sm);
+  white-space: nowrap;
 }
 
 .sidebar.collapsed {
@@ -146,6 +150,20 @@ export default {
   font-weight: 700;
   letter-spacing: 1px;
   color: var(--primary-light);
+  max-width: 200px;
+  transition: max-width 0.3s ease, opacity 0.2s ease;
+  opacity: 1;
+  white-space: nowrap;
+}
+
+h2.hidden-text,
+span.hidden-text {
+  max-width: 0 !important;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .toggle {
@@ -214,14 +232,27 @@ export default {
   text-align: center;
 }
 
+.menu-item :deep(svg) {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
 /* Colapsado: centra el ícono */
 .sidebar.collapsed .menu-item {
   justify-content: center;
   padding: 12px 8px;
+  gap: 0;
 }
 
-.sidebar.collapsed .menu-item span:not(:first-child) {
-  display: none;
+.menu-item span {
+  font-size: clamp(12px, 1vw, 14px);
+  max-width: 200px;
+  transition: max-width 0.3s ease, opacity 0.2s ease;
+  opacity: 1;
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {
@@ -277,15 +308,6 @@ export default {
   .toggle {
     font-size: 18px;
     padding: 6px;
-  }
-
-  .menu {
-    flex-direction: column;
-    overflow-x: visible;
-  }
-
-  .menu-item {
-    width: 100%;
   }
 }
 </style>

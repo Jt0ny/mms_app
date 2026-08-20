@@ -191,7 +191,7 @@ export default {
 
 .balance-bar-track {
 	height: 8px;
-	background: var(--bg-secondary, #f1f5f9);
+	background: var(--bg-secondary);
 	border-radius: 4px;
 	overflow: hidden;
 }
@@ -203,15 +203,15 @@ export default {
 }
 
 .balance-balanceado {
-	background: var(--success, #22c55e);
+	background: var(--success);
 }
 
 .balance-aceptable {
-	background: var(--warning, #f59e0b);
+	background: var(--warning);
 }
 
 .balance-desbalanceado {
-	background: var(--error, #ef4444);
+	background: var(--error);
 }
 
 .balance-info {

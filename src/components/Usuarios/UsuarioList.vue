@@ -4,13 +4,13 @@
 
             <h2>Usuarios actuales</h2>
             <p>Usuarios registrados en el sistema</p>
-            <button type="button" class="btn-refresh inline-flex-center gap-6" :disabled="cargando" @click="$emit('actualizar')">
+            <button type="button" class="btn-header-outline" :disabled="cargando" @click="$emit('actualizar')">
                 <ArrowPathIcon class="icon-sm" :class="{ 'spin': cargando }" />
                 {{ cargando ? 'Cargando...' : 'Actualizar' }}
             </button>
         </div>
 
-        <div v-if="cargando" class="loading-state">
+        <div v-if="cargando" class="table-loading-state">
             <p>Cargando usuarios...</p>
         </div>
 
@@ -46,7 +46,7 @@
             </table>
         </div>
 
-        <div v-else class="empty-state">
+        <div v-else class="table-empty-state">
             <p>No hay usuarios registrados</p>
         </div>
     </div>
@@ -107,36 +107,6 @@ export default {
     margin: 4px 0 0;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.8);
-}
-
-.btn-refresh {
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    padding: 10px 16px;
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
-    white-space: nowrap;
-}
-
-.btn-refresh:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-1px);
-}
-
-.btn-refresh:disabled {
-    cursor: progress;
-    opacity: 0.7;
-}
-
-.loading-state,
-.empty-state {
-    padding: 32px 24px;
-    text-align: center;
-    color: var(--text-light);
 }
 
 .content-table {
@@ -207,20 +177,13 @@ export default {
     color: var(--alert-info-text);
 }
 
-.actions-column {
-    width: 1%;
-    white-space: nowrap;
-}
-
-
-
 @media (max-width: 768px) {
     .usuario-table-header {
         flex-direction: column;
         align-items: flex-start;
     }
 
-    .btn-refresh {
+    .btn-header-outline {
         width: 100%;
     }
 

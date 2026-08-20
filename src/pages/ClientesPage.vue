@@ -10,9 +10,6 @@
         </div>
 
         <div class="header-actions">
-          <button class="btn btn-primary" @click="abrirNuevoFormulario">
-            <PlusIcon class="icon-md icon-inline" /> Nuevo Cliente
-          </button>
         </div>
       </div>
 
@@ -49,7 +46,6 @@
 </template>
 
 <script>
-import { PlusIcon } from '@heroicons/vue/24/outline'
 import ClienteClient from '../client/ClienteClient'
 import ClienteList from '../components/clientes/ClienteList.vue'
 import ClienteForm from '../components/clientes/ClienteForm.vue'
@@ -60,7 +56,6 @@ import { useCatalogos } from '../composables/useCatalogos.js'
 export default {
   name: 'ClientesPage',
   components: {
-    PlusIcon,
     ClienteList,
     ClienteForm,
     Alertas
@@ -121,10 +116,6 @@ export default {
       } else {
         this.clienteFacturacionSeleccionado = cliente
       }
-    },
-    abrirNuevoFormulario() {
-      this.clienteParaEditar = null
-      this.mostrarFormulario = true
     },
     seleccionarCliente(cliente) {
       this.clienteParaEditar = { ...cliente }

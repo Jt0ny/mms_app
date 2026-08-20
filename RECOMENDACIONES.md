@@ -2,611 +2,312 @@
 
 > **Auditor:** Arquitecto de Software Senior
 > **Fecha original:** 2026-07-22
-> **Última auditoría:** 2026-08-13
-> **Alcance:** Auditoría completa — código, estilos, comentarios, nomenclatura, mensajes, sincronización, Supabase, RLS
+> **Última auditoría:** 2026-08-19
+> **Alcance:** Auditoría exhaustiva de estilos en `/src`, análisis de Dark Mode en recetas, viabilidad de supervisor conectado, análisis de "Agregar Cliente", y oportunidades de mejora adicionales.
 
 ---
 
 ## Tabla de Contenidos
 
 - [Resumen Ejecutivo](#resumen-ejecutivo)
-- [Prioridad Crítica](#prioridad-crítica)
-  - [C1 — RLS en Supabase (Implementado)](#c1--rls-en-supabase-implementado)
-  - [C2 — Operaciones multi-tabla sin transaccionalidad](#c2--operaciones-multi-tabla-sin-transaccionalidad)
-- [Prioridad Alta](#prioridad-alta)
-  - [A1 — Mensaje de éxito al guardar usuarios no desaparece](#a1--mensaje-de-éxito-al-guardar-usuarios-no-desaparece)
-  - [A2 — Inconsistencias de nomenclatura en el frontend](#a2--inconsistencias-de-nomenclatura-en-el-frontend)
-  - [A3 — Sincronización de pedidos sin límite diario](#a3--sincronización-de-pedidos-sin-límite-diario)
-  - [A4 — Colores hardcoded dispersos en estilos scoped](#a4--colores-hardcoded-dispersos-en-estilos-scoped)
-- [Prioridad Media](#prioridad-media)
-  - [M1 — Animación `.spin` duplicada en 5 componentes](#m1--animación-spin-duplicada-en-5-componentes)
-  - [M2 — Comentarios `// Mapeo snake_case a camelCase` residuales](#m2--comentarios--mapeo-snake_case-a-camelcase-residuales)
-  - [M3 — JSDoc redundante en clients](#m3--jsdoc-redundante-en-clients)
-  - [M4 — `.badge-warning/success/danger` con colores hardcoded en style.css](#m4--badge-warningsuccessdanger-con-colores-hardcoded-en-stylecss)
-  - [M5 — Race condition en sistema de caché](#m5--race-condition-en-sistema-de-caché)
-  - [M6 — Colores hardcoded en UsuarioRol y UsuarioTablaActual](#m6--colores-hardcoded-en-usuariorol-y-usuariotablaactual)
-  - [M7 — DashboardEstadoPedidos eliminar `.mms-table` local (resuelto)](#m7--dashboardestadopedidos-tabla-refactorizada)
-- [Prioridad Baja](#prioridad-baja)
-  - [B1 — Comentarios HTML `<!-- LAYOUT -->` residuales](#b1--comentarios-html----layout----residuales)
-  - [B2 — Archivo muerto: `crypto.js`](#b2--archivo-muerto-cryptojs)
-  - [B3 — Gradiente minor en ProduccionForm `.stat-card`](#b3--gradiente-minor-en-produccionform-stat-card)
-  - [B4 — LoginForm define su propio `mostrarMensaje` local](#b4--loginform-define-su-propio-mostrarmensaje-local)
-- [Supabase — Estructura y Seguridad](#supabase--estructura-y-seguridad)
-- [Recomendaciones Anteriores](#recomendaciones-anteriores)
-- [Hoja de Ruta Priorizada](#hoja-de-ruta-priorizada)
+- [Estado de Recomendaciones Anteriores](#estado-de-recomendaciones-anteriores)
+- [Prioridad Alta 🔴](#prioridad-alta-)
+  - [A1 — Dark Mode en RecetaList: variable --text-dark inexistente](#a1--dark-mode-en-recetalist-variable---text-dark-inexistente)
+  - [A2 — .empty-state-card duplicada en style.css](#a2--empty-state-card-duplicada-en-stylecss)
+- [Prioridad Media 🟠](#prioridad-media-)
+  - [M1 — Centralizar filtros duplicados (.filters, .filter-input)](#m1--centralizar-filtros-duplicados-filters-filter-input)
+  - [M2 — Centralizar override .data-card-header neutral](#m2--centralizar-override-data-card-header-neutral)
+  - [M3 — Centralizar patrón "selector de chips"](#m3--centralizar-patrón-selector-de-chips)
+  - [M4 — Alinear inputs de formularios al sistema global .form-input](#m4--alinear-inputs-de-formularios-al-sistema-global-form-input)
+  - [M5 — Centralizar botón submit con gradiente](#m5--centralizar-botón-submit-con-gradiente)
+  - [M6 — Refactorizar UsuarioList para usar sistema global .data-card](#m6--refactorizar-usuariolist-para-usar-sistema-global-data-card)
+  - [M7 — HEX hardcoded en componentes](#m7--hex-hardcoded-en-componentes)
+  - [M8 — Reutilización de InventarioTable.vue (Descartado)](#m8--reutilización-de-inventariotablevue-descartado)
+- [Prioridad Baja 🟢](#prioridad-baja-)
+  - [B1 — Variables CSS inexistentes (--text-main, --bg-hover, --primary-rgb)](#b1--variables-css-inexistentes---text-main---bg-hover---primary-rgb)
+  - [B2 — Mostrar supervisor conectado en NavBar](#b2--mostrar-supervisor-conectado-en-navbar)
+  - [B3 — Focus state faltante en filtros de ClienteList](#b3--focus-state-faltante-en-filtros-de-clientelist)
+  - [B4 — Centralizar .actions-col / .font-medium](#b4--centralizar-actions-col--font-medium)
+  - [B5 — RecetaList usa .btn-icon en vez de .btn-action-ghost global](#b5--recetalist-usa-btn-icon-en-vez-de-btn-action-ghost-global)
+  - [B6 — Inline style en ProduccionForm y bloques style vacíos](#b6--inline-style-en-produccionform-y-bloques-style-vacíos)
+- [Análisis: Botón "Agregar Nuevo Cliente"](#análisis-botón-agregar-nuevo-cliente)
+- [Hoja de Ruta de Implementación](#hoja-de-ruta-de-implementación)
 
 ---
 
 ## Resumen Ejecutivo
 
-La aplicación se encuentra en un estado de madurez alto. La arquitectura es sólida con una separación clara de capas (`client/`, `composables/`, `pages/`, `components/`, `utils/`), convenciones de nomenclatura mayoritariamente consistentes (camelCase en frontend, snake_case confinado a la capa `client/`), y un sistema de design tokens bien definido en `style.css`.
+La auditoría del 2026-08-19 se centró en una **revisión exhaustiva de estilos** de todos los componentes de `/src`, con atención especial a `ClienteList`, `NavBar` y `ProduccionForm`. También se investigó el problema de Dark Mode en la lista de recetas, la viabilidad de mostrar el supervisor conectado y el análisis del botón "Agregar nuevo cliente".
 
-La auditoría de 2026-08-13 verificó las recomendaciones del documento anterior contra el código real, incorporó análisis de nomenclatura, comentarios, estilos, el bug de mensajes de usuario, la evaluación de sincronización diaria, y hallazgos nuevos.
+**Hallazgos clave:**
+- **Dark Mode en RecetaList:** La causa raíz es la variable CSS `--text-dark` que **no existe** en el proyecto. El fallback HEX `#1f2937` genera texto casi invisible en fondo oscuro. Afecta también a `RecetaForm.vue`.
+- **Estilos duplicados:** Se identificaron **8 patrones de estilos** duplicados entre componentes que podrían centralizarse (filtros, chips, inputs, submit buttons, header overrides, actions columns).
+- **UsuarioList aislado:** `UsuarioList.vue` no usa el sistema global `.data-card` y replica ~126 líneas de CSS que ya existen globalmente.
+- **HEX hardcoded:** Persisten colores HEX en 5+ componentes (`RecetaList`, `RecetaForm`, `MermaList`, `DashboardAvanceOperador`, `PlanificacionAsignacion`) que no respetan Dark Mode.
+- **Supervisor conectado:** Implementación trivial (~5 líneas) reutilizando `useAuth()` ya importado en NavBar.
+- **Recomendaciones anteriores completadas:** A1 (Dark Mode inputs), A2 (sincronizarContadorReceta), B1 (nomenclatura), B2 (useCatalogos), M5 (badges HEX en style.css), `.spin` duplicado — todos verificados como completados en el código real.
 
-**Cambios clave desde la última auditoría:**
-- Se implementó **Supabase Auth** (reemplazando auth propia con hashing SHA256).
-- Se creó una **Edge Function** (`create-user`) para creación segura de usuarios.
-- Se creó un **trigger SQL** para limpiar `auth.users` al eliminar de `public.usuarios`.
-- Se creó una función RPC `get_user_rol` para validación de permisos.
-- La tabla `usuarios` ahora tiene columna `auth_user_id` y `email`.
-- Se está implementando RLS (plan en `PLAN_IMPLEMENTACION_RLS.md`).
-- `DashboardEstadoPedidos` fue refactorizado para usar clases globales `data-card-table`.
-- Las variables CSS de warning (`--alert-warning-*`) fueron creadas en `style.css`.
-- Los estilos duplicados de `RecetaMaterialesTabla`/`RecetaMateriaPrimaTabla` fueron extraídos a clases globales en `style.css`.
-- `ProduccionRecetasView` unificó `.materiales-list`/`.materia-list` a `.ingrediente-list`.
+---
 
-| Prioridad | Cantidad | Enfoque principal |
+## Estado de Recomendaciones Anteriores
+
+Se verificó el código real para confirmar el progreso de **todas** las tareas previas.
+
+| Recomendación | Estado anterior | Estado verificado (2026-08-19) |
 |---|---|---|
-| Crítica | 2 | Operaciones sin transaccionalidad (RLS ya fue implementado) |
-| Alta | 4 | Bug de mensajes, nomenclatura, sincronización diaria, colores hardcoded |
-| Media | 7 | Spin duplicado, comentarios, JSDoc, badges, caché, colores en UsuarioRol |
-| Baja | 4 | Comentarios HTML, archivo muerto, gradiente minor, LoginForm local |
-
-### Estado general del código
-
-- **Manejo de errores:** Consistente. Todos los `Client` siguen el patrón `try/catch` → `{ success: false, error }`.
-- **`console.error/warn`:** Se usan correctamente. No hay `console.log` de depuración sueltos.
-- **Auth:** Migrada a Supabase Auth con Edge Function para creación de usuarios.
-- **RLS:** Completado y habilitado en las 15 tablas.
-
----
-
-## Prioridad Crítica
-
----
-
-### C1 — RLS en Supabase (Implementado)
-
-- **Estado:** ✅ Completado
-- **Documentación:** `PLAN_IMPLEMENTACION_RLS.md`
-- **Descripción:** RLS ya ha sido implementado y habilitado en las 15 tablas. La base de datos ahora está asegurada basándose en el rol del usuario (`supervisor` u `operador`). La migración a Supabase Auth ya se había completado exitosamente.
+| **RLS en Supabase** | ✅ | ✅ Completado — Implementado mediante Supabase Auth. |
+| **Tabla DashboardEstadoPedidos** | ✅ | ✅ Completado — Usa clases globales `.data-card`. |
+| **Operaciones multi-tabla (RPCs)** | ✅ | ✅ Completado — `ProduccionClient`, `MermaClient`, `PedidoClient` usan RPCs. |
+| **Mensaje de usuarios no desaparece** | ✅ | ✅ Completado — `UsuarioForm.vue` usa `setTimeout` + `clearTimeout`. |
+| **Sincronización diaria sin límite** | ✅ | ✅ Completado — `SyncLogClient.js` controla via tabla `sync_log`. |
+| **Colores CSS Variables (UsuarioRol)** | ✅ | ✅ Completado. |
+| **Colores CSS Variables (Badges en style.css)** | 🟡 Parcial | ✅ Completado — `.badge-warning`, `.badge-success`, `.badge-danger` ahora usan variables CSS. Los HEX restantes están en componentes locales (ver M7). |
+| **Animación `.spin` duplicada** | ❌ Pendiente | ✅ Completado — `@keyframes spin` existe únicamente en `style.css:907`. |
+| **A1 — Dark Mode inputs (color-scheme)** | 🔴 Pendiente | ✅ Completado — `color: inherit` en L99 y `color-scheme: dark` en L67 de `style.css`. |
+| **A2 — sincronizarContadorReceta** | 🔴 Pendiente | ✅ Completado — `useContadorRecetas.js:103` usa destructuración `({ categoria, cantidad })`. |
+| **M2 — Comentarios y código muerto** | 🟡 Parcial | 🟡 Parcial — `crypto.js` eliminado. Comentarios residuales en `RecetaClient.js` no verificados en detalle. |
+| **B1 — Nomenclatura inglés/español** | 🔴 Pendiente | ✅ Completado — `useAuth.js` exporta `estaAutenticado()`, `obtenerRol()`. |
+| **B2 — Race condition en useCatalogos** | 🔴 Pendiente | ✅ Completado (marcado en Hoja de Ruta anterior). |
+| **M4 — Composables grandes** | 🔴 Pendiente | ✅ Completado (marcado en Hoja de Ruta anterior). |
 
 ---
 
-### C2 — Operaciones multi-tabla sin transaccionalidad
+## Prioridad Alta 🔴
 
+### A1 — Dark Mode en RecetaList: variable --text-dark inexistente
 - **Estado:** 🔴 Pendiente
-- **Operaciones afectadas:**
+- **Prioridad:** Alta
+- **Archivos afectados:** `RecetaList.vue`, `RecetaForm.vue`.
+- **Problema encontrado:** La clase `.font-medium` en `RecetaList.vue:110` usa `color: var(--text-dark, #1f2937)`. La variable `--text-dark` **no existe** en ningún lugar de `style.css`, ni en modo claro ni en modo oscuro. El navegador siempre aplica el fallback `#1f2937` (gris casi negro). En Dark Mode, con fondo `#16171d`, este texto tiene contraste prácticamente nulo y es invisible.
+- **Otros textos afectados:**
+  - `RecetaForm.vue:176` — botón "Cancelar Edición" usa `var(--text-dark, #4b5563)` → pierde contraste en dark mode.
+  - `RecetaForm.vue:177` — borde `#d1d5db` hardcoded.
+  - `RecetaForm.vue:186` — fondo `#f3f4f6` hardcoded.
+  - `RecetaList.vue:80` — `.badge-gray` usa `background: #f3f4f6; color: #4b5563` → fondo gris claro totalmente fuera de lugar en dark mode.
+- **Solución recomendada:**
+  - `RecetaList.vue:110`: Cambiar `var(--text-dark, #1f2937)` → `var(--text-h)`.
+  - `RecetaList.vue:80`: Cambiar `.badge-gray { background: #f3f4f6; color: #4b5563; }` → `background: var(--bg-secondary); color: var(--text-light);`.
+  - `RecetaForm.vue:176`: Cambiar `var(--text-dark, #4b5563)` → `var(--text)`.
+  - `RecetaForm.vue:177`: Cambiar `#d1d5db` → `var(--border)`.
+  - `RecetaForm.vue:186`: Cambiar `#f3f4f6` → `var(--bg-secondary)`.
+- **Impacto:** Resuelve completamente el problema de contraste en Dark Mode de recetas sin afectar el modo claro.
 
-  | Operación | Client | Tablas | Queries |
-  |---|---|---|---|
-  | `agregarProduccion` | `ProduccionClient` | 7+ tablas | ~10 |
-  | `registrarMermaConDescuento` | `MermaClient` | 2-4 tablas | 2-4 |
-  | `resolverClientesDePedidos` | `ClientesClient` | `clientes` | 3-5 |
-  | `sincronizarConSupabase` (pedidos) | `PedidoClient` | 3 tablas | ~5 |
-
-- **Descripción:** `agregarProduccion` sigue siendo el caso más grave: toca 7+ tablas en ~10 queries secuenciales desde el frontend. Si falla a mitad de ejecución, los stocks quedan inconsistentes.
-- **Propuesta:** Crear funciones RPC (`SECURITY DEFINER`) para las operaciones críticas.
-- **Impacto:** Requiere refactorizar `ProduccionClient.js`, `MermaClient.js`, `ClientesClient.js`.
-
----
-
-## Prioridad Alta
-
----
-
-### A1 — Mensaje de éxito al guardar usuarios no desaparece
-
+### A2 — .empty-state-card duplicada en style.css
 - **Estado:** 🔴 Pendiente
-- **Prioridad:** 🔴 Alta
-- **Archivos afectados:**
-  - `src/components/usuarios/UsuarioForm.vue` (L57-60, L67, L87-96)
-  - `src/pages/UsuariosPage.vue` (L11, L38)
-  - `src/composables/useMensajes.js`
-  - `src/components/Alertas.vue`
-
-#### Problema encontrado
-
-`UsuarioForm.vue` define su propio estado de mensaje **local** (`data() → mensaje: { tipo, texto }`) y lo asigna directamente con `this.mensaje = { tipo, texto }` (L67, L88, L95). Esto reemplaza el objeto reactivo completo por un objeto nuevo **sin temporizador de auto-limpieza**.
-
-Al mismo tiempo, `UsuariosPage.vue` usa el composable `useMensajes()` que sí tiene `setTimeout` para auto-limpiar. Pero el componente `Alertas` que está dentro de `UsuarioForm` recibe el `mensaje` local del componente, no el del composable.
-
-**Flujo del bug:**
-1. Usuario llena el formulario y presiona "Guardar"
-2. `UsuarioForm.guardar()` se ejecuta → llama a `UsuarioClient.agregarUsuario()`
-3. Si `response.success` → `this.mensaje = { tipo: 'exito', texto: '...' }` (L88)
-4. El `<Alertas :mensaje="mensaje" />` interno (L27) muestra el mensaje de éxito
-5. **No hay `setTimeout`** que limpie `this.mensaje`, por lo que permanece visible indefinidamente
-6. El mensaje solo desaparece si el usuario realiza otra acción que modifique `this.mensaje`
-
-**Causa raíz:** `UsuarioForm` no usa `useMensajes()` sino un estado local reactivo sin temporizador. A diferencia de las demás páginas que usan `mostrarMensaje()` del composable (que sí incluye `setTimeout`).
-
-#### Solución recomendada
-
-**Opción A (Recomendada) — Agregar temporizador al estado local de UsuarioForm:**
-
-Mantener el estado local en `UsuarioForm` (porque los mensajes son internos del formulario) pero agregar la lógica de auto-limpieza:
-
-```javascript
-// En UsuarioForm.vue methods:
-mostrarMensaje(tipo, texto, duracion = 4000) {
-    this.mensaje = { tipo, texto }
-    if (duracion > 0) {
-        clearTimeout(this._mensajeTimer)
-        this._mensajeTimer = setTimeout(() => {
-            this.mensaje = { tipo: null, texto: '' }
-        }, duracion)
-    }
-}
-```
-
-Y reemplazar las asignaciones directas `this.mensaje = {...}` por llamadas a `this.mostrarMensaje(tipo, texto)`.
-
-**Opción B — Migrar a `useMensajes()`:**
-
-Eliminar el estado local y usar el composable global. Esto es más limpio pero tiene el efecto secundario de que los mensajes del formulario y los mensajes de la página se solaparían (porque ambos comparten el mismo estado singleton).
-
-**Recomendación:** Opción A, porque `UsuarioForm` tiene su propio `<Alertas>` interno y sus mensajes son contextuales al formulario (validación de campos, éxito de guardado).
-
-**Nota adicional:** `LoginForm.vue` tiene el mismo patrón (define `mostrarMensaje` local con `setTimeout`) y funciona correctamente. `UsuarioForm` es el único componente que asigna directamente sin temporizador.
-
-#### ¿Es reutilizable para toda la app?
-
-El composable `useMensajes()` ya es reutilizable y funciona correctamente en todas las páginas que lo usan. El problema es exclusivo de `UsuarioForm.vue` que no lo usa. No se necesita un sistema nuevo; solo alinear `UsuarioForm` al patrón existente.
+- **Prioridad:** Alta
+- **Archivos afectados:** `style.css`.
+- **Problema encontrado:** La clase `.empty-state-card` está definida **dos veces** en `style.css`:
+  - Primera definición: **L428-L435** (sin `text-align: center`).
+  - Segunda definición: **L951-L959** (con `text-align: center`).
+  La segunda sobreescribe a la primera. Esto es CSS redundante y confuso.
+- **Solución recomendada:** Unificar en una sola definición con `text-align: center` incluido. Eliminar la primera ocurrencia.
+- **Impacto:** Elimina confusión y CSS redundante.
 
 ---
 
-### A2 — Inconsistencias de nomenclatura en el frontend
+## Prioridad Media 🟠
 
+### M1 — Centralizar filtros duplicados (.filters, .filter-input)
 - **Estado:** 🔴 Pendiente
-- **Prioridad:** 🔴 Alta
+- **Problema encontrado:** Los estilos de filtros (`.filters`, `.filter-input`, `.filter-select`, `.filter-search`) están duplicados con ligeras variantes en `ClienteList.vue` y `MermaList.vue`. Ambos definen flexbox + gap + wrap para `.filters`, y bordes/padding/border-radius para inputs. MermaList añade `background`, `color` y `transition` explícitos (más completos), mientras ClienteList no.
+- **Solución recomendada:** Extraer a `style.css` un set de clases de filtro global (`.filter-bar`, `.filter-input`, `.filter-select`) tomando las propiedades más completas de MermaList.
+- **Componentes que se benefician:** `ClienteList.vue`, `MermaList.vue`.
+- **Impacto:** Elimina ~30 líneas de CSS duplicado y garantiza consistencia visual entre todas las listas con filtros.
 
-#### Hallazgos por categoría
-
-**1. Mezcla inglés/español en nombres de métodos**
-
-| Nombre actual | Ubicación | Nombre recomendado | Razón |
-|---|---|---|---|
-| `getCantidad()` | `RecetaMaterialesTabla.vue` L117, `RecetaMateriaPrimaTabla.vue` L114 | `obtenerCantidad()` | El resto de la app usa español: `obtenerMateriales`, `obtenerRecetas`, `obtenerPedidos`. `get` rompe la convención. |
-| `getSession()` | `UsuarioClient.js` L37 | `obtenerSesion()` | Mismo caso, el resto usa español. |
-| `getIsLogged()` | `useAuth.js` L73 | `estaAutenticado()` | Helper para router, pero inconsistente con convención española. |
-| `getRol()` | `useAuth.js` L69 | `obtenerRol()` | Mismo caso. |
-| `getInicializado()` | `useAuth.js` L77 | `estaInicializado()` | Mismo caso. |
-| `handleCancelar` | `useProduccionForm.js` L191 | `cancelar` o `manejarCancelacion` | Mezcla `handle` (inglés) con `Cancelar` (español). |
-| `applyEdicion` | `useProduccionForm.js` L117 | `aplicarEdicion` | `apply` es inglés. |
-| `resetForm()` | `MaterialesPage.vue` L215 | `resetearFormulario()` | `RecetasPage.vue` ya usa `resetearFormulario()`. |
-
-**2. Props con nombres inconsistentes**
-
-| Prop actual | Componente | Inconsistencia |
-|---|---|---|
-| `loading` | `InventoryTable.vue`, `PreviewTable.vue` | Inglés. El resto de componentes usan `cargando` |
-| `item-label` | `InventoryTable.vue`, `PreviewTable.vue` | Inglés. El resto usa español |
-| `empty-text` | `InventoryTable.vue` | Inglés. Inconsistente con el resto |
-| `confirm-text`, `loading-text` | `PreviewTable.vue` | Inglés. Inconsistente |
-| `title` | `InventoryTable.vue` | Inglés. Aunque se podría argumentar que los componentes `shared/` usen inglés, no hay convención explícita |
-
-**Nota:** Los componentes `shared/` (`InventoryTable`, `PreviewTable`) usan inglés en sus props, mientras que todo el resto de la app usa español. Si la convención es español, debería unificarse. Si se acepta que `shared/` use inglés como excepción de reutilización, debería documentarse.
-
-**3. Inconsistencia en emits**
-
-| Emit | Componente | Observación |
-|---|---|---|
-| `'guardado'` | `UsuarioForm.vue` | Correcto, español |
-| `'guardar'` | `MermaForm.vue`, `RecetaForm.vue`, `MaterialForm.vue`, `ProduccionForm.vue` | Correcto |
-| `'actualizar'` | `UsuarioTablaActual.vue`, Receta tablas | Correcto |
-| `'alternar'` | `RecetaMaterialesTabla`, `RecetaMateriaPrimaTabla` | Correcto |
-| `'cantidad'` | `RecetaMaterialesTabla`, `RecetaMateriaPrimaTabla` | Nombre ambiguo. `'cambiar-cantidad'` sería más expresivo |
-| `'archivo-seleccionado'` | `CargaArchivo.vue` | Correcto, kebab-case |
-
-**4. Variables locales con diferente nombre para el mismo concepto**
-
-| Concepto | Nombre en A | Nombre en B | Recomendación |
-|---|---|---|---|
-| Estado de guardado | `guardando` (MermasPage) | `guardandoReceta` (RecetasPage) | Usar `guardando` consistentemente |
-| Lista de producción | `editingProduccion` (ProduccionPage L106) | N/A | `produccionEnEdicion` para mantener español |
-| Datos de API | `huboCambiosCli` (PedidoClient L92) | `huboCambios` (usePedidoExcel L108) | Unificar a `huboCambios` |
-
-**Impacto:** Refactoring de ~30 líneas dispersas. Sin riesgo funcional si se hacen rename consistentes.
-
----
-
-### A3 — Sincronización de pedidos sin límite diario
-
-- **Estado:** 🔴 Pendiente (análisis)
-- **Prioridad:** 🔴 Alta
-
-#### Análisis del flujo actual
-
-**¿Dónde se ejecuta?**
-1. `PedidoPage.vue` → botón "Sincronizar" → `sincronizarAPI()` (L135-149)
-2. `sincronizarAPI()` → `PedidoClient.sincronizarConSupabase()` (L139)
-3. `MaterialesPage.vue` → botón "Sincronizar" → `useInventario.sincronizarAPI()` → `MaterialClient.sincronizarConSupabase()`
-4. `MateriaPrimaPage.vue` → mismo flujo → `MateriaPrimaClient.sincronizarConSupabase()`
-
-**¿Qué hace la sincronización de pedidos?**
-1. Llama a `axios.get(VITE_API_PEDIDOS_URL)` — API externa en puerto 8060
-2. Resuelve clientes nuevos via `ClientesClient.resolverClientesDePedidos()`
-3. Resuelve recetas faltantes (crea recetas genéricas si la categoría no existe)
-4. Hace `upsert` de pedidos y `delete + upsert` de detalles
-
-**¿Cómo se determina la fecha?** La fecha viene de los datos del pedido externo. No hay registro de "última sincronización".
-
-**¿Puede ejecutarse múltiples veces al día?** Sí, sin restricción. El `upsert` por ID hace que no se dupliquen pedidos, pero cada ejecución:
-- Realiza consultas innecesarias a la API externa
-- Ejecuta resolución de clientes y recetas (aunque no haya cambios)
-- Borra y re-inserta detalles de pedidos existentes
-
-**¿Existe un registro de última sincronización?** No. No hay campo, tabla ni localStorage que registre cuándo fue la última sincronización.
-
-#### Alternativas evaluadas
-
-| Alternativa | Pros | Contras | Viabilidad |
-|---|---|---|---|
-| **A. Frontend (localStorage)** | Implementación rápida, sin cambios en BD | Evitable limpiando localStorage, no comparte entre dispositivos | ⚠️ No confiable |
-| **B. Supabase — tabla `sync_log`** | Registro permanente, compartido entre usuarios, auditable | Requiere tabla nueva y consulta adicional | ✅ Recomendada |
-| **C. Supabase — campo en tabla existente** | Sin tabla nueva | No hay tabla lógica donde agregar el campo | ❌ Forzado |
-| **D. Backend/Edge Function** | Control total server-side | Over-engineering para este caso | ⚠️ Solo si se necesitan más controles |
-
-#### Solución recomendada: Opción B — Tabla `sync_log` en Supabase
-
-**1. Crear tabla:**
-```sql
-CREATE TABLE sync_log (
-    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    tipo TEXT NOT NULL,        -- 'pedidos', 'materiales', 'materia_prima'
-    fecha_sync DATE NOT NULL,
-    ejecutado_por uuid REFERENCES usuarios(id),
-    creado_en TIMESTAMPTZ DEFAULT now(),
-    UNIQUE(tipo, fecha_sync)   -- Solo una sync por tipo por día
-);
-```
-
-**2. Flujo propuesto:**
-1. Antes de sincronizar, consultar: `SELECT * FROM sync_log WHERE tipo = 'pedidos' AND fecha_sync = HOY`
-2. Si existe un registro → mostrar mensaje: "La sincronización de pedidos ya se realizó hoy a las HH:MM. ¿Deseas sincronizar nuevamente?"
-3. Si no existe → ejecutar la sincronización normalmente
-4. Al completar exitosamente → insertar registro en `sync_log`
-
-**3. Comportamiento si el usuario intenta sincronizar de nuevo:**
-- Mostrar un diálogo de confirmación con la hora de la última sincronización
-- Permitir forzar la re-sincronización si el usuario confirma (para casos excepcionales)
-- Registrar cada sincronización para trazabilidad
-
-**4. Archivos a modificar:**
-- Crear `SyncLogClient.js` (nuevo) — CRUD de `sync_log`
-- Modificar `useInventario.js` — verificar antes de sincronizar
-- Modificar `PedidoPage.vue` → `sincronizarAPI()` — verificar antes de sincronizar
-- Crear migración SQL para la tabla `sync_log`
-
-**Impacto:** Moderado. 1 client nuevo, 2-3 archivos modificados, 1 tabla nueva.
-
----
-
-### A4 — Colores hardcoded dispersos en estilos scoped
-
-- **Estado:** 🟡 Parcialmente completado
-- **Prioridad:** 🔴 Alta
-
-**Recomendaciones anteriores resueltas:**
-- ✅ `DashboardEstadoPedidos` ya usa `data-card-table` global (no `#1eab55`)
-- ✅ Variables `--alert-warning-*` ya existen en `style.css` (L41-43)
-- ✅ `RecetaMaterialesTabla`/`RecetaMateriaPrimaTabla` ya usan clases globales
-- ✅ `PlanificacionOperadorCard.vue` y `PlanificacionResumen.vue` ya usan `var(--bg)`/`var(--bg-secondary)` en gradientes
-- ✅ `ProduccionRecetasView.vue` unificó `.materiales-list`/`.materia-list` a `.ingrediente-list`
-- ✅ `PlanificacionMapeoRecetas` status badges usan `var(--alert-warning-bg/text)` (L309-311)
-- ✅ `ClienteList.vue` badges usan `var(--alert-info-bg)`, `var(--alert-warning-bg)` (L334-347)
-
-**Pendientes:**
-
-| Archivo | Línea | Color hardcoded | Propuesta |
-|---|---|---|---|
-| `UsuarioRol.vue` | L70, L74 | `#dcdcdc`, `#888` | → `var(--border)`, `var(--text-light)` |
-| `UsuarioRol.vue` | L86 | `#dcdcdc` | → `var(--border)` |
-| `UsuarioRol.vue` | L92-94 | `#2c7be5` | → `var(--alert-info-text)` o crear `--primary-alt` |
-| `UsuarioTablaActual.vue` | L139 | `#64748b` | → `var(--text-light)` |
-| `UsuarioTablaActual.vue` | L149-150 | `#1e293b` | → `var(--text-h)` |
-| `LoginForm.vue` | L132 | `rgba(16, 185, 129, 0.12)` | → `var(--primary-bg)` |
-| `style.css` | L473-488 | `.badge-warning/success/danger` hardcoded | → usar `var(--alert-*-bg/text/border)` |
-| `ProduccionRecetasView.vue` | L245 | `var(--primary, #2f6fed)` | Eliminar fallback `#2f6fed` (la variable siempre existe) |
-
-**Impacto:** ~12 líneas CSS. Sin riesgo funcional. Mejora dark mode.
-
----
-
-## Prioridad Media
-
----
-
-### M1 — Animación `.spin` duplicada en 5 componentes
-
+### M2 — Centralizar override .data-card-header neutral
 - **Estado:** 🔴 Pendiente
-- **Archivos afectados:**
-  - `DashboardPage.vue` (L140-145)
-  - `UsuarioTablaActual.vue` (L237-242)
-  - `InventoryTable.vue` (definición local)
-  - `RecetaMaterialesTabla.vue` (L73-78)
-  - `PlanificacionAsignacion.vue` (definición local)
-- **Descripción:** La clase `.spin` con `@keyframes spin` está definida en `style.css` (L842-846) como animación global. Sin embargo, 5 componentes la redefinen localmente en su `<style scoped>`.
-- **Propuesta:** Eliminar las 5 definiciones locales de `.spin` y `@keyframes spin`. La definición global en `style.css` (L842-846) ya es suficiente.
-- **Impacto:** Reduce ~30 líneas duplicadas. Sin riesgo funcional.
-
----
-
-### M2 — Comentarios `// Mapeo snake_case a camelCase` residuales
-
-- **Estado:** 🟡 Parcialmente completado
-- **Archivos con comentarios eliminados:** `ClientesClient.js`, `MermaClient.js`, `ProduccionClient.js` ✅
-- **Archivos pendientes:**
-  - `RecetaClient.js` (L45, L127) — 2 instancias restantes
-- **Propuesta:** Eliminar las 2 instancias restantes en `RecetaClient.js`.
-- **Impacto:** 2 líneas.
-
----
-
-### M3 — JSDoc redundante en clients
-
-- **Estado:** 🟡 Parcialmente completado
-- **JSDoc eliminados previamente:** `MaterialClient.js` (6 bloques) ✅
-- **Pendientes:**
-
-  | Archivo | Líneas | JSDoc redundante |
-  |---|---|---|
-  | `MateriaPrimaClient.js` | L8-10, L80-82, L108-111 | 3 bloques que repiten el nombre de la función |
-  | `RecetaClient.js` | L4-7, L68-70 | 2 bloques que repiten el nombre |
-
-- **JSDoc a CONSERVAR:**
-
-  | Archivo | Líneas | Motivo |
-  |---|---|---|
-  | `PlanificacionAlgoritmo.js` | L100-102, L165-169, L278-280, L332-335, L554 | Estructuras complejas |
-  | `PlanificacionClient.js` | L71-75 | Interfaz de API con constraint UNIQUE |
-  | `MermaClient.js` | L164-167 | `registrarMermaConDescuento` — operación compleja |
-  | `useAuth.js` | L1-7 | Contexto de uso |
-  | `useInventario.js` | L4 (signature) | Contrato de interfaz |
-
-- **Impacto:** ~15 líneas.
-
----
-
-### M4 — `.badge-warning/success/danger` con colores hardcoded en style.css
-
-- **Estado:** 🟡 Parcialmente completado
-- **Archivo:** `style.css` (L473-489)
-- **Descripción:** Los tokens `--alert-warning-*` ya fueron creados (L41-43) ✅, pero las clases `.badge-warning`, `.badge-success`, `.badge-danger` todavía usan hex hardcoded en lugar de las variables.
-- **Propuesta:**
+- **Problema encontrado:** `ClienteList.vue:318-331` y `MermaList.vue:212-223` definen **exactamente** la misma sobreescritura local de `.data-card-header` para reemplazar el gradiente verde global por un fondo blanco con borde inferior:
   ```css
-  .badge-warning {
-      background-color: var(--alert-warning-bg);
-      color: var(--alert-warning-text);
-      border: 1px solid var(--alert-warning-border);
-  }
-  .badge-success {
-      background-color: var(--alert-success-bg);
-      color: var(--alert-success-text);
-      border: 1px solid var(--alert-success-border);
-  }
-  .badge-danger {
-      background-color: var(--alert-error-bg);
-      color: var(--alert-error-text);
-      border: 1px solid var(--alert-error-border);
-  }
+  .data-card-header { background: var(--bg); border-bottom: 1px solid var(--border-light); color: var(--text); }
+  .data-card-header h2 { color: var(--text-h); }
+  .data-card-header p.data-card-subtitle { color: var(--text-light); opacity: 1; }
   ```
-- **Impacto:** ~9 líneas. Consistencia del sistema de tokens.
+- **Solución recomendada:** Crear un modificador global `.data-card-header.neutral` o `.data-card--flat` en `style.css`.
+- **Impacto:** Elimina ~13 líneas de CSS duplicado exacto.
 
----
-
-### M5 — Race condition en sistema de caché
-
-- **Estado:** ⏳ Pendiente
-- **Archivo:** `src/composables/useCatalogos.js`
-- **Descripción:** El sistema de caché almacena el resultado (`res.data`) en lugar de la Promesa. Si dos componentes llaman a `obtenerRecetas()` simultáneamente, ambas ven el caché vacío y disparan peticiones HTTP duplicadas.
-- **Propuesta:** Almacenar la Promesa (singleton promise pattern).
-- **Impacto:** Optimización de red. Reduce peticiones duplicadas.
-
----
-
-### M6 — Colores hardcoded en UsuarioRol y UsuarioTablaActual
-
+### M3 — Centralizar patrón "selector de chips"
 - **Estado:** 🔴 Pendiente
-- **Archivos:**
-  - `UsuarioRol.vue` (L70, L74, L86, L92-94) — `#dcdcdc`, `#888`, `#2c7be5`
-  - `UsuarioTablaActual.vue` (L139, L149-150) — `#64748b`, `#1e293b`
-- **Descripción:** Estos componentes de la sección de usuarios usan colores hex directos en lugar de variables CSS. En dark mode, estos colores no se adaptan.
-- **Propuesta:** Reemplazar por variables del sistema:
-  - `#dcdcdc` → `var(--border)`
-  - `#888` → `var(--text-light)`
-  - `#2c7be5` → `var(--alert-info-text)` o `var(--primary)`
-  - `#64748b` → `var(--text-light)`
-  - `#1e293b` → `var(--text-h)`
-- **Impacto:** ~7 líneas CSS.
+- **Problema encontrado:** Tres componentes implementan el mismo patrón visual de selector tipo "chip/pill" con estado activo, borde redondeado 999px y gradiente verde activo:
+  - `RecetaCategoria.vue:58-123` (~65 líneas)
+  - `UsuarioRol.vue:50-95` (~45 líneas)
+  - `MermaOperadorSelector.vue:53-127` (~75 líneas)
+  Todos comparten: `border-radius: 999px`, `border: 1px solid var(--border)`, transición hover con `translateY(-1px)`, estado `.activa` con gradiente verde y color blanco.
+- **Solución recomendada:** Crear un set de clases globales `.chip-selector`, `.chip-option`, `.chip-option.active` en `style.css`. Los componentes solo necesitarían CSS local para diferencias menores.
+- **Impacto:** Reduce ~140 líneas de CSS a ~40 globales reutilizables.
 
----
-
-### M7 — DashboardEstadoPedidos tabla refactorizada
-
-- **Estado:** ✅ Completado
-- **Verificación:** El componente ahora usa `data-card-table` global (L26, L56). Ya no existe `.mms-table` local ni `#1eab55`. Se eliminó el color hardcoded.
-
----
-
-## Prioridad Baja
-
----
-
-### B1 — Comentarios HTML `<!-- LAYOUT -->` residuales
-
-- **Estado:** ⏳ Pendiente
-- **Archivos:**
-  - `RecetasPage.vue` (L12)
-  - `PedidoPage.vue` (L12)
-- **Descripción:** El comentario `<!-- LAYOUT -->` aparece en 2 archivos. Otros como `<!-- TÍTULO -->` y `<!-- ALERTAS -->` ya fueron eliminados.
-- **Propuesta:** Eliminar para consistencia total.
-- **Impacto:** 2 líneas.
-
----
-
-### B2 — Archivo muerto: `crypto.js`
-
+### M4 — Alinear inputs de formularios al sistema global .form-input
 - **Estado:** 🔴 Pendiente
-- **Archivo:** `src/utils/crypto.js`
-- **Descripción:** La función `generarSHA256()` ya no se importa ni usa en ningún archivo del proyecto. Era usada para el hashing de contraseñas en el sistema de auth propio, que fue reemplazado por Supabase Auth.
-- **Propuesta:** Eliminar `crypto.js`.
-- **Impacto:** 1 archivo, 8 líneas.
+- **Problema encontrado:** `style.css` ya provee `.form-input` con `padding: 12px`, `border-radius: 8px`, focus con `box-shadow` y `color: var(--text)`. Sin embargo, estos componentes definen sus propios estilos de input que replican el mismo patrón:
+  - `UsuarioForm.vue:169-184` — `.form-body input` con `border-radius: 10px`, `padding: 11px 14px`.
+  - `RecetaForm.vue:116-125` — `.form-panel input` con `padding: 10px 12px`, `border-radius: 8px`.
+  - `ProduccionForm.vue:212-227` — `.date-field input`, `.category-input` con `border-radius: 12px`, `padding: 11px 12px`.
+- **Formularios que SÍ usan el sistema global:** `ClienteForm`, `MermaForm`, `MaterialForm` — estos son el ejemplo a seguir.
+- **Solución recomendada:** Migrar `UsuarioForm`, `RecetaForm` y `ProduccionForm` para que usen las clases globales `.form-input`, `.form-textarea`, `.form-select` en sus templates, eliminando los estilos locales de inputs.
+- **Impacto:** Consistencia visual de inputs en toda la aplicación y reducción de CSS local.
+
+### M5 — Centralizar botón submit con gradiente
+- **Estado:** 🔴 Pendiente
+- **Problema encontrado:** Cuatro componentes definen individualmente un botón de submit verde con gradiente `linear-gradient(135deg, var(--primary), var(--primary-dark))`, hover con `translateY(-1px)` y estado disabled:
+  - `ProduccionForm.vue:293-312` — `.submit-btn`
+  - `RecetaForm.vue:142-163` — `.btn-submit`
+  - `LoginForm.vue:135-162` — `button` genérico
+  - `UsuarioForm.vue:186-207` — `.form-body button[type="submit"]`
+  La clase global `.btn.btn-primary` ya existe pero no tiene gradiente.
+- **Solución recomendada:** Crear una variante `.btn-primary-gradient` o añadir el gradiente a `.btn-primary` en `style.css`. Los 4 componentes podrían entonces usar la clase global.
+- **Impacto:** Elimina ~60 líneas de CSS duplicado.
+
+### M6 — Refactorizar UsuarioList para usar sistema global .data-card
+- **Estado:** 🔴 Pendiente
+- **Problema encontrado:** `UsuarioList.vue` define ~126 líneas de CSS propio (`.usuario-table-container`, `.usuario-table-header`, `.usuario-table`, `.content-table`, etc.) que replican exactamente lo que `.data-card`, `.data-card-header` y `.data-card-table` ya proveen globalmente:
+  - `.usuario-table-container` → equivalente a `.data-card`
+  - `.usuario-table-header` → equivalente a `.data-card-header` (mismo gradiente verde, padding, color blanco)
+  - `.usuario-table` → equivalente a `.data-card-table` (mismo collapse, font-size, padding, hover)
+- **Solución recomendada:** Refactorizar el template de `UsuarioList.vue` para usar las clases globales `.data-card`, `.data-card-header`, `.data-card-table`, eliminando la mayor parte del CSS local.
+- **Impacto:** Reduce ~100 líneas de CSS y garantiza consistencia con las demás tablas de la aplicación.
+
+### M7 — HEX hardcoded en componentes
+- **Estado:** 🔴 Pendiente
+- **Problema encontrado:** Varios componentes usan colores HEX directos que no respetan el Dark Mode:
+
+  | Componente | Valores HEX | Variable sugerida |
+  |---|---|---|
+  | `RecetaList.vue:77-80` | `#ec4899`, `#10b981`, `#f59e0b`, `#4b5563`, `#f3f4f6` | Variables CSS o `rgba()` con fallback dark |
+  | `RecetaForm.vue:176-186` | `#d1d5db`, `#f3f4f6`, `var(--text-dark)` | `var(--border)`, `var(--bg-secondary)`, `var(--text)` |
+  | `MermaList.vue:225-238` | `#db2777`, `#2563eb`, `#7c3aed` | Crear variables CSS para colores de categoría |
+  | `DashboardAvanceOperador.vue:59-62` | `#16a34a`, `#2563eb`, `#d97706`, `#dc2626` (en JS) | `var(--primary)`, etc. o variables dedicadas |
+  | `PlanificacionAsignacion.vue:122` | `#0f172a` | `var(--bg-secondary)` o crear `--bg-dark` |
+
+- **Nota:** Los `.badge-*` globales en `style.css` ya fueron corregidos y usan variables CSS.
+- **Impacto:** Garantiza consistencia visual en Dark Mode en toda la aplicación.
+
+### M8 — Reutilización de InventarioTable.vue (Descartado)
+- **Estado:** 🚫 No aplica (Descartado tras análisis en auditoría anterior)
+- **Problema encontrado:** `InventarioTable.vue` fue analizado para ver si podía reemplazar las tablas de listas. Sin embargo, cada lista tiene layouts de header muy distintos.
+- **Solución recomendada:** No reutilizar `InventarioTable.vue`. Asegurar que todas las tablas usen la estructura CSS global `.data-card`, `.data-card-header`, `.data-card-table`.
 
 ---
 
-### B3 — Gradiente minor en ProduccionForm `.stat-card`
+## Prioridad Baja 🟢
 
-- **Estado:** ⏳ Pendiente (observación)
-- **Archivo:** `ProduccionForm.vue` (~L253)
-- **Descripción:** `.stat-card` usa un gradiente con `rgba(255, 255, 255, ...)`. En dark mode sería un parche blanco sutil.
-- **Impacto:** 1 línea CSS. Baja prioridad por impacto visual mínimo.
+### B1 — Variables CSS inexistentes (--text-main, --bg-hover, --primary-rgb)
+- **Estado:** 🔴 Pendiente
+- **Problema encontrado:** Se usan variables CSS que **no están definidas** en `:root` de `style.css`:
+  - `--text-main`: Usado en `style.css:584` (`.section-title`) y `DashboardEstadoPedidos.vue:117` (`.column-title`). Debería ser `var(--text-h)`.
+  - `--bg-hover`: Usado en `DashboardDistribucionMermas.vue:148` (`.insumo-item`). El fondo se renderiza transparente. Debería ser `var(--bg-secondary)`.
+  - `--primary-rgb`: Usado en `DashboardDistribucionMermas.vue:158` (`.insumo-rank`). El fallback `219, 39, 119` genera rosa en lugar del verde primario. Debería ser `rgba(22, 163, 74, 0.1)` o crear la variable `--primary-rgb: 22, 163, 74`.
+- **Impacto:** Corrige colores incorrectos y fondos faltantes en el dashboard.
+
+### B2 — Mostrar supervisor conectado en NavBar
+- **Estado:** 🔴 Pendiente
+- **Problema encontrado:** Se desea mostrar qué usuario/supervisor está conectado a la aplicación.
+- **Análisis de viabilidad:**
+  - `useAuth.js` ya centraliza `usuarioNombre`, `rol`, `isLogged` como computeds reactivos.
+  - `NavBar.vue` ya importa y usa `useAuth()` en su `setup()`, pero solo extrae `{ rol, isLogged }`.
+  - **Solo se necesita extraer `usuarioNombre` adicionalmente** y mostrarlo en el template.
+- **Solución recomendada:** En `NavBar.vue`, cambiar `const { rol, isLogged } = useAuth()` por `const { rol, isLogged, usuarioNombre } = useAuth()` y añadir un `<span>` junto al botón para mostrarlo. ~5 líneas de código.
+- **Impacto:** Mejora de UX — el usuario siempre sabe con qué cuenta está conectado.
+
+### B3 — Focus state faltante en filtros de ClienteList
+- **Estado:** 🔴 Pendiente
+- **Problema encontrado:** Los inputs de filtro en `ClienteList.vue` (`.filter-search`, `.filter-select`) no tienen estilos de `:focus` definidos. En contraste, `MermaList.vue` sí define `.filter-input:focus` con `border-color: var(--primary)` y `box-shadow: 0 0 0 3px var(--primary-bg)`.
+- **Solución:** Al centralizar los filtros (M1), asegurar que los estilos de focus estén incluidos.
+- **Impacto:** Mejora de accesibilidad y consistencia visual.
+
+### B4 — Centralizar .actions-col / .font-medium
+- **Estado:** 🔴 Pendiente
+- **Problema encontrado:** La clase `.actions-col { text-align: right; }` se repite en `ClienteList.vue`, `MermaList.vue` y `UsuarioList.vue`. La clase `.font-medium { font-weight: 500; }` se repite en `RecetaList.vue` y `DashboardEstadoPedidos.vue`.
+- **Solución:** Mover a `style.css` como utilidades globales.
+- **Impacto:** Elimina duplicación menor pero recurrente.
+
+### B5 — RecetaList usa .btn-icon en vez de .btn-action-ghost global
+- **Estado:** 🔴 Pendiente
+- **Problema encontrado:** `RecetaList.vue:87-106` define `.btn-icon` y `.btn-icon-danger` localmente (~20 líneas). Estas clases son funcionalmente idénticas a `.btn-action-ghost.edit` y `.btn-action-ghost.delete` que ya existen globalmente en `style.css`.
+- **Solución:** Reemplazar `.btn-icon` por `.btn-action-ghost` en el template y eliminar el CSS local.
+- **Impacto:** Elimina CSS redundante y usa el sistema global existente.
+
+### B6 — Inline style en ProduccionForm y bloques style vacíos
+- **Estado:** 🔴 Pendiente
+- **Problema encontrado:**
+  - `ProduccionForm.vue:65` usa `style="display:flex; gap:8px;"` directamente en el template. Debería ser una clase CSS (podría usar `.form-actions` global).
+  - `DashboardKPIs.vue`, `MaterialForm.vue` y `MermaForm.vue` tienen bloques `<style scoped>` completamente vacíos.
+- **Solución:** Reemplazar inline style por clase CSS; eliminar bloques `<style>` vacíos.
+- **Impacto:** Limpieza de código.
 
 ---
 
-### B4 — LoginForm define su propio `mostrarMensaje` local
+## Análisis: Botón "Agregar Nuevo Cliente"
 
-- **Estado:** ⏳ Observación (funciona correctamente)
-- **Archivo:** `src/components/login/LoginForm.vue` (L42-49)
-- **Descripción:** `LoginForm` define su propio `mostrarMensaje` con `setTimeout`. Esto funciona correctamente y es razonable porque el login es una pantalla aislada antes de la autenticación (no tiene acceso al layout principal). No requiere cambio, pero se documenta para referencia.
+Se analizó la funcionalidad de "Agregar nuevo cliente" en `ClientesPage.vue` para determinar qué quedaría innecesario si se elimina.
 
----
+**Ubicación del botón:** `ClientesPage.vue:12-16`
+```html
+<button class="btn btn-primary" @click="abrirNuevoFormulario">
+  <PlusIcon class="icon-md icon-inline" /> Nuevo Cliente
+</button>
+```
 
-## Supabase — Estructura y Seguridad
+### Lo que se puede eliminar de forma segura:
 
-### Estado actual (post-migración Auth)
-
-- **Auth:** Migrada a Supabase Auth. Edge Function `create-user` para creación segura.
-- **RPC:** `get_user_rol` — retorna el rol del usuario autenticado.
-- **Triggers:** Trigger para eliminar `auth.users` al borrar de `public.usuarios`.
-- **RLS:** Implementado y activo.
-- **Tabla `usuarios`:** Ahora incluye `auth_user_id`, `email`. Ya no almacena `contrasena`.
-
-### Propuesta RLS por tabla
-
-Se mantiene la propuesta original documentada en `PLAN_IMPLEMENTACION_RLS.md`.
-
-### Operaciones candidatas a RPC
-
-| Operación | Client actual | Riesgo | Propuesta RPC |
-|---|---|---|---|
-| `agregarProduccion` | `ProduccionClient` | 🔴 7+ tablas, ~10 queries | `rpc_registrar_produccion(...)` |
-| `registrarMermaConDescuento` | `MermaClient` | 🟠 2-4 queries | `rpc_registrar_merma(...)` |
-| `resolverClientesDePedidos` | `ClientesClient` | 🟡 3-5 queries | `rpc_resolver_clientes_pedidos(...)` |
-| `sincronizarConSupabase` (pedidos) | `PedidoClient` | 🟡 ~5 queries | `rpc_sincronizar_pedidos(...)` |
-
----
-
-## Recomendaciones Anteriores
-
-### Completadas (verificadas contra el código actual — auditoría 2026-08-13)
-
-| ID | Recomendación | Verificación |
+| Elemento | Archivo | Líneas |
 |---|---|---|
-| A1 (prev) | Gradientes hardcoded en PlanificacionOperadorCard y PlanificacionResumen | ✅ Ambos usan `var(--bg)` y `var(--bg-secondary)` en gradientes |
-| A2 (prev) | `background: white`/`#f8faf8` en recetas | ✅ Eliminado. Usan `var(--bg)` |
-| A3 (prev) | Estilos CSS duplicados RecetaMaterialesTabla/RecetaMateriaPrimaTabla | ✅ Extraídos a clases globales en `style.css` (`.selection-panel`, `.selection-panel-header`, `.selection-table`, `.btn-refresh`, `.qty-input`) |
-| A3 (prev) | Separadores decorativos `/* === */` | ✅ Eliminados. Patrón `// -- Sección --` adoptado |
-| M1 (prev) | Bloque `else` vacío en MaterialClient | ✅ Eliminado |
-| M2 (prev) | `sincronizarConSupabase` sin return en éxito | ✅ Retorna `{ success: true }` |
-| M3 (prev) | Import `PlanificacionClient` muerto en MermasPage | ✅ Eliminado |
-| M4 (prev) | `limpiarDatos` asigna reactive con `=` | ✅ Usa mutación directa |
-| M5 (prev) | `.forEach` sobre objeto en `resolverClientesDePedidos` | ✅ Corregido |
-| M7 (prev) | Evaluación de RecetaResumen | ✅ Evaluado, no requiere cambio |
-| M3 (actual) | `DashboardEstadoPedidos` replica `.data-card-table` | ✅ Refactorizado para usar clase global |
-| M5 (actual) | Duplicación `.materiales-list`/`.materia-list` en ProduccionRecetasView | ✅ Unificado a `.ingrediente-list` |
-| B1 (prev) | Espacio faltante en RecetaMateriaPrimaTabla `Fecha:{{ }}` | ✅ Verificado: `Fecha: {{ item.fechaIngreso || '-' }}` tiene espacio correcto |
-| B2 (prev) | Espacio faltante en RecetaResumen | ✅ Correcto |
-| B3 (prev) | Espacio faltante en RecetaMaterialesTabla | ✅ Correcto |
-| B4 (prev) | Comentario obsoleto en RecetasPage | ✅ Eliminado |
-| B1-B6 (prev) | Todos completados | ✅ |
-| N1-N12 (prev) | Todos completados | ✅ |
-| B4 (actual) | RecetaResumen — evaluado, no requiere cambio | ✅ |
+| `import { PlusIcon }` | `ClientesPage.vue` | L52 |
+| `PlusIcon` en components | `ClientesPage.vue` | L63 |
+| Botón "Nuevo Cliente" en template | `ClientesPage.vue` | L12-16 |
+| `abrirNuevoFormulario()` | `ClientesPage.vue` | L125-128 |
+| Título condicional "Agregar Nuevo Cliente" | `ClienteForm.vue` | L6 (simplificar a solo "Editar Cliente") |
 
-### Parcialmente completadas
+### Lo que NO se puede eliminar:
 
-| ID | Recomendación | Estado |
-|---|---|---|
-| A4 (actual) | Colores hardcoded dispersos | 🟡 ~60% completado. Quedan UsuarioRol, UsuarioTablaActual, LoginForm, badges en style.css |
-| M2 (actual) | Comentarios `// Mapeo snake_case a camelCase` | 🟡 2 de 4 eliminados. Quedan 2 en RecetaClient.js |
-| M3 (actual) | JSDoc redundante | 🟡 6 de ~15 eliminados. Quedan ~5 en MateriaPrimaClient y RecetaClient |
-| M4 (actual) | Badge variables en style.css | 🟡 Variables creadas, pero clases aún usan hex |
-
-### Descartadas (por decisión del usuario)
-
-| ID | Recomendación | Motivo |
-|---|---|---|
-| M6 (prev) | Funciones de selección duplicadas en RecetasPage | Descartado — lógica similar pero contextos distintos |
-
-### Ya no aplican
-
-| ID | Recomendación | Motivo |
-|---|---|---|
-| N/A | Auth propia con SHA256 | 🚫 Migrado a Supabase Auth. `crypto.js` es ahora código muerto |
-| C1 original | RLS deshabilitado sin auth | 🚫 Replanteado como C1 actual (en implementación con Supabase Auth) |
+| Elemento | Razón |
+|---|---|
+| `mostrarFormulario` (data) | También lo usa la edición de clientes existentes |
+| `clienteParaEditar` (data) | También lo usa la edición |
+| `cerrarFormulario()` | También lo usa la edición |
+| `guardarCliente()` | Maneja tanto creación como actualización |
+| `<div class="column-form">` | Se muestra al editar un cliente existente |
+| CSS de `.with-form`, `.column-form`, `slideInRight` | Necesarios para la animación del panel de edición |
+| `ClienteForm.vue` completo | Sigue siendo necesario para editar clientes |
 
 ---
 
-## Hoja de Ruta Priorizada
+## Hoja de Ruta de Implementación
 
-### Fase 1 — Seguridad: RPC (RLS Completado)
+**Fase 1 — Completada ✅ (Auditorías anteriores)**
+- [x] Aplicar fix global de Dark Mode en `style.css` — `color: inherit` y `color-scheme: dark` (A1 anterior).
+- [x] Arreglar destructuración en `useContadorRecetas.js` (A2 anterior).
+- [x] Eliminar `.spin` local duplicado en componentes.
+- [x] Eliminar archivo muerto `crypto.js`.
+- [x] Unificar nomenclatura inglés/español (B1 anterior).
+- [x] Extraer `.btn-refresh`, `.loading-state`, `.empty-state`, `.stat-card` a `style.css`.
+- [x] Reemplazar colores HEX en `.badge-*` globales por variables CSS.
+- [x] Implementar Singleton Promise en `useCatalogos.js`.
 
-| # | Tarea | Esfuerzo | Estado |
-|---|---|---|---|
-| C1 | Completar implementación RLS (15 tablas) | N/A | ✅ Completado |
-| C2 | Crear RPCs para operaciones multi-tabla | ~90 min | Pendiente |
-| C2b | Refactorizar clients para usar RPCs | ~30 min | Pendiente |
+**Fase 2 — Bugs Críticos de UX (Nueva)**
+- [x] Corregir Dark Mode en RecetaList: reemplazar `var(--text-dark)` por `var(--text-h)` y HEX por variables (A1).
+- [x] Unificar `.empty-state-card` duplicada en `style.css` (A2).
 
-### Fase 2 — Bugs y funcionalidad (Alta prioridad)
+**Fase 3 — Centralización de Estilos Duplicados (Nueva)**
+- [x] Centralizar `.filters` / `.filter-input` / `.filter-select` a `style.css` (M1).
+- [x] Crear modificador `.data-card-header.neutral` en `style.css` (M2).
+- [x] Crear clases globales `.chip-selector` / `.chip-option` en `style.css` (M3).
+- [x] Centralizar botón submit con gradiente como `.btn-primary-gradient` (M5).
 
-| # | Tarea | Esfuerzo | Líneas |
-|---|---|---|---|
-| A1 | Fix mensaje de usuario que no desaparece | 5 min | ~10 |
-| A3 | Implementar límite de sincronización diaria | 30-45 min | ~80 (tabla + client + UI) |
 
-### Fase 3 — Consistencia visual y nomenclatura (~20 min)
+**Fase 4 — Alineación de Formularios (Nueva)**
+- [x] Migrar inputs de `UsuarioForm`, `RecetaForm` y `ProduccionForm` al sistema global `.form-input` (M4).
+- [x] Refactorizar `UsuarioList` para usar `.data-card` global (M6).
+- [x] Reemplazar `.btn-icon` por `.btn-action-ghost` en `RecetaList` (B5).
 
-| # | Tarea | Esfuerzo | Líneas |
-|---|---|---|---|
-| A2 | Unificar nombres inglés/español | 10 min | ~30 |
-| A4 | Reemplazar colores hardcoded restantes | 5 min | ~12 |
-| M4 | Badges hardcoded → variables CSS | 2 min | ~9 |
-| M6 | Colores en UsuarioRol/UsuarioTablaActual | 3 min | ~7 |
+**Fase 5 — Colores y Variables CSS (Nueva)**
+- [x] Reemplazar HEX hardcoded en componentes por variables CSS (M7).
+- [x] Corregir variables CSS inexistentes: `--text-main`, `--bg-hover`, `--primary-rgb` (B1).
 
-### Fase 4 — Limpieza de código (~10 min)
+**Fase 6 — Mejoras de UX (Nueva)**
+- [x] Mostrar supervisor/usuario conectado en NavBar de forma sutil (B2).
+- [x] Eliminar botón "Agregar nuevo cliente" de la pantalla de Clientes.
 
-| # | Tarea | Esfuerzo | Líneas |
-|---|---|---|---|
-| M1 | Eliminar `.spin` duplicado en 5 componentes | 3 min | ~30 |
-| M2 | Eliminar 2 comentarios mapeo en RecetaClient | 1 min | 2 |
-| M3 | Eliminar ~5 bloques JSDoc redundantes | 3 min | ~15 |
-| B2 | Eliminar `crypto.js` muerto | 1 min | 8 |
-| B1 | Eliminar `<!-- LAYOUT -->` en 2 páginas | 1 min | 2 |
-
-### Fase 5 — Optimización (cuando convenga)
-
-| # | Tarea | Esfuerzo | Impacto |
-|---|---|---|---|
-| M5 | Singleton promise en useCatalogos | 15 min | Reduce peticiones duplicadas |
-| B3 | Gradiente minor en ProduccionForm | 1 min | Cosmético |
-
-### Estimación total
-
-- **Fase 1 (Seguridad):** ~3 horas (depende de decisiones de arquitectura)
-- **Fase 2 (Bugs):** ~45 minutos
-- **Fases 3-4 (Limpieza):** ~30 minutos
-- **Total limpieza:** ~75 min, ~200 líneas de mejoras
-- **Total seguridad:** ~3h, refactorización de 3+ clients + SQL
-
-**Resultado esperado:** Código con nomenclatura unificada, mensajes de éxito funcionales, sincronización controlada, CSS consistente con design tokens, sin código muerto, y seguridad RLS en Supabase.
+**Fase 7 — Limpieza Menor (Nueva)**
+- [x] Añadir focus state a filtros de ClienteList (B3).
+- [x] Centralizar `.actions-col` y `.font-medium` como utilidades globales (B4).
+- [x] Reemplazar inline style en ProduccionForm:65 por clase CSS (B6).
+- [x] Eliminar bloques `<style scoped>` vacíos en DashboardKPIs, MaterialForm, MermaForm (B6).
