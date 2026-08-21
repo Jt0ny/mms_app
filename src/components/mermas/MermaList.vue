@@ -168,15 +168,7 @@ export default {
   color: var(--text-light);
 }
 
-/* Badges */
-.badge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  white-space: nowrap;
-}
+
 
 
 .badge-materia_prima {

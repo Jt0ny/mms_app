@@ -197,13 +197,7 @@ export default {
 	gap: 6px;
 }
 
-.summary-label {
-	color: var(--text-light);
-	font-size: 11px;
-	text-transform: uppercase;
-	letter-spacing: 0.06em;
-	font-weight: 700;
-}
+
 
 .summary-none {
 	color: var(--text-light);
@@ -390,9 +384,7 @@ export default {
 	font-weight: 700;
 }
 
-.text-right {
-	text-align: right;
-}
+
 
 @media (max-width: 768px) {
 	.operadores-header {

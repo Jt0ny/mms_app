@@ -177,13 +177,6 @@ export function useProduccionForm(props, emit) {
         }
         emit('guardar', payload)
     }
-
-    const cancelar = () => {
-        resetearCantidades()
-        form.fecha = obtenerFechaHoy()
-        emit('cancelar')
-    }
-
     return {
         cargandoCategorias,
         categorias,
@@ -194,7 +187,6 @@ export function useProduccionForm(props, emit) {
         categoriasConCantidad,
         obtenerCantidad,
         actualizarCantidad,
-        enviarFormulario,
-        cancelar
+        enviarFormulario
     }
 }

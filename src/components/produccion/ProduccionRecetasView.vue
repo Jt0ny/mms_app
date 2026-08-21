@@ -65,7 +65,7 @@
 
 <script>
 import { useCatalogos } from '../../composables/useCatalogos.js'
-import Alertas from '../Alertas.vue'
+import Alertas from '../shared/Alertas.vue'
 
 export default {
     name: 'ProduccionRecetasView',
@@ -209,7 +209,7 @@ export default {
 }
 
 .error {
-    color: var(--danger);
+    color: var(--error);
 }
 
 .empty {

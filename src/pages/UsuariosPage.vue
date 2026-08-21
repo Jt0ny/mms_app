@@ -20,7 +20,7 @@
     </div>
 </template>
 <script>
-import Alertas from '../components/Alertas.vue'
+import Alertas from '../components/shared/Alertas.vue'
 import UsuarioClient from '../client/UsuarioClient.js'
 import UsuarioForm from '../components/usuarios/UsuarioForm.vue'
 import UsuarioList from '../components/usuarios/UsuarioList.vue'

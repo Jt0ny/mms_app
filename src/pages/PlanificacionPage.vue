@@ -65,7 +65,7 @@ import PlanificacionResumen from '../components/planificacion/PlanificacionResum
 import PlanificacionOperadorCard from '../components/planificacion/PlanificacionOperadorCard.vue'
 import PlanificacionMapeoRecetas from '../components/planificacion/PlanificacionMapeoRecetas.vue'
 import PlanificacionView from '../components/planificacion/PlanificacionView.vue'
-import Alertas from '../components/Alertas.vue'
+import Alertas from '../components/shared/Alertas.vue'
 import { useMensajes } from '../composables/useMensajes.js'
 import { obtenerFechaHoy } from '../utils/date.js'
 

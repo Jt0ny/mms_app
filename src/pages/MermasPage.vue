@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import Alertas from '../components/Alertas.vue'
+import Alertas from '../components/shared/Alertas.vue'
 import MermaForm from '../components/mermas/MermaForm.vue'
 import MermaList from '../components/mermas/MermaList.vue'
 

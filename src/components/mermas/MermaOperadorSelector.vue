@@ -3,7 +3,7 @@
         <label>Operador Responsable</label>
 
         <div class="selector-container">
-            <div class="actual-seleccion flex-align-center gap-8" :class="{ vacio: !operadorSeleccionado }">
+            <div class="selector-display flex-align-center gap-8" :class="{ vacio: !operadorSeleccionado }">
                 <UserIcon class="icon-md text-primary" /> 
                 {{ operadorSeleccionado ? `Operador: ${operadorSeleccionado.nombre}` : 'Selecciona un operador' }}
             </div>
@@ -67,22 +67,6 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 10px;
-}
-
-.actual-seleccion {
-    padding: 11px 14px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
-    color: var(--text-h);
-    font-weight: 600;
-    box-shadow: var(--shadow-sm);
-    font-size: 13px;
-}
-
-.actual-seleccion.vacio {
-    color: var(--text-light);
-    font-weight: 500;
 }
 
 </style>

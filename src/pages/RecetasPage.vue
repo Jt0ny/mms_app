@@ -51,7 +51,7 @@ import RecetaForm from '../components/recetas/RecetaForm.vue'
 import RecetaMaterialesList from '../components/recetas/RecetaMaterialesList.vue'
 import RecetaMateriaPrimaList from '../components/recetas/RecetaMateriaPrimaList.vue'
 import RecetaList from '../components/recetas/RecetaList.vue'
-import Alertas from '../components/Alertas.vue'
+import Alertas from '../components/shared/Alertas.vue'
 import { useMensajes } from '../composables/useMensajes.js'
 
 export default {

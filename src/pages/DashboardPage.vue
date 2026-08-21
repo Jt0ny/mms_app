@@ -45,7 +45,7 @@
 
 <script>
 import DashboardClient from '../client/DashboardClient.js'
-import Alertas from '../components/Alertas.vue'
+import Alertas from '../components/shared/Alertas.vue'
 import DashboardKPIs from '../components/dashboard/DashboardKPIs.vue'
 import DashboardAvanceOperador from '../components/dashboard/DashboardAvanceOperador.vue'
 import DashboardDistribucionMermas from '../components/dashboard/DashboardDistribucionMermas.vue'

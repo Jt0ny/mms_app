@@ -60,7 +60,7 @@
 <script>
 import MermaTipoSelector from './MermaTipoSelector.vue'
 import MermaMotivoSelector from './MermaMotivoSelector.vue'
-import Alertas from '../Alertas.vue'
+import Alertas from '../shared/Alertas.vue'
 import MermaOperadorSelector from './MermaOperadorSelector.vue'
 import { obtenerFechaHoy } from '../../utils/date.js'
 

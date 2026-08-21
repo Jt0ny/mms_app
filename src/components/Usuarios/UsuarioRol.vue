@@ -1,14 +1,14 @@
 <template>
     <div class="selector-rol">
-        <label>Rol de usuario</label>
+        <label>Rol del Usuario</label>
 
         <div class="rol-selector">
-            <div class="rol-actual" :class="{ vacio: !modelo }">
-                {{ modelo || 'Selecciona un rol' }}
+            <div class="selector-display" :class="{ vacio: !modelValue }">
+                {{ modelValue || 'Selecciona un rol' }}
             </div>
 
             <div class="chip-options">
-                <div v-for="rol in roles" :key="rol" class="chip-option" :class="{ activa: rol === modelo }"
+                <div v-for="rol in roles" :key="rol" class="chip-option" :class="{ activa: rol === modelValue }"
                     role="button" tabindex="0" @click="seleccionarRol(rol)" @keydown.enter.prevent="seleccionarRol(rol)"
                     @keydown.space.prevent="seleccionarRol(rol)">
                     {{ rol }}
@@ -20,6 +20,7 @@
 <script>
 
 export default {
+    name: 'UsuarioRol',
     props: {
         modelValue: {
             type: String,
@@ -63,15 +64,4 @@ export default {
     flex-direction: column;
     gap: 10px;
 }
-
-.rol-actual {
-    padding: 11px 14px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-}
-
-.rol-actual.vacio {
-    color: var(--text-light);
-}
-
 </style>

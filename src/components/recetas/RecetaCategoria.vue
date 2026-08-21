@@ -3,7 +3,7 @@
         <label>Categoría de la receta</label>
 
         <div class="categoria-selector">
-            <div class="categoria-actual" :class="{ vacio: !modelo }">
+            <div class="selector-display" :class="{ vacio: !modelo }">
                 {{ modelo || 'Selecciona una categoría' }}
             </div>
 
@@ -71,21 +71,6 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 10px;
-}
-
-.categoria-actual {
-    padding: 11px 14px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
-    color: var(--text-h);
-    font-weight: 600;
-    box-shadow: var(--shadow-sm);
-}
-
-.categoria-actual.vacio {
-    color: var(--text-light);
-    font-weight: 500;
 }
 
 </style>

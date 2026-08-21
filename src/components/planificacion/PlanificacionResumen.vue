@@ -41,12 +41,12 @@
 		</div>
 
 		<!-- Mensaje inline -->
-		<Alertas :mensaje="mensajeInline" style="grid-column: 1 / -1; margin-top: 10px;" />
+		<Alertas :mensaje="mensajeInline" class="alerta-full-width" />
 	</div>
 </template>
 
 <script>
-import Alertas from '../Alertas.vue'
+import Alertas from '../shared/Alertas.vue'
 import { DocumentCheckIcon, CheckCircleIcon, ExclamationTriangleIcon, XCircleIcon } from '@heroicons/vue/24/outline'
 
 export default {
@@ -133,13 +133,7 @@ export default {
 	gap: 6px;
 }
 
-.summary-label {
-	color: var(--text-light);
-	font-size: 11px;
-	text-transform: uppercase;
-	letter-spacing: 0.06em;
-	font-weight: 700;
-}
+
 
 .btn-asignar {
 	align-self: end;
@@ -231,5 +225,9 @@ export default {
 		grid-template-columns: 1fr;
 		gap: 4px;
 	}
+}
+.alerta-full-width {
+	grid-column: 1 / -1;
+	margin-top: 10px;
 }
 </style>

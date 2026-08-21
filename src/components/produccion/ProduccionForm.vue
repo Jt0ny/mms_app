@@ -49,7 +49,8 @@
                             @click="actualizarCantidad(categoria, obtenerCantidad(categoria) - 1)"
                             aria-label="Restar">−</button>
                         <input :value="obtenerCantidad(categoria)" type="number" min="0" step="1" inputmode="numeric"
-                            class="form-input category-input" @input="actualizarCantidad(categoria, $event.target.value)" />
+                            class="form-input category-input"
+                            @input="actualizarCantidad(categoria, $event.target.value)" />
                         <button type="button" class="stepper-btn"
                             @click="actualizarCantidad(categoria, obtenerCantidad(categoria) + 1)"
                             aria-label="Sumar">+</button>
@@ -62,11 +63,6 @@
                     Total registrado: <strong>{{ totalDelDia }}</strong>
                 </p>
                 <div class="form-actions-inline">
-                    <button v-if="edicion" type="button" class="submit-btn" @click="cancelar"
-                        :disabled="guardando">
-                        Cancelar
-                    </button>
-
                     <button type="submit" class="btn btn-primary" :disabled="guardando || cargandoCategorias">
                         {{ guardando ? (edicion ? 'Guardando...' : 'Guardando...') : (edicion ? 'Actualizar producción'
                             : 'Registrar producción') }}
@@ -78,7 +74,7 @@
 </template>
 
 <script>
-import Alertas from '../Alertas.vue'
+import Alertas from '../shared/Alertas.vue'
 import { useProduccionForm } from '../../composables/useProduccionForm'
 
 export default {
@@ -152,9 +148,9 @@ export default {
             totalDelDia,
             categoriasConCantidad,
             obtenerCantidad,
+            obtenerCantidad,
             actualizarCantidad,
-            enviarFormulario,
-            cancelar
+            enviarFormulario
         }
     }
 }
@@ -197,15 +193,6 @@ export default {
     color: var(--text-light);
     max-width: 640px;
     line-height: 1.5;
-}
-
-.date-field {
-    min-width: 180px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    color: var(--text-h);
-    font-weight: 600;
 }
 
 
@@ -281,10 +268,6 @@ export default {
         flex-direction: column;
     }
 
-    .date-field {
-        width: 100%;
-    }
-
     .stats-grid {
         grid-template-columns: 1fr;
     }
@@ -344,8 +327,9 @@ export default {
         display: none;
     }
 }
+
 .form-actions-inline {
-  display: flex;
-  gap: 8px;
+    display: flex;
+    gap: 8px;
 }
 </style>

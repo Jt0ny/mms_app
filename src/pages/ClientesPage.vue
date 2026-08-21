@@ -49,7 +49,7 @@
 import ClienteClient from '../client/ClienteClient'
 import ClienteList from '../components/clientes/ClienteList.vue'
 import ClienteForm from '../components/clientes/ClienteForm.vue'
-import Alertas from '../components/Alertas.vue'
+import Alertas from '../components/shared/Alertas.vue'
 import { useMensajes } from '../composables/useMensajes.js'
 import { useCatalogos } from '../composables/useCatalogos.js'
 

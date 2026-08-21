@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import Alertas from '../components/Alertas.vue'
+import Alertas from '../components/shared/Alertas.vue'
 import ProduccionForm from '../components/produccion/ProduccionForm.vue'
 import ProduccionClient from '../client/ProduccionClient'
 import DashboardClient from '../client/DashboardClient.js'

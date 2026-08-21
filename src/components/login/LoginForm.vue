@@ -12,8 +12,9 @@
 </template>
 
 <script>
-import Alertas from '../Alertas.vue'
+import Alertas from '../shared/Alertas.vue'
 import UsuarioClient from '../../client/UsuarioClient.js'
+import { useMensajes } from '../../composables/useMensajes'
 
 export default {
 
@@ -23,30 +24,22 @@ export default {
         Alertas
     },
 
+    setup() {
+        const { mensaje, mostrarMensaje } = useMensajes()
+        return { mensaje, mostrarMensaje }
+    },
+
     data() {
 
         return {
 
             email: '',
             contrasena: '',
-            cargando: false,
-            mensaje: {
-                tipo: null,
-                texto: ''
-            }
+            cargando: false
         }
     },
 
     methods: {
-
-        mostrarMensaje(tipo, texto, duracion = 3000) {
-
-            this.mensaje = { tipo, texto }
-
-            if (duracion > 0) {
-                setTimeout(() => { this.mensaje = { tipo: null, texto: '' } }, duracion)
-            }
-        },
 
         async ingresar() {
 
@@ -66,7 +59,7 @@ export default {
 
             if (response.success) {
                 if (response.data) {
-                    this.mensaje = { tipo: null, texto: '' }
+                    this.mostrarMensaje(null, '', 0) // Clear message
                     this.$emit('ingresar', response.data)
                 } else {
                     this.mostrarMensaje('error', 'Email o contraseña incorrectos.')

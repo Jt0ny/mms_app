@@ -51,7 +51,8 @@ export default {
 <style scoped>
 .main-layout {
     display: flex;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     background: var(--bg-secondary);
 }
 
@@ -59,25 +60,24 @@ export default {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 .page-content {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 768px) {
     .main-layout {
         flex-direction: column;
-        min-height: 100vh;
-    }
-
-    .main-content {
-        min-width: 0;
+        height: 100vh;
     }
 
     .page-content {
-        overflow-y: visible;
+        overflow-y: auto;
     }
 }
 </style>

@@ -136,15 +136,7 @@ export default {
     border: 1px solid var(--border);
 }
 
-.summary-label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-}
+
 
 .summary-card strong {
     font-size: 16px;
@@ -176,16 +168,8 @@ export default {
     font-size: 15px;
 }
 
-.text-right {
-    text-align: right;
-}
-
-.text-center {
-    text-align: center;
-}
-
 .text-muted {
-    color: var(--text-muted);
+    color: var(--text-light);
 }
 
 .py-4 {

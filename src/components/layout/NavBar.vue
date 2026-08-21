@@ -62,11 +62,6 @@ export default {
     return { rol, isLogged, usuarioNombre }
   },
 
-  setup() {
-    const { rol, isLogged, usuarioNombre } = useAuth()
-    return { rol, isLogged, usuarioNombre }
-  },
-
   methods: {
     onAction() {
       if (this.isLogged) {

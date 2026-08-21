@@ -156,9 +156,7 @@ export default {
     background: var(--border);
 }
 
-.font-medium {
-    font-weight: 500;
-}
+
 
 .quantity {
     font-variant-numeric: tabular-nums;

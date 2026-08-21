@@ -59,14 +59,7 @@ export default {
 </script>
 
 <style scoped>
-.badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: capitalize;
-}
+
 
 .badge-gray {
     background: var(--bg-secondary);
@@ -79,8 +72,5 @@ export default {
 }
 
 
-.font-medium {
-    font-weight: 500;
-    color: var(--text-h);
-}
+
 </style>

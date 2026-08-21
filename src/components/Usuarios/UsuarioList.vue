@@ -1,9 +1,15 @@
 <template>
-    <div class="usuario-table-container">
-        <div class="usuario-table-header">
-
-            <h2>Usuarios actuales</h2>
-            <p>Usuarios registrados en el sistema</p>
+    <div class="data-card">
+        <div class="data-card-header">
+            <div class="flex-align-center" style="gap: 14px;">
+                <span class="form-icon flex-align-center">
+                    <UsersIcon class="icon-lg text-white" />
+                </span>
+                <div>
+                    <h2>Usuarios actuales</h2>
+                    <p class="data-card-subtitle">Usuarios registrados en el sistema</p>
+                </div>
+            </div>
             <button type="button" class="btn-header-outline" :disabled="cargando" @click="$emit('actualizar')">
                 <ArrowPathIcon class="icon-sm" :class="{ 'spin': cargando }" />
                 {{ cargando ? 'Cargando...' : 'Actualizar' }}
@@ -14,12 +20,12 @@
             <p>Cargando usuarios...</p>
         </div>
 
-        <div v-else-if="usuarios.length > 0" class="content-table">
+        <div v-else-if="usuarios.length > 0" class="data-card-content">
             <div class="table-info">
                 <p><strong>{{ usuarios.length }}</strong> usuarios registrados</p>
             </div>
 
-            <table class="usuario-table">
+            <table class="data-card-table">
                 <thead>
                     <tr>
                         <th>Nombre</th>
@@ -52,11 +58,11 @@
     </div>
 </template>
 <script>
-import { TrashIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
+import { TrashIcon, ArrowPathIcon, UsersIcon } from '@heroicons/vue/24/outline'
 
 export default {
     name: 'UsuarioList',
-    components: { TrashIcon, ArrowPathIcon },
+    components: { TrashIcon, ArrowPathIcon, UsersIcon },
     props: {
         usuarios: {
             type: Array,
@@ -78,40 +84,10 @@ export default {
 </script>
 
 <style scoped>
-.usuario-table-container {
-    background: var(--bg);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-light);
-    overflow: hidden;
-}
-
-.usuario-table-header {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    align-items: center;
-    padding: 20px 24px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: white;
-}
-
-.usuario-table-header h2 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: white;
-}
-
-.usuario-table-header p {
-    margin: 4px 0 0;
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.content-table {
-    padding: 20px 24px 24px;
-    overflow-x: auto;
+.form-icon {
+    font-size: 28px;
+    line-height: 1;
+    flex-shrink: 0;
 }
 
 .table-info {
@@ -122,35 +98,6 @@ export default {
 
 .table-info p {
     margin: 0;
-}
-
-.usuario-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.usuario-table thead {
-    background: var(--primary);
-}
-
-.usuario-table th {
-    text-align: left;
-    padding: 12px 16px;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: white;
-    font-weight: 700;
-}
-
-.usuario-table td {
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-}
-
-.usuario-table tbody tr:hover {
-    background: var(--bg-secondary);
 }
 
 .user-name {
@@ -175,25 +122,5 @@ export default {
 .role-operador {
     background: var(--alert-info-bg);
     color: var(--alert-info-text);
-}
-
-@media (max-width: 768px) {
-    .usuario-table-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .btn-header-outline {
-        width: 100%;
-    }
-
-    .usuario-table {
-        font-size: 12px;
-    }
-
-    .usuario-table th,
-    .usuario-table td {
-        padding: 10px 8px;
-    }
 }
 </style>

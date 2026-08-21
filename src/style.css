@@ -274,12 +274,13 @@ p {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
   border: none;
-  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.2);
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.15);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--primary-dark);
+  opacity: 0.9;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
 }
 
 .btn-secondary {
@@ -1129,6 +1130,33 @@ p {
 /* =========================================
    UTILITIES (Fase 3 - Centralización)
    ========================================= */
+
+/* Patrones Fase 4 (M10, M11) */
+.summary-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.selector-display {
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
+  color: var(--text-h);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  font-size: 13px;
+}
+
+.selector-display.vacio {
+  color: var(--text-light);
+  font-weight: 500;
+}
 
 /* Filtros (M1) */
 .filter-bar {

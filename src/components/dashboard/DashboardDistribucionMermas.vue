@@ -3,7 +3,7 @@
       <div class="data-card-header">
           <div class="flex-align-center gap-8">
               <SunIcon class="icon-lg text-primary" />
-              <h2 style="margin: 0;">Análisis de Mermas de Hoy</h2>
+              <h2>Análisis de Mermas de Hoy</h2>
           </div>
       </div>
 

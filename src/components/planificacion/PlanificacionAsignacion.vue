@@ -17,7 +17,7 @@
 					@input="$emit('update:fechaSeleccionada', $event.target.value)" />
 			</div>
 
-			<button type="button" class="btn-distribuir" :style="{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }" :disabled="cargandoAuto || guardando"
+			<button type="button" class="btn-distribuir inline-flex-center gap-6" :disabled="cargandoAuto || guardando"
 				@click="$emit('distribuir')">
 				<ArrowPathIcon v-if="cargandoAuto" class="icon-sm spin text-white" />
 				<BoltIcon v-else class="icon-sm text-white" />
@@ -119,8 +119,8 @@ export default {
 	border: none;
 	border-radius: 12px;
 	padding: 12px 16px;
-	background: #0f172a;
-	color: white;
+	background: var(--text-h);
+	color: var(--bg);
 	font-weight: 700;
 	cursor: pointer;
 	transition: opacity 0.2s ease, transform 0.2s ease;

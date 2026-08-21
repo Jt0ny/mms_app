@@ -1,11 +1,13 @@
 <template>
-    <form class="usuarios-form" @submit.prevent="guardar">
+    <form class="data-card" @submit.prevent="guardar">
 
-        <div class="form-header">
-            <span class="form-icon flex-align-center"><UserIcon class="icon-lg text-white" /></span>
-            <div>
-                <h2>Agregar Usuario</h2>
-                <p>Completa los campos para registrar un nuevo acceso</p>
+        <div class="data-card-header">
+            <div class="flex-align-center" style="gap: 14px;">
+                <span class="form-icon flex-align-center"><UserIcon class="icon-lg text-white" /></span>
+                <div>
+                    <h2>Agregar Usuario</h2>
+                    <p class="data-card-subtitle">Completa los campos para registrar un nuevo acceso</p>
+                </div>
             </div>
         </div>
 
@@ -34,16 +36,22 @@
 </template>
 
 <script>
-import Alertas from '../Alertas.vue'
+import Alertas from '../shared/Alertas.vue'
 import UsuarioRol from './UsuarioRol.vue'
 import UsuarioClient from '../../client/UsuarioClient.js'
 import { UserIcon } from '@heroicons/vue/24/outline'
+import { useMensajes } from '../../composables/useMensajes'
 
 export default {
     components: {
         Alertas,
         UsuarioRol,
         UserIcon
+    },
+
+    setup() {
+        const { mensaje, mostrarMensaje } = useMensajes()
+        return { mensaje, mostrarMensaje }
     },
 
     data() {
@@ -53,25 +61,11 @@ export default {
             contrasena: '',
             rol: '',
             guardando: false,
-            roles: ['Supervisor', 'Operador'],
-            mensaje: {
-                tipo: null,
-                texto: ''
-            }
+            roles: ['Supervisor', 'Operador']
         }
     },
 
     methods: {
-        mostrarMensaje(tipo, texto, duracion = 4000) {
-            this.mensaje = { tipo, texto }
-            if (duracion > 0) {
-                clearTimeout(this._mensajeTimer)
-                this._mensajeTimer = setTimeout(() => {
-                    this.mensaje = { tipo: null, texto: '' }
-                }, duracion)
-            }
-        },
-
         async guardar() {
             if (!this.nombre.trim() || !this.email.trim() || !this.contrasena.trim()) {
                 this.mostrarMensaje('error', 'Por favor, complete todos los campos.')
@@ -110,26 +104,6 @@ export default {
 </script>
 
 <style scoped>
-.usuarios-form {
-    width: 100%;
-    border-radius: 16px;
-    overflow: hidden;
-    background: var(--bg);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-light);
-    display: flex;
-    flex-direction: column;
-}
-
-/* ── Header verde con ícono ── */
-.form-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 20px 24px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: white;
-}
 
 .form-icon {
     font-size: 28px;
@@ -137,19 +111,6 @@ export default {
     flex-shrink: 0;
 }
 
-.form-header h2 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: white;
-    letter-spacing: -0.01em;
-}
-
-.form-header p {
-    margin: 4px 0 0;
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.8);
-}
 
 /* ── Cuerpo del formulario ── */
 .form-body {
