@@ -148,7 +148,6 @@ export default {
             totalDelDia,
             categoriasConCantidad,
             obtenerCantidad,
-            obtenerCantidad,
             actualizarCantidad,
             enviarFormulario
         }

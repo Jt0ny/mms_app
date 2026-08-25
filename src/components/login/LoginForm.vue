@@ -58,14 +58,12 @@ export default {
             this.cargando = false
 
             if (response.success) {
-                if (response.data) {
-                    this.mostrarMensaje(null, '', 0) // Clear message
-                    this.$emit('ingresar', response.data)
-                } else {
-                    this.mostrarMensaje('error', 'Email o contraseña incorrectos.')
-                }
+                this.mostrarMensaje(null, '', 0) // Clear message
+                this.$emit('ingresar', response.data)
+            } else if (response.errorTipo === 'credenciales') {
+                this.mostrarMensaje('error', 'Email o contraseña incorrectos.')
             } else {
-                this.mostrarMensaje('error', 'No se pudo validar el usuario. Revisa la conexion con la API.')
+                this.mostrarMensaje('error', 'Error de conexión. Verifica tu acceso a internet.')
             }
         }
     }

@@ -1,8 +1,8 @@
 <template>
-    <div class="merma-operador-selector">
+    <div class="selector-group">
         <label>Operador Responsable</label>
 
-        <div class="selector-container">
+        <div class="selector-group">
             <div class="selector-display flex-align-center gap-8" :class="{ vacio: !operadorSeleccionado }">
                 <UserIcon class="icon-md text-primary" /> 
                 {{ operadorSeleccionado ? `Operador: ${operadorSeleccionado.nombre}` : 'Selecciona un operador' }}
@@ -51,22 +51,4 @@ export default {
 </script>
 
 <style scoped>
-.merma-operador-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.merma-operador-selector label {
-    font-weight: 600;
-    color: var(--text-h);
-    font-size: 14px;
-}
-
-.selector-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
 </style>

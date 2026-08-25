@@ -16,7 +16,7 @@
         </div>
 
         <!-- Detalle condicional de Otro Motivo -->
-        <div class="form-group mt-16" v-if="motivo === 'Otro'">
+        <div class="form-group mt-4" v-if="motivo === 'Otro'">
             <label class="form-label" for="otro-motivo-merma">Especificar Motivo</label>
             <input id="otro-motivo-merma" :value="otroMotivo" @input="$emit('update:otroMotivo', $event.target.value)"
                 type="text" class="form-input" placeholder="Escribe el motivo detallado" required />
@@ -49,9 +49,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.mt-16 {
-    margin-top: 16px;
-}
-</style>

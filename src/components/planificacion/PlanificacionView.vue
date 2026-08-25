@@ -40,12 +40,12 @@
                         <td>{{ fila.receta }}</td>
                         <td>
                             <span class="badge-cat" v-if="fila.categoria !== '-'">{{ fila.categoria }}</span>
-                            <span v-else class="text-muted">-</span>
+                            <span v-else class="text-light">-</span>
                         </td>
                         <td class="text-right cantidad-val">{{ fila.cantidad }}</td>
                     </tr>
                     <tr v-if="filasTabla.length === 0">
-                        <td colspan="4" class="text-center text-muted py-4">No hay datos para mostrar</td>
+                        <td colspan="4" class="text-center text-light p-5">No hay datos para mostrar</td>
                     </tr>
                 </tbody>
             </table>
@@ -168,14 +168,6 @@ export default {
     font-size: 15px;
 }
 
-.text-muted {
-    color: var(--text-light);
-}
-
-.py-4 {
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
-}
 
 @media (max-width: 768px) {
     .summary-card {

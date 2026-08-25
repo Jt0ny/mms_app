@@ -1,9 +1,8 @@
 import { reactive } from 'vue'
 
-const mensaje = reactive({ tipo: null, texto: '' })
-const mensajeInline = reactive({ tipo: null, texto: '' })
-
 export function useMensajes() {
+    const mensaje = reactive({ tipo: null, texto: '' })
+    const mensajeInline = reactive({ tipo: null, texto: '' })
 
     function mostrarMensaje(tipo, texto, duracion = 4000) {
         mensaje.tipo = tipo

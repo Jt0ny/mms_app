@@ -28,7 +28,7 @@
 							<div class="select-col">
 								<select v-model="row.recetaId" class="select-mapeo"
 									@change="validarRow(cat.categoria, idx)">
-									<option value="">-- Seleccionar Receta --</option>
+									<option value="">Seleccionar Receta</option>
 									<option v-for="rec in recetasPorCategoria(cat.categoria)" :key="rec.id"
 										:value="rec.id">
 										{{ rec.nombre }}
@@ -53,7 +53,7 @@
 
 					<!-- Botón agregar receta extra -->
 					<div class="add-row-action">
-						<button type="button" class="btn-add-receta" :disabled="!puedeAgregarReceta(cat.categoria)"
+						<button type="button" class="btn btn-dashed" :disabled="!puedeAgregarReceta(cat.categoria)"
 							@click="agregarRow(cat.categoria)">
 							+ Agregar otra receta de {{ cat.categoria }}
 						</button>
@@ -63,10 +63,10 @@
 		</div>
 
 		<footer class="mapeo-actions">
-			<button type="button" class="btn-cancelar" @click="$emit('cancelar')">
+			<button type="button" class="btn btn-secondary" @click="$emit('cancelar')">
 				Cancelar
 			</button>
-			<button type="button" class="btn-confirmar" :disabled="!formularioValido" @click="confirmarMapeo">
+			<button type="button" class="btn btn-primary" :disabled="!formularioValido" @click="confirmarMapeo">
 				Confirmar y Planificar
 			</button>
 		</footer>
@@ -405,69 +405,12 @@ export default {
 	text-align: left;
 }
 
-.btn-add-receta {
-	background: none;
-	border: 1.5px dashed var(--border);
-	color: var(--primary);
-	font-weight: 700;
-	font-size: 13px;
-	padding: 8px 16px;
-	border-radius: 10px;
-	cursor: pointer;
-	transition: background 0.15s, border-color 0.15s;
-}
-
-.btn-add-receta:hover:not(:disabled) {
-	background: var(--primary-bg);
-	border-color: var(--primary);
-}
-
-.btn-add-receta:disabled {
-	opacity: 0.5;
-	cursor: not-allowed;
-}
-
 .mapeo-actions {
 	padding-top: 16px;
 	border-top: 1px solid var(--border-light);
 	display: flex;
 	justify-content: flex-end;
 	gap: 12px;
-}
-
-.btn-cancelar {
-	border: 1.5px solid var(--border);
-	background: var(--bg);
-	color: var(--text);
-	font-weight: 700;
-	padding: 11px 20px;
-	border-radius: 12px;
-	cursor: pointer;
-	transition: background 0.15s;
-}
-
-.btn-cancelar:hover {
-	background: var(--bg-secondary);
-}
-
-.btn-confirmar {
-	border: none;
-	background: var(--primary);
-	color: white;
-	font-weight: 700;
-	padding: 12px 24px;
-	border-radius: 12px;
-	cursor: pointer;
-	transition: opacity 0.15s;
-}
-
-.btn-confirmar:hover:not(:disabled) {
-	opacity: 0.9;
-}
-
-.btn-confirmar:disabled {
-	opacity: 0.55;
-	cursor: not-allowed;
 }
 
 @media (max-width: 480px) {

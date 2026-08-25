@@ -25,8 +25,8 @@
                         </span>
                     </div>
 
-                    <div class="progress-bar-wrap">
-                        <div class="progress-bar-fill"
+                    <div class="progress-track lg">
+                        <div class="progress-fill"
                             :style="{ width: `${op.porcentaje}%`, background: getProgressColor(op.porcentaje) }"></div>
                     </div>
 
@@ -99,20 +99,6 @@ export default {
 
 .op-stems strong {
     color: var(--text-h);
-}
-
-.progress-bar-wrap {
-    width: 100%;
-    height: 10px;
-    background: var(--border-light);
-    border-radius: 999px;
-    overflow: hidden;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    border-radius: 999px;
-    transition: width 0.4s ease;
 }
 
 .op-status {

@@ -3,19 +3,19 @@
         <h2>Recetas de Producción</h2>
         <p>Lista de recetas utilizadas en la producción diaria.</p>
 
-        <div class="controls">
-            <input v-model="query" placeholder="Buscar por nombre o categoría" />
+        <div class="mb-4">
+            <input class="filter-input" v-model="query" placeholder="Buscar por nombre o categoría" />
         </div>
 
         <Alertas :mensaje="mensaje" />
 
         <div>
-            <div v-if="!filteredRecetas.length" class="empty">
+            <div v-if="!filteredRecetas.length" class="empty-state-card text-light">
                 {{ recetas.length ? 'No se encontraron recetas.' : 'No hay recetas registradas.' }}
             </div>
 
             <ul v-else class="receta-list">
-                <li v-for="receta in filteredRecetas" :key="receta.id" class="receta-card">
+                <li v-for="receta in filteredRecetas" :key="receta.id" class="data-card p-5">
                     <div class="receta-head">
                         <h3 class="receta-nombre">{{ receta.nombre }}</h3>
                         <span class="receta-categoria">{{ receta.categoria }}</span>
@@ -44,11 +44,8 @@
                         </ul>
                     </div>
 
-                    <button class="receta-accion"
-                        :class="{ 
-                            'receta-accion--seleccionada': modo === 'seleccionar' && isSelected(receta),
-                            'receta-accion--completada': modo === 'contador' && isCompletada(receta.id)
-                        }"
+                    <button class="btn btn-primary btn-block mt-3"
+                        :disabled="modo === 'contador' && isCompletada(receta.id)"
                         type="button" @click="emitirAccion(receta)">
                         <template v-if="modo === 'contador'">
                             {{ obtenerContadorTexto(receta.id) }}
@@ -65,6 +62,7 @@
 
 <script>
 import { useCatalogos } from '../../composables/useCatalogos.js'
+import { useMensajes } from '../../composables/useMensajes.js'
 import Alertas from '../shared/Alertas.vue'
 
 export default {
@@ -72,7 +70,8 @@ export default {
     components: { Alertas },
     setup() {
         const catalogos = useCatalogos()
-        return { catalogos }
+        const { mensaje, mostrarMensaje } = useMensajes()
+        return { catalogos, mensaje, mostrarMensaje }
     },
     props: {
         modo: {
@@ -113,7 +112,6 @@ export default {
             recetas: [],
             cargando: false,
             error: null,
-            mensaje: { tipo: null, texto: '' },
             query: ''
         }
     },
@@ -169,7 +167,7 @@ export default {
         async buscarRecetas() {
             this.cargando = true
             this.error = null
-            this.mensaje = { tipo: 'info', texto: 'Cargando recetas...' }
+            this.mostrarMensaje('info', 'Cargando recetas...', 0)
             try {
                 const data = await this.catalogos.obtenerRecetas()
                 this.recetas = data?.success !== undefined ? (data.data || []) : (data || [])
@@ -177,10 +175,10 @@ export default {
             } catch (err) {
                 console.error('Error fetching recetas:', err)
                 this.error = 'Error al cargar recetas'
-                this.mensaje = { tipo: 'error', texto: 'Error al cargar recetas' }
+                this.mostrarMensaje('error', 'Error al cargar recetas', 0)
             } finally {
                 this.cargando = false
-                if (!this.error) this.mensaje = { tipo: null, texto: '' }
+                if (!this.error) this.mostrarMensaje(null, '', 0)
             }
         }
     }
@@ -193,95 +191,12 @@ export default {
     padding: 12px;
 }
 
-.controls {
-    margin: 12px 0;
-}
-
-.controls input {
-    width: 100%;
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--border-light);
-}
-
-.info {
-    color: var(--text-light);
-}
-
-.error {
-    color: var(--error);
-}
-
-.empty {
-    color: var(--text-light);
-}
-
 .receta-list {
     list-style: none;
     padding: 0;
     margin: 0;
     display: grid;
     gap: 12px;
-}
-
-.receta-card {
-    background: var(--bg);
-    padding: 12px;
-    border-radius: 8px;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-light);
-    transition: transform 0.1s ease;
-}
-
-.receta-card:active {
-    transform: scale(0.99);
-}
-
-.receta-accion {
-    margin-top: 12px;
-    padding: 8px 12px;
-    border: 0;
-    border-radius: 6px;
-    background: var(--primary);
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-}
-
-.receta-accion--seleccionada {
-    background: var(--primary);
-    color: white;
-}
-
-.receta-accion--completada {
-    background: var(--primary);
-    color: white;
-    pointer-events: none;
-    opacity: 0.85;
-}
-
-.receta-accion:hover {
-    filter: brightness(0.95);
-}
-
-.receta-accion:focus-visible {
-    outline: 2px solid rgba(47, 111, 237, 0.35);
-    outline-offset: 2px;
-}
-
-/* Scrollbar — ya no hay scroll interno, por si se reactiva en futuro */
-.receta-list::-webkit-scrollbar {
-    width: 8px;
-}
-
-.receta-list::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.12);
-    border-radius: 8px;
-}
-
-.receta-list::-webkit-scrollbar-track {
-    background: transparent;
 }
 
 .receta-head {

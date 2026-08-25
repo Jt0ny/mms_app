@@ -16,7 +16,7 @@
 		</div>
 
 		<!-- Botón guardar todo -->
-		<button class="btn-asignar inline-flex-center gap-6" :disabled="guardando" @click="$emit('guardar')">
+		<button class="btn btn-primary inline-flex-center gap-6" :disabled="guardando" @click="$emit('guardar')">
 			<DocumentCheckIcon class="icon-sm" v-if="!guardando" />
 			{{ guardando ? 'Guardando...' : 'Guardar todas las planificaciones' }}
 		</button>
@@ -26,8 +26,8 @@
 			<span class="summary-label">Balance de carga</span>
 			<div v-for="op in balanceOperadores" :key="op.nombre" class="balance-row">
 				<span class="balance-name">{{ op.nombre }}</span>
-				<div class="balance-bar-track">
-					<div class="balance-bar-fill" :class="'balance-' + op.estado"
+				<div class="progress-track md">
+					<div class="progress-fill" :class="'balance-' + op.estado"
 						:style="{ width: op.porcentaje + '%' }">
 					</div>
 				</div>
@@ -133,31 +133,6 @@ export default {
 	gap: 6px;
 }
 
-
-
-.btn-asignar {
-	align-self: end;
-	padding: 11px 22px;
-	border: none;
-	border-radius: 12px;
-	background: var(--primary);
-	color: white;
-	font-weight: 700;
-	font-size: 14px;
-	cursor: pointer;
-	transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.btn-asignar:hover:not(:disabled) {
-	opacity: 0.9;
-	transform: translateY(-1px);
-}
-
-.btn-asignar:disabled {
-	opacity: 0.65;
-	cursor: progress;
-}
-
 /* ── Balance indicator ── */
 .balance-section {
 	grid-column: 1 / -1;
@@ -183,18 +158,6 @@ export default {
 	white-space: nowrap;
 }
 
-.balance-bar-track {
-	height: 8px;
-	background: var(--bg-secondary);
-	border-radius: 4px;
-	overflow: hidden;
-}
-
-.balance-bar-fill {
-	height: 100%;
-	border-radius: 4px;
-	transition: width 0.5s ease;
-}
 
 .balance-balanceado {
 	background: var(--success);

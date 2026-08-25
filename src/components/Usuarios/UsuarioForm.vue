@@ -2,7 +2,7 @@
     <form class="data-card" @submit.prevent="guardar">
 
         <div class="data-card-header">
-            <div class="flex-align-center" style="gap: 14px;">
+            <div class="flex-align-center gap-14">
                 <span class="form-icon flex-align-center"><UserIcon class="icon-lg text-white" /></span>
                 <div>
                     <h2>Agregar Usuario</h2>
@@ -104,13 +104,6 @@ export default {
 </script>
 
 <style scoped>
-
-.form-icon {
-    font-size: 28px;
-    line-height: 1;
-    flex-shrink: 0;
-}
-
 
 /* ── Cuerpo del formulario ── */
 .form-body {

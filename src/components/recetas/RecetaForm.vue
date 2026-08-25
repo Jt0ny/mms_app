@@ -33,7 +33,7 @@
                 <button type="submit" class="btn btn-primary btn-block" :disabled="guardando">
                     {{ guardando ? 'Guardando...' : (receta.id ? 'Actualizar receta' : 'Guardar receta') }}
                 </button>
-                <button v-if="receta.id" type="button" class="btn-cancel" @click="$emit('cancelar')" :disabled="guardando">
+                <button v-if="receta.id" type="button" class="btn btn-secondary btn-block" @click="$emit('cancelar')" :disabled="guardando">
                     Cancelar Edición
                 </button>
             </div>
@@ -135,27 +135,5 @@ export default {
     flex-direction: column;
     gap: 8px;
     width: 100%;
-}
-
-.btn-cancel {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-cancel:hover:not(:disabled) {
-    background: var(--bg-secondary);
-}
-
-.btn-cancel:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
 }
 </style>

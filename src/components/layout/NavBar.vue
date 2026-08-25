@@ -123,7 +123,7 @@ export default {
 .logout-icon-btn:hover {
   background: rgba(239, 68, 68, 0.15);
   /* bg-red-500 tint */
-  color: #fca5a5;
+  color: var(--color-logout-hover);
   /* text-red-300 */
   border-color: rgba(239, 68, 68, 0.3);
 }
@@ -131,7 +131,7 @@ export default {
 .login-icon-btn:hover {
   background: rgba(16, 185, 129, 0.15);
   /* bg-green-500 tint */
-  color: #6ee7b7;
+  color: var(--color-login-hover);
   /* text-green-300 */
   border-color: rgba(16, 185, 129, 0.3);
 }

@@ -17,14 +17,14 @@
 					@input="$emit('update:fechaSeleccionada', $event.target.value)" />
 			</div>
 
-			<button type="button" class="btn-distribuir inline-flex-center gap-6" :disabled="cargandoAuto || guardando"
+			<button type="button" class="btn btn-primary inline-flex-center gap-6" :disabled="cargandoAuto || guardando"
 				@click="$emit('distribuir')">
 				<ArrowPathIcon v-if="cargandoAuto" class="icon-sm spin text-white" />
 				<BoltIcon v-else class="icon-sm text-white" />
 				{{ cargandoAuto ? 'Distribuyendo...' : 'Distribuir automáticamente' }}
 			</button>
 
-			<button v-if="mostrarLimpiar" type="button" class="btn-limpiar" :disabled="guardando"
+			<button v-if="mostrarLimpiar" type="button" class="btn btn-dark" :disabled="guardando"
 				@click="$emit('limpiar')">
 				Limpiar
 			</button>
@@ -94,46 +94,8 @@ export default {
 	opacity: 0.6;
 }
 
-.btn-distribuir {
-	border: none;
-	border-radius: 12px;
-	padding: 12px 18px;
-	background: var(--primary);
-	color: white;
-	font-weight: 700;
-	cursor: pointer;
-	transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.btn-distribuir:hover:not(:disabled) {
-	opacity: 0.88;
-	transform: translateY(-1px);
-}
-
-.btn-distribuir:disabled {
-	opacity: 0.65;
-	cursor: progress;
-}
-
-.btn-limpiar {
-	border: none;
-	border-radius: 12px;
-	padding: 12px 16px;
-	background: var(--text-h);
-	color: var(--bg);
-	font-weight: 700;
-	cursor: pointer;
-	transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.btn-limpiar:hover:not(:disabled) {
-	opacity: 0.88;
-	transform: translateY(-1px);
-}
-
 @media (max-width: 768px) {
-	.btn-distribuir,
-	.btn-limpiar {
+	.btn {
 		width: 100%;
 	}
 }

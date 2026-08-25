@@ -23,7 +23,13 @@ export default {
       return { success: true, data: usuario }
     } catch (error) {
       console.error("Error al autenticar:", error)
-      return { success: false, error }
+      const esCredenciales = error?.status === 400 || 
+        error?.message?.includes('Invalid login credentials')
+      return { 
+        success: false, 
+        error,
+        errorTipo: esCredenciales ? 'credenciales' : 'conexion'
+      }
     }
   },
 

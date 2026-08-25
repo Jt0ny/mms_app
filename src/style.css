@@ -6,6 +6,7 @@
   --success: #16a34a;
   --warning: #facc15;
   --error: #b91c1c;
+  --info: #3b82f6;
   --text: #374151;
   --text-light: #6b7280;
   --text-h: #111827;
@@ -41,6 +42,10 @@
   --alert-warning-bg: #fef3c7;
   --alert-warning-text: #92400e;
   --alert-warning-border: #fde68a;
+
+  /* NavBar Hovers */
+  --color-logout-hover: #fca5a5;
+  --color-login-hover: #6ee7b7;
 
   /* Colores de Dominio */
   --color-materia-prima: #db2777;
@@ -301,6 +306,35 @@ p {
 .btn-danger:hover:not(:disabled) {
   opacity: 0.9;
   transform: translateY(-1px);
+}
+
+/* ── Focus accesible ── */
+.btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ── Variante oscura (botón "Limpiar") ── */
+.btn-dark {
+  background: var(--text-h);
+  color: var(--bg);
+}
+
+.btn-dark:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+/* ── Variante dashed (botón "+ Agregar") ── */
+.btn-dashed {
+  background: none;
+  border: 1.5px dashed var(--border);
+  color: var(--primary);
+}
+
+.btn-dashed:hover:not(:disabled) {
+  background: var(--primary-bg);
+  border-color: var(--primary);
 }
 
 /* =========================================
@@ -745,6 +779,11 @@ p {
   font-weight: 600;
   background: var(--primary-bg);
   color: var(--primary-dark);
+  transition: background 0.2s ease;
+}
+
+.btn-refresh:hover:not(:disabled) {
+  background: rgba(22, 163, 74, 0.15); /* un poco más oscuro que --primary-bg */
 }
 
 .selection-table-wrap {
@@ -1045,6 +1084,12 @@ p {
   vertical-align: middle;
 }
 
+.form-icon {
+  font-size: 28px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
 /* Colores de Iconos y Textos utilitarios */
 .text-primary {
   color: var(--primary);
@@ -1059,7 +1104,7 @@ p {
 }
 
 .text-info {
-  color: #3b82f6;
+  color: var(--info);
 }
 
 .text-light {
@@ -1197,10 +1242,73 @@ p {
 
   .filter-input,
   .filter-select,
-  .filter-search {
+  .alert-btn {
     width: 100%;
-    max-width: none;
+    margin-left: 0;
   }
+}
+
+/* =========================================
+   PHASE 11 UTILITIES
+   ========================================= */
+
+.badge-gray {
+  background: var(--bg-secondary);
+  color: var(--text-light);
+}
+
+.mt-4 {
+  margin-top: 16px;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* =========================================
+   PHASE 10 UTILITIES
+   ========================================= */
+
+.selector-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.selector-group label {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.progress-track {
+  width: 100%;
+  background: var(--border-light);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-track.sm { height: 6px; }
+.progress-track.md { height: 8px; }
+.progress-track.lg { height: 10px; }
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--primary);
+  transition: width 0.4s ease;
+}
+
+.gap-14 {
+  gap: 14px;
 }
 
 /* Data Card Header Neutral (M2) */

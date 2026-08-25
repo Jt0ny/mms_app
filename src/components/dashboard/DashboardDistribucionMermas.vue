@@ -27,8 +27,8 @@
                             <span class="motivo-name">{{ item.motivo }}</span>
                             <span class="motivo-pct">{{ item.porcentaje }}%</span>
                         </div>
-                        <div class="motivo-bar-wrap">
-                            <div class="motivo-bar-fill" :style="{ width: `${item.porcentaje}%` }"></div>
+                        <div class="progress-track sm">
+                            <div class="progress-fill" :style="{ width: `${item.porcentaje}%` }"></div>
                         </div>
                     </div>
                 </div>
@@ -115,20 +115,6 @@ export default {
 .motivo-pct {
     color: var(--text-h);
     font-weight: 600;
-}
-
-.motivo-bar-wrap {
-    width: 100%;
-    height: 6px;
-    background: var(--border-light);
-    border-radius: 999px;
-    overflow: hidden;
-}
-
-.motivo-bar-fill {
-    height: 100%;
-    background: var(--primary);
-    border-radius: 999px;
 }
 
 .top-insumos-list {

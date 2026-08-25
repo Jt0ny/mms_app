@@ -3,18 +3,20 @@
         <CheckCircleIcon v-if="mensaje.tipo === 'exito'" class="icon-md icon-inline" />
         <XCircleIcon v-else-if="mensaje.tipo === 'error'" class="icon-md icon-inline" />
         <InformationCircleIcon v-else-if="mensaje.tipo === 'info'" class="icon-md icon-inline" />
+        <ExclamationTriangleIcon v-else-if="mensaje.tipo === 'warning'" class="icon-md icon-inline" />
         <span class="status-text">{{ mensaje.texto }}</span>
     </div>
 </template>
 
 <script>
-import { CheckCircleIcon, XCircleIcon, InformationCircleIcon } from '@heroicons/vue/24/solid'
+import { CheckCircleIcon, XCircleIcon, InformationCircleIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/solid'
 
 export default {
     components: {
         CheckCircleIcon,
         XCircleIcon,
-        InformationCircleIcon
+        InformationCircleIcon,
+        ExclamationTriangleIcon
     },
     props: {
         mensaje: {
@@ -30,7 +32,8 @@ export default {
             return {
                 'status-success': this.mensaje.tipo === 'exito',
                 'status-error': this.mensaje.tipo === 'error',
-                'status-info': this.mensaje.tipo === 'info'
+                'status-info': this.mensaje.tipo === 'info',
+                'status-warning': this.mensaje.tipo === 'warning'
             }
         }
     }
@@ -69,6 +72,12 @@ export default {
     background: var(--alert-info-bg);
     color: var(--alert-info-text);
     border: 1px solid var(--alert-info-border);
+}
+
+.status-warning {
+    background: var(--alert-warning-bg);
+    color: var(--alert-warning-text);
+    border: 1px solid var(--alert-warning-border);
 }
 </style>
 

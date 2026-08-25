@@ -60,17 +60,9 @@ export default {
 
 <style scoped>
 
-
-.badge-gray {
-    background: var(--bg-secondary);
-    color: var(--text-light);
-}
-
 .action-cell {
     display: flex;
     gap: 8px;
 }
-
-
 
 </style>

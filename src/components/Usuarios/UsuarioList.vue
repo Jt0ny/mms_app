@@ -1,7 +1,7 @@
 <template>
     <div class="data-card">
         <div class="data-card-header">
-            <div class="flex-align-center" style="gap: 14px;">
+            <div class="flex-align-center gap-14">
                 <span class="form-icon flex-align-center">
                     <UsersIcon class="icon-lg text-white" />
                 </span>
@@ -84,11 +84,6 @@ export default {
 </script>
 
 <style scoped>
-.form-icon {
-    font-size: 28px;
-    line-height: 1;
-    flex-shrink: 0;
-}
 
 .table-info {
     margin-bottom: 14px;

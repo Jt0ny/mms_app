@@ -1,8 +1,8 @@
 <template>
-    <div class="selector-rol">
+    <div class="selector-group">
         <label>Rol del Usuario</label>
 
-        <div class="rol-selector">
+        <div class="selector-group">
             <div class="selector-display" :class="{ vacio: !modelValue }">
                 {{ modelValue || 'Selecciona un rol' }}
             </div>
@@ -49,19 +49,4 @@ export default {
 };
 </script>
 <style scoped>
-.selector-rol {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.selector-rol label {
-    font-weight: 600;
-}
-
-.rol-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
 </style>
