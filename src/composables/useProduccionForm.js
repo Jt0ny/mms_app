@@ -7,8 +7,6 @@ export function useProduccionForm(props, emit) {
     const categorias = ref([])
     const cantidadesPorCategoria = ref({})
     
-    // El formulario maneja su propio mensaje interno pero también emite notificar
-    const mensaje = ref({ tipo: null, texto: '' })
     const form = reactive({
         fecha: obtenerFechaHoy()
     })
@@ -83,13 +81,7 @@ export function useProduccionForm(props, emit) {
     })
 
     const notificar = (tipo, texto, duracion = 4000) => {
-        mensaje.value = { tipo, texto }
         emit('notificar', { tipo, texto, duracion })
-        if (duracion > 0) {
-            setTimeout(() => {
-                mensaje.value = { tipo: null, texto: '' }
-            }, duracion)
-        }
     }
 
     const cargarCategorias = async () => {
@@ -181,7 +173,6 @@ export function useProduccionForm(props, emit) {
         cargandoCategorias,
         categorias,
         cantidadesPorCategoria,
-        mensaje,
         form,
         totalDelDia,
         categoriasConCantidad,

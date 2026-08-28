@@ -101,22 +101,36 @@ export function useContadorRecetas() {
     }
 
     function sincronizarContadorReceta({ categoria, cantidad }) {
-        // Encuentra la primera receta que pertenece a esa categoría
-        const recetaId = Object.keys(recetaCategoriaMap.value).find(
+        // 1. Filtrar todas las recetas que pertenecen a esta categoría
+        const recetasDeCategoria = Object.keys(recetaCategoriaMap.value).filter(
             id => recetaCategoriaMap.value[id] === categoria
         )
-        if (recetaId && contadorRecetaPorId.value[recetaId]) {
-            const total = contadorRecetaPorId.value[recetaId].total
-            // Evitar que exceda el total planificado si se desea
-            const nuevoActual = Math.min(cantidad, total)
-            contadorRecetaPorId.value = {
-                ...contadorRecetaPorId.value,
-                [recetaId]: {
-                    ...contadorRecetaPorId.value[recetaId],
-                    actual: nuevoActual
-                }
+
+        if (recetasDeCategoria.length === 0) return
+
+        let cantidadRestante = cantidad
+        const nuevosContadores = { ...contadorRecetaPorId.value }
+
+        // 2. Iterar sobre cada receta de la categoría para repartir la cantidad
+        for (const recetaId of recetasDeCategoria) {
+            if (!nuevosContadores[recetaId]) continue
+
+            const totalPlanificado = nuevosContadores[recetaId].total
+            
+            // Asignamos a esta receta lo máximo que pueda recibir sin pasarse de su total
+            const aAsignar = Math.min(cantidadRestante, totalPlanificado)
+            
+            nuevosContadores[recetaId] = {
+                ...nuevosContadores[recetaId],
+                actual: aAsignar
             }
+
+            // Descontamos lo que acabamos de asignar para la siguiente receta
+            cantidadRestante -= aAsignar
         }
+
+        // 3. Actualizamos el estado general
+        contadorRecetaPorId.value = nuevosContadores
     }
 
     function resetearContadores() {

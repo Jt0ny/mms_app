@@ -13,7 +13,7 @@
             <div class="panel-column">
 
                 <!-- FORMULARIO -->
-                <RecetaForm :receta="nuevaReceta" :categorias="categorias" :totalSeleccionados="totalSeleccionados"
+                <RecetaForm ref="formulario" :receta="nuevaReceta" :categorias="categorias" :totalSeleccionados="totalSeleccionados"
                     :totalMateriales="materialesSeleccionados.length"
                     :totalMateriaPrima="materiaPrimaSeleccionada.length" :guardando="guardandoReceta"
                     @actualizar-receta="nuevaReceta = $event" @guardar="guardarReceta" @cancelar="resetearFormulario" />
@@ -121,11 +121,13 @@ export default {
                 categoria: receta.categoria || '',
                 instrucciones: receta.instrucciones || ''
             }
-            this.materialesSeleccionados = [...(receta.materiales || [])]
-            this.materiaPrimaSeleccionada = [...(receta.materiaPrima || [])]
+            this.materialesSeleccionados = (receta.materiales || []).map(m => ({ ...m }))
+            this.materiaPrimaSeleccionada = (receta.materiaPrima || []).map(m => ({ ...m }))
 
             // Scroll al inicio del formulario
-            window.scrollTo({ top: 0, behavior: 'smooth' })
+            if (this.$refs.formulario && this.$refs.formulario.$el) {
+                this.$refs.formulario.$el.scrollIntoView({ behavior: 'smooth' })
+            }
         },
 
         async borrarReceta(receta) {

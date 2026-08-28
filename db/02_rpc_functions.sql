@@ -417,23 +417,30 @@ BEGIN
         v_cant_producida := (v_detalle->>'cantidad')::INTEGER;
         
         IF v_cant_producida > 0 THEN
-            -- Insertar detalle
+            -- Insertar detalle (usando ON CONFLICT para sumar si enviamos varias recetas de la misma categoría)
             INSERT INTO produccion_detalle (produccion_id, categoria, cantidad)
-            VALUES (v_produccion_id, v_detalle->>'categoria', v_cant_producida);
+            VALUES (v_produccion_id, v_detalle->>'categoria', v_cant_producida)
+            ON CONFLICT (produccion_id, categoria) 
+            DO UPDATE SET cantidad = produccion_detalle.cantidad + EXCLUDED.cantidad;
 
             -- Encontrar la receta elegible. Prioridades:
-            -- 1. Planificada
-            -- 2. La primera de la categoría
-            SELECT r.id INTO v_receta_id
-            FROM recetas r
-            LEFT JOIN planificacion_recetas pr ON pr.receta_id = r.id AND pr.planificacion_id IN (
-                SELECT id FROM planificaciones WHERE operador_id = NULLIF(payload_produccion->>'operadorId', '')::UUID AND fecha = (payload_produccion->>'fecha')::DATE
-            )
-            WHERE LOWER(TRIM(r.categoria)) = LOWER(TRIM(v_detalle->>'categoria'))
-            ORDER BY 
-                CASE WHEN pr.planificacion_id IS NOT NULL THEN 0 ELSE 1 END,
-                r.fecha_creacion ASC
-            LIMIT 1;
+            -- 1. Si enviaron receta_id, la usamos
+            IF v_detalle->>'receta_id' IS NOT NULL THEN
+                v_receta_id := (v_detalle->>'receta_id')::UUID;
+            ELSE
+                -- 2. Planificada
+                -- 3. La primera de la categoría
+                SELECT r.id INTO v_receta_id
+                FROM recetas r
+                LEFT JOIN planificacion_recetas pr ON pr.receta_id = r.id AND pr.planificacion_id IN (
+                    SELECT id FROM planificaciones WHERE operador_id = NULLIF(payload_produccion->>'operadorId', '')::UUID AND fecha = (payload_produccion->>'fecha')::DATE
+                )
+                WHERE LOWER(TRIM(r.categoria)) = LOWER(TRIM(v_detalle->>'categoria'))
+                ORDER BY 
+                    CASE WHEN pr.planificacion_id IS NOT NULL THEN 0 ELSE 1 END,
+                    r.fecha_creacion ASC
+                LIMIT 1;
+            END IF;
 
             IF v_receta_id IS NOT NULL THEN
                 -- Procesar materia prima

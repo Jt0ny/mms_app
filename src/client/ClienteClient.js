@@ -305,12 +305,22 @@ export default {
                   notas: null
               }
           })
-          await this.agregarClientesMasivos(payloadEnvio)
+          const insertadosEnvio = await this.agregarClientesMasivos(payloadEnvio)
+          if (insertadosEnvio.success && insertadosEnvio.data) {
+              insertadosEnvio.data.forEach(c => {
+                  mapaClientes.set(c.nombre.toLowerCase().trim(), c)
+              })
+          }
       }
 
       // Actualizar Upserts
       if (clientesParaActualizar.length > 0) {
           const payloadUpsert = clientesParaActualizar.map(c => {
+              const currentClient = mapaClientes.get(c.nombre.toLowerCase().trim())
+              const clientId = currentClient ? currentClient.id : c.id
+
+              if (!clientId) return null
+
               let parentId = c.clienteFacturacionId || null
               if (c.clienteFacturacionAsociado) {
                   const parentObj = mapaClientes.get(c.clienteFacturacionAsociado.toLowerCase().trim())
@@ -319,7 +329,7 @@ export default {
                   }
               }
               return {
-                  id: c.id,
+                  id: clientId,
                   nombre: c.nombre.trim(),
                   tipo: c.tipo,
                   clienteFacturacionId: parentId,
@@ -328,8 +338,11 @@ export default {
                   direccion: c.direccion || null,
                   notas: c.notas || null
               }
-          })
-          await this.upsertClientesMasivos(payloadUpsert)
+          }).filter(Boolean)
+          
+          if (payloadUpsert.length > 0) {
+              await this.upsertClientesMasivos(payloadUpsert)
+          }
       }
 
       return { success: true, data: (clientesParaAgregarFacturacion.length > 0 || clientesParaAgregarEnvio.length > 0 || clientesParaActualizar.length > 0) }

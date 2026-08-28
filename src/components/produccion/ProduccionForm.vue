@@ -12,8 +12,6 @@
 
         </header>
 
-        <Alertas :mensaje="mensaje" />
-
         <Alertas v-if="cargandoCategorias" :mensaje="{ tipo: 'info', texto: 'Cargando categorías desde pedidos...' }" />
 
         <Alertas v-else-if="!categorias.length"
@@ -129,7 +127,6 @@ export default {
             cargandoCategorias,
             categorias,
             cantidadesPorCategoria,
-            mensaje,
             form,
             totalDelDia,
             categoriasConCantidad,
@@ -143,7 +140,6 @@ export default {
             cargandoCategorias,
             categorias,
             cantidadesPorCategoria,
-            mensaje,
             form,
             totalDelDia,
             categoriasConCantidad,

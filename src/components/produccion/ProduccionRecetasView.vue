@@ -14,48 +14,52 @@
                 {{ recetas.length ? 'No se encontraron recetas.' : 'No hay recetas registradas.' }}
             </div>
 
-            <ul v-else class="receta-list">
-                <li v-for="receta in filteredRecetas" :key="receta.id" class="data-card p-5">
-                    <div class="receta-head">
-                        <h3 class="receta-nombre">{{ receta.nombre }}</h3>
-                        <span class="receta-categoria">{{ receta.categoria }}</span>
-                    </div>
+            <div v-else class="scroll-recetas-alto custom-scrollbar">
+                <ul class="receta-list">
+                    <li v-for="receta in filteredRecetas" :key="receta.id" class="data-card p-5">
+                        <div class="receta-head">
+                            <h3 class="receta-nombre">{{ receta.nombre }}</h3>
+                            <span class="receta-categoria">{{ receta.categoria }}</span>
+                        </div>
 
-                    <p class="receta-instrucciones" v-if="receta.instrucciones">{{ receta.instrucciones }}</p>
+                        <p class="receta-instrucciones" v-if="receta.instrucciones">{{ receta.instrucciones }}</p>
 
-                    <!-- Detalle de materiales: nombre y cantidad -->
-                    <div v-if="(receta.materiales || []).length" class="ingrediente-list">
-                        <h4>Materiales</h4>
-                        <ul>
-                            <li v-for="m in receta.materiales" :key="m.id || m.nombre">
-                                <strong>{{ m.nombre || m.descripcion || '—' }}</strong>
-                                - {{ (m.cantidad !== undefined && m.cantidad !== null) ? m.cantidad : 1 }} unidad(es)
-                            </li>
-                        </ul>
-                    </div>
-                    <!-- Detalle de materia prima: nombre y cantidad -->
-                    <div v-if="(receta.materiaPrima || []).length" class="ingrediente-list">
-                        <h4>Materia prima</h4>
-                        <ul>
-                            <li v-for="mp in receta.materiaPrima" :key="mp.id || mp.nombre">
-                                <strong>{{ mp.nombre || mp.variedad || '—' }}</strong>
-                                - {{ (mp.cantidad !== undefined && mp.cantidad !== null) ? mp.cantidad : 1 }} unidad(es)
-                            </li>
-                        </ul>
-                    </div>
+                        <!-- Detalle de materiales: nombre y cantidad -->
+                        <div v-if="(receta.materiales || []).length" class="ingrediente-list">
+                            <h4>Materiales</h4>
+                            <ul>
+                                <li v-for="m in receta.materiales" :key="m.id || m.nombre">
+                                    <strong>{{ m.nombre || m.descripcion || '—' }}</strong>
+                                    - {{ (m.cantidad !== undefined && m.cantidad !== null) ? m.cantidad : 1 }}
+                                    unidad(es)
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- Detalle de materia prima: nombre y cantidad -->
+                        <div v-if="(receta.materiaPrima || []).length" class="ingrediente-list">
+                            <h4>Materia prima</h4>
+                            <ul>
+                                <li v-for="mp in receta.materiaPrima" :key="mp.id || mp.nombre">
+                                    <strong>{{ mp.nombre || mp.variedad || '—' }}</strong>
+                                    - {{ (mp.cantidad !== undefined && mp.cantidad !== null) ? mp.cantidad : 1 }}
+                                    unidad(es)
+                                </li>
+                            </ul>
+                        </div>
 
-                    <button class="btn btn-primary btn-block mt-3"
-                        :disabled="modo === 'contador' && isCompletada(receta.id)"
-                        type="button" @click="emitirAccion(receta)">
-                        <template v-if="modo === 'contador'">
-                            {{ obtenerContadorTexto(receta.id) }}
-                        </template>
-                        <template v-else>
-                            {{ isSelected(receta) ? '\u2713 Seleccionada' : textoSeleccionar }}
-                        </template>
-                    </button>
-                </li>
-            </ul>
+                        <button class="btn btn-primary btn-block mt-3"
+                            :disabled="modo === 'contador' && isCompletada(receta.id)" type="button"
+                            @click="emitirAccion(receta)">
+                            <template v-if="modo === 'contador'">
+                                {{ obtenerContadorTexto(receta.id) }}
+                            </template>
+                            <template v-else>
+                                {{ isSelected(receta) ? '\u2713 Seleccionada' : textoSeleccionar }}
+                            </template>
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </template>
@@ -187,8 +191,23 @@ export default {
 </script>
 
 <style scoped>
+.scroll-recetas-alto {
+    height: 100%;
+    max-height: calc(100vh - 309px);
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.filter-input {
+    width: 100%;
+}
+
 .recetas-view {
-    padding: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: var(--shadow);
 }
 
 .receta-list {

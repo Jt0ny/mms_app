@@ -29,7 +29,9 @@
 
                 <!-- Panel de recetas: muestra solo las asignadas o mensaje vacío -->
                 <div v-if="sinPlanificacion && !cargandoPlanificacion" class="empty-state-card">
-                    <span class="sin-plan-icon flex-center"><ClipboardDocumentListIcon class="icon-xl text-light" /></span>
+                    <span class="sin-plan-icon flex-center">
+                        <ClipboardDocumentListIcon class="icon-xl text-light" />
+                    </span>
                     <p>No tienes recetas asignadas para hoy.</p>
                     <p class="sin-plan-sub">El supervisor debe asignarte una planificación desde la sección
                         Planificación.</p>
@@ -73,9 +75,9 @@ export default {
         const planificacionOperador = usePlanificacionOperador()
         const contadorRecetas = useContadorRecetas()
 
-        return { 
-            mensaje, mostrarMensaje, 
-            operadorId: usuarioId, operadorNombre: usuarioNombre, 
+        return {
+            mensaje, mostrarMensaje,
+            operadorId: usuarioId, operadorNombre: usuarioNombre,
             catalogos,
             // Planificacion
             recetasPlanificadasIds: planificacionOperador.recetasPlanificadasIds,
@@ -129,7 +131,7 @@ export default {
         // ── Planificación ──────────────────────────────────────────
         async cargarPlanificacion() {
             const planificacion = await this.cargarPlanificacionBase(this.operadorId)
-            
+
             // Cargar datos para inicializar los contadores
             const responseRecetas = await this.catalogos.obtenerRecetas()
             const todasLasRecetas = responseRecetas?.success !== undefined ? (responseRecetas.data || []) : (responseRecetas || [])
@@ -137,19 +139,21 @@ export default {
             const produccionesHoy = this.producciones.filter(p => p.fecha === hoy)
 
             this.inicializarContadores(
-                planificacion, 
-                produccionesHoy, 
-                todasLasRecetas, 
+                planificacion,
+                produccionesHoy,
+                todasLasRecetas,
                 this.operadorId
             )
         },
 
-        // ── Producción ─────────────────────────────────────────────
+        // ── Producción ──
         async guardarProduccion(payload) {
             this.guardando = true
-            
+
             // Vincular el operador actual que registra la producción
             payload.operadorId = this.operadorId
+
+
 
             let response;
             if (payload.id) {
@@ -160,7 +164,7 @@ export default {
 
             if (response.success) {
                 this.mostrarMensaje('exito', payload.id ? 'Producción actualizada correctamente' : 'Producción registrada correctamente')
-                
+
                 this.ultimaGuardada = new Date().toISOString()
                 this.produccionEnEdicion = null
                 await this.cargarProducciones()
@@ -174,7 +178,7 @@ export default {
             } else {
                 this.mostrarMensaje('error', 'No se pudo guardar la producción', 0)
             }
-            
+
             this.guardando = false
         },
 
@@ -223,8 +227,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 /* ── Sin planificación ──────────────── */
 
 
