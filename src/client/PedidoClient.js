@@ -86,7 +86,7 @@ export default {
 
       if (pedidosExternos.length === 0) {
 
-        return;
+        return { success: true };
       }
 
       const huboCambiosCli = await ClienteClient.resolverClientesDePedidos(pedidosExternos);
@@ -144,7 +144,7 @@ export default {
       }
 
       const pedidosToUpsert = Array.from(pedidosMap.values());
-      if (pedidosToUpsert.length === 0) return;
+      if (pedidosToUpsert.length === 0) return { success: true };
 
 
       const { error: rpcError } = await supabase.rpc('rpc_sincronizar_pedidos', {

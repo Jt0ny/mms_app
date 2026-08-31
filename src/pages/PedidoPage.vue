@@ -134,26 +134,33 @@ export default {
         },
 
         async sincronizarAPI() {
-            const yaSincronizado = await SyncLogClient.yaSincronizadoHoy('pedidos')
-            if (yaSincronizado) {
-                this.mostrarMensaje('info', 'Los pedidos ya fueron sincronizados hoy')
-                return
-            }
+            try {
+                const yaSincronizado = await SyncLogClient.yaSincronizadoHoy('pedidos')
+                if (yaSincronizado) {
+                    this.mostrarMensaje('info', 'Los pedidos ya fueron sincronizados hoy')
+                    return
+                }
 
-            this.cargandoPedidos = true
-            this.mostrarMensaje('info', ' Sincronizando con la API externa...', 0)
+                this.cargandoPedidos = true
+                this.mostrarMensaje('info', ' Sincronizando con la API externa...', 0)
 
-            const response = await PedidoClient.sincronizarConSupabase()
+                const response = await PedidoClient.sincronizarConSupabase()
 
-            if (response?.success === false) {
-                this.mostrarMensaje('error', 'Error al sincronizar con la API externa')
+                if (response?.success === false) {
+                    this.mostrarMensaje('error', 'Error al sincronizar con la API externa')
+                    this.cargandoPedidos = false
+                    return
+                }
+
+                await SyncLogClient.registrarSync('pedidos')
+                this.mostrarMensaje('exito', 'Sincronización exitosa con la API externa')
+                await this.cargarPedidos()
+            } catch (error) {
+                console.error('Error en sincronización de pedidos:', error)
+                this.mostrarMensaje('error', 'Error inesperado al sincronizar. Intenta de nuevo.', 0)
+            } finally {
                 this.cargandoPedidos = false
-                return
             }
-
-            await SyncLogClient.registrarSync('pedidos')
-            this.mostrarMensaje('exito', 'Sincronización exitosa con la API externa')
-            await this.cargarPedidos()
         },
 
         // -- Archivo --

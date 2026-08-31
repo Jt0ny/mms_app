@@ -62,7 +62,7 @@
                 </p>
                 <div class="form-actions-inline">
                     <button type="submit" class="btn btn-primary" :disabled="guardando || cargandoCategorias">
-                        {{ guardando ? (edicion ? 'Guardando...' : 'Guardando...') : (edicion ? 'Actualizar producción'
+                        {{ guardando ? 'Guardando...' : (edicion ? 'Actualizar producción'
                             : 'Registrar producción') }}
                     </button>
                 </div>
@@ -132,8 +132,7 @@ export default {
             categoriasConCantidad,
             obtenerCantidad,
             actualizarCantidad,
-            enviarFormulario,
-            cancelar
+            enviarFormulario
         } = useProduccionForm(props, emit)
 
         return {

@@ -13,7 +13,7 @@ export default {
 
       if (materiasPrimasExternas.length === 0) {
 
-        return;
+        return { success: true };
       }
 
       // 1. Obtener catálogo existente en una sola consulta
@@ -68,6 +68,7 @@ export default {
       } else {
 
       }
+      return { success: true };
     } catch (error) {
       console.error("Error al sincronizar materias primas con Supabase:", error);
       return { success: false, error };

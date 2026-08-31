@@ -153,11 +153,18 @@ export function useProduccionForm(props, emit) {
     }
 
     const enviarFormulario = () => {
-        const detalle = construirDetalle()
-        if (!detalle.length) {
-            notificar('error', 'Completa al menos una categoría con cantidad mayor a cero', 0)
+        // Verificar que TODAS las categorías tengan valor > 0
+        const categoriasVacias = categorias.value.filter(
+            categoria => obtenerCantidadNumerica(categoria) === 0
+        )
+        
+        if (categoriasVacias.length > 0) {
+            const nombres = categoriasVacias.join(', ')
+            notificar('error', `Las siguientes categorías están vacías: ${nombres}`, 0)
             return
         }
+        
+        const detalle = construirDetalle()
         const payload = {
             fecha: form.fecha,
             total: totalDelDia.value,

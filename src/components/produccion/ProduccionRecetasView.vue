@@ -1,5 +1,5 @@
 <template>
-    <div class="recetas-view">
+    <div class="data-card" style="padding: 24px; border-radius: 18px;">
         <h2>Recetas de Producción</h2>
         <p>Lista de recetas utilizadas en la producción diaria.</p>
 
@@ -171,7 +171,12 @@ export default {
         async buscarRecetas() {
             this.cargando = true
             this.error = null
-            this.mostrarMensaje('info', 'Cargando recetas...', 0)
+
+            // Solo mostrar mensaje si la carga toma más de 200ms (evita parpadeo con caché)
+            const loadingTimer = setTimeout(() => {
+                if (this.cargando) this.mostrarMensaje('info', 'Cargando recetas...', 0)
+            }, 200)
+
             try {
                 const data = await this.catalogos.obtenerRecetas()
                 this.recetas = data?.success !== undefined ? (data.data || []) : (data || [])
@@ -181,6 +186,7 @@ export default {
                 this.error = 'Error al cargar recetas'
                 this.mostrarMensaje('error', 'Error al cargar recetas', 0)
             } finally {
+                clearTimeout(loadingTimer)
                 this.cargando = false
                 if (!this.error) this.mostrarMensaje(null, '', 0)
             }
@@ -202,13 +208,6 @@ export default {
     width: 100%;
 }
 
-.recetas-view {
-    background: var(--bg);
-    border: 1px solid var(--border-light);
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: var(--shadow);
-}
 
 .receta-list {
     list-style: none;

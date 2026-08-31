@@ -101,7 +101,8 @@ export default {
         const { inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI } = useInventario({
             obtenerDatos: (force) => catalogos.obtenerMateriales(force),
             sincronizar: () => MaterialClient.sincronizarConSupabase(),
-            nombreModulo: 'materiales'
+            nombreModulo: 'materiales',
+            mostrarMensaje
         })
 
         return {

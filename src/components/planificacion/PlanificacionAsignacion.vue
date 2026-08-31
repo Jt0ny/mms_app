@@ -1,15 +1,6 @@
 <template>
-	<header class="page-header">
-		<div>
-			<h1 class="page-title">Planificación</h1>
-			<p class="page-subtitle">
-				Selecciona una fecha y distribuye los pedidos pendientes entre operadores de forma automática y
-				equitativa.
-			</p>
-		</div>
-
-		<div class="header-actions">
-			<!-- Selector de fecha -->
+	<div class="header-actions">
+		<!-- Selector de fecha -->
 			<div class="fecha-group">
 				<label class="fecha-label" for="plan-fecha">Fecha de pedidos</label>
 				<input id="plan-fecha" :value="fechaSeleccionada" type="date" class="fecha-input"
@@ -29,7 +20,6 @@
 				Limpiar
 			</button>
 		</div>
-	</header>
 </template>
 
 <script>

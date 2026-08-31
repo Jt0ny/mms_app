@@ -160,7 +160,7 @@ export default {
         }
 
         this.mostrarMensaje('exito', mensajeExito)
-        
+
         // Recargar catálogos para actualizar el stock real desde la DB
         this.cargarDatos()
       } else {

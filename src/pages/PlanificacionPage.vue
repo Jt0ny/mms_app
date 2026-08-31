@@ -1,6 +1,14 @@
 <template>
     <div class="page-container planificacion-page">
         <div class="page-content-wrap">
+            <header class="page-header">
+                <div>
+                    <h1 class="page-title">Planificación</h1>
+                    <p class="page-subtitle">
+                        Selecciona una fecha y distribuye los pedidos pendientes entre operadores de forma automática y equitativa.
+                    </p>
+                </div>
+            </header>
 
             <!-- Header / Selector de Fecha y Acciones -->
             <PlanificacionAsignacion v-model:fechaSeleccionada="fechaSeleccionada" :cargando-auto="cargandoAuto"
@@ -57,17 +65,13 @@
 import { BoltIcon } from '@heroicons/vue/24/outline'
 import PlanificacionClient from '../client/PlanificacionClient.js'
 
-import PlanificacionAlgoritmo from '../client/PlanificacionAlgoritmo.js'
-import { useCatalogos } from '../composables/useCatalogos.js'
-
 import PlanificacionAsignacion from '../components/planificacion/PlanificacionAsignacion.vue'
 import PlanificacionResumen from '../components/planificacion/PlanificacionResumen.vue'
 import PlanificacionOperadorCard from '../components/planificacion/PlanificacionOperadorCard.vue'
 import PlanificacionMapeoRecetas from '../components/planificacion/PlanificacionMapeoRecetas.vue'
 import PlanificacionView from '../components/planificacion/PlanificacionView.vue'
 import Alertas from '../components/shared/Alertas.vue'
-import { useMensajes } from '../composables/useMensajes.js'
-import { obtenerFechaHoy } from '../utils/date.js'
+import { usePlanificacion } from '../composables/usePlanificacion.js'
 
 export default {
     name: 'PlanificacionPage',
@@ -83,38 +87,51 @@ export default {
     },
 
     setup() {
-        const { mensaje, mostrarMensaje, mensajeInline, mostrarMensajeInline } = useMensajes()
-        const catalogos = useCatalogos()
-        return { mensaje, mostrarMensaje, mensajeInline, mostrarMensajeInline, catalogos }
-    },
-
-    data() {
-        const hoy = obtenerFechaHoy()
+        const planificacion = usePlanificacion()
+        
         return {
-            fechaSeleccionada: hoy,
-            asignaciones: [],      // [{operador, recetas: [{recetaId, nombre, categoria, cantidad}], stemsTotal }]
-            todasLasRecetas: [],   // cache para el select de agregar receta
-            gruposRecetaBackup: [], // copia de respaldo con la información de pedidos por receta
-            cargandoAuto: false,
-            guardando: false,
-            planificacionesGuardadas: [],
-            cargandoPlanificaciones: false,
-            eliminandoPlanificaciones: false,
-            operadoresActivos: [],
+            // Alertas globales
+            mensaje: planificacion.mensaje,
+            mostrarMensaje: planificacion.mostrarMensaje,
+            mensajeInline: planificacion.mensajeInline,
+            mostrarMensajeInline: planificacion.mostrarMensajeInline,
 
-            // Estados del asistente interactivo de recetas
-            mostrarMapeoWizard: false,
-            categoriasRequeridas: [],
-            mapeoSeleccionado: null
+            // Estado del Dominio
+            fechaSeleccionada: planificacion.fechaSeleccionada,
+            asignaciones: planificacion.asignaciones,
+            todasLasRecetas: planificacion.todasLasRecetas,
+            gruposRecetaBackup: planificacion.gruposRecetaBackup,
+            planificacionesGuardadas: planificacion.planificacionesGuardadas,
+            operadoresActivos: planificacion.operadoresActivos,
+            categoriasRequeridas: planificacion.categoriasRequeridas,
+
+            // Computed
+            totalRecetasGlobal: planificacion.totalRecetasGlobal,
+            totalStemsGlobal: planificacion.totalStemsGlobal,
+
+            // Lógica compleja (algoritmos) Base
+            distribuirAutomaticamenteBase: planificacion.distribuirAutomaticamenteBase,
+            confirmarMapeoYPlanificarBase: planificacion.confirmarMapeoYPlanificarBase,
+            excluirOperadorBase: planificacion.excluirOperadorBase,
+            recalcularPedidosYStemsBase: planificacion.recalcularPedidosYStemsBase,
+            guardarTodasBase: planificacion.guardarTodasBase,
+
+            // Operaciones simples de datos Base
+            cargarRecetasIniciales: planificacion.cargarRecetasInicialesBase,
+            cargarPlanificacionesDelDiaBase: planificacion.cargarPlanificacionesDelDiaBase
         }
     },
 
-    computed: {
-        totalRecetasGlobal() {
-            return this.asignaciones.reduce((acc, a) => acc + a.recetas.length, 0)
-        },
-        totalStemsGlobal() {
-            return this.asignaciones.reduce((acc, a) => acc + a.stemsTotal, 0)
+    data() {
+        return {
+            cargandoAuto: false,
+            guardando: false,
+            cargandoPlanificaciones: false,
+            eliminandoPlanificaciones: false,
+            
+            // Estados del asistente interactivo de recetas
+            mostrarMapeoWizard: false,
+            mapeoSeleccionado: null
         }
     },
 
@@ -128,33 +145,50 @@ export default {
     },
 
     async mounted() {
-        const response = await this.catalogos.obtenerRecetas()
-        if (response?.success === false) {
-            console.warn('No se pudieron cargar las recetas para el selector:', response.error)
-            this.todasLasRecetas = []
-        } else {
-            this.todasLasRecetas = response?.data ?? []
-        }
+        await this.cargarRecetasIniciales()
     },
 
     methods: {
         async cargarPlanificacionesDelDia() {
             this.cargandoPlanificaciones = true
-            this.planificacionesGuardadas = []
-            this.asignaciones = []
-            
-            const response = await PlanificacionClient.obtenerPlanificacionesPorFecha(this.fechaSeleccionada)
-            if (response?.success === false) {
-                this.mostrarMensaje('error', 'Error al cargar las planificaciones guardadas')
-            } else {
-                this.planificacionesGuardadas = response?.data ?? []
-            }
-            
+            await this.cargarPlanificacionesDelDiaBase()
             this.cargandoPlanificaciones = false
         },
 
-        async eliminarPlanificacionesDelDia() {
+        /* ─── Distribución automática ─────────────── */
+        async distribuirAutomaticamente() {
+            this.cargandoAuto = true
+            const puedeAbrir = await this.distribuirAutomaticamenteBase()
+            if (puedeAbrir) {
+                this.mostrarMapeoWizard = true
+            } else {
+                this.cargandoAuto = false
+            }
+        },
 
+        async confirmarMapeoYPlanificar(mapeo) {
+            this.mapeoSeleccionado = mapeo
+            this.mostrarMapeoWizard = false
+            await this.confirmarMapeoYPlanificarBase(mapeo)
+            this.cargandoAuto = false
+        },
+
+        excluirOperador(idx) {
+            this.excluirOperadorBase(idx)
+        },
+
+        async guardarTodas() {
+            this.guardando = true
+            const exito = await this.guardarTodasBase(this.mapeoSeleccionado)
+            if (exito) {
+                this.mapeoSeleccionado = null
+                await this.cargarPlanificacionesDelDia()
+            }
+            this.guardando = false
+        },
+
+        /* ─── Eliminar Planificaciones ────────────── */
+        async eliminarPlanificacionesDelDia() {
             this.eliminandoPlanificaciones = true
             
             const response = await PlanificacionClient.eliminarPlanificacionesPorFecha(this.fechaSeleccionada)
@@ -169,107 +203,12 @@ export default {
             this.eliminandoPlanificaciones = false
         },
 
-        /* ─── Distribución automática ─────────────── */
-        async distribuirAutomaticamente() {
-            this.cargandoAuto = true
-            this.asignaciones = []
-            this.gruposRecetaBackup = []
-            this.categoriasRequeridas = []
-            this.mapeoSeleccionado = null
-
-            try {
-                // 1. Obtener los pedidos pendientes agrupados puramente por categoría de flor
-                const categorias = await PlanificacionAlgoritmo.obtenerPedidosAgrupadosPorCategoria(
-                    this.fechaSeleccionada
-                )
-
-                if (!categorias.length) {
-                    this.mostrarMensaje('error', `No hay pedidos pendientes para el ${this.fechaSeleccionada}.`)
-                    this.cargandoAuto = false
-                    return
-                }
-
-                this.categoriasRequeridas = categorias
-                // Abrir modal de mapeo interactivo de recetas
-                this.mostrarMapeoWizard = true
-
-            } catch (err) {
-                console.error('Error al iniciar distribución:', err)
-                this.mostrarMensaje('error', 'Error al obtener pedidos. Intenta de nuevo.')
-                this.cargandoAuto = false
-            }
-        },
-
-        /* ─── Confirmar Mapeo y Ejecutar Planificación ─── */
-        async confirmarMapeoYPlanificar(mapeo) {
-            this.mapeoSeleccionado = mapeo
-            this.mostrarMapeoWizard = false
-
-            try {
-                const responseOp = await this.catalogos.obtenerOperadores()
-                const operadores = responseOp?.data ?? []
-
-                if (!operadores || !operadores.length) {
-                    this.mostrarMensaje('error', 'No hay operadores disponibles.')
-                    this.cargandoAuto = false
-                    return
-                }
-                this.operadoresActivos = operadores
-
-                const { asignaciones, gruposRecetaBackup } = PlanificacionAlgoritmo.asignarYDistribuir(
-                    this.categoriasRequeridas,
-                    mapeo,
-                    this.todasLasRecetas,
-                    this.operadoresActivos
-                )
-
-                this.asignaciones = asignaciones
-                this.gruposRecetaBackup = gruposRecetaBackup
-
-                this.mostrarMensaje(
-                    'exito',
-                    `${gruposRecetaBackup.length} recetas de producción distribuidas entre ${this.asignaciones.length} operadores según la carga de stems.`,
-                    7000
-                )
-
-            } catch (err) {
-                console.error('Error al distribuir:', err)
-                this.mostrarMensaje('error', 'Error al distribuir carga entre operadores.')
-            } finally {
-                this.cargandoAuto = false
-            }
-        },
-
-        /* ─── Excluir Operador (Ausencia) ─────────── */
-        excluirOperador(idx) {
-            const asig = this.asignaciones[idx]
-            if (!asig || !asig.operador) return
-
-            // Quitar de la lista de operadores activos
-            this.operadoresActivos = this.operadoresActivos.filter(op => op.id !== asig.operador.id)
-
-            if (this.operadoresActivos.length === 0) {
-                this.mostrarMensaje('error', 'No puedes excluir a todos los operadores. Al menos uno debe quedar.')
-                // Revertir
-                this.operadoresActivos.push(asig.operador)
-                return
-            }
-
-            try {
-                this.asignaciones = PlanificacionAlgoritmo.redistribuirCarga(this.operadoresActivos, this.gruposRecetaBackup)
-                this.mostrarMensaje('exito', `Operador ${asig.operador.nombre} excluido. Carga redistribuida equitativamente.`)
-            } catch (error) {
-                console.error('Error al redistribuir', error)
-                this.mostrarMensaje('error', 'Error al redistribuir la carga.')
-            }
-        },
-
         /* ─── Edición por operador ──────────────── */
         quitarReceta({ idx, ri }) {
             const asig = this.asignaciones[idx]
             if (!asig) return
             asig.recetas.splice(ri, 1)
-            this.recalcularPedidosYStems(idx)
+            this.recalcularPedidosYStemsBase(idx)
         },
 
         agregarReceta({ idx, recetaId }) {
@@ -287,101 +226,22 @@ export default {
                 categoria: receta.categoria || '',
                 cantidad: 1
             })
-            this.recalcularPedidosYStems(idx)
+            this.recalcularPedidosYStemsBase(idx)
         },
 
         recalcularStems(idx) {
-            this.recalcularPedidosYStems(idx)
-        },
-
-        recalcularPedidosYStems(idx) {
-            const asig = this.asignaciones[idx]
-            if (!asig) return
-
-            // Recalcular stems
-            asig.stemsTotal = asig.recetas.reduce((acc, r) => acc + (parseInt(r.cantidad) || 0), 0)
-
-            // Recalcular pedidos atendidos
-            const pedidosMapa = new Map()
-            asig.recetas.forEach(r => {
-                const grupo = this.gruposRecetaBackup.find(g => g.recetaId === r.recetaId)
-                if (grupo && grupo.pedidos) {
-                    grupo.pedidos.forEach(p => {
-                        const key = `${p.pedidoId}-${p.categoria}`
-                        if (pedidosMapa.has(key)) {
-                            pedidosMapa.get(key).stems += p.stems
-                        } else {
-                            pedidosMapa.set(key, {
-                                pedidoId: p.pedidoId,
-                                cliente: p.cliente,
-                                categoria: p.categoria || '',
-                                stems: p.stems
-                            })
-                        }
-                    })
-                }
-            })
-            asig.pedidosAsignados = Array.from(pedidosMapa.values())
+            this.recalcularPedidosYStemsBase(idx)
         },
 
         /* ─── Limpiar ───────────────────────────── */
         limpiarTodo() {
             this.asignaciones = []
-            this.mensaje = { tipo: null, texto: '' }
-            this.mensajeInline = { tipo: null, texto: '' }
+            this.mostrarMensaje(null, '')
+            this.mostrarMensajeInline(null, '')
             this.gruposRecetaBackup = []
             this.categoriasRequeridas = []
             this.mapeoSeleccionado = null
             this.mostrarMapeoWizard = false
-        },
-
-        /* ─── Guardar todo ──────────────────────── */
-        async guardarTodas() {
-            const validas = this.asignaciones.filter(a => a.recetas.length > 0)
-            if (!validas.length) {
-                this.mostrarMensajeInline('error', 'No hay recetas asignadas para guardar.')
-                return
-            }
-
-            this.guardando = true
-            try {
-                const resultado = await PlanificacionAlgoritmo.crearPlanificacionesMasivas(
-                    validas.map(a => ({
-                        operador: a.operador,
-                        recetas: a.recetas.map(r => ({
-                            recetaId: r.recetaId,
-                            nombre: r.nombre,
-                            cantidad: parseInt(r.cantidad) || 1
-                        })),
-                        stemsTotal: a.stemsTotal
-                    })),
-                    this.fechaSeleccionada,
-                    this.mapeoSeleccionado
-                )
-
-                if (resultado.fallidos.length === 0) {
-                    this.mostrarMensaje('exito', 'Todas las planificaciones se han guardado correctamente', 3000)
-                    this.asignaciones = []
-                    this.gruposRecetaBackup = []
-                    this.categoriasRequeridas = []
-                    this.mapeoSeleccionado = null
-                    // Recargar para mostrar vista de solo lectura
-                    await this.cargarPlanificacionesDelDia()
-                } else {
-                    const nombres = resultado.fallidos.map(f => `${f.nombre}: ${f.motivo}`).join(' · ')
-                    this.mostrarMensajeInline(
-                        'error',
-                        `${resultado.exitosos} guardadas. ⚠️ No guardadas: ${nombres}`,
-                        0
-                    )
-                }
-
-            } catch (err) {
-                console.error('Error al guardar planificaciones:', err)
-                this.mostrarMensajeInline('error', 'Error al guardar. Intenta de nuevo.')
-            } finally {
-                this.guardando = false
-            }
         }
     }
 }

@@ -90,7 +90,8 @@ export default {
         const { inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI } = useInventario({
             obtenerDatos: (force) => catalogos.obtenerMateriaPrima(force),
             sincronizar: () => MateriaPrimaClient.sincronizarConSupabase(),
-            nombreModulo: 'Materia prima'
+            nombreModulo: 'Materia prima',
+            mostrarMensaje
         })
 
         return {

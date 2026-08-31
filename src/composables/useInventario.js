@@ -1,9 +1,7 @@
 import { ref } from 'vue'
-import { useMensajes } from './useMensajes.js'
 import SyncLogClient from '../client/SyncLogClient'
 
-export function useInventario({ obtenerDatos, sincronizar, nombreModulo }) {
-    const { mostrarMensaje } = useMensajes()
+export function useInventario({ obtenerDatos, sincronizar, nombreModulo, mostrarMensaje }) {
 
     const inventarioActual = ref([])
     const cargandoInventario = ref(false)

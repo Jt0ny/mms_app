@@ -1,699 +1,558 @@
-# Plan de Trabajo Oficial — MMS App (Auditoría #5)
+# Plan de Trabajo Oficial — MMS App (Auditoría #6)
 
 > **Auditor:** Antigravity (AI Architect)
-> **Fecha de auditoría:** 2026-08-27
-> **Alcance:** Auditoría completa: estilos componente a componente, alertas en Materiales/Materia Prima, tiempos de alertas, validación de producciones, sincronización de pedidos, títulos de Pages, y oportunidades de mejora.
+> **Fecha de auditoría:** 2026-08-31
+> **Alcance:** Auditoría completa de verificación: cumplimiento de Auditoría #5, revisión de estilos componente a componente, revisión de try/catch en todos los archivos, estandarización de `<div>`, consistencia vertical de tablas, y nuevas oportunidades.
 
 ---
 
 ## Tabla de Contenidos
 
-- [Estado de Recomendaciones Anteriores (Auditorías 1–4)](#estado-de-recomendaciones-anteriores-auditorías-14)
-- [1. Auditoría de Estilos — Componente por Componente](#1-auditoría-de-estilos--componente-por-componente)
-- [2. Alertas en Materiales y Materia Prima](#2-alertas-en-materiales-y-materia-prima)
-- [3. Reporte de Tiempos de Alertas](#3-reporte-de-tiempos-de-alertas)
-- [4. Validación del Registro de Producciones](#4-validación-del-registro-de-producciones)
-- [5. Sincronización de Pedidos](#5-sincronización-de-pedidos)
-- [6. Títulos de Secciones / Pages](#6-títulos-de-secciones--pages)
-- [7. Oportunidades de Mejora Adicionales](#7-oportunidades-de-mejora-adicionales)
+- [Estado de Recomendaciones Anteriores (Auditorías 1–5)](#estado-de-recomendaciones-anteriores-auditorías-15)
+- [1. Auditoría de Estilos — Verificación de Cumplimiento](#1-auditoría-de-estilos--verificación-de-cumplimiento)
+- [2. Alertas en Materiales y Materia Prima — Estado](#2-alertas-en-materiales-y-materia-prima--estado)
+- [3. Reporte de Tiempos de Alertas — Estado](#3-reporte-de-tiempos-de-alertas--estado)
+- [4. Validación del Registro de Producciones — Estado](#4-validación-del-registro-de-producciones--estado)
+- [5. Sincronización de Pedidos — Estado](#5-sincronización-de-pedidos--estado)
+- [6. Títulos de Secciones / Pages — Estado](#6-títulos-de-secciones--pages--estado)
+- [7. Oportunidades de Mejora — Verificación y Nuevas](#7-oportunidades-de-mejora--verificación-y-nuevas)
+- [8. Revisión de try/catch y Manejo de Errores](#8-revisión-de-trycatch-y-manejo-de-errores)
+- [9. Estandarización de Contenedores (Div vs Semánticos)](#9-estandarización-de-contenedores-div-vs-semánticos)
+- [10. Consistencia Vertical de Tablas](#10-consistencia-vertical-de-tablas)
 - [Hoja de Ruta de Implementación](#hoja-de-ruta-de-implementación)
 
 ---
 
-## Estado de Recomendaciones Anteriores (Auditorías 1–4)
+## Estado de Recomendaciones Anteriores (Auditorías 1–5)
 
-| Recomendación | Estado |
+### Auditorías 1–4
+
+| Recomendación | Estado (Auditoría #5) | Estado verificado (Auditoría #6) |
+|---|---|---|
+| Refactorizar `useMensajes.js` — Eliminar singleton | ✅ Corregido | ✅ **Verificado** — estado dentro de función (`useMensajes.js` L3-4: `const mensaje = reactive(...)`) |
+| Soporte `warning` en `Alertas.vue` | ✅ Corregido | ✅ **Verificado** — `status-warning` existe en `Alertas.vue` |
+| Deep clone en `RecetasPage.vue` al editar | ✅ Corregido | ✅ **Verificado** — `RecetasPage.vue` L124-125: `.map(m => ({...m}))` |
+| Duplicación de `autoCompletarPedidos` | ⏸️ Descartada | ⏸️ **Mantenido** — sigue en `DashboardPage.vue` L96 y `ProduccionPage.vue` L174 |
+| Balance global/local CSS | ✅ Mantenido | ✅ **Verificado** — sin cambios significativos |
+
+### Auditoría #5 — Fase 15 (Crítica)
+
+| Tarea | Estado en #5 | Estado verificado en #6 |
+|---|---|---|
+| Refactorizar `useInventario()` para recibir `mostrarMensaje` como parámetro | 🔴 Pendiente | ✅ **COMPLETADO** — `useInventario.js` L4 ahora recibe `mostrarMensaje` como parámetro: `export function useInventario({ obtenerDatos, sincronizar, nombreModulo, mostrarMensaje })` |
+| Actualizar Pages para pasar `mostrarMensaje` a `useInventario` | 🔴 Pendiente | ✅ **COMPLETADO** — `MaterialesPage.vue` L101-106 pasa `mostrarMensaje`. `MateriaPrimaPage.vue` L90-95 pasa `mostrarMensaje`. |
+| Agregar `return { success: true }` en `MateriaPrimaClient.sincronizarConSupabase()` | 🔴 Pendiente | ✅ **COMPLETADO** — `MateriaPrimaClient.js` L16: `return { success: true }` (flujo vacío), L71: `return { success: true }` (flujo con datos) |
+| Agregar `return { success: true }` en `PedidoClient.sincronizarConSupabase()` | 🔴 Pendiente | ✅ **COMPLETADO** — `PedidoClient.js` L89: `return { success: true }` (flujo vacío), L147: `return { success: true }` (flujo vacío de datos), L158: `return { success: true }` (flujo exitoso) |
+
+### Auditoría #5 — Fase 16 (Media)
+
+| Tarea | Estado en #5 | Estado verificado en #6 |
+|---|---|---|
+| Validación de todas las categorías > 0 en producción | 🟠 Pendiente | ✅ **COMPLETADO** — `useProduccionForm.js` L155-165: `categoriasVacias` verifica todas las categorías |
+| Mover título de `PlanificacionAsignacion` a `PlanificacionPage` | 🟠 Pendiente | ✅ **COMPLETADO** — `PlanificacionPage.vue` L4-11 contiene `<header class="page-header">` con título. `PlanificacionAsignacion.vue` solo tiene selector de fecha y botones. |
+| Envolver `sincronizarAPI()` en `PedidoPage.vue` con try/catch | 🟠 Pendiente | ✅ **COMPLETADO** — `PedidoPage.vue` L136-163: `sincronizarAPI()` está envuelto en try/catch con finally |
+
+### Auditoría #5 — Fase 17 (Limpieza)
+
+| Tarea | Estado en #5 | Estado verificado en #6 |
+|---|---|---|
+| Eliminar CSS muerto de `ClientesPage.vue` | 🟢 Pendiente | ✅ **COMPLETADO** — CSS de `ClientesPage.vue` (L170-228) ya NO contiene `.active-filter-banner` ni `.btn-clear-filter` |
+| Simplificar ternario redundante en `ProduccionForm.vue` L65 | 🟢 Pendiente | ✅ **COMPLETADO** — `ProduccionForm.vue` L65-66: ternario ahora es `guardando ? 'Guardando...' : (edicion ? 'Actualizar producción' : 'Registrar producción')` |
+| Remover desestructuración de `cancelar` en `ProduccionForm.vue` | 🟢 Pendiente | ✅ **COMPLETADO** — `useProduccionForm.js` L179-189: retorno no incluye `cancelar` |
+| Corregir mutación directa de `mensaje` en `PlanificacionPage.vue` | 🟢 Pendiente | ✅ **COMPLETADO** — `PlanificacionPage.vue` L239: usa `this.mostrarMensaje(null, '')` |
+
+### Auditoría #5 — Fase 18 (Arquitectónicas)
+
+| Tarea | Estado en #5 | Estado verificado en #6 |
+|---|---|---|
+| Extraer lógica a composable `usePlanificacion()` | 🟠 Pendiente | ✅ **COMPLETADO** — `usePlanificacion.js` existe (247 líneas). `PlanificacionPage.vue` ahora usa `usePlanificacion()` en setup() (L89-122) y delega toda la lógica de dominio. La Page pasó de ~419 líneas a ~279 líneas. |
+| Refactorizar `ProduccionRecetasView` para usar `.data-card` global | 🟢 Pendiente | ⚠️ **PARCIALMENTE** — `ProduccionRecetasView.vue` L2 usa `class="data-card"` en el contenedor, pero mantiene `style="padding: 24px; border-radius: 18px;"` inline. El `border-radius` inline sobrescribe el global (12px → 18px). |
+| Agregar delay al mensaje de carga en `ProduccionRecetasView.vue` | 🟢 Pendiente | ✅ **COMPLETADO** — `ProduccionRecetasView.vue` L176-178: `setTimeout` de 200ms antes de mostrar "Cargando recetas..." |
+| Simplificar doble carga en `MermasPage.vue` post-registro | 🟢 Pendiente | 🟡 **NO IMPLEMENTADO** — `MermasPage.vue` L141-165: sigue actualizando stocks localmente Y llamando `this.cargarDatos()`. Se mantiene como deuda técnica menor aceptada. |
+| Refactorizar `PedidoClient.js` para no usar `useCatalogos()` internamente | 🟢 Pendiente | 🟡 **NO IMPLEMENTADO** — `PedidoClient.js` L6, L17, L68, L94, L172: sigue usando `useCatalogos()` directamente. Se mantiene como deuda técnica aceptada. |
+
+---
+
+## 1. Auditoría de Estilos — Verificación de Cumplimiento
+
+### Resumen de Verificación
+
+Se revisó cada `<style scoped>` de los 40+ archivos `.vue` nuevamente. Las conclusiones de la Auditoría #5 siguen siendo válidas:
+
+| Categoría | Estado |
 |---|---|
-| Refactorizar `useMensajes.js` — Eliminar singleton (estado fuera de función) | ✅ Corregido — estado ahora dentro de la función |
-| Soporte `warning` en `Alertas.vue` (clase + icono) | ✅ Corregido — `status-warning` y `ExclamationTriangleIcon` implementados |
-| Deep clone en `RecetasPage.vue` al editar receta | ✅ Corregido — `.map(m => ({...m}))` aplicado |
-| Duplicación de `autoCompletarPedidos` en Dashboard y Producción | ⏸️ Descartada intencionalmente — se mantiene en ambos componentes |
-| Balance global/local CSS tras auditorías de estilos | ✅ Mantenido correctamente |
+| ✅ Estilos correctamente locales (~95%) | **Mantenido** |
+| 🌐 Candidatos menores a centralización (`.no-data`, `.link-contact`) | **Sin cambios** — siguen locales, no generan deuda |
+| ⚠️ `ProduccionRecetasView.vue` — inline styles | **Nuevo hallazgo** — ver detalle abajo |
 
----
+### Hallazgo: Inline styles en `ProduccionRecetasView.vue`
 
-## 1. Auditoría de Estilos — Componente por Componente
-
-### Metodología
-
-Se revisó cada `<style scoped>` en los 40+ archivos `.vue` del proyecto para determinar:
-- ✅ **Mantener local** — estilo acoplado al HTML/lógica del componente
-- 🌐 **Centralizar** — estilo reutilizable o duplicado
-- ⚠️ **Refactorizar** — estilo con problemas técnicos
-
----
-
-### `/src/components/layout/`
-
-#### NavBar.vue (~240 líneas de CSS)
-| Clase | Veredicto | Motivo |
-|---|---|---|
-| `.container-nav`, `.navbar` | ✅ Mantener local | Grid layout único del navbar |
-| `.logo`, `.logo-mark`, `.logo-copy` | ✅ Mantener local | Branding específico |
-| `.menu`, `.menu li` | ✅ Mantener local | Navegación principal única |
-| `.user-profile-block/info/name/role` | ✅ Mantener local | UI del perfil de usuario específica |
-| `.logout-icon-btn`, `.login-icon-btn` | ✅ Mantener local | Botones de acción contextuales |
-| Media queries (768px, 480px) | ✅ Mantener local | Responsive del navbar |
-
-**Veredicto: ✅ Todo correcto. Estilos justificados y bien organizados.**
-
-#### SideBar.vue (~200 líneas de CSS)
-| Clase | Veredicto | Motivo |
-|---|---|---|
-| `.sidebar`, `.sidebar.collapsed` | ✅ Mantener local | Layout del sidebar con animaciones de colapso |
-| `.menu-item`, `.menu-item.active` | ✅ Mantener local | Estilos de navegación lateral únicos |
-| `.hidden-text` | ✅ Mantener local | Animación de colapso |
-| Media queries | ✅ Mantener local | Responsive del sidebar |
-
-**Veredicto: ✅ Todo correcto.**
-
-#### MainLayout.vue
-Sin estilos scoped. ✅ Limpio.
-
----
-
-### `/src/components/shared/`
-
-#### Alertas.vue (~40 líneas de CSS)
-| Clase | Veredicto | Motivo |
-|---|---|---|
-| `.status`, `.status-text` | ✅ Mantener local | Base del componente de alerta |
-| `.status-success/error/info/warning` | ✅ Mantener local | Variantes de color usando variables CSS globales |
-
-**Veredicto: ✅ Correcto. Los estilos usan variables globales (`--alert-*-bg/text/border`) correctamente.**
-
-#### CargaArchivo.vue (~70 líneas de CSS)
-| Clase | Veredicto | Motivo |
-|---|---|---|
-| `.upload-card/zone/icon/label/hint` | ✅ Mantener local | UX de drag-and-drop única |
-| `.file-input` | ✅ Mantener local | Input oculto |
-| `.helper-text` | ⚠️ Candidato menor a global | Es simplemente `color: var(--text-light); font-size: 13px`. Ya existe `.text-light` global. |
-
-**Veredicto: ✅ Correcto. El `.helper-text` es menor y funciona bien localmente.**
-
-#### AccionesButton.vue (~15 líneas de CSS)
-`.actions` — Flexbox de botones de acción. ✅ Mínimo y justificado.
-
-#### InventarioTable.vue (~10 líneas de CSS)
-Solo media query para responsive del header. ✅ Correcto.
-
-#### VistaPreviaTable.vue (~70 líneas de CSS)
-| Clase | Veredicto | Motivo |
-|---|---|---|
-| `.preview-wrapper` (fadeIn) | ✅ Mantener local | Animación de aparición del preview |
-| `.preview-actions` | ✅ Mantener local | Alineación de botones |
-| Mobile card layout (480px) | ✅ Mantener local | Transformación de tabla a cards en mobile |
-
-**Veredicto: ✅ Correcto.**
-
----
-
-### `/src/components/clientes/`
-
-#### ClienteList.vue (~90 líneas de CSS)
-| Clase | Veredicto | Motivo |
-|---|---|---|
-| `.client-row`, `.clickable-row`, `.active-row` | ✅ Mantener local | Interacción maestro-detalle específica |
-| `.client-name` | ✅ Mantener local | Estilo de nombre en tabla |
-| `.associated-badge` | ✅ Mantener local | Badge de "Factura a:" muy específico |
-| `.no-data` | 🟢 Podría usar `.text-light` global | Duplica `color: var(--text-light); font-style: italic` |
-| `.link-contact` | 🟢 Podría ser `.link-primary` global | Pero solo se usa aquí en toda la app |
-| `.address-text` | ✅ Mantener local | Truncamiento específico |
-| `.badge-billing/shipping/both` | ✅ Mantener local | Badges semánticos de dominio de negocio |
-
-**Veredicto: ✅ Correcto. Las clases `.no-data` y `.link-contact` son candidatas menores a globalización, pero no generan deuda técnica.**
-
-#### ClienteForm.vue
-Sin `<style scoped>`. Usa clases globales. ✅ Limpio.
-
----
-
-### `/src/components/produccion/`
-
-#### ProduccionForm.vue (~180 líneas de CSS)
-| Clase | Veredicto | Motivo |
-|---|---|---|
-| `.produccion-form-card` | ✅ Mantener local | Card contenedora del formulario |
-| `.header`, `.eyebrow`, `.subtitle` | ✅ Mantener local | `.eyebrow` se usa solo aquí. `.subtitle` difiere de `.page-subtitle` en `max-width`. |
-| `.stats-grid` | ✅ Mantener local | Grid de 3 columnas para stats del form |
-| `.category-list/row/info/name/hint/input` | ✅ Mantener local | Layout de categorías con stepper — muy específico |
-| `.stepper`, `.stepper-btn` | ✅ Mantener local | Control táctil con media queries `pointer: coarse/fine` |
-| `.form-footer`, `.total-text` | ✅ Mantener local | Footer del formulario |
-| `.form-actions-inline` | ✅ Mantener local | Alineación de botones inline |
-
-**Veredicto: ✅ Estilos bien justificados. El patrón stepper con `pointer: coarse/fine` es excelente para la UX touch.**
-
-#### ProduccionRecetasView.vue (~75 líneas de CSS)
-| Clase | Veredicto | Motivo |
-|---|---|---|
-| `.recetas-view` | ⚠️ Duplicación parcial | Repite el patrón de card (`background, border, border-radius, padding, box-shadow`) que es idéntico a `.produccion-form-card`. Ambos podrían usar `.data-card` global con padding personalizado. |
-| `.filter-input` | ✅ Mantener local | Solo `width: 100%` — trivial |
-| `.scroll-recetas-alto` | ✅ Mantener local | Scroll con altura calculada (`calc(100vh - 309px)`) muy específica |
-| `.receta-list/head/nombre/categoria/instrucciones` | ✅ Mantener local | Layout interno de cada receta |
-| `.ingrediente-list` | ✅ Mantener local | Detalles de ingredientes |
-
-**Veredicto: ⚠️ `.recetas-view` podría usar `.data-card` global + padding override.**
-
----
-
-### `/src/components/recetas/`
-
-#### RecetaForm.vue (~35 líneas de CSS)
-| Clase | Veredicto | Motivo |
-|---|---|---|
-| `.form-panel` | ✅ Mantener local | Layout vertical del formulario de recetas |
-| `.form-panel label`, `.form-panel textarea` | ✅ Mantener local | Estilos de form fields |
-| `.resume-box` | ✅ Mantener local | Resumen de selección |
-| `.actions` | ✅ Mantener local | Contexto vertical, diferente de AccionesButton |
-
-**Veredicto: ✅ Correcto.**
-
-#### RecetaList.vue, RecetaMaterialesList.vue, RecetaMateriaPrimaList.vue, RecetaCategoria.vue
-Sin estilos scoped significativos. Usan clases globales. ✅ Limpio.
-
----
-
-### `/src/components/materiales/`
-
-#### MaterialForm.vue
-Sin `<style scoped>`. Usa clases globales. ✅ Limpio.
-
----
-
-### `/src/components/mermas/`
-
-#### MermaForm.vue
-Sin `<style scoped>`. Usa clases globales. ✅ Limpio.
-
-#### MermaList.vue, MermaTipoSelector.vue, MermaMotivoSelector.vue, MermaOperadorSelector.vue
-Usan estilos globales y/o scoped mínimos específicos de dominio (badges de merma). ✅ Correcto.
-
----
-
-### `/src/components/usuarios/`
-
-#### UsuarioForm.vue (~20 líneas de CSS)
-`.form-body`, `.form-body label` — Layout grid del formulario. ✅ Correcto.
-
-#### UsuarioList.vue, UsuarioRol.vue
-Estilos scoped mínimos, específicos (`.role-supervisor`, `.role-operador`). ✅ Correctos.
-
----
-
-### `/src/components/dashboard/`
-
-#### DashboardAvanceOperador.vue, DashboardDistribucionMermas.vue, DashboardEstadoPedidos.vue, DashboardKPIs.vue
-Estilos locales justificados — grids de gráficos, dimensiones de canvas, layouts de widgets. ✅ Correctos.
-
----
-
-### `/src/components/planificacion/`
-
-#### PlanificacionAsignacion.vue (~40 líneas de CSS)
-`.fecha-group/label/input` — estilos del selector de fecha. ✅ Mantener local.
-
-#### PlanificacionOperadorCard.vue, PlanificacionMapeoRecetas.vue, PlanificacionResumen.vue, PlanificacionView.vue
-Estilos locales altamente específicos (`.operadores-panel`, `.categorias-grid`, `.mapping-table`). ✅ Correctos.
-
----
-
-### `/src/components/login/`
-
-#### LoginForm.vue (~85 líneas de CSS)
-| Clase | Veredicto | Motivo |
-|---|---|---|
-| `.login-card` | ✅ Mantener local | Card del login con estilos únicos |
-| `h1`, `p`, `p::before`, `input` | ✅ Mantener local | Patrón atípico usando `attr(type)` para labels — intencional y creativo |
-| `.login-btn` | ✅ Mantener local | Override de `.btn` para el botón de login |
-
-**Veredicto: ✅ Correcto.**
-
----
-
-### `/src/pages/`
-
-| Page | CSS Lines | Veredicto |
-|---|---|---|
-| DashboardPage.vue | ~15 | ✅ Correcto (`.alertas-stock-wrap`, `.pedidos-widget`) |
-| ProduccionPage.vue | ~20 | ✅ Correcto (`.sin-plan-icon/sub`, `.page-grid-produccion`) |
-| ClientesPage.vue | ~100 | ⚠️ Contiene CSS muerto (`.active-filter-banner`) — ver hallazgo 7.1 |
-| PlanificacionPage.vue | ~30 | ✅ Correcto (`.vacio-texto`, `.fade-msg-*`) |
-| MaterialesPage.vue | 0 | ✅ Limpio (style scoped vacío) |
-| MateriaPrimaPage.vue | 0 | ✅ Limpio |
-| PedidoPage.vue | 0 | ✅ Limpio |
-| RecetasPage.vue | 0 | ✅ Limpio |
-| MermasPage.vue | 0 | ✅ Limpio |
-| UsuariosPage.vue | 0 | ✅ Limpio |
-| PublicHomePage.vue | ~25 | ✅ Correcto (`.public-home`, `.hero`, `.login-overlay`) |
-
----
-
-### Resumen de Estilos
-
-| Categoría | Cantidad |
-|---|---|
-| ✅ Estilos correctamente locales | ~95% |
-| 🌐 Candidatos a centralización (baja prioridad) | 2 (`.no-data`, `.link-contact`) |
-| ⚠️ Duplicación menor | 1 (`.recetas-view` vs `.data-card`) |
-| ⚠️ CSS potencialmente muerto | 1 (`ClientesPage` — `.active-filter-banner`) |
-
-> **Conclusión:** El balance global/local de CSS está en excelente estado. No se recomienda una migración masiva. Las oportunidades son menores y opcionales.
-
----
-
-## 2. Alertas en Materiales y Materia Prima
-
-### Problema Reportado
-> Al realizar la acción de sincronizar, en algunas ocasiones no aparece el mensaje de alerta correspondiente.
-
-### Investigación del Flujo Completo
-
-#### Flujo de sincronización (Materiales y Materia Prima):
-
-```
-Botón "Sincronizar API" (InventarioTable.vue)
-  → emit('sincronizar')
-    → Page.sincronizarAPI()  [delegado a useInventario()]
-      → useInventario.sincronizarAPI()
-        1. SyncLogClient.yaSincronizadoHoy(moduloKey)
-        2. mostrarMensaje('info', 'Sincronizando...', 0)         ← mensaje con duración infinita
-        3. await sincronizar()                                    ← Client.sincronizarConSupabase()
-        4. mostrarMensaje('exito', 'Sincronización exitosa')      ← mensaje de éxito
-        5. await cargarInventario(true)                           ← recarga datos
-```
-
-### 🔴 Causa Raíz: Instancias separadas de `useMensajes()`
-
-**El problema es que `useInventario()` crea su PROPIA instancia de `useMensajes()`:**
-
-```javascript
-// useInventario.js L6
-const { mostrarMensaje } = useMensajes()  // ← NUEVA instancia
-```
-
-Mientras que las Pages (`MaterialesPage`, `MateriaPrimaPage`) crean OTRA instancia:
-
-```javascript
-// MaterialesPage.vue L97
-const { mensaje, mostrarMensaje } = useMensajes()  // ← OTRA instancia diferente
-```
-
-Y el template renderiza:
 ```html
-<Alertas :mensaje="mensaje" />  <!-- ← usa el 'mensaje' de la Page, NO el de useInventario -->
+<!-- ProduccionRecetasView.vue L2 -->
+<div class="data-card" style="padding: 24px; border-radius: 18px;">
 ```
 
-**Resultado:** Cuando `useInventario` llama a `mostrarMensaje()`, modifica su propio objeto `mensaje` reactivo, pero el `<Alertas>` de la Page está vinculado a una instancia diferente. **El mensaje nunca llega al componente visual.**
+El componente usa la clase global `.data-card` correctamente, pero **sobrescribe** `padding` y `border-radius` con estilos inline. Esto:
+- ✅ Funciona correctamente
+- ⚠️ Impide que los cambios globales de `.data-card` se apliquen
+- ⚠️ Rompe la consistencia visual (`.data-card` global tiene `border-radius: 12px`, aquí es 18px)
 
-Esto explica por qué:
-- ✅ Las alertas de carga Excel, guardado manual y eliminación **SÍ funcionan** — usan `this.mostrarMensaje` de la Page.
-- ❌ Las alertas de sincronización **NO aparecen** — usan el `mostrarMensaje` interno de `useInventario`.
-- ❌ Los mensajes de error en `cargarInventario` (como "Error al cargar materiales") **tampoco aparecen**.
+### Hallazgo: `MaterialesPage.vue` tiene `<style scoped>` vacío
 
-### 🔴 Causa Secundaria: `MateriaPrimaClient.sincronizarConSupabase()` no retorna `{ success: true }`
-
-```javascript
-// MateriaPrimaClient.js L8-L74
-async sincronizarConSupabase() {
-    try {
-        // ...proceso...
-        if (materiasPrimasExternas.length === 0) {
-            return;  // ← RETORNA undefined, NO { success: true }
-        }
-        // ...upsert...
-        // ❌ NO HAY return { success: true } al final del try exitoso
-    } catch (error) {
-        return { success: false, error };
-    }
-}
+```html
+<!-- MaterialesPage.vue L227-228 -->
+<style scoped>
+</style>
 ```
 
-Si la función no retorna nada (o retorna `undefined`), la verificación en `useInventario.js L41`:
-```javascript
-if (response?.success === false) { ... }
-```
-…pasa correctamente (undefined !== false), pero queda en un estado ambiguo.
-
-Comparando con `MaterialClient.sincronizarConSupabase()` (L66): este **SÍ retorna `{ success: true }`** correctamente.
-
-### Archivos Afectados
-
-| Archivo | Problema |
-|---|---|
-| `useInventario.js` L6 | Crea instancia propia de `useMensajes()` desconectada de la Page |
-| `MateriaPrimaClient.js` L8-74 | No retorna `{ success: true }` en el flujo exitoso |
-| `MaterialesPage.vue` | Indirectamente afectado — sus alertas de sync no aparecen |
-| `MateriaPrimaPage.vue` | Indirectamente afectado — ídem |
+No genera problemas, pero es código muerto. Puede eliminarse.
 
 ### Recomendación
 
 | # | Acción | Prioridad |
 |---|---|---|
-| 2.1 | Modificar `useInventario()` para que NO cree su propia instancia de `useMensajes()`. En su lugar, recibir `mostrarMensaje` como parámetro desde la Page que lo invoca. | 🔴 Alta |
-| 2.2 | Corregir `MateriaPrimaClient.sincronizarConSupabase()` para retornar `{ success: true }` explícitamente al final del bloque try. | 🔴 Alta |
+| 1.1 | Mover los estilos inline de `ProduccionRecetasView.vue` L2 a una clase scoped local o usar `.data-card` sin override | 🟢 Baja |
+| 1.2 | Eliminar el `<style scoped>` vacío de `MaterialesPage.vue` | 🟢 Baja |
 
 ---
 
-## 3. Reporte de Tiempos de Alertas
+## 2. Alertas en Materiales y Materia Prima — Estado
 
-### Configuración Actual
+### ✅ RESUELTO COMPLETAMENTE
 
-Los tiempos de duración de alertas están configurados en **`useMensajes.js`** como parámetros por defecto de las funciones:
+**Causa raíz (instancias separadas de `useMensajes()`):** `useInventario()` ahora recibe `mostrarMensaje` como parámetro desde la Page que lo invoca (L4).
 
-| Función | Duración por defecto | Línea |
-|---|---|---|
-| `mostrarMensaje(tipo, texto, duracion)` | **4000ms** (4s) | `useMensajes.js` L7 |
-| `mostrarMensajeInline(tipo, texto, duracion)` | **5000ms** (5s) | `useMensajes.js` L15 |
+**Verificación directa:**
 
-### Tiempos por Tipo de Alerta según uso en la aplicación
+```javascript
+// MaterialesPage.vue L96-106
+const { mensaje, mostrarMensaje } = useMensajes()  // ← instancia de la Page
+const { inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI } = useInventario({
+    obtenerDatos: (force) => catalogos.obtenerMateriales(force),
+    sincronizar: () => MaterialClient.sincronizarConSupabase(),
+    nombreModulo: 'materiales',
+    mostrarMensaje  // ← SE PASA la misma instancia
+})
+```
 
-| Tipo | Duración usada | Dónde se invoca | Observaciones |
-|---|---|---|---|
-| **Éxito** (`exito`) | 4000ms (default) | Todas las Pages | Consistente ✅ |
-| **Éxito** (con override) | 3000ms | `PlanificacionPage.vue` L363 | Duración reducida para éxito masivo |
-| **Éxito** (con override) | 7000ms | `PlanificacionPage.vue` L232 | Mensaje largo de distribución |
-| **Error** | 4000ms (default) | Mayoría de Pages | ⚠️ Puede desaparecer rápido si el usuario no lo nota |
-| **Error** (persistente) | **0ms** (infinito) | `MaterialesPage` L184, `MateriaPrimaPage` L178, `ProduccionPage` L179, L192, `PedidoPage` L129, L205 | Correcto para errores críticos ✅ |
-| **Info** | 4000ms (default) | `PedidoPage` L139 (ya sincronizado) | ✅ |
-| **Info** (persistente) | **0ms** (infinito) | `useInventario` L37 ("Sincronizando...") | Correcto — se espera override posterior ✅ |
-| **Info** (corta) | 2500ms | `useContadorRecetas` L99 | Notificación de contador completo |
-| **Info** (corta) | 3000ms | `useProduccionForm` L29, L31 | Notificaciones de límite de categoría |
-| **Warning** | 4000ms (default) | No se invoca explícitamente en el código actual | — |
-| **Inline error** | 5000ms (default) | `PlanificacionPage` L342, L381 | ✅ |
-| **Inline error** (persistente) | **0ms** (infinito) | `PlanificacionPage` L376 | ✅ |
+**Retornos de sincronización:** `MateriaPrimaClient.sincronizarConSupabase()` ahora retorna `{ success: true }` en L16 y L71.
 
-### Análisis
+**No hay acciones pendientes para esta sección.**
 
-1. **No hay estandarización explícita.** Los tiempos dependen de cada invocación. No existe una constante central como `ALERT_DURATIONS`.
-2. **Los errores persistentes (duración 0) están bien usados** — solo en errores críticos donde el usuario debe leer el mensaje.
-3. **Inconsistencia menor:** Un error de carga de excel muestra 4s (default), pero un error de guardado muestra 0ms (infinito). Ambos son errores de operación pero con severidad diferente.
+---
+
+## 3. Reporte de Tiempos de Alertas — Estado
+
+### Sin cambios funcionales
+
+La configuración de tiempos sigue siendo la misma reportada en Auditoría #5:
+- `mostrarMensaje()`: **4000ms** por defecto (`useMensajes.js` L7)
+- `mostrarMensajeInline()`: **5000ms** por defecto (`useMensajes.js` L15)
+- No se han creado constantes centralizadas `DURACION_EXITO`, `DURACION_ERROR`, etc.
+
+### Hallazgo menor: Mutación directa persistente
+
+Dos Pages siguen mutando `mensaje` directamente en lugar de usar `mostrarMensaje()`:
+
+```javascript
+// MaterialesPage.vue L170-171
+this.mensaje.tipo = null
+this.mensaje.texto = ''
+
+// MateriaPrimaPage.vue L163-164
+this.mensaje.tipo = null
+this.mensaje.texto = ''
+```
+
+Esto funciona porque `mensaje` es un `reactive`, pero rompe la encapsulación del composable.
 
 ### Recomendación
 
 | # | Acción | Prioridad |
 |---|---|---|
-| 3.1 | Crear constantes de duración en `useMensajes.js`: `DURACION_EXITO = 4000`, `DURACION_ERROR = 0`, `DURACION_INFO = 4000`, `DURACION_WARNING = 5000`. Los errores deberían ser persistentes por defecto para que el usuario siempre los lea. | 🟢 Baja |
-| 3.2 | Evaluar si los errores con duración default (4s) deberían ser persistentes. | 🟢 Baja |
+| 3.1 | (Sin cambios) Crear constantes de duración centralizadas | 🟢 Baja |
+| 3.2 | Reemplazar mutaciones directas en `MaterialesPage.vue` L170-171 y `MateriaPrimaPage.vue` L163-164 por `this.mostrarMensaje(null, '')` | 🟢 Baja |
 
 ---
 
-## 4. Validación del Registro de Producciones
+## 4. Validación del Registro de Producciones — Estado
 
-### Estructura Actual
+### ✅ COMPLETADO
 
-El registro de producción funciona así:
-
-1. **`ProduccionForm.vue`** renderiza un input por cada categoría (obtenidas de pedidos).
-2. **`useProduccionForm.js`** gestiona el estado con `cantidadesPorCategoria` (ref) y la función `enviarFormulario()`.
-3. La validación actual en `enviarFormulario()` (L155-160):
-   ```javascript
-   const detalle = construirDetalle()
-   if (!detalle.length) {
-       notificar('error', 'Completa al menos una categoría con cantidad mayor a cero', 0)
-       return
-   }
-   ```
-4. `construirDetalle()` (L146-153) filtra categorías con cantidad > 0:
-   ```javascript
-   return categorias.value
-       .map(categoria => ({ categoria, cantidad: obtenerCantidadNumerica(categoria) }))
-       .filter(item => item.cantidad > 0)
-   ```
-
-### Campos Involucrados
-
-| Campo | Tipo | Obligatorio actualmente | Propuesto |
-|---|---|---|---|
-| `fecha` | Date input | Sí (default: hoy) | Sí ✅ |
-| `categorias[]` (inputs numéricos) | Number | Al menos uno > 0 | **Todos obligatorios** |
-| `stems` (ProduccionRecetasView clicks) | — | No | **No obligatorio** ✅ |
-
-### Análisis
-
-La validación propuesta es:
-> **Todas las categorías deben tener un valor > 0 → permitir registro. Alguna categoría vacía → impedir registro. Los campos de stems NO deben ser obligatorios.**
-
-**¿Dónde implementar?**
-
-La lógica de validación está correctamente centralizada en `useProduccionForm.js`, específicamente en `enviarFormulario()`. La modificación debe hacerse allí.
-
-### Implementación Recomendada
-
-Modificar `enviarFormulario()` en `useProduccionForm.js`:
+**Verificación directa en `useProduccionForm.js` L155-165:**
 
 ```javascript
 const enviarFormulario = () => {
-    // Verificar que TODAS las categorías tengan valor > 0
     const categoriasVacias = categorias.value.filter(
         categoria => obtenerCantidadNumerica(categoria) === 0
     )
-    
     if (categoriasVacias.length > 0) {
         const nombres = categoriasVacias.join(', ')
         notificar('error', `Las siguientes categorías están vacías: ${nombres}`, 0)
         return
     }
-    
-    // El resto del flujo actual...
+    // ... construir payload y emitir
 }
 ```
 
-**Nota sobre stems:** Los stems se manejan desde `ProduccionRecetasView` como clicks en recetas, que incrementan `cantidadesExternas`. Son un atajo, no un campo obligatorio. El formulario ya permite ingresar cantidades directamente. Los stems NO deben validarse.
+✅ Exige que **todas** las categorías tengan cantidad > 0.
+✅ Los stems (clicks desde `ProduccionRecetasView`) **no** son obligatorios.
+✅ El error es persistente (`duracion = 0`) para que el usuario lo lea.
+
+**No se implementó el resaltado visual de categorías vacías (4.2 de Auditoría #5).** Esto permanece como mejora opcional.
 
 ### Recomendación
 
 | # | Acción | Prioridad |
 |---|---|---|
-| 4.1 | Modificar la validación en `useProduccionForm.js` → `enviarFormulario()` para exigir que todas las categorías tengan cantidad > 0. | 🟠 Media |
-| 4.2 | Mostrar visualmente las categorías vacías (resaltar en rojo o con borde de error). | 🟢 Baja |
+| 4.1 | (Opcional) Implementar resaltado visual de categorías vacías (borde rojo) | 🟢 Baja |
 
 ---
 
-## 5. Sincronización de Pedidos
+## 5. Sincronización de Pedidos — Estado
 
-### Flujo Completo Analizado
+### ✅ Retornos corregidos (5.1)
 
-```
-PedidoPage.vue → sincronizarAPI()
-  1. SyncLogClient.yaSincronizadoHoy('pedidos')      → Verificar si ya se sincronizó
-  2. PedidoClient.sincronizarConSupabase()             → Proceso principal
-     a. axios.get(API_URL)                             → Obtener pedidos de API externa
-     b. ClienteClient.resolverClientesDePedidos()      → Resolver/crear clientes
-     c. _obtenerCatalogos()                            → Obtener mapas de clientes y recetas
-     d. _resolverRecetasFaltantes()                    → Crear recetas genéricas faltantes
-     e. Procesar cada pedido → pedidosMap + detalles   → Mapeo de datos
-     f. supabase.rpc('rpc_sincronizar_pedidos', {...})  → Guardado masivo vía RPC
-  3. SyncLogClient.registrarSync('pedidos')            → Registrar en log
-  4. cargarPedidos()                                   → Recargar tabla
-```
+`PedidoClient.sincronizarConSupabase()` ahora retorna `{ success: true }` en **todos** los flujos:
+- L89: flujo vacío (`pedidosExternos.length === 0`)
+- L147: flujo sin datos a upsert (`pedidosToUpsert.length === 0`)
+- L158: flujo exitoso completo
 
-### Problemas Identificados
+### ✅ Try/catch en Page (5.2)
 
-#### 🔴 5.1 — `sincronizarConSupabase()` no retorna valor en flujos vacíos
+`PedidoPage.vue` L136-163: `sincronizarAPI()` envuelto en try/catch/finally que garantiza `cargandoPedidos = false`.
+
+### 🟡 `useCatalogos()` dentro de Client (5.3) — Sin cambios
+
+`PedidoClient.js` sigue invocando `useCatalogos()` en L6, L17, L68, L94, L172. Se mantiene como deuda técnica aceptada. Funciona porque `useCatalogos()` usa promesas de módulo (variables globales fuera de la función composable).
+
+### Hallazgo nuevo: `DashboardClient.js` también usa `useCatalogos()`
 
 ```javascript
-// PedidoClient.js L87-90
-if (pedidosExternos.length === 0) {
-    return;  // ← undefined, NO { success: true }
-}
-
-// PedidoClient.js L147
-if (pedidosToUpsert.length === 0) return;  // ← undefined
+// DashboardClient.js L2
+import { useCatalogos } from '../composables/useCatalogos.js'
 ```
 
-En `PedidoPage.vue L148`:
-```javascript
-if (response?.success === false) { ... }
-```
-Esto no falla con `undefined`, pero **el `SyncLogClient.registrarSync('pedidos')` se ejecuta aunque la respuesta sea `undefined`**, lo que potencialmente registra una sincronización exitosa sin haber procesado datos.
-
-#### 🟠 5.2 — Falta de try/catch en la Page
-
-```javascript
-// PedidoPage.vue L146
-const response = await PedidoClient.sincronizarConSupabase()
-```
-No hay `try/catch` envolvente en `sincronizarAPI()` de `PedidoPage`. Si `PedidoClient` lanza una excepción no capturada (por ejemplo, si `axios.get` falla por un error de red antes de que el try/catch interno lo atrape), la UI quedaría en estado `cargandoPedidos = true` permanentemente.
-
-**Comparación:** `useInventario.js` tampoco tiene try/catch externo, lo que significa que este patrón es consistente pero igualmente frágil.
-
-#### 🟠 5.3 — `useCatalogos()` invocado dentro de un Client (fuera de componente Vue)
-
-```javascript
-// PedidoClient.js L17, L68, L94, L172
-const catalogos = useCatalogos()
-```
-
-`useCatalogos()` fue diseñado como composable de Vue (para ser llamado en `setup()`). Al invocarlo dentro de un client module (no reactivo), funciona **solo porque usa promesas de módulo (variables globales fuera de la función)**. No es un error funcional, pero es un antipatrón arquitectónico que mezcla capas.
-
-#### 🟢 5.4 — Pedidos sin detalles se renderizan como líneas vacías
-
-```javascript
-// PedidoClient.js L262-274
-if (details.length === 0) {
-    flatList.push({
-        // ...pedido sin categoría, stems: 0, precio: 0
-    })
-}
-```
-Pedidos sin `pedido_detalles` se incluyen en la lista con categoría vacía. Esto podría generar ruido en la tabla.
+Mismo antipatrón que `PedidoClient.js`. Sin embargo, al examinar el código actual (L1-152), **no se invoca `useCatalogos()`** dentro de ningún método de `DashboardClient`. Es un **import no utilizado**.
 
 ### Recomendación
 
 | # | Acción | Prioridad |
 |---|---|---|
-| 5.1 | Corregir `PedidoClient.sincronizarConSupabase()` para retornar `{ success: true }` en TODOS los flujos exitosos (vacíos y con datos). | 🔴 Alta |
-| 5.2 | Envolver `sincronizarAPI()` en `PedidoPage.vue` con try/catch para evitar UI congelada. | 🟠 Media |
-| 5.3 | Refactorizar `PedidoClient` para recibir los catálogos como parámetro en lugar de invocar `useCatalogos()` internamente. | 🟢 Baja (mejora arquitectónica, no bloquea funcionalidad) |
-| 5.4 | Evaluar si los pedidos sin detalles deben excluirse de la lista plana en `obtenerPedidos()`. | 🟢 Baja |
+| 5.1 | Eliminar el import no utilizado de `useCatalogos` en `DashboardClient.js` L2 | 🟢 Baja |
+| 5.2 | (Largo plazo) Refactorizar `PedidoClient.js` para recibir catálogos como parámetro | 🟢 Baja |
 
 ---
 
-## 6. Títulos de Secciones / Pages
+## 6. Títulos de Secciones / Pages — Estado
 
-### Inventario de Títulos
+### ✅ COMPLETADO
 
-| Título | Ubicación Actual | Ubicación Recomendada | Motivo |
+El título "Planificación" fue movido a `PlanificacionPage.vue`:
+
+```html
+<!-- PlanificacionPage.vue L4-11 -->
+<header class="page-header">
+    <div>
+        <h1 class="page-title">Planificación</h1>
+        <p class="page-subtitle">
+            Selecciona una fecha y distribuye los pedidos pendientes...
+        </p>
+    </div>
+</header>
+```
+
+`PlanificacionAsignacion.vue` ahora solo contiene el selector de fecha y botones de acción (L1-51). ✅ Correcto.
+
+**No hay acciones pendientes para esta sección.**
+
+---
+
+## 7. Oportunidades de Mejora — Verificación y Nuevas
+
+### Verificación de hallazgos previos
+
+| # | Hallazgo (#5) | Estado (#6) |
+|---|---|---|
+| 7.1 | CSS muerto en `ClientesPage.vue` | ✅ **ELIMINADO** |
+| 7.2 | `PlanificacionPage.vue` demasiado grande | ✅ **RESUELTO** — reducido de ~419 a ~279 líneas gracias a `usePlanificacion()` |
+| 7.3 | Alerta "Cargando recetas..." innecesaria | ✅ **RESUELTO** — delay de 200ms implementado |
+| 7.4 | Mutación directa de `mensaje` en `PlanificacionPage` | ✅ **RESUELTO** — usa `mostrarMensaje(null, '')` |
+| 7.5 | Ternario redundante en `ProduccionForm.vue` | ✅ **RESUELTO** |
+| 7.6 | `cancelar` no existente desestructurado | ✅ **RESUELTO** |
+| 7.7 | Doble carga en `MermasPage.vue` | 🟡 **Sin cambios** — deuda menor aceptada |
+| 7.8 | Duplicación de `autoCompletarPedidos` | ⏸️ **Mantenido** — descartada intencionalmente |
+
+### Nuevos hallazgos
+
+#### 🟡 7.9 — `UsuarioClient.logout()` no retorna `{ success }` ni tiene try/catch
+
+```javascript
+// UsuarioClient.js L37-39
+async logout() {
+    const { error } = await supabase.auth.signOut()
+    if (error) console.error("Error al cerrar sesión:", error)
+}
+```
+
+No retorna `{ success }` ni tiene try/catch. Si `signOut()` lanza una excepción (por ejemplo, error de red), se propagará sin manejo. Comparado con el resto de métodos del mismo client que **sí** siguen el patrón `{ success: true/false }`, es una inconsistencia.
+
+#### 🟡 7.10 — `UsuarioClient.obtenerSesion()` no retorna `{ success }` ni tiene try/catch
+
+```javascript
+// UsuarioClient.js L43-53
+async obtenerSesion() {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return null
+    const { data: usuario } = await supabase.from('usuarios')...
+    return usuario
+}
+```
+
+Retorna directamente `usuario` o `null`, mientras que todos los demás métodos retornan `{ success, data }`. No tiene try/catch.
+
+#### 🟢 7.11 — `RecetasPage.vue` llama `obtenerRecetas(true)` y `cargarTodasLasRecetas(true)` secuencialmente
+
+```javascript
+// RecetasPage.vue L137-138 (borrarReceta)
+await this.catalogos.obtenerRecetas(true)  // Force refresh cache
+this.cargarTodasLasRecetas(true)           // Calls catalogos.obtenerRecetas again
+
+// RecetasPage.vue L263-264 (guardarReceta)
+await this.catalogos.obtenerRecetas(true)  // Force refresh cache
+await this.cargarTodasLasRecetas(true)     // Calls catalogos.obtenerRecetas again
+```
+
+`cargarTodasLasRecetas(true)` internamente llama a `catalogos.obtenerRecetas(true)`, por lo que la primera llamada explícita es redundante. El caché se refrescará igualmente con la segunda llamada.
+
+---
+
+## 8. Revisión de try/catch y Manejo de Errores
+
+### Metodología
+
+Se revisaron **todos** los archivos que contienen `try {` para verificar:
+1. Que el catch retorne un objeto `{ success: false }` consistente
+2. Que los errores se registren en consola
+3. Que no haya flujos sin try/catch que puedan congelar la UI
+
+### Clients (capa de datos)
+
+| Client | Métodos con try/catch | Patrón consistente | Problemas |
 |---|---|---|---|
-| **"Panel de Control"** | `DashboardPage.vue` L7 | ✅ Mantener en Page | Correcto — el Page es dueño de su título |
-| **"Carga de Pedidos"** | `PedidoPage.vue` L7 | ✅ Mantener en Page | Correcto |
-| **"Directorio de Clientes"** | `ClientesPage.vue` L8 | ✅ Mantener en Page | Correcto |
-| **"Carga de Materia Prima"** | `MateriaPrimaPage.vue` L6 | ✅ Mantener en Page | Correcto |
-| **"Carga de Materiales"** | `MaterialesPage.vue` L6 | ✅ Mantener en Page | Correcto |
-| **"Creación de Recetas"** | `RecetasPage.vue` L7 | ✅ Mantener en Page | Correcto |
-| **"Producción diaria"** | `ProduccionPage.vue` L6 | ✅ Mantener en Page | Correcto |
-| **"Mantenimiento de Usuarios"** | `UsuariosPage.vue` L6 | ✅ Mantener en Page | Correcto |
-| **"Mermas de Producción"** | `MermasPage.vue` L7 | ✅ Mantener en Page | Correcto |
-| **"Planificación"** | `PlanificacionAsignacion.vue` L4 | 🟠 **Mover a PlanificacionPage** | El título principal está dentro de un componente hijo. Si se oculta el componente, el título desaparece. |
-| **"Producción por categoría"** | `ProduccionForm.vue` L6 | ✅ Mantener en componente | Excepción válida — subtítulo del formulario |
-| **"Recetas de Producción"** | `ProduccionRecetasView.vue` L3 | ✅ Mantener en componente | Excepción válida — subtítulo del panel lateral |
-| **"Registrar Merma"** | `MermaForm.vue` L4 | ✅ Mantener en componente | Excepción válida — subtítulo del formulario |
-| **"Datos de la receta"** | `RecetaForm.vue` L5 | ✅ Mantener en componente | Excepción válida — subtítulo |
-| **"Agregar Usuario"** | `UsuarioForm.vue` L8 | ✅ Mantener en componente | Excepción válida — header de card |
-| **"Bienvenido a Nuestra Aplicación"** | `PublicHomePage.vue` L4 | ✅ Mantener en Page | Correcto |
-| **"Gestión de Manufactura"** | `LoginForm.vue` L3 | ✅ Mantener en componente | Excepción válida — título del modal de login |
+| `DashboardClient.js` | `obtenerDatosDashboard`, `autoCompletarPedidos` | ✅ Consistente `{ success, error }` | Ninguno |
+| `MateriaPrimaClient.js` | `sincronizarConSupabase`, `obtenerMateriaPrima`, `cargarMateriaPrima`, `actualizarStockMateriaPrima` | ✅ Consistente | Ninguno |
+| `MaterialClient.js` | Todos los métodos | ✅ Consistente | Ninguno |
+| `MermaClient.js` | `obtenerMermas`, `agregarMerma`, `eliminarMerma`, `registrarMermaConDescuento` | ✅ Consistente | Ninguno |
+| `PedidoClient.js` | `sincronizarConSupabase`, `agregarPedido`, `obtenerPedidos` | ✅ Consistente | Ninguno |
+| `PlanificacionClient.js` | `_queryPlanificaciones`, `eliminarPlanificacionesPorFecha`, `crearPlanificacion` | ✅ Consistente | Ninguno |
+| `RecetaClient.js` | `obtenerRecetas`, `agregarReceta`, `editarReceta`, `eliminarReceta` | ✅ Consistente | Ninguno |
+| `SyncLogClient.js` | `yaSincronizadoHoy`, `registrarSync` | ✅ Consistente | Ninguno |
+| `UsuarioClient.js` | `login`, `agregarUsuario`, `eliminarUsuario` | ✅ Consistente | ⚠️ `logout()` y `obtenerSesion()` NO tienen try/catch (ver 7.9, 7.10) |
+| `ClienteClient.js` | Todos los métodos | ✅ Consistente | Ninguno |
 
-### Hallazgo
+### Composables
 
-Solo **1 título principal** está fuera de su Page:
+| Composable | try/catch | Problemas |
+|---|---|---|
+| `useExcel.js` | ✅ `leerExcel()` tiene try/catch | Ninguno |
+| `usePlanificacion.js` | ✅ `distribuirAutomaticamenteBase()`, `confirmarMapeoYPlanificarBase()`, `guardarTodasBase()` | Ninguno |
+| `usePedidoExcel.js` | ✅ `sincronizarClientes()` tiene try/catch | Ninguno |
+| `useProduccionForm.js` | Sin try/catch interno pero emite errores vía `notificar` | ✅ Correcto — los errores de API se manejan en la Page |
+| `useInventario.js` | ⚠️ Sin try/catch externo en `sincronizarAPI()` | Ver análisis abajo |
 
-> **"Planificación"** en `PlanificacionAsignacion.vue` debería estar en `PlanificacionPage.vue`.
+### Análisis de `useInventario.sincronizarAPI()` sin try/catch externo
+
+```javascript
+// useInventario.js L23-49
+async function sincronizarAPI() {
+    // ...sin try/catch...
+    const response = await sincronizar()  // Si lanza excepción no capturada → crash
+    // ...
+}
+```
+
+Si `sincronizar()` (que es `MaterialClient.sincronizarConSupabase()` o `MateriaPrimaClient.sincronizarConSupabase()`) lanza una excepción **no atrapada internamente** (posible si `axios` falla antes del try/catch del Client), `cargandoInventario` quedaría en `true` permanentemente.
+
+Sin embargo, los Clients **sí** tienen try/catch interno, por lo que la probabilidad es baja. El riesgo es si `axios` falla por un error de módulo no capturado (por ejemplo, `axios` no instalado, DNS resolution failure a nivel de import).
+
+### Pages
+
+| Page | try/catch en métodos async | Problemas |
+|---|---|---|
+| `PedidoPage.vue` | ✅ `sincronizarAPI()` con try/catch/finally | Ninguno |
+| `ProduccionPage.vue` | ✅ `autoCompletarPedidos` en try/catch (L173-177) | Ninguno |
+| `MaterialesPage.vue` | ✅ `procesarArchivo()` con try/catch | Ninguno |
+| `MateriaPrimaPage.vue` | ✅ `procesarArchivo()` con try/catch | Ninguno |
+| Otras Pages | No requieren try/catch — usan `response.success` pattern | ✅ Correcto |
 
 ### Recomendación
 
 | # | Acción | Prioridad |
 |---|---|---|
-| 6.1 | Mover el título "Planificación" y la etiqueta `<header class="page-header">` de `PlanificacionAsignacion.vue` a `PlanificacionPage.vue`. `PlanificacionAsignacion` debería solo contener el selector de fecha y los botones de acción, sin el título de la sección. | 🟠 Media |
+| 8.1 | Agregar try/catch a `UsuarioClient.logout()` con `return { success: false }` | 🟢 Baja |
+| 8.2 | Agregar try/catch a `UsuarioClient.obtenerSesion()` y estandarizar retorno `{ success, data }` | 🟡 Media (podría causar pantalla en blanco si falla la sesión) |
+| 8.3 | (Opcional) Agregar try/catch externo a `useInventario.sincronizarAPI()` como defensa adicional | 🟢 Baja |
 
 ---
 
-## 7. Oportunidades de Mejora Adicionales
+## 9. Estandarización de Contenedores (Div vs Semánticos)
 
-### 🔴 7.1 — CSS muerto en `ClientesPage.vue`
+### Metodología
 
-- **Problema:** Las clases `.active-filter-banner`, `.btn-clear-filter` y su animación `@keyframes slideDown` están definidas en `<style scoped>` pero no se referencian en el `<template>`.
-- **Evidencia:** `ClientesPage.vue` L176-219 define estos estilos pero el template no los usa.
-- **Causa:** Eliminadas del template en una refactorización anterior sin limpiar los estilos.
-- **Recomendación:** Eliminar las clases CSS no utilizadas.
-- **Prioridad:** 🟢 Baja
+Se analizó el uso de etiquetas HTML semánticas (`<header>`, `<footer>`, `<section>`, `<article>`) vs `<div>` genéricos en toda la aplicación para evaluar consistencia.
 
----
+### Uso de `<header>`
 
-### 🟠 7.2 — `PlanificacionPage.vue` es el archivo más grande (419 líneas)
+| Archivo | Uso | Evaluación |
+|---|---|---|
+| `PlanificacionPage.vue` L4 | `<header class="page-header">` | ✅ Correcto — encabezado principal de Page |
+| `ProduccionPage.vue` L4 | `<header class="page-header">` | ✅ Correcto |
+| `UsuariosPage.vue` L4 | `<header class="page-header">` | ✅ Correcto |
+| `DashboardPage.vue` L5 | `<header class="page-header">` | ✅ Correcto |
+| `MermasPage.vue` L5 | `<header class="page-header">` | ✅ Correcto |
+| `ClientesPage.vue` L6 | `<div class="page-header">` | ⚠️ Inconsistencia — usa `<div>` en lugar de `<header>` |
+| `PedidoPage.vue` | Sin `page-header` explícito, solo `<h1>` directo | ⚠️ Inconsistencia — no usa `<header>` |
+| `MaterialesPage.vue` | Sin `page-header` explícito, solo `<h1>` directo | ⚠️ Inconsistencia — no usa `<header>` |
+| `MateriaPrimaPage.vue` | Sin `page-header` explícito, solo `<h1>` directo | ⚠️ Inconsistencia — no usa `<header>` |
+| `RecetasPage.vue` | Sin `page-header` explícito, solo `<h1>` directo | ⚠️ Inconsistencia — no usa `<header>` |
+| `ProduccionForm.vue` L3 | `<header class="header">` | ✅ Correcto — header del componente |
+| `PlanificacionOperadorCard.vue` L4 | `<header class="operadores-header">` | ✅ Correcto |
+| `PlanificacionMapeoRecetas.vue` L3 | `<header class="mapeo-header">` | ✅ Correcto |
 
-- **Problema:** Contiene la mayor cantidad de lógica de negocio entre todas las Pages.
-- **Evidencia:** `PlanificacionPage.vue` — 419 líneas, 10+ métodos, estado complejo.
-- **Causa:** La planificación tiene un flujo multi-paso (distribuir → mapear → editar → guardar).
-- **Recomendación:** Extraer la lógica de negocio a un composable `usePlanificacion()`, similar a `useProduccionForm()` y `useContadorRecetas()`.
-- **Prioridad:** 🟠 Media — funciona correctamente pero dificulta el mantenimiento.
+### Uso de `<section>`
 
----
+Solo 1 uso: `DashboardEstadoPedidos.vue` L2: `<section class="data-card h-full">`. El resto de componentes similares usa `<div class="data-card">`. Inconsistencia menor.
 
-### 🟠 7.3 — `ProduccionRecetasView.vue` muestra alerta "Cargando recetas..." innecesariamente
+### Uso de `<article>`
 
-- **Problema:** Al montarse, el componente muestra una alerta de tipo `info` con "Cargando recetas..." que desaparece rápidamente cuando los datos se cargan del caché.
-- **Evidencia:** `ProduccionRecetasView.vue` L174: `this.mostrarMensaje('info', 'Cargando recetas...', 0)`
-- **Problema UX:** Si los datos están en caché, el mensaje aparece y desaparece en <100ms, generando un parpadeo.
-- **Recomendación:** Agregar un delay mínimo antes de mostrar el mensaje de carga, o solo mostrarlo si la carga toma más de 200ms.
-- **Prioridad:** 🟢 Baja
+Usado en `ProduccionForm.vue` (stat-cards y category-rows) y `DashboardKPIs.vue` (stat-cards). ✅ Uso correcto semánticamente — representan unidades de contenido independientes.
 
----
+### Uso de `<footer>`
 
-### 🟢 7.4 — `PlanificacionPage.vue` L330 — mutación directa de `mensaje`
+Solo 2 usos: `ProduccionForm.vue` L59 y `PlanificacionMapeoRecetas.vue` L65. ✅ Uso correcto.
 
-- **Problema:** En `limpiarTodo()`, se muta directamente el objeto reactivo: `this.mensaje = { tipo: null, texto: '' }` en lugar de usar `mostrarMensaje()`.
-- **Recomendación:** Usar `this.mostrarMensaje(null, '')` o crear un `limpiarMensaje()` en el composable.
-- **Prioridad:** 🟢 Baja
+### Análisis
 
----
+La **mayoría de Pages** usan un patrón consistente con `<div class="page-container">` → `<div class="page-content-wrap">` → contenido. Sin embargo, hay una inconsistencia en si el encabezado usa `<header class="page-header">` o simplemente `<h1 class="page-title">` directamente.
 
-### 🟢 7.5 — `ProduccionForm.vue` L65 — ternario redundante
+Esto es una inconsistencia **cosmética** que no afecta funcionalidad. Según las preferencias del usuario: "No quiero modificar elementos que tienen una función específica. El objetivo es principalmente estandarizar los contenedores."
 
-- **Problema:** `guardando ? (edicion ? 'Guardando...' : 'Guardando...') : (...)` — ambas ramas del ternario interno son iguales.
-- **Recomendación:** Simplificar a `guardando ? 'Guardando...' : (edicion ? 'Actualizar producción' : 'Registrar producción')`.
-- **Prioridad:** 🟢 Baja
+### Recomendación
 
----
-
-### 🟢 7.6 — `ProduccionForm.vue` L136 — `cancelar` desestructurado pero no retornado
-
-- **Problema:** Se desestructura `cancelar` de `useProduccionForm` pero este no existe en el composable.
-- **Causa:** Residuo de una implementación anterior.
-- **Recomendación:** Remover la desestructuración de `cancelar`.
-- **Prioridad:** 🟢 Baja
+| # | Acción | Prioridad |
+|---|---|---|
+| 9.1 | Estandarizar las 4 Pages que no usan `<header class="page-header">` (`PedidoPage`, `MaterialesPage`, `MateriaPrimaPage`, `RecetasPage`) para que envuelvan su `<h1>` en un `<header class="page-header">` con su `<p class="page-subtitle">` correspondiente | 🟢 Baja |
+| 9.2 | Cambiar `<div class="page-header">` a `<header class="page-header">` en `ClientesPage.vue` L6 | 🟢 Baja |
+| 9.3 | (Opcional) Cambiar `<section>` a `<div>` en `DashboardEstadoPedidos.vue` L2 para consistencia con los demás `data-card`, o viceversa | 🟢 Baja |
 
 ---
 
-### 🟢 7.7 — `MermasPage.vue` — Doble carga de datos después de registrar merma
+## 10. Consistencia Vertical de Tablas
 
-- **Problema:** Después de registrar una merma, se actualiza el stock localmente (L144-159) Y se llama `this.cargarDatos()` que recarga TODO.
-- **Recomendación:** Mantener solo la recarga completa (eliminar actualizaciones locales) o solo las actualizaciones locales (eliminar `cargarDatos()`).
-- **Prioridad:** 🟢 Baja
+### Metodología
 
----
+Se compararon las tablas de las Pages de Usuarios, Clientes y Producción para evaluar consistencia en:
+- Estructura HTML (uso de `data-card`, `data-card-table`)
+- Contenedor de scroll (`data-card-content`)
+- Estados vacíos y de carga
+- Columna de acciones
 
-### 🟢 7.8 — Duplicación de `autoCompletarPedidos` (recordatorio)
+### Tablas evaluadas
 
-- **Estado:** Descartada intencionalmente en auditoría #4. Se documenta como deuda técnica aceptada.
-- **Prioridad:** ⏸️ Descartada
+| Componente | Clase contenedora | Tabla | Scroll | Estado vacío | Estado cargando | Acciones |
+|---|---|---|---|---|---|---|
+| `UsuarioList.vue` | `.data-card` | `.data-card-table` | `.data-card-content` (sin overflow max-height explícito) | `.table-empty-state` | `.table-loading-state` | `.actions-column` |
+| `ClienteList.vue` | `.data-card.h-full` | `.data-card-table` | `.data-card-content.no-pad` | `.empty-state-card.m-5` | `.loading-state` | `.actions-col` |
+| `MermaList.vue` | `.data-card.h-full` | `.data-card-table` | `.data-card-content.no-pad` | `.empty-state-card.m-5` | `.loading-state` | `.actions-col` |
+| `InventarioTable.vue` | `.data-card` | `.data-card-table` | `.data-card-content` | `.table-empty-state` | `.table-loading-state` | — (delegado a slots) |
+| `VistaPreviaTable.vue` | `.data-card` | `.data-card-table` | `.data-card-content.no-pad` | — | — | — |
+
+### Inconsistencias encontradas
+
+#### Estado vacío: 3 variantes
+
+1. **`.table-empty-state`** — `UsuarioList`, `InventarioTable` — padding centrado, solo texto
+2. **`.empty-state-card.m-5`** — `ClienteList`, `MermaList` — con icono `InboxIcon`, con borde dashed
+3. **`.empty-state-card`** — Varias Pages — gradiente de fondo, borde dashed
+
+Son ligeramente diferentes en presentación pero cumplen la misma función.
+
+#### Estado de carga: 2 variantes
+
+1. **`.table-loading-state`** — `UsuarioList`, `InventarioTable` — solo texto
+2. **`.loading-state`** — `ClienteList`, `MermaList` — con spinner + texto
+
+#### Columna de acciones: 2 nombres
+
+1. **`.actions-column`** — `UsuarioList`, `MaterialesPage` (slot de InventarioTable)
+2. **`.actions-col`** — `ClienteList`, `MermaList`
+
+Ambos nombres están definidos en `style.css` L1131-1136 con el **mismo estilo**, así que no hay bug visual, solo inconsistencia de naming.
+
+### Análisis
+
+Las inconsistencias son **menores** y no causan bugs visuales porque:
+- `actions-col` y `actions-column` comparten la misma regla CSS global
+- Los estados vacíos/cargando son variantes que conviven en la app
+
+Sin embargo, para mantenibilidad futura, sería bueno estandarizar.
+
+### Recomendación
+
+| # | Acción | Prioridad |
+|---|---|---|
+| 10.1 | Estandarizar el nombre de la columna de acciones: elegir `.actions-col` o `.actions-column` y usar uno solo | 🟢 Baja |
+| 10.2 | (Opcional) Estandarizar estados vacíos: elegir entre `.table-empty-state` y `.empty-state-card` para contextos de tabla | 🟢 Baja |
+| 10.3 | (Opcional) Estandarizar estados de carga: elegir entre `.table-loading-state` y `.loading-state` con spinner | 🟢 Baja |
 
 ---
 
 ## Hoja de Ruta de Implementación
 
-### Fase 15 — 🔴 Arreglo Crítico de Alertas de Sincronización
+### Resumen de estado post-auditoría
+
+| Categoría | Total tareas | Completadas | Pendientes |
+|---|---|---|---|
+| Fase 15 (Crítica) | 4 | ✅ 4 | 0 |
+| Fase 16 (Media) | 3 | ✅ 3 | 0 |
+| Fase 17 (Limpieza) | 5 | ✅ 5 | 0 |
+| Fase 18 (Arquitectónica) | 5 | ✅ 3, 🟡 2 | 2 (deuda aceptada) |
+| **Nuevas (Auditoría #6)** | **14** | — | **14** |
+
+### Fase 19 — 🟡 Correcciones Menores de Consistencia
 
 | Tarea | Archivo | Prioridad |
 |---|---|---|
-| [ ] Refactorizar `useInventario()` para recibir `mostrarMensaje` como parámetro | `useInventario.js` | 🔴 Alta |
-| [ ] Actualizar `MaterialesPage.vue` y `MateriaPrimaPage.vue` para pasar `mostrarMensaje` a `useInventario` | `MaterialesPage.vue`, `MateriaPrimaPage.vue` | 🔴 Alta |
-| [ ] Agregar `return { success: true }` en `MateriaPrimaClient.sincronizarConSupabase()` | `MateriaPrimaClient.js` | 🔴 Alta |
-| [ ] Agregar `return { success: true }` en los flujos vacíos de `PedidoClient.sincronizarConSupabase()` | `PedidoClient.js` | 🔴 Alta |
+| [ ] Agregar try/catch a `UsuarioClient.obtenerSesion()` y estandarizar retorno | `UsuarioClient.js` | 🟡 Media |
 
-### Fase 16 — 🟠 Validación de Producciones y Títulos
+### Fase 20 — 🟢 Limpieza y Estandarización
 
 | Tarea | Archivo | Prioridad |
 |---|---|---|
-| [ ] Implementar validación de que todas las categorías tengan valor > 0 | `useProduccionForm.js` | 🟠 Media |
-| [ ] Mover título de `PlanificacionAsignacion.vue` a `PlanificacionPage.vue` | `PlanificacionAsignacion.vue`, `PlanificacionPage.vue` | 🟠 Media |
-| [ ] Envolver `sincronizarAPI()` en `PedidoPage.vue` con try/catch | `PedidoPage.vue` | 🟠 Media |
+| [ ] Reemplazar mutaciones directas de `mensaje` por `mostrarMensaje(null, '')` | `MaterialesPage.vue`, `MateriaPrimaPage.vue` | 🟢 Baja |
+| [ ] Eliminar `<style scoped>` vacío | `MaterialesPage.vue` | 🟢 Baja |
+| [ ] Mover inline styles a clase scoped en `ProduccionRecetasView.vue` L2 | `ProduccionRecetasView.vue` | 🟢 Baja |
+| [ ] Eliminar import no utilizado de `useCatalogos` | `DashboardClient.js` | 🟢 Baja |
+| [ ] Eliminar doble llamada redundante a `obtenerRecetas(true)` | `RecetasPage.vue` L137, L263 | 🟢 Baja |
+| [ ] Agregar try/catch a `UsuarioClient.logout()` | `UsuarioClient.js` | 🟢 Baja |
+| [ ] (Opcional) Agregar try/catch externo a `useInventario.sincronizarAPI()` | `useInventario.js` | 🟢 Baja |
 
-### Fase 17 — 🟢 Limpieza y Consistencia
-
-| Tarea | Archivo | Prioridad |
-|---|---|---|
-| [ ] Eliminar CSS muerto de `ClientesPage.vue` (`.active-filter-banner`, `.btn-clear-filter`, `@keyframes slideDown`) | `ClientesPage.vue` | 🟢 Baja |
-| [ ] Simplificar ternario redundante en `ProduccionForm.vue` L65 | `ProduccionForm.vue` | 🟢 Baja |
-| [ ] Remover desestructuración de `cancelar` en `ProduccionForm.vue` L136 | `ProduccionForm.vue` | 🟢 Baja |
-| [ ] Corregir mutación directa de `mensaje` en `PlanificacionPage.vue` L330 | `PlanificacionPage.vue` | 🟢 Baja |
-| [ ] (Opcional) Resaltar visualmente categorías vacías en producción | `ProduccionForm.vue` | 🟢 Baja |
-
-### Fase 18 — 🟢 Mejoras Arquitectónicas (Opcionales)
+### Fase 21 — 🟢 Estandarización HTML (Opcional)
 
 | Tarea | Archivo | Prioridad |
 |---|---|---|
-| [ ] Extraer lógica de `PlanificacionPage` a un composable `usePlanificacion()` | Nuevo archivo + `PlanificacionPage.vue` | 🟠 Media |
-| [ ] Refactorizar `ProduccionRecetasView` para usar `.data-card` global en lugar de `.recetas-view` | `ProduccionRecetasView.vue` | 🟢 Baja |
-| [ ] Agregar delay al mensaje de carga en `ProduccionRecetasView.vue` | `ProduccionRecetasView.vue` | 🟢 Baja |
-| [ ] Simplificar doble carga en `MermasPage.vue` post-registro | `MermasPage.vue` | 🟢 Baja |
-| [ ] (Largo plazo) Refactorizar `PedidoClient.js` para no usar `useCatalogos()` internamente | `PedidoClient.js` | 🟢 Baja |
+| [ ] Envolver `<h1>` en `<header class="page-header">` | `PedidoPage.vue`, `MaterialesPage.vue`, `MateriaPrimaPage.vue`, `RecetasPage.vue` | 🟢 Baja |
+| [ ] Cambiar `<div class="page-header">` a `<header class="page-header">` | `ClientesPage.vue` | 🟢 Baja |
+| [ ] Estandarizar nombre de columna de acciones a `.actions-col` | Múltiples componentes | 🟢 Baja |
+| [ ] (Opcional) Estandarizar `<section>` vs `<div>` en `DashboardEstadoPedidos.vue` | `DashboardEstadoPedidos.vue` | 🟢 Baja |
+| [ ] (Opcional) Resaltar categorías vacías en producción | `ProduccionForm.vue` | 🟢 Baja |
+
+### Deuda Técnica Aceptada (No planificada)
+
+| Deuda | Razón |
+|---|---|
+| Doble carga en `MermasPage.vue` post-registro | Funciona correctamente, la simplificación es de bajo impacto |
+| `useCatalogos()` dentro de `PedidoClient.js` | Funciona por diseño de promesas globales, refactorizar tendría alto costo |
+| Duplicación de `autoCompletarPedidos` | Descartada intencionalmente en Auditoría #4 |
+| Estandarización de estados vacíos/cargando en tablas | Variantes coexisten sin bugs, unificar requiere testing extensivo |

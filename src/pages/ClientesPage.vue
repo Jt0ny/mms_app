@@ -172,51 +172,6 @@ export default {
   max-width: 1500px !important;
 }
 
-/* Banner de Filtro Activo */
-.active-filter-banner {
-  background: var(--primary-bg);
-  border: 1px solid var(--primary-border);
-  border-radius: 8px;
-  padding: 12px 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  font-size: 13px;
-  color: var(--text-h);
-  animation: slideDown 0.2s ease-out;
-}
-
-.btn-clear-filter {
-  background: var(--bg);
-  border: 1px solid var(--primary-border);
-  color: var(--primary);
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-clear-filter:hover {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-@keyframes slideDown {
-  from {
-    transform: translateY(-10px);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
 /* Layout Principal */
 .main-layout {
