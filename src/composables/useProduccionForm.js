@@ -10,6 +10,7 @@ export function useProduccionForm(props, emit) {
     const form = reactive({
         fecha: obtenerFechaHoy()
     })
+    const intentoEnvio = ref(false)
 
     const resetearCantidades = () => {
         const cantidades = {}
@@ -153,6 +154,7 @@ export function useProduccionForm(props, emit) {
     }
 
     const enviarFormulario = () => {
+        intentoEnvio.value = true
         // Verificar que TODAS las categorías tengan valor > 0
         const categoriasVacias = categorias.value.filter(
             categoria => obtenerCantidadNumerica(categoria) === 0
@@ -185,6 +187,7 @@ export function useProduccionForm(props, emit) {
         categoriasConCantidad,
         obtenerCantidad,
         actualizarCantidad,
-        enviarFormulario
+        enviarFormulario,
+        intentoEnvio
     }
 }

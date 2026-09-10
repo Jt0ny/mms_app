@@ -24,8 +24,9 @@ export function useAuth() {
   async function inicializar() {
     if (state.inicializado) return
 
-    const usuario = await UsuarioClient.obtenerSesion()
-    if (usuario) {
+    const response = await UsuarioClient.obtenerSesion()
+    if (response && response.success && response.data) {
+      const usuario = response.data
       state.rol = (usuario.rol || '').toLowerCase()
       state.usuarioId = usuario.id
       state.usuarioNombre = usuario.nombre

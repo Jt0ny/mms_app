@@ -1,6 +1,6 @@
 <template>
     <div class="produccion-form-card">
-        <header class="header">
+        <div class="header">
             <div>
                 <p class="eyebrow">Registro diario</p>
                 <h2>Producción por categoría</h2>
@@ -10,7 +10,7 @@
             </div>
 
 
-        </header>
+        </div>
 
         <Alertas v-if="cargandoCategorias" :mensaje="{ tipo: 'info', texto: 'Cargando categorías desde pedidos...' }" />
 
@@ -19,24 +19,24 @@
 
         <form v-else class="produccion-form" @submit.prevent="enviarFormulario">
             <div class="stats-grid">
-                <article class="stat-card simple">
+                <div class="stat-card simple">
                     <span>Categorías</span>
                     <strong>{{ categorias.length }}</strong>
-                </article>
+                </div>
 
-                <article class="stat-card simple">
+                <div class="stat-card simple">
                     <span>Producción total</span>
                     <strong>{{ totalDelDia }}</strong>
-                </article>
+                </div>
 
-                <article class="stat-card simple">
+                <div class="stat-card simple">
                     <span>Categorías con cantidad registrada</span>
                     <strong>{{ categoriasConCantidad }}</strong>
-                </article>
+                </div>
             </div>
 
             <div class="category-list">
-                <article v-for="categoria in categorias" :key="categoria" class="category-row">
+                <div v-for="categoria in categorias" :key="categoria" class="category-row" :class="{ 'category-error': intentoEnvio && !obtenerCantidad(categoria) }">
                     <div class="category-info">
                         <span class="category-name">{{ categoria }}</span>
                         <span class="category-hint">Cantidad producida hoy</span>
@@ -53,10 +53,10 @@
                             @click="actualizarCantidad(categoria, obtenerCantidad(categoria) + 1)"
                             aria-label="Sumar">+</button>
                     </div>
-                </article>
+                </div>
             </div>
 
-            <footer class="form-footer">
+            <div class="form-footer">
                 <p class="total-text">
                     Total registrado: <strong>{{ totalDelDia }}</strong>
                 </p>
@@ -66,7 +66,7 @@
                             : 'Registrar producción') }}
                     </button>
                 </div>
-            </footer>
+            </div>
         </form>
     </div>
 </template>
@@ -132,7 +132,8 @@ export default {
             categoriasConCantidad,
             obtenerCantidad,
             actualizarCantidad,
-            enviarFormulario
+            enviarFormulario,
+            intentoEnvio
         } = useProduccionForm(props, emit)
 
         return {
@@ -144,7 +145,8 @@ export default {
             categoriasConCantidad,
             obtenerCantidad,
             actualizarCantidad,
-            enviarFormulario
+            enviarFormulario,
+            intentoEnvio
         }
     }
 }
@@ -218,6 +220,10 @@ export default {
     border: 1px solid var(--border-light);
     border-radius: 14px;
     background: var(--bg);
+}
+
+.category-error {
+    border-color: var(--error) !important;
 }
 
 .category-info {

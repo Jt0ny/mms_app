@@ -21,31 +21,37 @@ export function useInventario({ obtenerDatos, sincronizar, nombreModulo, mostrar
     }
 
     async function sincronizarAPI() {
-        const normalized = String(nombreModulo).toLowerCase().trim()
-        let moduloKey = 'desconocido'
-        if (normalized === 'materia prima') moduloKey = 'materia_prima'
-        else if (normalized === 'materiales') moduloKey = 'materiales'
-        const yaSincronizado = await SyncLogClient.yaSincronizadoHoy(moduloKey)
-        if (yaSincronizado) {
-            mostrarMensaje('info', `El inventario de ${nombreModulo} ya fue sincronizado hoy`)
-            return
-        }
+        try {
+            const normalized = String(nombreModulo).toLowerCase().trim()
+            let moduloKey = 'desconocido'
+            if (normalized === 'materia prima') moduloKey = 'materia_prima'
+            else if (normalized === 'materiales') moduloKey = 'materiales'
+            const yaSincronizado = await SyncLogClient.yaSincronizadoHoy(moduloKey)
+            if (yaSincronizado) {
+                mostrarMensaje('info', `El inventario de ${nombreModulo} ya fue sincronizado hoy`)
+                return
+            }
 
-        cargandoInventario.value = true
-        mostrarMensaje('info', ' Sincronizando con la API externa...', 0)
+            cargandoInventario.value = true
+            mostrarMensaje('info', ' Sincronizando con la API externa...', 0)
 
-        const response = await sincronizar()
+            const response = await sincronizar()
 
-        if (response?.success === false) {
-            console.error(response.error)
-            mostrarMensaje('error', 'Error al sincronizar con la API externa')
+            if (response?.success === false) {
+                console.error(response.error)
+                mostrarMensaje('error', 'Error al sincronizar con la API externa')
+                cargandoInventario.value = false
+                return
+            }
+
+            await SyncLogClient.registrarSync(moduloKey)
+            mostrarMensaje('exito', 'Sincronización exitosa con la API externa')
+            await cargarInventario(true)
+        } catch (error) {
+            console.error("Error inesperado en sincronizarAPI:", error)
+            mostrarMensaje('error', 'Ocurrió un error inesperado al sincronizar')
             cargandoInventario.value = false
-            return
         }
-
-        await SyncLogClient.registrarSync(moduloKey)
-        mostrarMensaje('exito', 'Sincronización exitosa con la API externa')
-        await cargarInventario(true)
     }
 
     return { inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI }

@@ -1,7 +1,7 @@
 <template>
 	<div class="operadores-panel">
 		<!-- Cabecera del operador -->
-		<header class="operadores-header">
+		<div class="operadores-header">
 			<div>
 				<h2>{{ asig.operador.nombre }}</h2>
 				<p>{{ asig.stemsTotal }} stems asignados</p>
@@ -12,7 +12,7 @@
 					<XMarkIcon class="icon-sm" />
 				</button>
 			</div>
-		</header>
+		</div>
 
 		<div class="operadores-body">
 			<!-- Tabla de recetas asignadas -->

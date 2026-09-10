@@ -1,10 +1,10 @@
 <template>
 	<div class="mapeo-panel">
-		<header class="mapeo-header">
+		<div class="mapeo-header">
 			<h2>Mapear Recetas del Día</h2>
 			<p>Selecciona una o más recetas para cada categoría de flor y distribuye la cantidad de stems solicitada.
 			</p>
-		</header>
+		</div>
 
 		<div class="mapeo-content">
 			<div class="categorias-grid">

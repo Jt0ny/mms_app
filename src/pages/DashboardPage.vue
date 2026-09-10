@@ -2,7 +2,7 @@
     <div class="page-container dashboard-page">
         <div class="page-content-wrap">
             <!-- Encabezado -->
-            <header class="page-header">
+            <div class="page-header">
                 <div>
                     <h1 class="page-title">Panel de Control</h1>
                     <p class="page-subtitle">Monitoreo de producción, inventarios y mermas en tiempo real</p>
@@ -13,7 +13,7 @@
                         {{ cargando ? 'Cargando...' : 'Actualizar Panel' }}
                     </button>
                 </div>
-            </header>
+            </div>
 
             <Alertas :mensaje="mensaje" />
 

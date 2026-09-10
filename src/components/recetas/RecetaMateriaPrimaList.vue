@@ -118,3 +118,83 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.selection-panel {
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.selection-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.selection-panel-header p {
+    margin-top: 4px;
+    color: var(--text-light);
+}
+
+.btn-refresh {
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-weight: 600;
+    background: var(--primary-bg);
+    color: var(--primary-dark);
+    transition: background 0.2s ease;
+}
+
+.btn-refresh:hover:not(:disabled) {
+    background: rgba(22, 163, 74, 0.15);
+}
+
+.selection-table-wrap {
+    max-height: 420px;
+    overflow: auto;
+}
+
+.selection-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.selection-table th,
+.selection-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-light);
+    text-align: left;
+}
+
+.selection-table th {
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.row-subtitle {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+.qty-input {
+    width: 100px;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.empty-state {
+    padding: 18px;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    border: 1px dashed var(--border);
+    color: var(--text-light);
+}
+</style>

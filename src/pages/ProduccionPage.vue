@@ -1,7 +1,7 @@
 <template>
     <div class="page-container produccion-page">
         <div class="page-content-wrap">
-            <header class="page-header">
+            <div class="page-header">
                 <div>
                     <h1 class="page-title">Producción diaria</h1>
                     <p v-if="operadorNombre" class="page-subtitle">
@@ -13,19 +13,19 @@
                 <!-- Indicador de estado de planificación -->
                 <div v-if="cargandoPlanificacion" class="badge badge-cargando">Cargando planificación...</div>
                 <div v-else-if="sinPlanificacion" class="badge badge-warning">Sin planificación asignada hoy</div>
-                <div v-else-if="recetasPlanificadasIds" class="badge badge-ok">
+                <div v-else-if="recetasPlanificadasIds" class="badge badge-success">
                     {{ recetasPlanificadasIds.length }} receta(s) asignadas
                 </div>
-            </header>
+            </div>
 
             <Alertas :mensaje="mensaje" />
 
             <div class="page-grid page-grid-produccion">
-                <ProduccionForm :guardando="guardando" :ultima-guardada="ultimaGuardada" :edicion="produccionEnEdicion"
+                <ProduccionForm :guardando="guardando" :ultima-guardada="ultimaGuardada"
                     :categorias-permitidas="categoriasRecetasAsignadas" :cantidades-externas="cantidadesExternas"
                     :limites-por-categoria="limitesPorCategoria" @guardar="guardarProduccion"
                     @notificar="mostrarMensaje($event.tipo, $event.texto, $event.duracion)"
-                    @cancelar="produccionEnEdicion = null" @cantidad-cambiada="sincronizarContadorReceta" />
+                    @cantidad-cambiada="sincronizarContadorReceta" />
 
                 <!-- Panel de recetas: muestra solo las asignadas o mensaje vacío -->
                 <div v-if="sinPlanificacion && !cargandoPlanificacion" class="empty-state-card">
@@ -104,8 +104,7 @@ export default {
             guardando: false,
             ultimaGuardada: null,
             producciones: [],
-            cargandoProducciones: false,
-            produccionEnEdicion: null
+            cargandoProducciones: false
         }
     },
 
@@ -118,7 +117,6 @@ export default {
                 if (!newVal) return
                 // Resetear estado del operador anterior
                 this.resetearContadores()
-                this.produccionEnEdicion = null
 
                 // Cargar producciones PRIMERO, luego planificación (que depende de producciones)
                 await this.cargarProducciones()
@@ -153,20 +151,20 @@ export default {
             // Vincular el operador actual que registra la producción
             payload.operadorId = this.operadorId
 
-
-
-            let response;
-            if (payload.id) {
-                response = await ProduccionClient.editarProduccion(payload.id, payload)
-            } else {
-                response = await ProduccionClient.agregarProduccion(payload)
+            // Validación preventiva de unicidad
+            const check = await ProduccionClient.existeProduccion(payload.operadorId, payload.fecha);
+            if (check.success && check.existe) {
+                this.mostrarMensaje('error', ' Ya has registrado la producción para el día de hoy.', 0);
+                this.guardando = false;
+                return;
             }
 
+            const response = await ProduccionClient.agregarProduccion(payload)
+
             if (response.success) {
-                this.mostrarMensaje('exito', payload.id ? 'Producción actualizada correctamente' : 'Producción registrada correctamente')
+                this.mostrarMensaje('exito', 'Producción registrada correctamente')
 
                 this.ultimaGuardada = new Date().toISOString()
-                this.produccionEnEdicion = null
                 await this.cargarProducciones()
 
                 // Evaluar si la producción registrada completa algún pedido pendiente
@@ -176,7 +174,8 @@ export default {
                     console.error('Error al evaluar pedidos:', e)
                 }
             } else {
-                this.mostrarMensaje('error', 'No se pudo guardar la producción', 0)
+                const errorMsg = typeof response.error === 'string' ? response.error : 'No se pudo guardar la producción';
+                this.mostrarMensaje('error', errorMsg, 0)
             }
 
             this.guardando = false
@@ -194,30 +193,7 @@ export default {
             this.cargandoProducciones = false
         },
 
-        editarProduccion(p) {
-            this.produccionEnEdicion = p
-            this.$nextTick(() => {
-                const el = document.querySelector('.produccion-form-card')
-                if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                const input = document.querySelector('#fecha-produccion')
-                if (input && input.focus) input.focus()
-            })
-        },
 
-        async eliminarProduccion(p) {
-            if (!p || !p.id) {
-                this.mostrarMensaje('error', 'Elemento no válido para eliminar', 3000)
-                return
-            }
-
-            const response = await ProduccionClient.eliminarProduccion(p.id)
-            if (response.success) {
-                this.mostrarMensaje('exito', 'Registro eliminado')
-                await this.cargarProducciones()
-            } else {
-                this.mostrarMensaje('error', 'No se pudo eliminar el registro', 0)
-            }
-        },
 
         manejarAccionReceta(payload) {
             this.manejarAccionRecetaBase(payload?.receta, this.mostrarMensaje)

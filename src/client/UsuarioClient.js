@@ -23,10 +23,10 @@ export default {
       return { success: true, data: usuario }
     } catch (error) {
       console.error("Error al autenticar:", error)
-      const esCredenciales = error?.status === 400 || 
+      const esCredenciales = error?.status === 400 ||
         error?.message?.includes('Invalid login credentials')
-      return { 
-        success: false, 
+      return {
+        success: false,
         error,
         errorTipo: esCredenciales ? 'credenciales' : 'conexion'
       }
@@ -35,22 +35,36 @@ export default {
 
   // LOGOUT — Cierra sesión de Supabase Auth
   async logout() {
-    const { error } = await supabase.auth.signOut()
-    if (error) console.error("Error al cerrar sesión:", error)
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+      return { success: true }
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error)
+      return { success: false, error }
+    }
   },
 
   // SESSION — Verifica si hay sesión activa
   async obtenerSesion() {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return null
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError) throw sessionError
+      if (!session) return { success: true, data: null }
 
-    const { data: usuario } = await supabase
-      .from('usuarios')
-      .select('id, nombre, rol')
-      .eq('auth_user_id', session.user.id)
-      .single()
+      const { data: usuario, error: userError } = await supabase
+        .from('usuarios')
+        .select('id, nombre, rol')
+        .eq('auth_user_id', session.user.id)
+        .single()
+        
+      if (userError) throw userError
 
-    return usuario
+      return { success: true, data: usuario }
+    } catch (error) {
+      console.error("Error al obtener sesión:", error)
+      return { success: false, error }
+    }
   },
 
   // Obtener lista de usuarios (sin contraseña)

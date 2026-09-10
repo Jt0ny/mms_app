@@ -2,12 +2,13 @@
   <div class="page-container mermas-page">
     <div class="page-content-wrap">
       <!-- Encabezado -->
-      <header class="page-header">
+      <div class="page-header">
         <div>
           <h1 class="page-title">Mermas de Producción</h1>
+          <p class="page-subtitle">Gestiona mermas diarias, materias primas y materiales utilizados.</p>
 
         </div>
-      </header>
+      </div>
 
       <!-- Mensajes de Alerta -->
       <Alertas :mensaje="mensaje" />

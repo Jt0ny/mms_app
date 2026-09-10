@@ -3,7 +3,12 @@
 
         <div class="page-content-wrap">
 
-            <h1 class="page-title">Carga de Materiales</h1>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Carga de Materiales</h1>
+                    <p class="page-subtitle">Registra y gestiona materia prima con tu inventario en tiempo real.</p>
+                </div>
+            </div>
 
             <Alertas :mensaje="mensaje" />
 
@@ -20,7 +25,9 @@
                     <InventarioTable titulo="Inventario Actual" :items="inventarioActual" :cargando="cargandoInventario"
                         etiqueta-item="insumos" texto-vacio="No hay materiales registrados"
                         @actualizar="cargarInventario(true)" @sincronizar="sincronizarAPI">
-                        <template #title-icon><ArchiveBoxIcon class="icon-lg text-white" /></template>
+                        <template #title-icon>
+                            <ArchiveBoxIcon class="icon-lg text-white" />
+                        </template>
                         <template #header>
                             <th>Nombre</th>
                             <th>Cantidad</th>
@@ -31,7 +38,7 @@
                             <td class="text-variety">{{ item.nombre }}</td>
                             <td class="text-quantity">{{ item.cantidad }}</td>
                             <td>{{ item.descripcion || '-' }}</td>
-                            <td class="actions-column">
+                            <td class="actions-col">
                                 <button class="btn-action-ghost delete" @click="eliminarMaterial(item.id)">
                                     <TrashIcon class="icon-action text-error" />
                                 </button>
@@ -167,8 +174,7 @@ export default {
         // ── Limpiar ──
         limpiarDatos() {
             this.datosProcesados = []
-            this.mensaje.tipo = null
-            this.mensaje.texto = ''
+            this.mostrarMensaje(null, '')
         },
 
         // ── Confirmar excel ──
@@ -223,6 +229,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-</style>

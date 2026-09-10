@@ -1,12 +1,12 @@
 <template>
     <div class="page-container usuarios-page">
         <div class="page-content-wrap">
-            <header class="page-header">
+            <div class="page-header">
                 <div>
                     <h1 class="page-title">Mantenimiento de Usuarios</h1>
                     <p class="page-subtitle">Registra usuarios nuevos y revisa los que ya existen en el sistema.</p>
                 </div>
-            </header>
+            </div>
 
             <Alertas :mensaje="mensaje" />
 
@@ -55,14 +55,14 @@ export default {
         async cargarUsuarios(forceRefresh = false) {
             this.cargandoUsuarios = true
             const response = await this.catalogos.obtenerUsuarios(forceRefresh)
-            
+
             if (response && response.success === false) {
                 this.usuarios = []
                 this.mostrarMensaje('error', 'Error al cargar los usuarios')
             } else {
                 this.usuarios = response?.success ? response.data : (response ?? [])
             }
-            
+
             this.cargandoUsuarios = false
         },
 

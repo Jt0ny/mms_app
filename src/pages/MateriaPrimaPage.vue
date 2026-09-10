@@ -3,7 +3,12 @@
 
         <div class="page-content-wrap">
 
-            <h1 class="page-title">Carga de Materia Prima</h1>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Carga de Materia Prima</h1>
+                    <p class="page-subtitle">Registra y gestiona materia prima con tu inventario en tiempo real.</p>
+                </div>
+            </div>
 
             <Alertas :mensaje="mensaje" />
 
@@ -20,7 +25,9 @@
                     <InventarioTable titulo="Inventario Actual" :items="inventarioActual" :cargando="cargandoInventario"
                         etiqueta-item="insumos" texto-vacio="No hay materia prima registrada"
                         @actualizar="cargarInventario(true)" @sincronizar="sincronizarAPI">
-                        <template #title-icon><SunIcon class="icon-lg text-white" /></template>
+                        <template #title-icon>
+                            <SunIcon class="icon-lg text-white" />
+                        </template>
                         <template #header>
                             <th>Variedad</th>
                             <th>Cantidad (Tallos)</th>
@@ -160,14 +167,13 @@ export default {
         // ── Limpiar ──
         limpiarDatos() {
             this.datosProcesados = []
-            this.mensaje.tipo = null
-            this.mensaje.texto = ''
+            this.mostrarMensaje(null, '')
         },
 
         // ── Guardar ──
         async confirmarYSubir() {
             this.cargando = true
-            
+
             const response = await MateriaPrimaClient.cargarMateriaPrima(this.datosProcesados)
             this.cargando = false
 

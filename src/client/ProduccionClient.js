@@ -21,17 +21,36 @@ export default {
 
             if (error) throw error;
 
-            return { success: true, data: (data || []).map(p => ({
-                id: p.id,
-                fecha: p.fecha,
-                total: p.total,
-                operadorId: p.operador_id,
-                operadorNombre: p.usuarios?.nombre || '',
-                creadoEn: p.creado_en,
-                detalle: p.detalle || []
-            }))};
+            return {
+                success: true, data: (data || []).map(p => ({
+                    id: p.id,
+                    fecha: p.fecha,
+                    total: p.total,
+                    operadorId: p.operador_id,
+                    operadorNombre: p.usuarios?.nombre || '',
+                    creadoEn: p.creado_en,
+                    detalle: p.detalle || []
+                }))
+            };
         } catch (error) {
             console.error('Error al obtener producciones:', error);
+            return { success: false, error };
+        }
+    },
+
+    async existeProduccion(operadorId, fecha) {
+        try {
+            const { data, error } = await supabase
+                .from('producciones')
+                .select('id')
+                .eq('operador_id', operadorId)
+                .eq('fecha', fecha)
+                .limit(1);
+
+            if (error) throw error;
+            return { success: true, existe: data && data.length > 0 };
+        } catch (error) {
+            console.error('Error verificando existencia de producción:', error);
             return { success: false, error };
         }
     },
@@ -39,8 +58,8 @@ export default {
     // Registra una nueva producción y descuenta materias primas atómicamente
     async agregarProduccion(payload) {
         try {
-            const { data, error } = await supabase.rpc('rpc_registrar_produccion', { 
-                payload_produccion: payload 
+            const { data, error } = await supabase.rpc('rpc_registrar_produccion', {
+                payload_produccion: payload
             });
 
             if (error) throw error;
@@ -48,6 +67,9 @@ export default {
             return { success: true, data: { id: data.produccion_id } };
         } catch (error) {
             console.error('Error al agregar producción con RPC:', error);
+            if (error?.code === '23505') {
+                return { success: false, error: 'Ya existe un registro de producción para hoy.' };
+            }
             return { success: false, error };
         }
     },
@@ -89,6 +111,9 @@ export default {
             return { success: true, data: { id } };
         } catch (error) {
             console.error('Error al editar producción:', error);
+            if (error?.code === '23505') {
+                return { success: false, error: 'Ya existe un registro de producción para hoy.' };
+            }
             return { success: false, error };
         }
     },

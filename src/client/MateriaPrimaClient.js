@@ -40,10 +40,10 @@ export default {
         const actual = mapExistentesPorId.get(idStr) || mapExistentesPorVariedad.get(variedadNormalizada);
 
         if (actual) {
-          // Si existe (por ID o por variedad), conservamos su ID de la BD para no romper relaciones
+          // Si existe, conservamos su ID de la BD y SUMAMOS la cantidad externa al stock actual
           upsertData.push({
             ...actual,
-            cantidad_total: externaCantidad,
+            cantidad_total: (actual.cantidad_total || 0) + externaCantidad,
             variedad: mp.variedad // Actualizamos por si cambió la capitalización
           });
         } else {
@@ -109,21 +109,24 @@ export default {
       // Obtener existentes para resolver IDs por variedad
       const { data: existentes, error: queryErr } = await supabase
         .from('materia_prima')
-        .select('id, variedad');
+        .select('id, variedad, cantidad_total');
 
       if (queryErr) throw queryErr;
 
       const mapExistentes = new Map(
-        (existentes || []).map(e => [e.variedad.toLowerCase().trim(), e.id])
+        (existentes || []).map(e => [e.variedad.toLowerCase().trim(), e])
       );
 
       const payload = data.map(mp => {
         const variedad = String(mp.variedad || '').trim();
-        const existingId = mapExistentes.get(variedad.toLowerCase());
+        const existente = mapExistentes.get(variedad.toLowerCase());
+        const cantidadExistente = existente ? (parseInt(existente.cantidad_total) || 0) : 0;
+        const cantidadIngresada = parseInt(mp.cantidadTotal) || 0;
+        
         return {
-          id: existingId || crypto.randomUUID(),
+          id: existente ? existente.id : crypto.randomUUID(),
           variedad,
-          cantidad_total: mp.cantidadTotal ?? 0,
+          cantidad_total: cantidadExistente + cantidadIngresada,
           fecha_ingreso: mp.fechaIngreso || mp.fecha || obtenerFechaHoy()
         };
       });

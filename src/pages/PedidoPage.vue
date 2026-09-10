@@ -3,8 +3,12 @@
 
         <div class="page-content-wrap">
 
-
-            <h1 class="page-title">Carga de Pedidos</h1>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Carga de Pedidos</h1>
+                    <p class="page-subtitle">Gestiona pedidos diarios y sincroniza con la API externa.</p>
+                </div>
+            </div>
 
 
             <Alertas :mensaje="mensaje" />
@@ -20,8 +24,8 @@
 
                     <!-- INVENTARIO -->
                     <InventarioTable titulo="Pedidos Pendientes" :items="pedidosPendientes" :cargando="cargandoPedidos"
-                        etiqueta-item="pedidos pendientes" texto-vacio="No hay pedidos pendientes hoy" @actualizar="cargarPedidos"
-                        @sincronizar="sincronizarAPI">
+                        etiqueta-item="pedidos pendientes" texto-vacio="No hay pedidos pendientes hoy"
+                        @actualizar="cargarPedidos" @sincronizar="sincronizarAPI">
                         <template #title-icon>
                             <ArchiveBoxIcon class="icon-lg text-white" />
                         </template>
@@ -42,9 +46,9 @@
                 </div>
 
                 <!-- PANEL DERECHO -->
-                <VistaPreviaTable :items="datosProcesados" :cargando="cargando" etiqueta-item="líneas de pedido encontradas"
-                    texto-confirmar="Importar Pedidos" texto-cargando="Importando..." @cancelar="limpiarDatos"
-                    @confirmar="confirmarYSubir">
+                <VistaPreviaTable :items="datosProcesados" :cargando="cargando"
+                    etiqueta-item="líneas de pedido encontradas" texto-confirmar="Importar Pedidos"
+                    texto-cargando="Importando..." @cancelar="limpiarDatos" @confirmar="confirmarYSubir">
                     <template #header>
                         <th>Cliente (Bill)</th>
                         <th>Destino (Ship)</th>

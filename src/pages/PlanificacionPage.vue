@@ -1,14 +1,14 @@
 <template>
     <div class="page-container planificacion-page">
         <div class="page-content-wrap">
-            <header class="page-header">
+            <div class="page-header">
                 <div>
                     <h1 class="page-title">Planificación</h1>
                     <p class="page-subtitle">
                         Selecciona una fecha y distribuye los pedidos pendientes entre operadores de forma automática y equitativa.
                     </p>
                 </div>
-            </header>
+            </div>
 
             <!-- Header / Selector de Fecha y Acciones -->
             <PlanificacionAsignacion v-model:fechaSeleccionada="fechaSeleccionada" :cargando-auto="cargandoAuto"

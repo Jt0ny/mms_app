@@ -41,7 +41,7 @@
                                 {{ formatearRol(usuario.rol) }}
                             </span>
                         </td>
-                        <td class="actions-column">
+                        <td class="actions-col">
                             <button type="button" class="btn-action-ghost delete"
                                 @click="$emit('eliminar', usuario.id)">
                                 <TrashIcon class="icon-action text-error" />
@@ -117,5 +117,21 @@ export default {
 .role-operador {
     background: var(--alert-info-bg);
     color: var(--alert-info-text);
+}
+
+/* Forzar altura al 100% de la columna (para igualar al formulario exacto) */
+.data-card {
+  height: 0; /* Evita que los registros internos estiren la fila del grid infinitamente */
+  min-height: 100%; /* Obliga a la tarjeta a medir exactamente lo mismo que el formulario */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Anular la restricción global de 450px y permitir scroll interno */
+.data-card-content {
+  flex: 1;
+  min-height: 0;
+  max-height: none !important;
+  overflow-y: auto;
 }
 </style>

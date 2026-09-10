@@ -1,11 +1,11 @@
 <template>
-    <section class="data-card h-full">
-        <header class="data-card-header">
+    <div class="data-card h-full">
+        <div class="data-card-header">
             <div>
                 <h2>Pedidos de Hoy</h2>
                 <p class="data-card-subtitle">Estado en tiempo real de los despachos</p>
             </div>
-        </header>
+        </div>
 
         <div class="data-card-content flex-col">
             <div v-if="cargando" class="loading-state">
@@ -77,7 +77,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 </template>
 
 <script>

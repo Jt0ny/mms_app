@@ -1,5 +1,5 @@
 <template>
-    <div class="data-card" style="padding: 24px; border-radius: 18px;">
+    <div class="data-card recetas-view-container">
         <h2>Recetas de Producción</h2>
         <p>Lista de recetas utilizadas en la producción diaria.</p>
 
@@ -9,7 +9,7 @@
 
         <Alertas :mensaje="mensaje" />
 
-        <div>
+        <div class="recetas-list-wrapper">
             <div v-if="!filteredRecetas.length" class="empty-state-card text-light">
                 {{ recetas.length ? 'No se encontraron recetas.' : 'No hay recetas registradas.' }}
             </div>
@@ -197,9 +197,28 @@ export default {
 </script>
 
 <style scoped>
+.recetas-view-container {
+    padding: 24px;
+    border-radius: 18px;
+    /* Forzar altura al 100% de la columna (para igualar al formulario exacto) */
+    height: 0; 
+    min-height: 100%; 
+    display: flex;
+    flex-direction: column;
+}
+
+.recetas-list-wrapper {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Anular la restricción rígida y permitir flex grow */
 .scroll-recetas-alto {
-    height: 100%;
-    max-height: calc(100vh - 309px);
+    flex: 1;
+    min-height: 0;
+    max-height: none !important;
     overflow-y: auto;
     padding-right: 8px;
 }
@@ -262,5 +281,18 @@ export default {
 .ingrediente-list li {
     margin-bottom: 6px;
     color: var(--text);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
 }
 </style>

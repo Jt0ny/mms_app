@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import { useCatalogos } from '../composables/useCatalogos.js'
+
 
 // --- FUNCIONES PRIVADAS COMPARTIDAS ---
 

@@ -1,3 +1,6 @@
+/* =========================================
+   1. VARIABLES / TOKENS
+   ========================================= */
 :root {
   --primary: #16a34a;
   --primary-dark: #15803d;
@@ -17,6 +20,7 @@
   --code-bg: #f3f4f6;
   --shadow: rgba(0, 0, 0, 0.08) 0 10px 24px;
   --shadow-sm: rgba(0, 0, 0, 0.04) 0 2px 8px;
+  --shadow-md: rgba(0, 0, 0, 0.10) 0 12px 28px;
   --shadow-lg: rgba(0, 0, 0, 0.12) 0 15px 35px;
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -87,6 +91,10 @@
   }
 }
 
+
+/* =========================================
+   2. RESET Y BASE
+   ========================================= */
 html {
   min-width: 320px;
 }
@@ -124,6 +132,17 @@ select {
   min-width: 0;
 }
 
+#app {
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* =========================================
+   3. TIPOGRAFÍA
+   ========================================= */
 h1,
 h2 {
   font-family: var(--heading);
@@ -148,14 +167,22 @@ p {
   margin: 0;
 }
 
-#app {
-  width: 100%;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
+.form-title {
+  margin: 0;
+  font-size: clamp(16px, 2vw, 18px);
+  color: var(--text-h);
 }
 
-/* Global Form Styles */
+.form-title-lg {
+  margin: 0 0 6px;
+  font-size: clamp(18px, 2vw, 22px);
+  color: var(--text-h);
+}
+
+
+/* =========================================
+   4. FORMULARIOS
+   ========================================= */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -206,8 +233,27 @@ p {
   resize: vertical;
 }
 
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.selector-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.selector-group label {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+
 /* =========================================
-   PAGE GLOBAL LAYOUT (Refactor Phase 4)
+   5. LAYOUT DE PÁGINAS
    ========================================= */
 .page-container {
   width: 100%;
@@ -225,9 +271,6 @@ p {
   gap: 24px;
 }
 
-/* =========================================
-   PAGE HEADERS
-   ========================================= */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -256,8 +299,32 @@ p {
   flex-wrap: wrap;
 }
 
+.main-layout-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.main-layout-split.with-preview {
+  grid-template-columns: minmax(220px, 360px) 1fr;
+}
+
+.panel-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+
 /* =========================================
-   BUTTONS (GLOBAL)
+   6. BOTONES
    ========================================= */
 .btn {
   border: none;
@@ -273,6 +340,11 @@ p {
 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .btn-primary {
@@ -308,13 +380,6 @@ p {
   transform: translateY(-1px);
 }
 
-/* ── Focus accesible ── */
-.btn:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-/* ── Variante oscura (botón "Limpiar") ── */
 .btn-dark {
   background: var(--text-h);
   color: var(--bg);
@@ -325,7 +390,6 @@ p {
   transform: translateY(-1px);
 }
 
-/* ── Variante dashed (botón "+ Agregar") ── */
 .btn-dashed {
   background: none;
   border: 1.5px dashed var(--border);
@@ -337,8 +401,72 @@ p {
   border-color: var(--primary);
 }
 
+
+.btn-header-outline {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-header-outline:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-header-outline:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-action-ghost {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-action-ghost:hover {
+  transform: scale(1.1);
+}
+
+.btn-action-ghost.edit {
+  color: var(--primary);
+}
+
+.btn-action-ghost.delete {
+  color: var(--alert-error-text);
+}
+
+.btn-action-ghost.edit:hover {
+  background: var(--alert-info-bg);
+}
+
+.btn-action-ghost.delete:hover {
+  background: var(--alert-error-bg);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+
 /* =========================================
-   DATA DISPLAY UTILITIES
+   7. DATA DISPLAY / BADGES
    ========================================= */
 .text-variety {
   color: var(--text-h);
@@ -362,124 +490,33 @@ p {
   font-size: 13px;
 }
 
-/* =========================================
-   PAGE LAYOUTS
-   ========================================= */
-.main-layout-split {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-}
-
-.main-layout-split.with-preview {
-  grid-template-columns: minmax(220px, 360px) 1fr;
-}
-
-.panel-column {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-/* =========================================
-   GENERIC PAGE GRID
-   ========================================= */
-.page-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  align-items: start;
-}
-
-/* =========================================
-   ACTION BUTTONS (inline in tables)
-   ========================================= */
-.btn-action {
-  border: none;
-  border-radius: 6px;
-  padding: 8px 10px;
-  cursor: pointer;
-  transition: 0.3s ease;
-}
-
-.btn-action:hover {
-  transform: scale(1.05);
-}
-
-.btn-action-edit {
-  background: var(--alert-info-bg);
-}
-
-.btn-action-delete {
-  background: var(--alert-error-bg);
-}
-
-/* =========================================
-   FEEDBACK MESSAGES
-   ========================================= */
-.msg-feedback {
-  margin: 0;
-  font-size: 13px;
+.summary-label {
+  display: block;
+  font-size: 12px;
   font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 8px;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
 }
 
-.msg-exito {
-  background: var(--alert-success-bg);
-  color: var(--alert-success-text);
+.selector-display {
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
+  color: var(--text-h);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  font-size: 13px;
 }
 
-.msg-error {
-  background: var(--alert-error-bg);
-  color: var(--alert-error-text);
+.selector-display.vacio {
+  color: var(--text-light);
+  font-weight: 500;
 }
 
-.msg-info {
-  background: var(--alert-info-bg);
-  color: var(--alert-info-text);
-}
-
-/* =========================================
-   RESPONSIVE BREAKPOINTS
-   ========================================= */
-@media (max-width: 1024px) {
-  .main-layout-split.with-preview {
-    grid-template-columns: 1fr;
-    /* Stack columns on tablets */
-  }
-
-  .page-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .page-container {
-    padding: 12px;
-  }
-
-  .page-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .header-actions {
-    flex-direction: column;
-  }
-}
-
-@media (max-width: 480px) {
-  .page-content-wrap {
-    gap: 16px;
-  }
-}
-
-
-/* Badges (pÃ­ldoras de estado) */
 .badge,
-.badge-ok,
-.badge-error,
 .badge-cargando {
   display: inline-flex;
   align-items: center;
@@ -502,18 +539,6 @@ p {
   text-transform: none;
 }
 
-.badge-ok {
-  background-color: var(--alert-success-bg);
-  color: var(--alert-success-text);
-  border: 1px solid var(--alert-success-border);
-}
-
-.badge-error {
-  background-color: var(--alert-error-bg);
-  color: var(--alert-error-text);
-  border: 1px solid var(--alert-error-border);
-}
-
 .badge-warning {
   background-color: var(--alert-warning-bg);
   color: var(--alert-warning-text);
@@ -532,8 +557,14 @@ p {
   border: 1px solid var(--alert-error-border);
 }
 
+.badge-gray {
+  background: var(--bg-secondary);
+  color: var(--text-light);
+}
+
+
 /* =========================================
-   STAT CARDS (Dashboard / Mermas)
+   8. STAT CARDS
    ========================================= */
 .stats-grid {
   display: grid;
@@ -569,25 +600,11 @@ p {
   font-size: 24px;
 }
 
-.stat-icon.blue {
-  background: rgba(37, 99, 235, 0.1);
-}
-
-.stat-icon.green {
-  background: rgba(22, 163, 74, 0.1);
-}
-
-.stat-icon.pink {
-  background: rgba(219, 39, 119, 0.1);
-}
-
-.stat-icon.orange {
-  background: rgba(245, 158, 11, 0.1);
-}
-
-.stat-icon.purple {
-  background: rgba(124, 58, 237, 0.1);
-}
+.stat-icon.blue { background: rgba(37, 99, 235, 0.1); }
+.stat-icon.green { background: rgba(22, 163, 74, 0.1); }
+.stat-icon.pink { background: rgba(219, 39, 119, 0.1); }
+.stat-icon.orange { background: rgba(245, 158, 11, 0.1); }
+.stat-icon.purple { background: rgba(124, 58, 237, 0.1); }
 
 .stat-info {
   display: flex;
@@ -613,29 +630,31 @@ p {
   font-weight: 400;
 }
 
-/* =========================================
-   SECTION HEADERS (Dashboard)
-   ========================================= */
-.section-header {
-  margin-bottom: 24px;
+.stat-card.simple {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--bg-secondary);
+  box-shadow: none;
 }
 
-.section-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-h);
-  margin: 0 0 4px 0;
-}
-
-.section-subtitle {
-  font-size: 0.85rem;
+.stat-card.simple span {
+  display: block;
+  font-size: 13px;
   color: var(--text-light);
-  margin: 0;
+  margin-bottom: 0;
+}
+
+.stat-card.simple strong {
+  font-size: clamp(20px, 2vw, 28px);
+  color: var(--text-h);
 }
 
 
 /* =========================================
-   DATA CARDS (Tablas e inventarios)
+   9. DATA CARDS / TABLAS
    ========================================= */
 .data-card {
   background: var(--bg);
@@ -671,6 +690,21 @@ p {
   font-size: 14px;
   opacity: 0.8;
   color: white;
+}
+
+.data-card-header.neutral {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text);
+}
+
+.data-card-header.neutral h2 {
+  color: var(--text-h);
+}
+
+.data-card-header.neutral p.data-card-subtitle {
+  color: var(--text-light);
+  opacity: 1;
 }
 
 .data-card-content {
@@ -732,144 +766,6 @@ p {
   background: var(--bg-secondary);
 }
 
-@media (max-width: 768px) {
-  .data-card-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .data-card-table {
-    font-size: 12px;
-  }
-
-  .data-card-table th,
-  .data-card-table td {
-    padding: 10px 8px;
-  }
-}
-
-/* =========================================
-   SELECTION PANEL (For Recetas)
-   ========================================= */
-.selection-panel {
-  background: var(--bg);
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: var(--shadow-sm);
-}
-
-.selection-panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.selection-panel-header p {
-  margin-top: 4px;
-  color: var(--text-light);
-}
-
-.btn-refresh {
-  border: none;
-  border-radius: 10px;
-  padding: 10px 14px;
-  cursor: pointer;
-  font-weight: 600;
-  background: var(--primary-bg);
-  color: var(--primary-dark);
-  transition: background 0.2s ease;
-}
-
-.btn-refresh:hover:not(:disabled) {
-  background: rgba(22, 163, 74, 0.15); /* un poco más oscuro que --primary-bg */
-}
-
-.selection-table-wrap {
-  max-height: 420px;
-  overflow: auto;
-}
-
-.selection-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.selection-table th,
-.selection-table td {
-  padding: 12px 10px;
-  border-bottom: 1px solid var(--border-light);
-  text-align: left;
-}
-
-.selection-table th {
-  font-size: 14px;
-  color: var(--text-light);
-}
-
-.row-subtitle {
-  margin-top: 4px;
-  font-size: 13px;
-  color: var(--text-light);
-}
-
-.qty-input {
-  width: 100px;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-
-.empty-state {
-  padding: 18px;
-  border-radius: 10px;
-  background: var(--bg-secondary);
-  border: 1px dashed var(--border);
-  color: var(--text-light);
-}
-
-/* =========================================
-   UTILITY CLASSES (Fase 1 CSS Refactor)
-   ========================================= */
-
-/* Layout Utils */
-.grid-halves {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
-
-/* =========================================
-   NEW UTILITIES (Fase 3 CSS Refactor)
-   ========================================= */
-
-.btn-header-outline {
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
-  padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.btn-header-outline:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
-}
-
-.btn-header-outline:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
 .table-loading-state,
 .table-empty-state {
   padding: 40px 20px;
@@ -877,124 +773,11 @@ p {
   color: var(--text-light);
 }
 
-.stat-card.simple {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 16px;
-  border-radius: 14px;
-  background: var(--bg-secondary);
-  box-shadow: none;
+.actions-col {
+  text-align: right;
+  width: 90px;
 }
 
-.stat-card.simple span {
-  display: block;
-  font-size: 13px;
-  color: var(--text-light);
-  margin-bottom: 0;
-}
-
-.stat-card.simple strong {
-  font-size: clamp(20px, 2vw, 28px);
-  color: var(--text-h);
-}
-
-@media (max-width: 1024px) {
-  .grid-halves {
-    grid-template-columns: 1fr;
-  }
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-/* Transiciones Globales (Vue) */
-.fade-enter-active,
-.fade-leave-active,
-.fade-msg-enter-active,
-.fade-msg-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to,
-.fade-msg-enter-from,
-.fade-msg-leave-to {
-  opacity: 0;
-}
-
-/* Animaciones y Carga */
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  color: var(--text-light);
-  gap: 16px;
-}
-
-.spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--border);
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-.spin {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* =========================================
-   NUEVAS CLASES GLOBALES (Refactor Phase)
-   ========================================= */
-
-/* Botones de acción ligeros */
-.btn-action-ghost {
-  border: none;
-  border-radius: 6px;
-  padding: 6px 8px;
-  cursor: pointer;
-  transition: 0.3s ease;
-  background: transparent;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-action-ghost:hover {
-  transform: scale(1.1);
-}
-
-.btn-action-ghost.edit {
-  color: var(--primary);
-}
-
-.btn-action-ghost.delete {
-  color: var(--alert-error-text);
-}
-
-.btn-action-ghost.edit:hover {
-  background: var(--alert-info-bg);
-}
-
-.btn-action-ghost.delete:hover {
-  background: var(--alert-error-bg);
-}
-
-/* Estado vacío / Empty States */
 .empty-state-card {
   text-align: center;
   padding: 40px;
@@ -1005,71 +788,31 @@ p {
   box-shadow: var(--shadow-sm);
 }
 
-.btn-block {
-  width: 100%;
+
+/* =========================================
+   10. UTILIDADES
+   ========================================= */
+.grid-halves {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
 }
 
-/* Títulos de formularios */
-.form-title {
-  margin: 0;
-  font-size: clamp(16px, 2vw, 18px);
-  color: var(--text-h);
-}
+.h-full { height: 100%; }
 
-.form-title-lg {
-  margin: 0 0 6px;
-  font-size: clamp(18px, 2vw, 22px);
-  color: var(--text-h);
-}
+.mt-4 { margin-top: 16px; }
+.mb-4 { margin-bottom: 16px; }
+.mb-5 { margin-bottom: 20px; }
+.mb-6 { margin-bottom: 24px; }
+.p-4 { padding: 16px; }
+.p-5 { padding: 20px; }
+.p-6 { padding: 24px; }
+.m-5 { margin: 20px; }
 
-/* Espaciados y Utilidades de Layout */
-.h-full {
-  height: 100%;
-}
-
-.mb-4 {
-  margin-bottom: 16px;
-}
-
-.mb-5 {
-  margin-bottom: 20px;
-}
-
-.mb-6 {
-  margin-bottom: 24px;
-}
-
-.p-4 {
-  padding: 16px;
-}
-
-.p-5 {
-  padding: 20px;
-}
-
-.p-6 {
-  padding: 24px;
-}
-
-.m-5 {
-  margin: 20px;
-}
-
-/* Iconos (Heroicons) */
-.icon-sm {
-  width: 16px;
-  height: 16px;
-}
-
-.icon-md {
-  width: 20px;
-  height: 20px;
-}
-
-.icon-lg {
-  width: 24px;
-  height: 24px;
-}
+.icon-sm { width: 16px; height: 16px; }
+.icon-md { width: 20px; height: 20px; }
+.icon-lg { width: 24px; height: 24px; }
+.icon-xl { width: 48px; height: 48px; }
 
 .icon-inline {
   display: inline-block;
@@ -1090,52 +833,16 @@ p {
   flex-shrink: 0;
 }
 
-/* Colores de Iconos y Textos utilitarios */
-.text-primary {
-  color: var(--primary);
-}
+.text-primary { color: var(--primary); }
+.text-warning { color: var(--warning); }
+.text-error { color: var(--error); }
+.text-info { color: var(--info); }
+.text-light { color: var(--text-light); }
+.text-h { color: var(--text-h); }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.font-medium { font-weight: 500; }
 
-.text-warning {
-  color: var(--warning);
-}
-
-.text-error {
-  color: var(--error);
-}
-
-.text-info {
-  color: var(--info);
-}
-
-.text-light {
-  color: var(--text-light);
-}
-
-.text-h {
-  color: var(--text-h);
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-right {
-  text-align: right;
-}
-
-.font-medium {
-  font-weight: 500;
-}
-
-/* Acciones en Tablas */
-.actions-col,
-.actions-column,
-.actions-header {
-  text-align: right;
-  width: 90px;
-}
-
-/* Utilidades de Flexbox */
 .flex-align-center {
   display: flex;
   align-items: center;
@@ -1153,57 +860,15 @@ p {
   justify-content: center;
 }
 
-/* Espaciados (Gaps) */
-.gap-4 {
-  gap: 4px;
-}
+.gap-4 { gap: 4px; }
+.gap-6 { gap: 6px; }
+.gap-8 { gap: 8px; }
+.gap-14 { gap: 14px; }
 
-.gap-6 {
-  gap: 6px;
-}
-
-.gap-8 {
-  gap: 8px;
-}
-
-/* Tamaños adicionales de icono */
-.icon-xl {
-  width: 48px;
-  height: 48px;
-}
 
 /* =========================================
-   UTILITIES (Fase 3 - Centralización)
+   11. COMPONENTES ESPECÍFICOS
    ========================================= */
-
-/* Patrones Fase 4 (M10, M11) */
-.summary-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-light);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-
-.selector-display {
-  padding: 11px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
-  color: var(--text-h);
-  font-weight: 600;
-  box-shadow: var(--shadow-sm);
-  font-size: 13px;
-}
-
-.selector-display.vacio {
-  color: var(--text-light);
-  font-weight: 500;
-}
-
-/* Filtros (M1) */
 .filter-bar {
   display: flex;
   gap: 12px;
@@ -1233,62 +898,6 @@ p {
   min-width: 200px;
 }
 
-@media (max-width: 768px) {
-  .filter-bar {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filter-input,
-  .filter-select,
-  .alert-btn {
-    width: 100%;
-    margin-left: 0;
-  }
-}
-
-/* =========================================
-   PHASE 11 UTILITIES
-   ========================================= */
-
-.badge-gray {
-  background: var(--bg-secondary);
-  color: var(--text-light);
-}
-
-.mt-4 {
-  margin-top: 16px;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
-  border-radius: 8px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* =========================================
-   PHASE 10 UTILITIES
-   ========================================= */
-
-.selector-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.selector-group label {
-  font-weight: 600;
-  color: var(--text-h);
-}
-
 .progress-track {
   width: 100%;
   background: var(--border-light);
@@ -1307,27 +916,6 @@ p {
   transition: width 0.4s ease;
 }
 
-.gap-14 {
-  gap: 14px;
-}
-
-/* Data Card Header Neutral (M2) */
-.data-card-header.neutral {
-  background: var(--bg);
-  border-bottom: 1px solid var(--border-light);
-  color: var(--text);
-}
-
-.data-card-header.neutral h2 {
-  color: var(--text-h);
-}
-
-.data-card-header.neutral p.data-card-subtitle {
-  color: var(--text-light);
-  opacity: 1;
-}
-
-/* Selector de Chips (M3) */
 .chip-options {
   display: flex;
   flex-wrap: wrap;
@@ -1364,4 +952,105 @@ p {
 .chip-option:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
+}
+
+
+/* =========================================
+   12. ANIMACIONES
+   ========================================= */
+.fade-enter-active,
+.fade-leave-active,
+.fade-msg-enter-active,
+.fade-msg-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to,
+.fade-msg-enter-from,
+.fade-msg-leave-to {
+  opacity: 0;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--text-light);
+  gap: 16px;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
+/* =========================================
+   13. RESPONSIVE / MEDIA QUERIES
+   ========================================= */
+@media (max-width: 1024px) {
+  .main-layout-split.with-preview {
+    grid-template-columns: 1fr;
+  }
+  .page-grid {
+    grid-template-columns: 1fr;
+  }
+  .grid-halves {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding: 12px;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .header-actions {
+    flex-direction: column;
+  }
+  .data-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .data-card-table {
+    font-size: 12px;
+  }
+  .data-card-table th,
+  .data-card-table td {
+    padding: 10px 8px;
+  }
+  .filter-bar {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter-input,
+  .filter-select {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-content-wrap {
+    gap: 16px;
+  }
 }

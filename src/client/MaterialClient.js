@@ -37,10 +37,10 @@ export default {
         const actual = mapExistentesPorId.get(idStr) || mapExistentesPorNombre.get(nombreNormalizado);
 
         if (actual) {
-          // Si existe, preservamos sus datos actuales de la BD (como su ID) y actualizamos cantidad
+          // Si existe, preservamos sus datos de BD y SUMAMOS la cantidad externa al stock actual
           upsertData.push({
             ...actual,
-            cantidad: cantidadExterna,
+            cantidad: (actual.cantidad || 0) + cantidadExterna,
             nombre: m.nombre // Por si cambió la capitalización
           });
         } else {
@@ -90,21 +90,24 @@ export default {
       // Obtener existentes para resolver IDs por nombre
       const { data: existentes, error: queryErr } = await supabase
         .from('materiales')
-        .select('id, nombre');
+        .select('id, nombre, cantidad');
 
       if (queryErr) throw queryErr;
 
       const mapExistentes = new Map(
-        (existentes || []).map(e => [e.nombre.toLowerCase().trim(), e.id])
+        (existentes || []).map(e => [e.nombre.toLowerCase().trim(), e])
       );
 
       const payload = data.map(m => {
         const nombre = String(m.nombre || '').trim();
-        const existingId = mapExistentes.get(nombre.toLowerCase());
+        const existente = mapExistentes.get(nombre.toLowerCase());
+        const cantidadExistente = existente ? (parseInt(existente.cantidad) || 0) : 0;
+        const cantidadIngresada = parseInt(m.cantidad) || 0;
+        
         return {
-          id: existingId || crypto.randomUUID(),
+          id: existente ? existente.id : crypto.randomUUID(),
           nombre,
-          cantidad: parseInt(m.cantidad) || 0,
+          cantidad: cantidadExistente + cantidadIngresada,
           descripcion: m.descripcion || null
         };
       });

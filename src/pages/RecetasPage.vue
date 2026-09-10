@@ -4,7 +4,12 @@
         <div class="page-content-wrap">
 
 
-            <h1 class="page-title">Creación de Recetas</h1>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Creación de Recetas</h1>
+                    <p class="page-subtitle">Crea recetas combinando materiales y materia prima.</p>
+                </div>
+            </div>
 
 
             <Alertas :mensaje="mensaje" />
@@ -13,8 +18,8 @@
             <div class="panel-column">
 
                 <!-- FORMULARIO -->
-                <RecetaForm ref="formulario" :receta="nuevaReceta" :categorias="categorias" :totalSeleccionados="totalSeleccionados"
-                    :totalMateriales="materialesSeleccionados.length"
+                <RecetaForm ref="formulario" :receta="nuevaReceta" :categorias="categorias"
+                    :totalSeleccionados="totalSeleccionados" :totalMateriales="materialesSeleccionados.length"
                     :totalMateriaPrima="materiaPrimaSeleccionada.length" :guardando="guardandoReceta"
                     @actualizar-receta="nuevaReceta = $event" @guardar="guardarReceta" @cancelar="resetearFormulario" />
 
@@ -134,7 +139,6 @@ export default {
 
             const res = await RecetaClient.eliminarReceta(receta.id)
             if (res.success) {
-                await this.catalogos.obtenerRecetas(true) // Force refresh the cache
                 this.cargarTodasLasRecetas(true)
                 this.mostrarMensaje('exito', 'Receta eliminada correctamente')
                 if (this.nuevaReceta.id === receta.id) this.resetearFormulario()
@@ -260,7 +264,6 @@ export default {
             this.guardandoReceta = false
 
             if (response.success) {
-                await this.catalogos.obtenerRecetas(true) // Force refresh the cache
                 await this.cargarTodasLasRecetas(true)
                 this.mostrarMensaje('exito', this.nuevaReceta.id ? 'Receta actualizada correctamente' : 'Receta guardada correctamente')
                 this.resetearFormulario()

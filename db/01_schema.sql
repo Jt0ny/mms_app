@@ -179,7 +179,8 @@ CREATE TABLE producciones (
     operador_id UUID NULL,                -- Relación con usuarios (Operador que registra)
     creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT pk_producciones PRIMARY KEY (id),
-    CONSTRAINT fk_producciones_operador FOREIGN KEY (operador_id) REFERENCES usuarios (id) ON DELETE SET NULL
+    CONSTRAINT fk_producciones_operador FOREIGN KEY (operador_id) REFERENCES usuarios (id) ON DELETE SET NULL,
+    CONSTRAINT uq_producciones_operador_fecha UNIQUE(operador_id, fecha)
 );
 
 -- ---------------------------------------------------------------------------
