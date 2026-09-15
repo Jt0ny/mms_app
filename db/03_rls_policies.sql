@@ -76,7 +76,7 @@ ON public.recetas
 AS PERMISSIVE
 FOR INSERT
 TO authenticated
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "recetas_update_supervisor"
 ON public.recetas
@@ -84,7 +84,7 @@ AS PERMISSIVE
 FOR UPDATE
 TO authenticated
 USING ((get_user_rol() = 'supervisor'::text))
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "recetas_delete_supervisor"
 ON public.recetas
@@ -109,7 +109,7 @@ ON public.receta_materiales
 AS PERMISSIVE
 FOR INSERT
 TO authenticated
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "receta_materiales_delete_supervisor"
 ON public.receta_materiales
@@ -134,7 +134,7 @@ ON public.receta_materia_prima
 AS PERMISSIVE
 FOR INSERT
 TO authenticated
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "receta_materia_prima_delete_supervisor"
 ON public.receta_materia_prima
@@ -159,7 +159,7 @@ ON public.clientes
 AS PERMISSIVE
 FOR INSERT
 TO authenticated
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "clientes_update_supervisor"
 ON public.clientes
@@ -167,7 +167,7 @@ AS PERMISSIVE
 FOR UPDATE
 TO authenticated
 USING ((get_user_rol() = 'supervisor'::text))
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "clientes_delete_supervisor"
 ON public.clientes
@@ -192,7 +192,7 @@ ON public.pedidos
 AS PERMISSIVE
 FOR INSERT
 TO authenticated
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "pedidos_update_supervisor"
 ON public.pedidos
@@ -200,7 +200,7 @@ AS PERMISSIVE
 FOR UPDATE
 TO authenticated
 USING ((get_user_rol() = 'supervisor'::text))
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "pedidos_delete_supervisor"
 ON public.pedidos
@@ -225,7 +225,7 @@ ON public.pedido_detalles
 AS PERMISSIVE
 FOR INSERT
 TO authenticated
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "pedido_detalles_update_supervisor"
 ON public.pedido_detalles
@@ -233,7 +233,7 @@ AS PERMISSIVE
 FOR UPDATE
 TO authenticated
 USING ((get_user_rol() = 'supervisor'::text))
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "pedido_detalles_delete_supervisor"
 ON public.pedido_detalles
@@ -265,7 +265,7 @@ ON public.mermas
 AS PERMISSIVE
 FOR INSERT
 TO authenticated
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 
 -- Políticas para la tabla: producciones
@@ -283,7 +283,7 @@ ON public.producciones
 AS PERMISSIVE
 FOR INSERT
 TO authenticated
-WITH CHECK (((operador_id = get_usuario_id()) OR (operador_id IS NULL)));
+WITH CHECK (((operador_id = obtener_usuarios_id()) OR (operador_id IS NULL)));
 
 CREATE POLICY "producciones_update_supervisor"
 ON public.producciones
@@ -291,7 +291,7 @@ AS PERMISSIVE
 FOR UPDATE
 TO authenticated
 USING ((get_user_rol() = 'supervisor'::text))
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "producciones_delete_supervisor"
 ON public.producciones
@@ -359,7 +359,7 @@ ON public.planificaciones
 AS PERMISSIVE
 FOR INSERT
 TO authenticated
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "planificaciones_update_supervisor"
 ON public.planificaciones
@@ -367,7 +367,7 @@ AS PERMISSIVE
 FOR UPDATE
 TO authenticated
 USING ((get_user_rol() = 'supervisor'::text))
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "planificaciones_delete_supervisor"
 ON public.planificaciones
@@ -392,7 +392,7 @@ ON public.planificacion_recetas
 AS PERMISSIVE
 FOR INSERT
 TO authenticated
-WITH CHECK ((get_user_rol() = 'supervisor'::text));
+WITH CHECK ((obtener_usuarios_rol() = 'supervisor'::text));
 
 CREATE POLICY "planificacion_recetas_delete_supervisor"
 ON public.planificacion_recetas
@@ -418,19 +418,20 @@ AS PERMISSIVE
 FOR DELETE
 TO authenticated
 USING ((get_user_rol() = 'supervisor'::text));
+USING ((obtener_usuarios_rol() = 'supervisor'::text));
 
 
 -- Políticas para la tabla: sync_log
 ALTER TABLE public.sync_log ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Permitir lectura a autenticados"
+CREATE POLICY "sync_log_select_authenticated"
 ON public.sync_log
 AS PERMISSIVE
 FOR SELECT
 TO authenticated
-USING (true);
+USING (true);
 
-CREATE POLICY "Permitir inserción a autenticados"
+CREATE POLICY "sync_log_insert_authenticated"
 ON public.sync_log
 AS PERMISSIVE
 FOR INSERT

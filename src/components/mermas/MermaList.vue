@@ -42,7 +42,7 @@
     </div>
 
     <!-- Tabla -->
-    <div v-else class="data-card-content no-pad">
+    <div v-else class="data-card-content no-pad no-limit">
       <table class="data-card-table">
         <thead>
           <tr>
@@ -209,7 +209,7 @@ export default {
 .data-card-content {
   flex: 1;
   min-height: 0;
-  max-height: none !important;
+  max-height: none;
   overflow-y: auto;
 }
 </style>

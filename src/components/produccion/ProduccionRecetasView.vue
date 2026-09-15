@@ -218,7 +218,7 @@ export default {
 .scroll-recetas-alto {
     flex: 1;
     min-height: 0;
-    max-height: none !important;
+    max-height: none;
     overflow-y: auto;
     padding-right: 8px;
 }

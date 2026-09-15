@@ -130,7 +130,7 @@ Para evitar el retraso significativo ("Cold Start") de 3 a 5 segundos de una Edg
 Al eliminar un registro de `public.usuarios`, un Trigger con permisos elevados (`SECURITY DEFINER`) purga automáticamente al usuario de `auth.users` en la misma transacción:
 
 ```sql
-CREATE OR REPLACE FUNCTION public.handle_deleted_user()
+CREATE OR REPLACE FUNCTION public.procesar_usuarios_eliminado()
 RETURNS TRIGGER AS $$
 BEGIN
   DELETE FROM auth.users WHERE id = OLD.auth_user_id;
@@ -138,10 +138,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE TRIGGER on_user_deleted
+CREATE TRIGGER tr_after_delete_usuarios
   AFTER DELETE ON public.usuarios
   FOR EACH ROW
-  EXECUTE PROCEDURE public.handle_deleted_user();
+  EXECUTE PROCEDURE public.procesar_usuarios_eliminado();
 ```
 
 ---

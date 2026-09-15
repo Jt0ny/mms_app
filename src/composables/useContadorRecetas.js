@@ -1,4 +1,5 @@
 import { ref, computed } from 'vue'
+import { DURACION_INFO } from '../utils/alertTimes.js'
 
 export function useContadorRecetas() {
     const contadorRecetaPorId = ref({})
@@ -96,7 +97,7 @@ export function useContadorRecetas() {
         }
 
         if (mostrarMensaje) {
-            mostrarMensaje('info', `El contador de ${receta.nombre} ya llegó al total configurado`, 2500)
+            mostrarMensaje('info', `El contador de ${receta.nombre} ya llegó al total configurado`, DURACION_INFO)
         }
     }
 

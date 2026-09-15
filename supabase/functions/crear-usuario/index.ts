@@ -19,7 +19,7 @@ Deno.serve(async (req) => {
     )
 
     // Validar token y verificar rol con una sola llamada RPC
-    const { data: rol, error: userError } = await supabaseClient.rpc('get_user_rol')
+    const { data: rol, error: userError } = await supabaseClient.rpc('obtener_usuarios_rol')
     
     if (userError || rol !== 'supervisor') {
       throw new Error('No autorizado: Solo supervisores pueden crear usuarios')

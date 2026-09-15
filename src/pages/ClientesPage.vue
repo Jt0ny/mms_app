@@ -1,7 +1,7 @@
 <!-- ClientesPage.vue -->
 <template>
   <div class="page-container clientes-page">
-    <div class="page-content-wrap page-content-wide">
+    <div class="page-content-wrap wide">
       <!-- Encabezado -->
       <div class="page-header">
         <div>
@@ -168,9 +168,7 @@ export default {
 </script>
 
 <style scoped>
-.page-content-wide {
-  max-width: 1500px !important;
-}
+
 
 
 /* Layout Principal */

@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Arquitectura de MMS App",
+    "quality_profile": "showcase"
+  },
+  "layout": {
+    "mode": "grid",
+    "cols": 3,
+    "gapX": 200,
+    "gapY": 120,
+    "cellW": 180,
+    "cellH": 60
+  },
+  "components": [
+    {
+      "id": "web_client",
+      "type": "frontend",
+      "label": "Cliente Web",
+      "tag": "Navegador",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "supabase_client",
+      "type": "backend",
+      "label": "Cliente Supabase",
+      "tag": "Gestor de conexión",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "supabase_auth",
+      "type": "security",
+      "brand": "supabase",
+      "label": "Supabase Auth",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "supabase_edge",
+      "type": "backend",
+      "brand": "supabase",
+      "label": "Edge Functions",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "supabase_rpc",
+      "type": "database",
+      "brand": "supabase",
+      "label": "Funciones RPC",
+      "tag": "Lógica DB",
+      "row": 2,
+      "col": 0
+    },
+    {
+      "id": "supabase_db",
+      "type": "database",
+      "brand": "supabase",
+      "label": "PostgreSQL",
+      "tag": "Datos / RLS",
+      "row": 3,
+      "col": 0
+    },
+    {
+      "id": "ext_pedidos",
+      "type": "external",
+      "label": "API Pedidos",
+      "row": 0,
+      "col": 2
+    },
+    {
+      "id": "ext_materiales",
+      "type": "external",
+      "label": "API Materiales",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "ext_materia_prima",
+      "type": "external",
+      "label": "API Mat. Prima",
+      "row": 2,
+      "col": 2
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "Supabase",
+      "wraps": ["supabase_auth", "supabase_edge", "supabase_rpc", "supabase_db"]
+    }
+  ],
+  "connections": [
+    {
+      "from": "web_client",
+      "to": "supabase_client",
+      "label": "Registrar Producción",
+      "variant": "emphasis",
+      "labelDy": 24
+    },
+    {
+      "from": "supabase_client",
+      "to": "supabase_rpc",
+      "label": "Llama a RPC",
+      "variant": "emphasis",
+      "labelDy": 24
+    },
+    {
+      "from": "supabase_rpc",
+      "to": "supabase_db",
+      "label": "Modifica Tablas",
+      "variant": "emphasis",
+      "labelDy": 24
+    },
+    {
+      "from": "web_client",
+      "to": "ext_pedidos",
+      "label": "GET Pedidos"
+    },
+    {
+      "from": "web_client",
+      "to": "ext_materiales",
+      "label": "GET Materiales",
+      "labelDx": -45,
+      "labelDy": 47
+    },
+    {
+      "from": "web_client",
+      "to": "ext_materia_prima",
+      "label": "GET Mat. Prima",
+      "labelDx": 45,
+      "labelDy": 47
+    },
+    {
+      "from": "supabase_client",
+      "to": "supabase_auth",
+      "label": "Auth JWT"
+    },
+    {
+      "from": "supabase_client",
+      "to": "supabase_edge",
+      "label": "Invoke Func"
+    }
+  ]
+}

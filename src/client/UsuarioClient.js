@@ -86,7 +86,7 @@ export default {
   // Crear usuario — Llama a Edge Function (seguro, sin exponer service_role_key)
   async agregarUsuario(usuario) {
     try {
-      const { data, error } = await supabase.functions.invoke('create-user', {
+      const { data, error } = await supabase.functions.invoke('crear-usuario', {
         body: {
           email: usuario.email,
           password: usuario.password,

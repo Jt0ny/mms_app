@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import SyncLogClient from '../client/SyncLogClient'
+import { DURACION_ERROR } from '../utils/alertTimes.js'
 
 export function useInventario({ obtenerDatos, sincronizar, nombreModulo, mostrarMensaje }) {
 
@@ -12,7 +13,7 @@ export function useInventario({ obtenerDatos, sincronizar, nombreModulo, mostrar
 
         if (response?.success === false) {
             console.error(response.error)
-            mostrarMensaje('error', `Error al cargar ${nombreModulo}`, 3000)
+            mostrarMensaje('error', `Error al cargar ${nombreModulo}`, DURACION_ERROR)
             inventarioActual.value = []
         } else {
             inventarioActual.value = response?.data ?? []

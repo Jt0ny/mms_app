@@ -2,8 +2,8 @@
 -- FUNCIONES RPC Y TRIGGERS
 -- ==========================================
 
--- Function: get_user_rol
-CREATE OR REPLACE FUNCTION public.get_user_rol()
+-- Function: obtener_usuarios_rol
+CREATE OR REPLACE FUNCTION public.obtener_usuarios_rol()
  RETURNS text
  LANGUAGE sql
  STABLE SECURITY DEFINER
@@ -12,8 +12,8 @@ AS $function$
 $function$
 
 
--- Function: get_usuario_id
-CREATE OR REPLACE FUNCTION public.get_usuario_id()
+-- Function: obtener_usuarios_id
+CREATE OR REPLACE FUNCTION public.obtener_usuarios_id()
  RETURNS uuid
  LANGUAGE sql
  STABLE SECURITY DEFINER
@@ -22,8 +22,8 @@ AS $function$
 $function$
 
 
--- Function: handle_deleted_user
-CREATE OR REPLACE FUNCTION public.handle_deleted_user()
+-- Function: procesar_usuarios_eliminado
+CREATE OR REPLACE FUNCTION public.procesar_usuarios_eliminado()
  RETURNS trigger
  LANGUAGE plpgsql
  SECURITY DEFINER

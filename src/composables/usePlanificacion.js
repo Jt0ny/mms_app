@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import PlanificacionClient from '../client/PlanificacionClient.js'
 import PlanificacionAlgoritmo from '../client/PlanificacionAlgoritmo.js'
+import { DURACION_EXITO } from '../utils/alertTimes.js'
 import { useCatalogos } from './useCatalogos.js'
 import { useMensajes } from './useMensajes.js'
 import { obtenerFechaHoy } from '../utils/date.js'
@@ -165,7 +166,7 @@ export function usePlanificacion() {
             )
 
             if (resultado.fallidos.length === 0) {
-                mostrarMensaje('exito', 'Todas las planificaciones se han guardado correctamente', 3000)
+                mostrarMensaje('exito', 'Todas las planificaciones se han guardado correctamente', DURACION_EXITO)
                 asignaciones.value = []
                 gruposRecetaBackup.value = []
                 categoriasRequeridas.value = []

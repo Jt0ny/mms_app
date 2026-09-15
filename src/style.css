@@ -271,6 +271,10 @@ p {
   gap: 24px;
 }
 
+.page-content-wrap.wide {
+  max-width: 1500px;
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -712,6 +716,10 @@ p {
   overflow-y: auto;
   overflow-x: auto;
   max-height: 450px;
+}
+
+.data-card-content.no-limit {
+  max-height: none;
 }
 
 .data-card-content.no-pad {

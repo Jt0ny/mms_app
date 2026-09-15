@@ -4,7 +4,7 @@
 
       <!-- Logo -->
       <div class="logo" aria-label="Gestión de manufactura">
-        <div class="logo-mark">GM</div>
+        <img src="../../assets/logo.png" alt="Logo Florícola" class="logo-img" />
         <div class="logo-copy">
           <span>Florícola</span>
           <strong>Sistema MMS</strong>
@@ -164,17 +164,10 @@ export default {
   grid-area: logo;
 }
 
-.logo-mark {
+.logo-img {
   width: 52px;
   height: 52px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(223, 249, 231, 0.88));
-  color: var(--secondary);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  box-shadow: inset 0 0 0 1px rgba(42, 93, 28, 0.08);
+  object-fit: contain;
 }
 
 .logo-copy {

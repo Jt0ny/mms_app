@@ -33,8 +33,8 @@
                         <ClipboardDocumentListIcon class="icon-xl text-light" />
                     </span>
                     <p>No tienes recetas asignadas para hoy.</p>
-                    <p class="sin-plan-sub">El supervisor debe asignarte una planificación desde la sección
-                        Planificación.</p>
+                    <span class="sin-plan-sub">El supervisor debe asignarte una planificación desde la sección
+                        de <strong>Planificación</strong>.</span>
                 </div>
 
                 <ProduccionRecetasView v-else modo="contador" :contador-por-receta="contadorRecetaPorId"
@@ -212,9 +212,9 @@ export default {
 }
 
 .sin-plan-sub {
-    color: var(--text-light) !important;
-    font-weight: 400 !important;
-    font-size: 14px !important;
+    color: var(--text-light);
+    font-weight: 400;
+    font-size: 14px;
 }
 
 /* ── Grid ───────────────────────────── */

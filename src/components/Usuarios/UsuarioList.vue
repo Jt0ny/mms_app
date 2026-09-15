@@ -20,7 +20,7 @@
             <p>Cargando usuarios...</p>
         </div>
 
-        <div v-else-if="usuarios.length > 0" class="data-card-content">
+        <div v-else-if="usuarios.length > 0" class="data-card-content no-limit">
             <div class="table-info">
                 <p><strong>{{ usuarios.length }}</strong> usuarios registrados</p>
             </div>
@@ -131,7 +131,7 @@ export default {
 .data-card-content {
   flex: 1;
   min-height: 0;
-  max-height: none !important;
+  max-height: none;
   overflow-y: auto;
 }
 </style>

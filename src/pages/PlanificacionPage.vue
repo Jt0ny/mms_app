@@ -258,21 +258,4 @@ export default {
     padding: 16px 0;
 }
 
-.fade-msg-enter-active,
-.fade-msg-leave-active {
-    transition: opacity 0.3s ease;
-}
-
-.fade-msg-enter-from,
-.fade-msg-leave-to {
-    opacity: 0;
-}
-
-
-
-@media (max-width: 768px) {
-    .page-container {
-        padding: 12px;
-    }
-}
 </style>

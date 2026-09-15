@@ -1,10 +1,11 @@
 import { reactive } from 'vue'
+import { DURACION_EXITO, DURACION_INLINE } from '../utils/alertTimes.js'
 
 export function useMensajes() {
     const mensaje = reactive({ tipo: null, texto: '' })
     const mensajeInline = reactive({ tipo: null, texto: '' })
 
-    function mostrarMensaje(tipo, texto, duracion = 4000) {
+    function mostrarMensaje(tipo, texto, duracion = DURACION_EXITO) {
         mensaje.tipo = tipo
         mensaje.texto = texto
         if (duracion > 0) {
@@ -12,7 +13,7 @@ export function useMensajes() {
         }
     }
 
-    function mostrarMensajeInline(tipo, texto, duracion = 5000) {
+    function mostrarMensajeInline(tipo, texto, duracion = DURACION_INLINE) {
         mensajeInline.tipo = tipo
         mensajeInline.texto = texto
         if (duracion > 0) {

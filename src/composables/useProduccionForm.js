@@ -1,6 +1,7 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import PedidoClient from '../client/PedidoClient'
 import { obtenerFechaHoy } from '../utils/date'
+import { DURACION_INFO, DURACION_EXITO, DURACION_ERROR } from '../utils/alertTimes.js'
 
 export function useProduccionForm(props, emit) {
     const cargandoCategorias = ref(false)
@@ -27,9 +28,9 @@ export function useProduccionForm(props, emit) {
         if (limite !== undefined && cantidadFinal >= limite) {
             if (cantidadFinal > limite) {
                 cantidadFinal = limite
-                notificar('info', `El total planificado para la categoría ${categoria} es ${limite} y ya ha sido completado.`, 3000)
+                notificar('info', `El total planificado para la categoría ${categoria} es ${limite} y ya ha sido completado.`, DURACION_INFO)
             } else if (cantidadFinal === limite) {
-                notificar('exito', `¡Has completado la cantidad requerida para ${categoria}!`, 3000)
+                notificar('exito', `¡Has completado la cantidad requerida para ${categoria}!`, DURACION_EXITO)
             }
         }
 
@@ -81,7 +82,7 @@ export function useProduccionForm(props, emit) {
         cargarCategorias()
     })
 
-    const notificar = (tipo, texto, duracion = 4000) => {
+    const notificar = (tipo, texto, duracion = DURACION_ERROR) => {
         emit('notificar', { tipo, texto, duracion })
     }
 

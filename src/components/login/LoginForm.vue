@@ -1,14 +1,13 @@
 <template>
-    <div class="login-card">
+    <form class="login-card" @submit.prevent="ingresar">
         <h1>Gestión de Manufactura</h1>
         <p type="Email:"><input type="email" v-model="email" autocomplete="email" /></p>
-        <p type="Contraseña:"><input type="password" v-model="contrasena" autocomplete="current-password"
-                @keyup.enter="ingresar" /></p>
+        <p type="Contraseña:"><input type="password" v-model="contrasena" autocomplete="current-password" /></p>
         <Alertas :mensaje="mensaje" />
-        <button type="button" class="btn btn-primary btn-block login-btn" @click="ingresar" :disabled="cargando">
+        <button type="submit" class="btn btn-primary btn-block login-btn" :disabled="cargando">
             {{ cargando ? 'Ingresando...' : 'Ingresar' }}
         </button>
-    </div>
+    </form>
 </template>
 
 <script>
