@@ -80,6 +80,7 @@
 
 <script>
 import { ClipboardDocumentListIcon, InboxIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { obtenerFechaHoy } from '../../utils/date.js'
 
 export default {
   name: 'MermaList',
@@ -102,7 +103,7 @@ export default {
       filtros: {
         buscar: '',
         tipo: '',
-        fecha: ''
+        fecha: obtenerFechaHoy()
       }
     }
   },
@@ -199,8 +200,10 @@ export default {
 
 /* Forzar altura al 100% de la columna (para igualar al formulario exacto) */
 .data-card {
-  height: 0; /* Evita que los registros internos estiren la fila del grid infinitamente */
-  min-height: 100%; /* Obliga a la tarjeta a medir exactamente lo mismo que el formulario */
+  height: 0;
+  /* Evita que los registros internos estiren la fila del grid infinitamente */
+  min-height: 100%;
+  /* Obliga a la tarjeta a medir exactamente lo mismo que el formulario */
   display: flex;
   flex-direction: column;
 }

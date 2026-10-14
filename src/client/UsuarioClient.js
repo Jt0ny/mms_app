@@ -57,7 +57,7 @@ export default {
         .select('id, nombre, rol')
         .eq('auth_user_id', session.user.id)
         .single()
-        
+
       if (userError) throw userError
 
       return { success: true, data: usuario }
@@ -73,6 +73,7 @@ export default {
       const { data, error } = await supabase
         .from('usuarios')
         .select('id, nombre, rol, email')
+        .eq('activo', true)
         .order('nombre', { ascending: true })
 
       if (error) throw error
@@ -104,13 +105,12 @@ export default {
     }
   },
 
-  // Eliminar usuario — Directamente en la base de datos (Trigger SQL limpia auth.users)
+  // Eliminar usuario — Vía RPC (Soft Delete y limpieza de auth.users)
   async eliminarUsuario(id) {
     try {
-      const { error } = await supabase
-        .from('usuarios')
-        .delete()
-        .eq('id', id)
+      const { error } = await supabase.rpc('rpc_desactivar_usuario', {
+        usuario_id_a_dar_de_baja: id
+      })
 
       if (error) throw error
       return { success: true }

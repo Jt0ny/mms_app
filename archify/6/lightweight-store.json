@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Patrón Lightweight Store",
+    "subtitle": "Estrategia de manejo de estado descentralizado",
+    "output": "lightweight-store.html",
+    "quality_profile": "showcase",
+    "viewBox": [850, 600]
+  },
+  "components": [
+    { "id": "vue_components", "type": "frontend", "label": "Componentes Vue", "sublabel": "Vistas y Formularios", "pos": [250, 40], "size": [350, 60] },
+
+    { "id": "use_auth", "type": "frontend", "label": "useAuth()", "sublabel": "Composable", "pos": [50, 180], "size": [150, 60] },
+    { "id": "use_catalogos", "type": "frontend", "label": "useCatalogos()", "sublabel": "Composable", "pos": [250, 180], "size": [150, 60] },
+    
+    { "id": "use_planificacion", "type": "frontend", "label": "usePlanificacion()", "sublabel": "Composable", "pos": [450, 180], "size": [150, 60] },
+    { "id": "use_produccion", "type": "frontend", "label": "useProduccionForm()", "sublabel": "Composable", "pos": [650, 180], "size": [150, 60] },
+
+    { "id": "state_global", "type": "database", "label": "Estado Global", "sublabel": "reactividad externa", "tag": "Singleton", "pos": [150, 320], "size": [150, 60] },
+
+    { "id": "state_local_1", "type": "database", "label": "Estado Local", "sublabel": "reactividad interna", "tag": "Aislamiento", "pos": [450, 320], "size": [150, 60] },
+    { "id": "state_local_2", "type": "database", "label": "Estado Local", "sublabel": "reactividad interna", "tag": "Aislamiento", "pos": [650, 320], "size": [150, 60] },
+
+    { "id": "supabase", "type": "cloud", "label": "Supabase", "sublabel": "Backend & Base de Datos", "pos": [350, 480], "size": [150, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Nivel 1: Estado Global (Singleton)", "wraps": ["use_auth", "use_catalogos", "state_global"] },
+    { "kind": "region", "label": "Nivel 2: Estado de Instancia (Aislamiento)", "wraps": ["use_planificacion", "use_produccion", "state_local_1", "state_local_2"] }
+  ],
+  "connections": [
+    { "id": "vc_auth", "from": "vue_components", "to": "use_auth", "fromSide": "bottom", "toSide": "top" },
+    { "id": "vc_cat", "from": "vue_components", "to": "use_catalogos", "fromSide": "bottom", "toSide": "top" },
+    { "id": "vc_plan", "from": "vue_components", "to": "use_planificacion", "fromSide": "bottom", "toSide": "top" },
+    { "id": "vc_prod", "from": "vue_components", "to": "use_produccion", "fromSide": "bottom", "toSide": "top" },
+
+    { "id": "auth_sg", "from": "use_auth", "to": "state_global", "label": "comparte", "fromSide": "bottom", "toSide": "top" },
+    { "id": "cat_sg", "from": "use_catalogos", "to": "state_global", "label": "comparte", "fromSide": "bottom", "toSide": "top" },
+
+    { "id": "plan_sl1", "from": "use_planificacion", "to": "state_local_1", "label": "encapsula", "fromSide": "bottom", "toSide": "top", "labelDy": 24 },
+    { "id": "prod_sl2", "from": "use_produccion", "to": "state_local_2", "label": "encapsula", "fromSide": "bottom", "toSide": "top", "labelDy": 24 },
+
+    { "id": "sg_supa", "from": "state_global", "to": "supabase", "label": "API (Caché/Sesión)", "fromSide": "bottom", "toSide": "left" },
+    { "id": "sl1_supa", "from": "state_local_1", "to": "supabase", "label": "API", "fromSide": "bottom", "toSide": "top" },
+    { "id": "sl2_supa", "from": "state_local_2", "to": "supabase", "label": "API", "fromSide": "bottom", "toSide": "right" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Patrón Singleton", "items": ["Variables declaradas fuera de la función.", "La misma referencia en memoria se comparte en toda la app.", "Útil para la sesión y caché de catálogos."] },
+    { "dot": "emerald", "title": "Aislamiento de Instancia", "items": ["Variables declaradas dentro de la función.", "Cada vista crea un estado nuevo y limpio.", "Evita colisiones en formularios de producción o planificación."] }
+  ]
+}

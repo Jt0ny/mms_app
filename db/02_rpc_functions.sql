@@ -22,16 +22,25 @@ AS $function$
 $function$
 
 
--- Function: procesar_usuarios_eliminado
-CREATE OR REPLACE FUNCTION public.procesar_usuarios_eliminado()
- RETURNS trigger
+-- Function: rpc_desactivar_usuario
+CREATE OR REPLACE FUNCTION public.rpc_desactivar_usuario(usuario_id_a_dar_de_baja uuid)
+ RETURNS void
  LANGUAGE plpgsql
  SECURITY DEFINER
 AS $function$
+DECLARE
+    v_auth_id uuid;
 BEGIN
-  -- Elimina el usuario de la tabla de autenticación
-  DELETE FROM auth.users WHERE id = OLD.auth_user_id;
-  RETURN OLD;
+    -- 1. Obtener el ID de autenticación del usuario
+    SELECT auth_user_id INTO v_auth_id FROM public.usuarios WHERE id = usuario_id_a_dar_de_baja;
+    
+    -- 2. Marcar al usuario como inactivo en la tabla pública
+    UPDATE public.usuarios SET activo = false WHERE id = usuario_id_a_dar_de_baja;
+    
+    -- 3. Borrar completamente sus credenciales de acceso en Supabase Auth
+    IF v_auth_id IS NOT NULL THEN
+        DELETE FROM auth.users WHERE id = v_auth_id;
+    END IF;
 END;
 $function$
 
@@ -159,7 +168,11 @@ $function$
 
 
 -- Function: rpc_obtener_kpis_dashboard
-CREATE OR REPLACE FUNCTION public.rpc_obtener_kpis_dashboard(p_fecha date)
+CREATE OR REPLACE FUNCTION public.rpc_obtener_kpis_dashboard(
+    p_fecha date,
+    p_umbral_tallos integer DEFAULT 200,
+    p_umbral_materiales integer DEFAULT 200
+)
  RETURNS jsonb
  LANGUAGE plpgsql
  SECURITY DEFINER
@@ -167,6 +180,9 @@ AS $function$
 DECLARE
     v_total_pedidos_stems INTEGER := 0;
     v_total_mermas_stems INTEGER := 0;
+    v_total_procesado_stems INTEGER := 0;
+    v_total_planificado_stems INTEGER := 0;
+    v_pedidos_count INTEGER := 0;
     
     v_estado_pedidos JSONB;
     v_avance_operadores JSONB;
@@ -174,7 +190,7 @@ DECLARE
     v_top_mermas_insumos JSONB;
     v_alertas_stock JSONB := '[]'::jsonb;
 BEGIN
-    -- 1. totalPedidosStems & estadoPedidos
+    -- 1. totalPedidosStems & estadoPedidos & pedidos_count
     WITH pedidos_filtrados AS (
         SELECT p.id, p.estado, p.fecha_pedido, c.nombre AS cliente_facturacion,
             COALESCE(SUM(pd.stems), 0)::INTEGER AS total_stems
@@ -188,6 +204,7 @@ BEGIN
     )
     SELECT 
         COALESCE(SUM(total_stems), 0)::INTEGER,
+        COUNT(*)::INTEGER,
         COALESCE(
             jsonb_agg(
                 jsonb_build_object(
@@ -204,7 +221,7 @@ BEGIN
             ), 
             '[]'::jsonb
         )
-    INTO v_total_pedidos_stems, v_estado_pedidos
+    INTO v_total_pedidos_stems, v_pedidos_count, v_estado_pedidos
     FROM pedidos_filtrados;
 
     -- 2. totalMermasStems, mermasMotivos, topMermasInsumos
@@ -260,7 +277,7 @@ BEGIN
     ) INTO v_top_mermas_insumos
     FROM (SELECT * FROM insumos ORDER BY cant DESC LIMIT 5) sub;
 
-    -- 3. avanceOperadores
+    -- 3. avanceOperadores y suma total de produccion y planificacion
     WITH plan_ops AS (
         SELECT p.operador_id, COALESCE(u.nombre, 'Operador') as nombre,
                COALESCE(SUM(pr.cantidad), 0) as planificado
@@ -283,21 +300,25 @@ BEGIN
         FROM plan_ops p
         FULL OUTER JOIN prod_ops pr ON pr.operador_id = p.operador_id
     )
-    SELECT COALESCE(
-        jsonb_agg(
-            jsonb_build_object(
-                'operadorId', op_id,
-                'nombre', nombre,
-                'planificado', planificado,
-                'producido', producido,
-                'porcentaje', CASE 
-                                WHEN planificado > 0 THEN LEAST(100, ROUND((producido * 100.0) / planificado))
-                                WHEN producido > 0 THEN 100
-                                ELSE 0 
-                              END
-            )
-        ), '[]'::jsonb
-    ) INTO v_avance_operadores
+    SELECT 
+        COALESCE(
+            jsonb_agg(
+                jsonb_build_object(
+                    'operadorId', op_id,
+                    'nombre', nombre,
+                    'planificado', planificado,
+                    'producido', producido,
+                    'porcentaje', CASE 
+                                    WHEN planificado > 0 THEN LEAST(100, ROUND((producido * 100.0) / planificado))
+                                    WHEN producido > 0 THEN 100
+                                    ELSE 0 
+                                  END
+                )
+            ), '[]'::jsonb
+        ),
+        COALESCE(SUM(producido), 0)::INTEGER,
+        COALESCE(SUM(planificado), 0)::INTEGER
+    INTO v_avance_operadores, v_total_procesado_stems, v_total_planificado_stems
     FROM ops_list;
 
     -- 4. Alertas Stock
@@ -341,7 +362,7 @@ BEGIN
             'texto', 'Alerta de Reabastecimiento: La variedad de rosa "' || variedad || '" cuenta con stock mínimo de ' || cantidad_total || ' tallos.'
         ) as alerta
         FROM materia_prima 
-        WHERE cantidad_total < 200 
+        WHERE cantidad_total < p_umbral_tallos
           AND id NOT IN (SELECT d.id FROM demanda_mp d LEFT JOIN materia_prima mp2 ON mp2.id = d.id WHERE COALESCE(mp2.cantidad_total, 0) < d.total_req)
 
         UNION ALL
@@ -351,7 +372,7 @@ BEGIN
             'texto', 'Alerta de Reabastecimiento: El material "' || nombre || '" cuenta con stock bajo de ' || cantidad || ' unidades.'
         ) as alerta
         FROM materiales 
-        WHERE cantidad < 200
+        WHERE cantidad < p_umbral_materiales
           AND id NOT IN (SELECT d.id FROM demanda_mat d LEFT JOIN materiales mat2 ON mat2.id = d.id WHERE COALESCE(mat2.cantidad, 0) < d.total_req)
     )
     SELECT COALESCE(jsonb_agg(alerta), '[]'::jsonb) INTO v_alertas_stock FROM pre_alertas;
@@ -365,6 +386,11 @@ BEGIN
     -- Return full payload
     RETURN jsonb_build_object(
         'kpis', jsonb_build_object(
+            'totalProcesadoStems', v_total_procesado_stems,
+            'totalPlanificadoStems', v_total_planificado_stems,
+            'demandaStems', v_total_pedidos_stems,
+            'demandaPedidosCount', v_pedidos_count,
+            'totalAlertasStock', jsonb_array_length(v_alertas_stock),
             'totalPedidosStems', v_total_pedidos_stems,
             'totalMermasStems', v_total_mermas_stems
         ),

@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { UMBRAL_MINIMO_TALLOS, UMBRAL_MINIMO_MATERIALES } from '../utils/stockAlerts.js'
 
 
 // --- FUNCIONES PRIVADAS COMPARTIDAS ---
@@ -42,7 +43,11 @@ export default {
     // Obtiene los datos completos del dashboard para una fecha dada.
     async obtenerDatosDashboard(fecha) {
         try {
-            const { data, error } = await supabase.rpc('rpc_obtener_kpis_dashboard', { p_fecha: fecha })
+            const { data, error } = await supabase.rpc('rpc_obtener_kpis_dashboard', {
+                p_fecha: fecha,
+                p_umbral_tallos: UMBRAL_MINIMO_TALLOS,
+                p_umbral_materiales: UMBRAL_MINIMO_MATERIALES
+            })
 
             if (error) throw error
 

@@ -11,6 +11,7 @@
             </div>
 
             <Alertas :mensaje="mensaje" />
+            <Alertas v-if="alertaStockCritico && !mensaje?.texto" :mensaje="alertaStockCritico" />
 
             <div class="main-layout-split" :class="{ 'with-preview': datosProcesados.length > 0 }">
 
@@ -31,11 +32,17 @@
                         <template #header>
                             <th>Variedad</th>
                             <th>Cantidad (Tallos)</th>
+                            <th>Estado</th>
                             <th>Fecha Ingreso</th>
                         </template>
                         <template #row="{ item }">
                             <td class="text-variety">{{ item.variedad }}</td>
                             <td class="text-quantity">{{ item.cantidadTotal }}</td>
+                            <td>
+                                <span class="badge" :class="clasificarEstadoStock(item.cantidadTotal, UMBRAL_MINIMO_TALLOS).badgeClass">
+                                    {{ clasificarEstadoStock(item.cantidadTotal, UMBRAL_MINIMO_TALLOS).label }}
+                                </span>
+                            </td>
                             <td class="text-date">{{ formatearFecha(item.fechaIngreso) }}</td>
                         </template>
                     </InventarioTable>
@@ -77,6 +84,7 @@ import InventarioTable from '../components/shared/InventarioTable.vue'
 import VistaPreviaTable from '../components/shared/VistaPreviaTable.vue'
 import { useMensajes } from '../composables/useMensajes.js'
 import { obtenerFechaHoy, formatearFecha } from '../utils/date.js'
+import { UMBRAL_MINIMO_TALLOS, clasificarEstadoStock } from '../utils/stockAlerts.js'
 import { SunIcon } from '@heroicons/vue/24/outline'
 
 export default {
@@ -103,7 +111,22 @@ export default {
 
         return {
             mensaje, mostrarMensaje, leerExcel, normalizarClaves, catalogos, formatearFecha,
-            inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI
+            inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI,
+            UMBRAL_MINIMO_TALLOS, clasificarEstadoStock
+        }
+    },
+
+    computed: {
+        alertaStockCritico() {
+            if (!this.inventarioActual || !this.inventarioActual.length) return null
+            const bajoStock = this.inventarioActual.filter(
+                (item) => Number(item.cantidadTotal || 0) < this.UMBRAL_MINIMO_TALLOS
+            )
+            if (bajoStock.length === 0) return null
+            return {
+                tipo: 'warning',
+                texto: `Alerta de Stock: ${bajoStock.length} variedad(es) se encuentran por debajo del umbral mínimo permitido (${this.UMBRAL_MINIMO_TALLOS} tallos).`
+            }
         }
     },
 

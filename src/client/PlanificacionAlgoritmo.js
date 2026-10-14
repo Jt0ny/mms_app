@@ -27,10 +27,14 @@ export default {
         return data || [];
     },
 
-    // Algoritmo de distribución equitativa mejorado.
+    // ============================================================================
+    // FASE 3: Distribución Equitativa (Heurística Greedy LPT - Longest Processing Time)
+    // ============================================================================
+    // Variante del problema de programación de multiprocesadores (Multiprocessor Scheduling Problem).
     // Divide los stems de cada receta proporcionalmente entre los operadores,
-    // de modo que cada operador reciba una cantidad similar de stems totales.
-    // Las recetas que excedan la carga promedio por operador se dividen entre varios.
+    // calculando una "carga promedio ideal" de modo que cada operador reciba una cantidad similar.
+    // Iterando de mayor a menor volumen, las recetas que excedan la carga promedio se fraccionan
+    // matemáticamente entre múltiples operadores.
     distribuirEquitativamente(operadores, gruposReceta) {
         if (!operadores.length || !gruposReceta.length) return [];
 
@@ -89,8 +93,11 @@ export default {
         return carga.filter(c => c.recetas.length > 0);
     },
 
-    // Reconstruye los grupos de receta, asigna pedidos por FIFO, distribuye a operadores
-    // y arma la estructura de asignaciones inicial.
+    // ============================================================================
+    // FASE 2 y Orquestador de FASE 3: Asignación FIFO y Orquestación de Distribución
+    // ============================================================================
+    // Reconstruye los grupos de receta, asigna pedidos por principio de prioridad
+    // cronológica a las recetas físicas y luego delega a la Fase 3 la distribución de carga.
     asignarYDistribuir(categoriasRequeridas, mapeo, todasLasRecetas, operadoresActivos) {
         const gruposReceta = []
         for (const cat of categoriasRequeridas) {
@@ -106,7 +113,11 @@ export default {
                 }
             })
 
-            // Algoritmo FIFO para asignar pedidos individuales de la categoría a las recetas físicas
+            // ------------------------------------------------------------------------
+            // FASE 2: Asignación FIFO (First In, First Out)
+            // Asigna pedidos individuales de la categoría a las recetas físicas disponibles,
+            // respetando la prioridad de los pedidos más antiguos.
+            // ------------------------------------------------------------------------
             let recipeIdx = 0
             for (const p of cat.pedidos) {
                 let remainingStems = p.stems
@@ -242,9 +253,11 @@ export default {
         return asignaciones
     },
 
-    // Guarda en batch las planificaciones calculadas automáticamente.
-    // Si se pasa mapeoCategorias, actualiza primero los pedido_detalles de Supabase
-    // para mapear la categoría a la receta seleccionada.
+    // ============================================================================
+    // FASE 4: Persistencia
+    // ============================================================================
+    // Ejecuta el remapeo de los detalles de los pedidos (si el usuario hizo ajustes de mapeo)
+    // y guarda las planificaciones masivamente de forma paralela en la base de datos.
     async crearPlanificacionesMasivas(distribuciones, fecha, mapeoCategorias = null) {
         // 1. Si se pasó un mapeo de categorías, actualizar primero los detalles de los pedidos
         if (mapeoCategorias && Object.keys(mapeoCategorias).length > 0) {
@@ -460,7 +473,11 @@ export default {
         return { exitosos, fallidos };
     },
 
-    // Obtiene los pedidos pendientes agrupados puramente por nombre de categoría
+    // ============================================================================
+    // FASE 1: Agrupación y Filtrado
+    // ============================================================================
+    // Consulta en bloque los pedidos pendientes para la fecha indicada, los agrupa
+    // por categoría y finalmente los ordena de forma descendente por volumen de tallos (stems).
     async obtenerPedidosAgrupadosPorCategoria(fecha) {
         try {
             const data = await this._obtenerPedidosPendientes(fecha);

@@ -11,6 +11,7 @@
             </div>
 
             <Alertas :mensaje="mensaje" />
+            <Alertas v-if="alertaStockCritico && !mensaje?.texto" :mensaje="alertaStockCritico" />
 
             <div class="main-layout-split" :class="{ 'with-preview': datosProcesados.length > 0 }">
 
@@ -31,12 +32,18 @@
                         <template #header>
                             <th>Nombre</th>
                             <th>Cantidad</th>
+                            <th>Estado</th>
                             <th>Descripción</th>
                             <th>Acciones</th>
                         </template>
                         <template #row="{ item }">
                             <td class="text-variety">{{ item.nombre }}</td>
                             <td class="text-quantity">{{ item.cantidad }}</td>
+                            <td>
+                                <span class="badge" :class="clasificarEstadoStock(item.cantidad, UMBRAL_MINIMO_MATERIALES).badgeClass">
+                                    {{ clasificarEstadoStock(item.cantidad, UMBRAL_MINIMO_MATERIALES).label }}
+                                </span>
+                            </td>
                             <td>{{ item.descripcion || '-' }}</td>
                             <td class="actions-col">
                                 <button class="btn-action-ghost delete" @click="eliminarMaterial(item.id)">
@@ -86,6 +93,7 @@ import MaterialForm from '../components/materiales/MaterialForm.vue'
 import InventarioTable from '../components/shared/InventarioTable.vue'
 import VistaPreviaTable from '../components/shared/VistaPreviaTable.vue'
 import { useMensajes } from '../composables/useMensajes.js'
+import { UMBRAL_MINIMO_MATERIALES, clasificarEstadoStock } from '../utils/stockAlerts.js'
 import { TrashIcon, ArchiveBoxIcon } from '@heroicons/vue/24/outline'
 
 export default {
@@ -114,7 +122,22 @@ export default {
 
         return {
             mensaje, mostrarMensaje, leerExcel, normalizarClaves, catalogos,
-            inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI
+            inventarioActual, cargandoInventario, cargarInventario, sincronizarAPI,
+            UMBRAL_MINIMO_MATERIALES, clasificarEstadoStock
+        }
+    },
+
+    computed: {
+        alertaStockCritico() {
+            if (!this.inventarioActual || !this.inventarioActual.length) return null
+            const bajoStock = this.inventarioActual.filter(
+                (item) => Number(item.cantidad || 0) < this.UMBRAL_MINIMO_MATERIALES
+            )
+            if (bajoStock.length === 0) return null
+            return {
+                tipo: 'warning',
+                texto: `Alerta de Stock: ${bajoStock.length} material(es) se encuentran por debajo del umbral mínimo permitido (${this.UMBRAL_MINIMO_MATERIALES} unidades).`
+            }
         }
     },
 

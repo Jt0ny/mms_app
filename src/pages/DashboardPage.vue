@@ -1,14 +1,27 @@
 <template>
     <div class="page-container dashboard-page">
         <div class="page-content-wrap">
-            <!-- Encabezado -->
+            <!-- Encabezado con selector de fecha histórica -->
             <div class="page-header">
                 <div>
                     <h1 class="page-title">Panel de Control</h1>
-                    <p class="page-subtitle">Monitoreo de producción, inventarios y mermas en tiempo real</p>
+                    <p class="page-subtitle">
+                        <span v-if="esHoy">Monitoreo de producción, inventarios y mermas en tiempo real</span>
+                        <span v-else class="subtitle-historico">
+                            Visualizando datos históricos del <strong>{{ formatearFechaVisual(fechaSeleccionada)
+                                }}</strong>
+                        </span>
+                    </p>
                 </div>
-                <div class="header-actions">
-                    <button @click="cargarDatosDashboard" :disabled="cargando" class="btn btn-primary inline-flex-center gap-6">
+                <div class="header-actions filter-bar">
+                    <input type="date" v-model="fechaSeleccionada" @change="cargarDatosDashboard"
+                        class="filter-input filter-date" title="Seleccionar fecha a consultar" />
+                    <button v-if="!esHoy" @click="volverAHoy" class="btn btn-secondary"
+                        title="Volver a la fecha actual">
+                        Hoy
+                    </button>
+                    <button @click="cargarDatosDashboard" :disabled="cargando"
+                        class="btn btn-primary inline-flex-center gap-6">
                         <ArrowPathIcon class="icon-sm" :class="{ 'spin': cargando }" />
                         {{ cargando ? 'Cargando...' : 'Actualizar Panel' }}
                     </button>
@@ -24,8 +37,10 @@
             </div>
 
             <!-- KPIs Principales -->
-            <DashboardKPIs :totalPedidosStems="kpis.totalPedidosStems"
-                :totalMermasStems="kpis.totalMermasStems" :totalAlertasStock="alertasStock.length" />
+            <DashboardKPIs :totalProcesadoStems="kpis.totalProcesadoStems || 0"
+                :totalPlanificadoStems="kpis.totalPlanificadoStems || 0"
+                :demandaStems="kpis.demandaStems || kpis.totalPedidosStems || 0"
+                :demandaPedidosCount="kpis.demandaPedidosCount || 0" :totalAlertasStock="alertasStock.length" />
 
             <!-- Layout de Gráficos e Indicadores -->
             <div class="grid-halves">
@@ -36,7 +51,7 @@
                 <DashboardDistribucionMermas :mermasMotivos="mermasMotivos" :topMermasInsumos="topMermasInsumos"
                     :cargando="cargando" />
 
-                <!-- Estado de Pedidos de Hoy -->
+                <!-- Estado de Pedidos de la Fecha -->
                 <DashboardEstadoPedidos :pedidos="estadoPedidos" :cargando="cargando" class="pedidos-widget" />
             </div>
         </div>
@@ -69,17 +84,27 @@ export default {
         return { mensaje, mostrarMensaje }
     },
     data() {
+        const hoy = obtenerFechaHoy()
         return {
+            fechaHoy: hoy,
+            fechaSeleccionada: hoy,
             cargando: false,
             alertasStock: [],
             kpis: {
-                totalPedidosStems: 0,
-                totalMermasStems: 0
+                totalProcesadoStems: 0,
+                totalPlanificadoStems: 0,
+                demandaStems: 0,
+                demandaPedidosCount: 0
             },
             avanceOperadores: [],
             mermasMotivos: [],
             topMermasInsumos: [],
             estadoPedidos: []
+        }
+    },
+    computed: {
+        esHoy() {
+            return this.fechaSeleccionada === this.fechaHoy
         }
     },
     mounted() {
@@ -90,16 +115,18 @@ export default {
             this.cargando = true
             this.alertasStock = []
 
-            const hoy = obtenerFechaHoy()
-            
-            // 1. Ejecutar las reglas de negocio de auto-completar primero (Side-effects)
-            const autoRes = await DashboardClient.autoCompletarPedidos(hoy)
-            if (autoRes && !autoRes.success) {
-                console.error("Error al auto-completar pedidos:", autoRes.error)
+            const fechaConsulta = this.fechaSeleccionada || this.fechaHoy
+
+            // 1. Ejecutar las reglas de negocio de auto-completar solo si se consulta el día de hoy
+            if (fechaConsulta === this.fechaHoy) {
+                const autoRes = await DashboardClient.autoCompletarPedidos(fechaConsulta)
+                if (autoRes && !autoRes.success) {
+                    console.error("Error al auto-completar pedidos:", autoRes.error)
+                }
             }
-            
-            // 2. Traer la información puramente para lectura (Read-only)
-            const response = await DashboardClient.obtenerDatosDashboard(hoy)
+
+            // 2. Traer la información puramente para lectura (Read-only) para la fecha seleccionada
+            const response = await DashboardClient.obtenerDatosDashboard(fechaConsulta)
 
             if (response.success) {
                 const datos = response.data
@@ -114,12 +141,37 @@ export default {
             }
 
             this.cargando = false
+        },
+        volverAHoy() {
+            this.fechaSeleccionada = this.fechaHoy
+            this.cargarDatosDashboard()
+        },
+        formatearFechaVisual(fechaStr) {
+            if (!fechaStr) return ''
+            const parts = fechaStr.split('-')
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`
+            }
+            return fechaStr
         }
     }
 }
 </script>
 
 <style scoped>
+.filter-date {
+    max-width: 150px;
+}
+
+.subtitle-historico {
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.subtitle-historico strong {
+    color: var(--text-h);
+}
+
 /* Alertas */
 .alertas-stock-wrap {
     display: flex;

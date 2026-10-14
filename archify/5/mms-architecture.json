@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "MMS App — Arquitectura de Alto Nivel",
+    "quality_profile": "showcase",
+    "viewBox": [1200, 700],
+    "views": [
+      { "id": "ruta-pedidos", "label": "Ruta principal de pedidos", "focus": ["browser", "vue-spa", "service-layer", "supabase-api", "pg-db"], "note": "Flujo principal: el supervisor sincroniza pedidos externos, los visualiza y planifica la producción." },
+      { "id": "seguridad", "label": "Perímetro de seguridad", "focus": ["supabase-auth", "rls-policies", "vue-router-guard"], "note": "Supabase Auth emite JWT; RLS filtra filas por rol; el router guard bloquea rutas no autorizadas." },
+      { "id": "datos-externos", "label": "Sincronización externa", "focus": ["api-ventas", "api-materiales", "service-layer"], "note": "APIs REST on-premise alimentan pedidos, materia prima y materiales vía Axios." }
+    ]
+  },
+  "components": [
+    { "id": "browser",          "type": "external",  "label": "Navegador",           "sublabel": "Supervisor / Operador",      "pos": [40,  280], "size": [120, 56] },
+    { "id": "vue-spa",          "type": "frontend",  "label": "Vue 3 SPA",           "sublabel": "Vite + Vue Router",          "pos": [230, 280], "size": [140, 56], "tag": "Options + Composition API" },
+    { "id": "vue-router-guard", "type": "security",  "label": "Router Guard",        "sublabel": "beforeEach RBAC",            "pos": [230, 120], "size": [140, 52] },
+    { "id": "service-layer",    "type": "backend",   "label": "Capa de Servicios",   "sublabel": "src/client/*.js",            "pos": [470, 280], "size": [140, 56], "tag": "12 módulos Client" },
+    { "id": "planning-algo",    "type": "backend",   "label": "Motor Planificación", "sublabel": "Algoritmo Greedy + FIFO",    "pos": [470, 120], "size": [140, 52] },
+    { "id": "supabase-api",     "type": "cloud",     "label": "Supabase PostgREST",  "sublabel": "API REST auto-generada",     "pos": [720, 280], "size": [150, 56] },
+    { "id": "rls-policies",     "type": "security",  "label": "Políticas RLS",       "sublabel": "Row Level Security",         "pos": [720, 120], "size": [140, 52], "tag": "supervisor / operador" },
+    { "id": "supabase-auth",    "type": "security",  "label": "Supabase Auth",       "sublabel": "JWT + email/password",        "pos": [950, 120], "size": [130, 52] },
+    { "id": "rpc-functions",    "type": "database",  "label": "Funciones RPC",       "sublabel": "PL/pgSQL transaccional",     "pos": [720, 440], "size": [150, 52], "tag": "4 RPCs atómicas" },
+    { "id": "pg-db",            "type": "database",  "label": "PostgreSQL",          "sublabel": "15 tablas normalizadas",     "pos": [960, 280], "size": [130, 56] },
+    { "id": "api-ventas",       "type": "external",  "label": "API Ventas",          "sublabel": "Puerto :8060",               "pos": [220, 500], "size": [120, 52] },
+    { "id": "api-materiales",   "type": "external",  "label": "API Materiales",      "sublabel": "Puerto :8090",               "pos": [40,  500], "size": [130, 52] }
+  ],
+  "boundaries": [
+    { "kind": "region",         "label": "Supabase Cloud (BaaS)",  "wraps": ["supabase-api", "supabase-auth", "rls-policies", "rpc-functions", "pg-db"] },
+    { "kind": "security-group", "label": "Autenticación y RBAC",   "wraps": ["supabase-auth", "vue-router-guard", "rls-policies"] },
+    { "kind": "region",         "label": "Red Local On-Premise",   "wraps": ["api-ventas", "api-materiales"] }
+  ],
+  "connections": [
+    { "id": "user-to-spa",            "from": "browser",          "to": "vue-spa",        "label": "HTTPS",            "variant": "emphasis" },
+    { "id": "spa-to-services",        "from": "vue-spa",          "to": "service-layer" },
+    { "id": "services-to-supabase",   "from": "service-layer",    "to": "supabase-api",   "label": "supabase-js SDK",  "variant": "emphasis" },
+    { "id": "supabase-to-pg",         "from": "supabase-api",     "to": "pg-db",          "label": "SQL",              "labelAt": [850, 270] },
+    { "id": "auth-to-api",            "from": "supabase-auth",    "to": "supabase-api",   "label": "JWT verify",       "variant": "security" },
+    { "id": "rls-to-api",             "from": "rls-policies",     "to": "supabase-api",   "label": "filtro por rol",   "variant": "security", "fromSide": "bottom", "toSide": "top" },
+    { "id": "rpc-to-pg",              "from": "rpc-functions",    "to": "pg-db",          "label": "transacciones",    "fromSide": "right",   "toSide": "bottom" },
+    { "id": "services-to-rpc",        "from": "service-layer",    "to": "rpc-functions",  "label": "supabase.rpc()",   "variant": "dashed",   "fromSide": "bottom", "toSide": "left" },
+    { "id": "guard-to-spa",           "from": "vue-router-guard", "to": "vue-spa",        "label": "rol check",        "variant": "security", "fromSide": "bottom", "toSide": "top", "labelDy": 24 },
+    { "id": "services-to-ventas",     "from": "service-layer",    "to": "api-ventas",     "label": "Axios GET",        "variant": "dashed",   "fromSide": "bottom", "toSide": "top" },
+    { "id": "services-to-materiales", "from": "service-layer",    "to": "api-materiales", "label": "Axios GET",        "variant": "dashed",   "fromSide": "bottom", "toSide": "top" }
+  ],
+  "cards": [
+    { "dot": "cyan",    "title": "Frontend (Vue 3 SPA)", "items": ["Vite dev-server con HMR y basic-ssl", "Vue Router con lazy-loading por página y guards RBAC (supervisor vs operador)", "11 páginas: Dashboard, Pedidos, Recetas, Planificación, Producción, Mermas, etc.", "Composables reactivos como store ligero (useAuth, useCatalogos, usePlanificacion)"] },
+    { "dot": "emerald", "title": "Capa de Servicios",    "items": ["12 módulos Client.js encapsulan toda interacción con Supabase", "Motor de planificación in-browser: algoritmo Greedy equitativo + FIFO", "Auto-creación de recetas genéricas para categorías desconocidas", "Importación de pedidos desde Excel vía xlsx.js"] },
+    { "dot": "violet",  "title": "Supabase (BaaS)",      "items": ["PostgREST auto-genera endpoints para las 15 tablas", "4 funciones RPC transaccionales: sincronizar pedidos, registrar producción, registrar merma, KPIs dashboard", "Supabase Auth con email/password vinculado a tabla usuarios vía auth_user_id"] },
+    { "dot": "rose",    "title": "Seguridad y Confianza", "items": ["Supabase Auth emite JWT; anon key pública solo permite acceso autenticado", "RLS habilitado en todas las tablas: escritura restringida a supervisor, lectura a authenticated", "Router guard bloquea rutas no autorizadas según rol", "Trigger CASCADE elimina auth.users al borrar perfil de usuarios"] },
+    { "dot": "amber",   "title": "APIs Externas On-Premise", "items": ["Puerto :8060 — API de ventas (pedidos sincronizados vía PedidoClient)", "Puerto :8070 — API de materia prima (IDs VARCHAR importados)", "Puerto :8090 — API de materiales (IDs VARCHAR importados)", "Sincronización manual desde frontend; sin webhook ni push automático"] },
+    { "dot": "slate",   "title": "Limitaciones Documentadas", "items": ["Sin transacciones formales en operaciones multi-request del cliente (trade-off aceptado)", "RLS basado en rol genérico, sin aislamiento por tenant", "Riesgo marginal de inconsistencia si se cae la red entre DELETE e INSERT"] }
+  ]
+}

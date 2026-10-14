@@ -90,7 +90,7 @@ export default {
     async cargarClientes(forceRefresh = false) {
       this.cargando = true
       const response = await this.catalogos.obtenerClientes(forceRefresh)
-      
+
       if (response?.success === false) {
         this.clientes = []
         this.mostrarMensaje('error', 'Error al cargar los clientes')
@@ -168,9 +168,6 @@ export default {
 </script>
 
 <style scoped>
-
-
-
 /* Layout Principal */
 .main-layout {
   display: grid;

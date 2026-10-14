@@ -1,63 +1,60 @@
 <template>
-  <div class="data-card h-full">
-      <div class="data-card-header">
-          <div class="flex-align-center gap-8">
-              <SunIcon class="icon-lg text-primary" />
-              <h2>Análisis de Mermas de Hoy</h2>
-          </div>
-      </div>
+    <div class="data-card h-full">
+        <div class="data-card-header">
+            <div class="flex-align-center gap-8">
+                <h2>Análisis de Mermas de Hoy</h2>
+            </div>
+        </div>
 
-      <div class="data-card-content p-6">
-          <div v-if="cargando" class="loading-state">
-              <div class="spinner"></div>
-              <p>Cargando análisis de mermas...</p>
-          </div>
+        <div class="data-card-content p-6">
+            <div v-if="cargando" class="loading-state">
+                <div class="spinner"></div>
+                <p>Cargando análisis de mermas...</p>
+            </div>
 
-          <div v-else-if="mermasMotivos.length === 0 && topMermasInsumos.length === 0" class="empty-state-card m-5">
-              <p>No se han registrado mermas el día de hoy.</p>
-          </div>
+            <div v-else-if="mermasMotivos.length === 0 && topMermasInsumos.length === 0" class="empty-state-card m-5">
+                <p>No se han registrado mermas el día de hoy.</p>
+            </div>
 
-          <div v-else class="grid-halves">
-            <!-- Mermas por motivo -->
-            <div class="analysis-section" v-if="mermasMotivos.length > 0">
-                <h4>Porcentaje por Motivo</h4>
-                <div class="motivos-list">
-                    <div v-for="item in mermasMotivos" :key="item.motivo" class="motivo-item">
-                        <div class="motivo-info">
-                            <span class="motivo-name">{{ item.motivo }}</span>
-                            <span class="motivo-pct">{{ item.porcentaje }}%</span>
-                        </div>
-                        <div class="progress-track sm">
-                            <div class="progress-fill" :style="{ width: `${item.porcentaje}%` }"></div>
+            <div v-else class="grid-halves">
+                <!-- Mermas por motivo -->
+                <div class="analysis-section" v-if="mermasMotivos.length > 0">
+                    <h4>Porcentaje por Motivo</h4>
+                    <div class="motivos-list">
+                        <div v-for="item in mermasMotivos" :key="item.motivo" class="motivo-item">
+                            <div class="motivo-info">
+                                <span class="motivo-name">{{ item.motivo }}</span>
+                                <span class="motivo-pct">{{ item.porcentaje }}%</span>
+                            </div>
+                            <div class="progress-track sm">
+                                <div class="progress-fill" :style="{ width: `${item.porcentaje}%` }"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Top Insumos Mermados -->
-            <div class="analysis-section" v-if="topMermasInsumos.length > 0">
-                <h4>Top Insumos más Mermados</h4>
-                <ul class="top-insumos-list">
-                    <li v-for="(ins, idx) in topMermasInsumos" :key="idx" class="insumo-item">
-                        <span class="insumo-rank">#{{ idx + 1 }}</span>
-                        <div class="insumo-detail">
-                            <span class="insumo-name">{{ ins.nombre }}</span>
-                            <span class="insumo-qty">{{ ins.cantidad }} <small>{{ ins.unidad }}</small></span>
-                        </div>
-                    </li>
-                </ul>
+                <!-- Top Insumos Mermados -->
+                <div class="analysis-section" v-if="topMermasInsumos.length > 0">
+                    <h4>Top Insumos más Mermados</h4>
+                    <ul class="top-insumos-list">
+                        <li v-for="(ins, idx) in topMermasInsumos" :key="idx" class="insumo-item">
+                            <span class="insumo-rank">#{{ idx + 1 }}</span>
+                            <div class="insumo-detail">
+                                <span class="insumo-name">{{ ins.nombre }}</span>
+                                <span class="insumo-qty">{{ ins.cantidad }} <small>{{ ins.unidad }}</small></span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
-          </div>
-      </div>
-  </div>
+        </div>
+    </div>
 </template>
 
 <script>
-import { SunIcon } from '@heroicons/vue/24/outline'
 
 export default {
     name: 'DashboardDistribucionMermas',
-    components: { SunIcon },
     props: {
         mermasMotivos: {
             type: Array,
@@ -76,8 +73,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 .analysis-section h4 {
     margin: 0 0 14px;
     font-size: 14px;

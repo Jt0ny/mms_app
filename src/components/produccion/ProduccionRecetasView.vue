@@ -201,8 +201,8 @@ export default {
     padding: 24px;
     border-radius: 18px;
     /* Forzar altura al 100% de la columna (para igualar al formulario exacto) */
-    height: 0; 
-    min-height: 100%; 
+    height: 0;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
 }

@@ -2,7 +2,7 @@
     <InventarioTable titulo="Recetas Existentes" :items="recetas" :cargando="cargando" etiqueta-item="recetas"
         texto-vacio="No hay recetas registradas" @actualizar="$emit('actualizar')" :show-sync="false">
         <template #title-icon>
-            <BookOpenIcon class="icon-lg text-primary" />
+            <BookOpenIcon class="icon-lg text-white" />
         </template>
         <template #header>
             <th>Nombre de Receta</th>
@@ -59,10 +59,8 @@ export default {
 </script>
 
 <style scoped>
-
 .action-cell {
     display: flex;
     gap: 8px;
 }
-
 </style>

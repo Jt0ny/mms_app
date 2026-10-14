@@ -16,8 +16,9 @@ CREATE TABLE usuarios (
     rol VARCHAR(50) NOT NULL,
     auth_user_id UUID UNIQUE,
     email VARCHAR(255) UNIQUE,
+    activo BOOLEAN NOT NULL DEFAULT true,
     CONSTRAINT pk_usuarios PRIMARY KEY (id),
-    CONSTRAINT usuarios_auth_user_id_fkey FOREIGN KEY (auth_user_id) REFERENCES auth.users(id)
+    CONSTRAINT usuarios_auth_user_id_fkey FOREIGN KEY (auth_user_id) REFERENCES auth.users(id) ON DELETE SET NULL
 );
 
 -- ---------------------------------------------------------------------------

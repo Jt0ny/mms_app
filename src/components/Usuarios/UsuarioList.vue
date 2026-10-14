@@ -84,7 +84,6 @@ export default {
 </script>
 
 <style scoped>
-
 .table-info {
     margin-bottom: 14px;
     color: var(--text-h);
@@ -121,17 +120,19 @@ export default {
 
 /* Forzar altura al 100% de la columna (para igualar al formulario exacto) */
 .data-card {
-  height: 0; /* Evita que los registros internos estiren la fila del grid infinitamente */
-  min-height: 100%; /* Obliga a la tarjeta a medir exactamente lo mismo que el formulario */
-  display: flex;
-  flex-direction: column;
+    height: 0;
+    /* Evita que los registros internos estiren la fila del grid infinitamente */
+    min-height: 100%;
+    /* Obliga a la tarjeta a medir exactamente lo mismo que el formulario */
+    display: flex;
+    flex-direction: column;
 }
 
 /* Anular la restricción global de 450px y permitir scroll interno */
 .data-card-content {
-  flex: 1;
-  min-height: 0;
-  max-height: none;
-  overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
 }
 </style>

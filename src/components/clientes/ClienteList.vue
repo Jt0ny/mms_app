@@ -6,7 +6,6 @@
         <div class="flex-align-center gap-8">
           <DocumentTextIcon v-if="mostrarSoloTipo === 'Facturación'" class="icon-lg text-primary" />
           <TruckIcon v-else-if="mostrarSoloTipo === 'Envío'" class="icon-lg text-warning" />
-          <UserGroupIcon v-else class="icon-lg text-primary" />
           <h2>{{ titulo }}</h2>
         </div>
         <p class="data-card-subtitle">{{ totalClientes }} registros en total</p>
@@ -37,7 +36,9 @@
 
     <!-- Lista Vacía -->
     <div v-else-if="clientesFiltrados.length === 0" class="empty-state-card m-5">
-      <p><InboxIcon class="icon-lg icon-inline text-light" /> No se encontraron registros</p>
+      <p>
+        <InboxIcon class="icon-lg icon-inline text-light" /> No se encontraron registros
+      </p>
     </div>
 
     <!-- Tabla de Clientes -->
@@ -71,19 +72,19 @@
             </td>
             <td v-if="mostrarDetallesContacto">
               <a v-if="cliente.email" :href="`mailto:${cliente.email}`" class="link-contact" @click.stop>
-                <EnvelopeIcon class="icon-sm icon-inline" /> {{ cliente.email }}
+                {{ cliente.email }}
               </a>
               <span v-else class="no-data">—</span>
             </td>
             <td v-if="mostrarDetallesContacto">
               <a v-if="cliente.telefono" :href="`tel:${cliente.telefono}`" class="link-contact" @click.stop>
-                <PhoneIcon class="icon-sm icon-inline" /> {{ cliente.telefono }}
+                {{ cliente.telefono }}
               </a>
               <span v-else class="no-data">—</span>
             </td>
             <td v-if="mostrarDetallesContacto">
               <span v-if="cliente.direccion" class="address-text" :title="cliente.direccion">
-                <MapPinIcon class="icon-sm icon-inline" /> {{ cliente.direccion }}
+                {{ cliente.direccion }}
               </span>
               <span v-else class="no-data">—</span>
             </td>
@@ -103,18 +104,16 @@
 </template>
 
 <script>
-import { 
-  DocumentTextIcon, TruckIcon, UserGroupIcon, InboxIcon, 
-  LinkIcon, EnvelopeIcon, PhoneIcon, MapPinIcon, 
-  PencilIcon, TrashIcon 
+import {
+  DocumentTextIcon, TruckIcon, InboxIcon,
+  LinkIcon, PencilIcon, TrashIcon
 } from '@heroicons/vue/24/outline'
 
 export default {
   name: 'ClienteList',
   components: {
-    DocumentTextIcon, TruckIcon, UserGroupIcon, InboxIcon, 
-    LinkIcon, EnvelopeIcon, PhoneIcon, MapPinIcon, 
-    PencilIcon, TrashIcon
+    DocumentTextIcon, TruckIcon, InboxIcon,
+    LinkIcon, PencilIcon, TrashIcon
   },
   props: {
     clientes: {
@@ -305,7 +304,4 @@ export default {
   background: var(--primary-bg);
   color: var(--primary);
 }
-
-
-
 </style>
