@@ -205,19 +205,33 @@ export default {
   }
 }
 
-@media (max-width: 1024px) {
+/* ≤ 1200px — Tablet landscape: 2 col lado a lado, formulario ocupa fila completa abajo */
+@media (max-width: 1200px) {
   .main-layout.with-form {
     grid-template-columns: 1fr 1fr;
   }
 
   .column-form {
-    grid-column: span 2;
+    grid-column: 1 / -1;
   }
 }
 
-@media (max-width: 1024px) {
-  .main-layout {
+/* ≤ 900px — Tablet portrait: todo apilado en 1 columna */
+@media (max-width: 900px) {
+  .main-layout,
+  .main-layout.with-form {
     grid-template-columns: 1fr;
+  }
+
+  .column-form {
+    grid-column: auto;
+  }
+}
+
+/* ≤ 768px — Móvil: sin animación para mejor rendimiento */
+@media (max-width: 768px) {
+  .column-form {
+    animation: none;
   }
 }
 </style>

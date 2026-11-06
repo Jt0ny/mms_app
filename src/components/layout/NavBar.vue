@@ -232,81 +232,80 @@ export default {
 
 @media (max-width: 768px) {
   .container-nav {
-    padding: 10px 14px;
+    flex-shrink: 0;
+    padding: 8px 16px;
     min-height: auto;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .navbar {
-    grid-template-columns: auto 1fr;
-    grid-template-areas:
-      'logo acciones'
-      'menu menu';
-    gap: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
   }
 
   .menu {
-    flex-basis: 100%;
-    justify-content: flex-start;
-    gap: 12px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-    white-space: nowrap;
+    display: none; /* Hide redundant label on mobile/tablet */
+  }
+
+  .logo {
+    gap: 10px;
+  }
+
+  .logo-img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .logo-copy span {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+  }
+
+  .logo-copy strong {
+    font-size: 13.5px;
   }
 
   .acciones {
     margin-left: 0;
-    justify-self: end;
-    width: 100%;
+    width: auto;
   }
 
-  .btn {
-    width: 100%;
+  .user-profile-block {
+    gap: 10px;
   }
 
-
-  .menu li {
+  .user-profile-name {
     font-size: 12px;
   }
 
-  .logo-copy span {
-    font-size: 11px;
-  }
-
-  .logo-copy strong {
-    font-size: 14px;
+  .user-profile-role {
+    font-size: 10px;
   }
 }
 
 @media (max-width: 480px) {
   .container-nav {
-    padding: 10px 12px;
+    padding: 8px 12px;
   }
 
-  .navbar {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      'logo'
-      'acciones'
-      'menu';
-    justify-items: start;
+  .logo-img {
+    width: 36px;
+    height: 36px;
   }
 
-  .acciones {
-    justify-self: start;
+  .logo-copy span {
+    display: none;
   }
 
-  .btn {
-    width: 100%;
+  .logo-copy strong {
+    font-size: 13px;
   }
 
-  .menu {
-    width: 100%;
-  }
-
-  .logo-mark {
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
+  .user-profile-role {
+    display: none;
   }
 }
 </style>

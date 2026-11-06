@@ -51,7 +51,7 @@ export default {
 <style scoped>
 .main-layout {
     display: flex;
-    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     background: var(--bg-secondary);
 }
@@ -61,23 +61,43 @@ export default {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    min-height: 0;
 }
 
 .page-content {
     flex: 1;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    min-height: 0;
 }
 
 @media (max-width: 768px) {
     .main-layout {
         flex-direction: column;
-        height: 100vh;
+        height: 100dvh;
+    }
+
+    .main-content {
+        display: contents;
+    }
+
+    :deep(.container-nav) {
+        order: 1;
+        flex-shrink: 0;
+    }
+
+    :deep(.sidebar) {
+        order: 2;
+        flex-shrink: 0;
     }
 
     .page-content {
+        order: 3;
+        flex: 1;
+        min-height: 0;
         overflow-y: auto;
+        overflow-x: auto;
     }
 }
 </style>

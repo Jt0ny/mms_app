@@ -102,8 +102,7 @@ export default {
     color: var(--text-light);
     margin: 2px 0 0 0;
     font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-word;
 }
 </style>

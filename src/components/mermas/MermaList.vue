@@ -191,21 +191,39 @@ export default {
 
 
 
+/* En pantallas grandes (2 columnas), igualar la altura de la tarjeta a la del formulario */
+@media (min-width: 1025px) {
+  .data-card {
+    height: 0;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* En tablets, pantallas divididas y móviles (1 columna) */
+@media (max-width: 1024px) {
+  .data-card {
+    height: auto;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .data-card-content {
+    max-height: 500px;
+  }
+}
+
 @media (max-width: 768px) {
   .filter-date {
     width: 100%;
     max-width: none;
   }
-}
 
-/* Forzar altura al 100% de la columna (para igualar al formulario exacto) */
-.data-card {
-  height: 0;
-  /* Evita que los registros internos estiren la fila del grid infinitamente */
-  min-height: 100%;
-  /* Obliga a la tarjeta a medir exactamente lo mismo que el formulario */
-  display: flex;
-  flex-direction: column;
+  .data-card-table {
+    min-width: 540px;
+  }
 }
 
 /* Anular la restricción global de 450px y permitir scroll interno */
@@ -213,6 +231,5 @@ export default {
   flex: 1;
   min-height: 0;
   max-height: none;
-  overflow-y: auto;
 }
 </style>

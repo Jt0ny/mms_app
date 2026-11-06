@@ -244,7 +244,7 @@ p {
    ========================================= */
 .page-container {
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 24px;
   background: var(--bg-secondary);
 }
@@ -716,6 +716,7 @@ p {
   padding: 20px;
   overflow-y: auto;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   max-height: 450px;
 }
 
@@ -949,6 +950,16 @@ p {
 
 .gap-14 {
   gap: 14px;
+}
+
+/* Utilidad para ocultar barras de desplazamiento */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE y Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 

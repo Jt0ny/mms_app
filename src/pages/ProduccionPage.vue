@@ -219,6 +219,13 @@ export default {
 
 /* ── Grid ───────────────────────────── */
 .page-grid-produccion {
-    grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.85fr);
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.85fr);
 }
+
+@media (max-width: 900px) {
+    .page-grid-produccion {
+        grid-template-columns: 1fr;
+    }
+}
+
 </style>

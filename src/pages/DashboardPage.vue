@@ -188,4 +188,11 @@ export default {
 .pedidos-widget {
     grid-column: 1 / -1;
 }
+
+@media (max-width: 1024px) {
+    .pedidos-widget {
+        grid-column: auto;
+    }
+}
+
 </style>

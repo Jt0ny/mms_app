@@ -7,7 +7,7 @@
       </button>
     </div>
 
-    <nav class="menu">
+    <nav class="menu no-scrollbar">
       <router-link v-if="esSupervisor" to="/app/dashboard" class="menu-item" active-class="active">
         <ChartBarIcon class="sidebar-icon" />
         <span :class="{ 'hidden-text': isCollapsed }">Dashboard</span>
@@ -98,9 +98,27 @@ export default {
       return this.rol === 'supervisor'
     }
   },
+  watch: {
+    '$route'() {
+      this.scrollActiveTab()
+    }
+  },
+  mounted() {
+    this.scrollActiveTab()
+  },
   methods: {
     toggleSidebar() {
       this.isCollapsed = !this.isCollapsed
+    },
+    scrollActiveTab() {
+      this.$nextTick(() => {
+        if (window.innerWidth <= 768 && this.$el) {
+          const activeEl = this.$el.querySelector('.menu-item.active')
+          if (activeEl) {
+            activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+          }
+        }
+      })
     }
   }
 }
@@ -257,10 +275,15 @@ span.hidden-text {
 
 @media (max-width: 768px) {
   .sidebar {
+    flex-shrink: 0;
     width: 100%;
     height: auto;
-    padding: 12px;
+    padding: 8px 12px;
     overflow-x: hidden;
+    overflow-y: hidden;
+    background: var(--secondary);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
   .sidebar.collapsed {
@@ -268,46 +291,86 @@ span.hidden-text {
   }
 
   .top {
-    margin-bottom: 12px;
-  }
-
-  .top h2 {
     display: none;
   }
 
   .menu {
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 8px;
     overflow-x: auto;
-    padding-bottom: 4px;
-    scrollbar-width: thin;
+    overflow-y: hidden;
+    padding: 2px 2px 4px 2px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .menu-item {
-    white-space: nowrap;
-    padding: 8px 10px;
+    flex-shrink: 0;
     width: auto;
+    white-space: nowrap;
+    padding: 7px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 13px;
+    font-weight: 500;
   }
 
-  .menu-item span:first-child {
-    min-width: 0;
+  .menu-item:hover:not(.disabled) {
+    background: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .menu-item.active {
+    background: var(--primary);
+    color: #ffffff;
+    font-weight: 600;
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  .menu-item :deep(svg) {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+  }
+
+  .menu-item span {
+    max-width: none !important;
+    opacity: 1 !important;
+    font-size: 12.5px;
   }
 }
 
 @media (max-width: 480px) {
   .sidebar {
-    padding: 10px;
+    padding: 6px 10px;
   }
 
-  .top {
-    margin-bottom: 10px;
-    padding-bottom: 12px;
+  .menu {
+    gap: 6px;
   }
 
-  .toggle {
-    font-size: 18px;
-    padding: 6px;
+  .menu-item {
+    padding: 6px 11px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .menu-item :deep(svg) {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+  }
+
+  .menu-item span {
+    font-size: 12px;
   }
 }
 </style>
