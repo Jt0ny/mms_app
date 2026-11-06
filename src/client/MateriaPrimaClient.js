@@ -2,7 +2,7 @@ import axios from "axios";
 import { supabase } from "./supabase";
 import { obtenerFechaHoy } from "../utils/date.js";
 
-const API_URL = import.meta.env.VITE_API_MATERIA_PRIMA_URL;
+const API_URL = window.__ENV__?.VITE_API_MATERIA_PRIMA_URL || import.meta.env.VITE_API_MATERIA_PRIMA_URL || 'http://localhost:8070/materia-prima';
 
 export default {
   async sincronizarConSupabase() {

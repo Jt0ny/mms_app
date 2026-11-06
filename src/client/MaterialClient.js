@@ -1,7 +1,7 @@
 import axios from "axios";
 import { supabase } from "./supabase";
 
-const API_URL = import.meta.env.VITE_API_MATERIALES_URL;
+const API_URL = window.__ENV__?.VITE_API_MATERIALES_URL || import.meta.env.VITE_API_MATERIALES_URL || 'http://localhost:8090/materiales';
 
 export default {
   async sincronizarConSupabase() {

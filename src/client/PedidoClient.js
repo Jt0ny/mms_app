@@ -5,7 +5,7 @@ import RecetaClient from "./RecetaClient";
 import { obtenerFechaHoy } from "../utils/date.js";
 import { useCatalogos } from "../composables/useCatalogos.js";
 
-const API_URL = import.meta.env.VITE_API_PEDIDOS_URL;
+const API_URL = window.__ENV__?.VITE_API_PEDIDOS_URL || import.meta.env.VITE_API_PEDIDOS_URL || 'http://localhost:8060/pedidos';
 
 export default {
 

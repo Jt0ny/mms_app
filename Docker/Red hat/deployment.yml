@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mms-web
+  namespace: j0el1-dev
+  labels:
+    app: mms-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mms-web
+  template:
+    metadata:
+      labels:
+        app: mms-web
+    spec:
+      containers:
+        - name: mms-web
+          image: anthonyjoel/mms_app:vr
+          ports:
+            - name: http
+              containerPort: 8080
+          # ====================================================================
+          # Variables de entorno inyectadas en tiempo de ejecución (Runtime).
+          # La imagen construida con Docker/Red hat/Dockerfile ejecuta
+          # /entrypoint.sh al arrancar, generando dinámicamente config.js
+          # con estos valores para la aplicación web.
+          # ====================================================================
+          env:
+            - name: VITE_SUPABASE_URL
+              value: "https://nvdyyxfemqwjfrlrokgx.supabase.co"
+            - name: VITE_SUPABASE_ANON_KEY
+              value: "sb_publishable_Hkm2ulzCTVW5XFyrK3BWSA_IuJBdrPg"
+            - name: VITE_API_PEDIDOS_URL
+              value: "http://localhost:8060/pedidos"
+            - name: VITE_API_MATERIA_PRIMA_URL
+              value: "http://localhost:8070/materia-prima"
+            - name: VITE_API_MATERIALES_URL
+              value: "http://localhost:8090/materiales"
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mms-web-service
+  namespace: j0el1-dev
+  labels:
+    app: mms-web
+spec:
+  type: ClusterIP
+  selector:
+    app: mms-web
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: mms-web-route
+  namespace: j0el1-dev
+  labels:
+    app: mms-web
+spec:
+  to:
+    kind: Service
+    name: mms-web-service
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: mms-web-hpa
+  namespace: j0el1-dev
+spec:
+  minReplicas: 1
+  maxReplicas: 3
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mms-web
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 70
