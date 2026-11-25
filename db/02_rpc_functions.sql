@@ -45,6 +45,48 @@ END;
 $function$
 
 
+-- Function: rpc_cambiar_contrasena_usuario
+CREATE OR REPLACE FUNCTION public.rpc_cambiar_contrasena_usuario(
+    p_usuario_id uuid,
+    p_nueva_contrasena text
+)
+ RETURNS void
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path = public, extensions, pg_temp
+AS $function$
+DECLARE
+    v_auth_id uuid;
+BEGIN
+    -- 1. Verificar que quien ejecuta la función tenga rol de supervisor
+    IF public.obtener_usuarios_rol() IS DISTINCT FROM 'supervisor' THEN
+        RAISE EXCEPTION 'No autorizado: Solo supervisores pueden cambiar contraseñas';
+    END IF;
+
+    -- 2. Validar longitud mínima de contraseña (estándar de Supabase Auth: 6 caracteres)
+    IF p_nueva_contrasena IS NULL OR char_length(trim(p_nueva_contrasena)) < 6 THEN
+        RAISE EXCEPTION 'La contraseña debe tener al menos 6 caracteres';
+    END IF;
+
+    -- 3. Obtener el auth_user_id del usuario activo
+    SELECT auth_user_id INTO v_auth_id
+    FROM public.usuarios
+    WHERE id = p_usuario_id AND activo = true;
+
+    IF v_auth_id IS NULL THEN
+        RAISE EXCEPTION 'El usuario no existe o no tiene cuenta de autenticación activa';
+    END IF;
+
+    -- 4. Actualizar la contraseña encriptada en Supabase Auth (bcrypt)
+    UPDATE auth.users
+    SET encrypted_password = extensions.crypt(p_nueva_contrasena, extensions.gen_salt('bf')),
+        updated_at = now()
+    WHERE id = v_auth_id;
+END;
+$function$
+
+
+
 -- Function: rpc_registrar_merma
 CREATE OR REPLACE FUNCTION public.rpc_registrar_merma(payload_merma jsonb)
  RETURNS jsonb

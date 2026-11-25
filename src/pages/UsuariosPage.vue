@@ -11,10 +11,11 @@
             <Alertas :mensaje="mensaje" />
 
             <div class="page-grid">
-                <UsuarioForm @guardado="cargarUsuarios(true)" />
+                <UsuarioForm :usuarioSeleccionado="usuarioSeleccionado" @guardado="cargarUsuarios(true)"
+                    @cancelar="usuarioSeleccionado = null" />
 
                 <UsuarioList :usuarios="usuarios" :cargando="cargandoUsuarios" @actualizar="cargarUsuarios(true)"
-                    @eliminar="eliminarUsuario" />
+                    @cambiar-contrasena="seleccionarUsuario" @eliminar="eliminarUsuario" />
             </div>
         </div>
     </div>
@@ -43,7 +44,8 @@ export default {
     data() {
         return {
             usuarios: [],
-            cargandoUsuarios: false
+            cargandoUsuarios: false,
+            usuarioSeleccionado: null
         }
     },
 
@@ -52,6 +54,10 @@ export default {
     },
 
     methods: {
+        seleccionarUsuario(usuario) {
+            this.usuarioSeleccionado = { ...usuario }
+        },
+
         async cargarUsuarios(forceRefresh = false) {
             this.cargandoUsuarios = true
             const response = await this.catalogos.obtenerUsuarios(forceRefresh)
@@ -69,6 +75,9 @@ export default {
         async eliminarUsuario(id) {
             const response = await UsuarioClient.eliminarUsuario(id)
             if (response.success) {
+                if (this.usuarioSeleccionado?.id === id) {
+                    this.usuarioSeleccionado = null
+                }
                 this.mostrarMensaje('exito', 'Usuario eliminado correctamente.')
                 await this.cargarUsuarios(true)
             } else {

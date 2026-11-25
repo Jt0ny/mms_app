@@ -118,5 +118,21 @@ export default {
       console.error("Error al eliminar usuario:", error)
       return { success: false, error }
     }
+  },
+
+  // Cambiar contraseña de usuario — Vía RPC (Solo supervisores)
+  async cambiarContrasena(id, nuevaContrasena) {
+    try {
+      const { error } = await supabase.rpc('rpc_cambiar_contrasena_usuario', {
+        p_usuario_id: id,
+        p_nueva_contrasena: nuevaContrasena
+      })
+
+      if (error) throw error
+      return { success: true }
+    } catch (error) {
+      console.error("Error al cambiar contraseña:", error)
+      return { success: false, error }
+    }
   }
 }

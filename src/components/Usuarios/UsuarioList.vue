@@ -42,7 +42,11 @@
                             </span>
                         </td>
                         <td class="actions-col">
-                            <button type="button" class="btn-action-ghost delete"
+                            <button type="button" class="btn-action-ghost edit" title="Cambiar contraseña"
+                                @click="$emit('cambiar-contrasena', usuario)">
+                                <KeyIcon class="icon-action text-info" />
+                            </button>
+                            <button type="button" class="btn-action-ghost delete" title="Eliminar usuario"
                                 @click="$emit('eliminar', usuario.id)">
                                 <TrashIcon class="icon-action text-error" />
                             </button>
@@ -58,11 +62,11 @@
     </div>
 </template>
 <script>
-import { TrashIcon, ArrowPathIcon, UsersIcon } from '@heroicons/vue/24/outline'
+import { TrashIcon, ArrowPathIcon, UsersIcon, KeyIcon } from '@heroicons/vue/24/outline'
 
 export default {
     name: 'UsuarioList',
-    components: { TrashIcon, ArrowPathIcon, UsersIcon },
+    components: { TrashIcon, ArrowPathIcon, UsersIcon, KeyIcon },
     props: {
         usuarios: {
             type: Array,
@@ -73,7 +77,7 @@ export default {
             default: false
         }
     },
-    emits: ['actualizar', 'eliminar'],
+    emits: ['actualizar', 'eliminar', 'cambiar-contrasena'],
     methods: {
         formatearRol(rol) {
             if (!rol) return '-'
